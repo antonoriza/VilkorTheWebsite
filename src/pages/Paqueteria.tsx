@@ -134,13 +134,19 @@ export default function Paqueteria() {
                   <td className="px-8 py-5"><StatusBadge status={pkg.status} /></td>
                   <td className="px-8 py-5 text-sm text-slate-500 font-medium">{pkg.location}</td>
                   <td className="px-8 py-5">
-                    {pkg.status === 'Pendiente' && (
+                    {pkg.status === 'Pendiente' && isAdmin && (
                       <button
                         onClick={() => handleDeliver(pkg.id)}
                         className="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all"
+                        title="Marcar como entregado"
                       >
                         <span className="material-symbols-outlined text-lg font-bold">check_circle</span>
                       </button>
+                    )}
+                    {pkg.status === 'Pendiente' && !isAdmin && (
+                      <span className="inline-flex items-center text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                        En espera
+                      </span>
                     )}
                     {pkg.status === 'Entregado' && (
                       <span className="material-symbols-outlined text-lg text-slate-300">task_alt</span>

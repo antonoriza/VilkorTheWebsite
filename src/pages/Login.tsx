@@ -1,15 +1,20 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { seedResidents } from '../data/seed'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { setAuth } = useAuth()
+  const { setAuth, isAuthenticated, role } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  // If already authenticated, redirect to the correct home
+  if (isAuthenticated) {
+    return <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} replace />
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

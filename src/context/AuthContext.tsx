@@ -7,29 +7,38 @@ interface AuthState {
   apartment: string
   email: string
   role: Role
-  toggleRole: () => void
+  isAuthenticated: boolean
   setAuth: (user: string, apartment: string, email: string, role: Role) => void
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthState | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState('Juan Antonio')
-  const [apartment, setApartment] = useState('A201')
-  const [email, setEmail] = useState('juan@property.com')
+  const [user, setUser] = useState('')
+  const [apartment, setApartment] = useState('')
+  const [email, setEmail] = useState('')
   const [role, setRole] = useState<Role>('resident')
-
-  const toggleRole = () => setRole(r => r === 'resident' ? 'admin' : 'resident')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const setAuth = (u: string, a: string, e: string, r: Role) => {
     setUser(u)
     setApartment(a)
     setEmail(e)
     setRole(r)
+    setIsAuthenticated(true)
+  }
+
+  const logout = () => {
+    setUser('')
+    setApartment('')
+    setEmail('')
+    setRole('resident')
+    setIsAuthenticated(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, apartment, email, role, toggleRole, setAuth }}>
+    <AuthContext.Provider value={{ user, apartment, email, role, isAuthenticated, setAuth, logout }}>
       {children}
     </AuthContext.Provider>
   )
