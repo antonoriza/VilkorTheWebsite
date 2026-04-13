@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { seedResidents } from '../data/seed'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { setAuth } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -11,12 +14,23 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulated login
+
     setTimeout(() => {
       setIsLoading(false)
+
       if (email.includes('admin')) {
+        // Admin login
+        setAuth('Administrador', 'ADMIN', email, 'admin')
         navigate('/admin')
       } else {
+        // Try to match a known resident by email
+        const matchedResident = seedResidents.find(r => r.email === email)
+        if (matchedResident) {
+          setAuth(matchedResident.name, matchedResident.apartment, matchedResident.email, 'resident')
+        } else {
+          // Default resident
+          setAuth('Juan Antonio', 'A201', email || 'juan@property.com', 'resident')
+        }
         navigate('/dashboard')
       }
     }, 800)
@@ -84,6 +98,16 @@ export default function Login() {
           <div className="space-y-2">
             <h2 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">Welcome Back</h2>
             <p className="text-slate-500 font-medium">Please enter your credentials to access the estate.</p>
+          </div>
+
+          {/* Quick access hint */}
+          <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl">
+            <p className="text-[11px] font-bold text-indigo-700 uppercase tracking-widest mb-2">Acceso Rápido (Demo)</p>
+            <div className="space-y-1 text-[11px] text-indigo-600 font-medium">
+              <p><strong>Residente:</strong> sofia@property.com</p>
+              <p><strong>Admin:</strong> admin@property.com</p>
+              <p className="text-indigo-400 mt-1">Contraseña: cualquier texto</p>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

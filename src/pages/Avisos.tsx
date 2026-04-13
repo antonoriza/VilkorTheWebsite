@@ -10,6 +10,8 @@ export default function Avisos() {
   const [formTitle, setFormTitle] = useState('')
   const [formFile, setFormFile] = useState('')
 
+  const isAdmin = role === 'admin'
+
   const handleAdd = () => {
     if (!formTitle.trim()) return
     dispatch({
@@ -26,6 +28,38 @@ export default function Avisos() {
     setShowModal(false)
   }
 
+  const handleDelete = (id: string) => {
+    dispatch({ type: 'DELETE_AVISO', payload: id })
+  }
+
+  const handleDownload = (aviso: { title: string; attachment: string; date: string }) => {
+    // Simulate file download with a generated text file
+    const content = [
+      `═══════════════════════════════════════`,
+      `  AVISO — ${aviso.title}`,
+      `═══════════════════════════════════════`,
+      ``,
+      `Fecha de publicación: ${aviso.date}`,
+      `Archivo original: ${aviso.attachment}`,
+      ``,
+      `Este es un documento de demostración generado por CantonAlfa.`,
+      `En producción, este botón descargaría el archivo real adjunto.`,
+      ``,
+      `Lote Alemania — Cosmopol HU Lifestyle`,
+      ``,
+    ].join('\n')
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = aviso.attachment.replace(/\.[^.]+$/, '') + '.txt'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -35,7 +69,7 @@ export default function Avisos() {
             Noticias y Avisos
           </h1>
         </div>
-        {role === 'admin' && (
+        {isAdmin && (
           <button
             onClick={() => setShowModal(true)}
             className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
@@ -69,8 +103,20 @@ export default function Avisos() {
                 </span>
               </div>
             </div>
-            <div className="flex justify-end mt-6">
-              <button className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase group-hover:border-slate-300">
+            <div className="flex justify-end mt-6 gap-3">
+              {isAdmin && (
+                <button
+                  onClick={() => handleDelete(aviso.id)}
+                  className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-rose-200 text-rose-600 font-bold rounded-xl hover:bg-rose-50 transition-all text-[11px] tracking-widest uppercase"
+                >
+                  <span className="material-symbols-outlined text-lg">delete</span>
+                  <span>Eliminar</span>
+                </button>
+              )}
+              <button
+                onClick={() => handleDownload(aviso)}
+                className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase group-hover:border-slate-300"
+              >
                 <span className="material-symbols-outlined text-lg">download</span>
                 <span>Descargar</span>
               </button>

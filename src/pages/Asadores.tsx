@@ -4,6 +4,8 @@ import { useStore } from '../data/store'
 import StatusBadge from '../components/StatusBadge'
 import Modal from '../components/Modal'
 
+const TIME_SLOTS = ['10:00 – 14:00', '14:00 – 18:00', '18:00 – 22:00']
+
 export default function Asadores() {
   const { role, apartment, user } = useAuth()
   const { state, dispatch } = useStore()
@@ -11,6 +13,8 @@ export default function Asadores() {
   const [showModal, setShowModal] = useState(false)
   const [formDate, setFormDate] = useState('')
   const [formGrill, setFormGrill] = useState('Asador 1')
+  const [formTimeSlot, setFormTimeSlot] = useState(TIME_SLOTS[0])
+  const [conflictError, setConflictError] = useState('')
 
   const isAdmin = role === 'admin'
 
@@ -26,12 +30,22 @@ export default function Asadores() {
 
   const handleAdd = () => {
     if (!formDate) return
+
+    // Double-booking validation
+    const existing = state.reservaciones.find(
+      r => r.date === formDate && r.grill === formGrill && r.status !== 'Cancelado'
+    )
+    if (existing) {
+      setConflictError(`${formGrill} ya está reservado el ${formDate} por ${existing.resident} (${existing.apartment}).`)
+      return
+    }
+
     dispatch({
       type: 'ADD_RESERVACION',
       payload: {
         id: `res-${Date.now()}`,
         date: formDate,
-        grill: formGrill,
+        grill: `${formGrill} (${formTimeSlot})`,
         resident: user,
         apartment,
         status: 'Reservado',
@@ -39,6 +53,8 @@ export default function Asadores() {
     })
     setFormDate('')
     setFormGrill('Asador 1')
+    setFormTimeSlot(TIME_SLOTS[0])
+    setConflictError('')
     setShowModal(false)
   }
 
@@ -57,7 +73,7 @@ export default function Asadores() {
           Reservación de Asadores
         </h1>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => { setConflictError(''); setShowModal(true) }}
           className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
         >
           <span className="material-symbols-outlined text-lg">outdoor_grill</span>
@@ -141,12 +157,19 @@ export default function Asadores() {
       {/* Add Modal */}
       <Modal open={showModal} onClose={() => setShowModal(false)} title="Nueva Reservación">
         <div className="space-y-5">
+          {conflictError && (
+            <div className="flex items-start space-x-3 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700">
+              <span className="material-symbols-outlined text-base mt-0.5">error</span>
+              <p className="text-sm font-bold">{conflictError}</p>
+            </div>
+          )}
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fecha</label>
             <input
               type="date"
               value={formDate}
-              onChange={(e) => setFormDate(e.target.value)}
+              onChange={(e) => { setFormDate(e.target.value); setConflictError('') }}
+              min={new Date().toISOString().split('T')[0]}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
             />
           </div>
@@ -154,12 +177,22 @@ export default function Asadores() {
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Asador</label>
             <select
               value={formGrill}
-              onChange={(e) => setFormGrill(e.target.value)}
+              onChange={(e) => { setFormGrill(e.target.value); setConflictError('') }}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
             >
               <option>Asador 1</option>
               <option>Asador 2</option>
               <option>Asador 3</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Horario</label>
+            <select
+              value={formTimeSlot}
+              onChange={(e) => setFormTimeSlot(e.target.value)}
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+            >
+              {TIME_SLOTS.map(slot => <option key={slot} value={slot}>{slot}</option>)}
             </select>
           </div>
           <button

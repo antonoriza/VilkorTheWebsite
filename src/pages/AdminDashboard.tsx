@@ -1,28 +1,85 @@
-const staffOnDuty = [
+import { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { useStore } from '../data/store'
+
+interface ApprovalItem {
+  id: string
+  type: string
+  detail: string
+  date: string
+  icon: string
+}
+
+const initialStaff = [
   { name: 'Carlos Mendoza', role: 'Seguridad', location: 'Puerta Principal', status: 'online' },
   { name: 'Juan Pérez', role: 'Mantenimiento', location: 'Eléctrico', status: 'online' },
   { name: 'María López', role: 'Limpieza', location: 'Torre A', status: 'online' },
 ]
 
-const recentNotices = [
-  { title: 'Mantenimiento de Piscina', body: 'Limpieza profunda programada para el lunes.', time: 'Hace 4h', icon: 'pool' },
-  { title: 'Fumigación Áreas Verdes', body: 'Tratamiento trimestral de jardines comunes.', time: 'Hace 1d', icon: 'park' },
-]
-
-const criticalAlerts = [
-  { title: 'Falla en Bomba Principal', body: 'Presión baja detectada en Torre A y B.', severity: 'critical', icon: 'water_damage' },
-  { title: 'Cámara 04 Desconectada', body: 'Acceso perimetral norte sin monitoreo.', severity: 'warning', icon: 'videocam_off' },
-]
-
-const pendingApprovals = [
-  { type: 'Reserva', detail: 'Salón Eventos — A304', date: '15 Apr', icon: 'event' },
-  { type: 'Pago', detail: 'Comprobante — B102', date: '14 Apr', icon: 'receipt_long' },
-  { type: 'Acceso', detail: 'Visitante — C201', date: '14 Apr', icon: 'badge' },
+const initialApprovals: ApprovalItem[] = [
+  { id: 'appr-1', type: 'Reserva', detail: 'Salón Eventos — A304', date: '15 Apr', icon: 'event' },
+  { id: 'appr-2', type: 'Pago', detail: 'Comprobante — B102', date: '14 Apr', icon: 'receipt_long' },
+  { id: 'appr-3', type: 'Acceso', detail: 'Visitante — C201', date: '14 Apr', icon: 'badge' },
 ]
 
 export default function AdminDashboard() {
+  const { state } = useStore()
+  const [approvals, setApprovals] = useState<ApprovalItem[]>(initialApprovals)
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'approve' | 'reject' }[]>([])
+
+  // KPI calculations from real store data
+  const totalPagos = state.pagos.length
+  const paidPagos = state.pagos.filter(p => p.status === 'Pagado').length
+  const recaudacionPct = totalPagos > 0 ? Math.round((paidPagos / totalPagos) * 100) : 0
+
+  const pendingPaquetes = state.paquetes.filter(p => p.status === 'Pendiente').length
+  const totalResidents = 12 // from seedResidents
+  const occupancyPct = Math.round((totalResidents / 126) * 100) // 126 total units
+
+  // Building health from combined metrics
+  const healthPct = Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
+
+  const recentNotices = useMemo(() => {
+    const icons = ['description', 'park', 'pool', 'campaign', 'notifications']
+    return state.avisos.slice(0, 2).map((a, i) => ({
+      title: a.title,
+      body: a.attachment,
+      time: a.date,
+      icon: icons[i] || 'description',
+    }))
+  }, [state.avisos])
+
+  const handleApproval = (id: string, action: 'approve' | 'reject') => {
+    const item = approvals.find(a => a.id === id)
+    if (!item) return
+    setApprovals(prev => prev.filter(a => a.id !== id))
+    const msg = action === 'approve' ? `${item.type} aprobado: ${item.detail}` : `${item.type} rechazado: ${item.detail}`
+    const toastId = `toast-${Date.now()}`
+    setToasts(prev => [...prev, { id: toastId, message: msg, type: action }])
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== toastId)), 3000)
+  }
+
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Toasts */}
+      <div className="fixed top-24 right-10 z-[200] space-y-3">
+        {toasts.map(t => (
+          <div
+            key={t.id}
+            className={`flex items-center space-x-3 px-5 py-3 rounded-2xl shadow-xl border animate-in fade-in slide-in-from-right-4 duration-300 ${
+              t.type === 'approve'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                : 'bg-rose-50 border-rose-200 text-rose-700'
+            }`}
+          >
+            <span className="material-symbols-outlined text-base">
+              {t.type === 'approve' ? 'check_circle' : 'cancel'}
+            </span>
+            <span className="text-sm font-bold">{t.message}</span>
+          </div>
+        ))}
+      </div>
+
       {/* Page header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
         <div>
@@ -37,14 +94,20 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <button className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm text-[11px] tracking-widest uppercase">
+          <Link
+            to="/avisos"
+            className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm text-[11px] tracking-widest uppercase"
+          >
             <span className="material-symbols-outlined text-lg">campaign</span>
             <span>Broadcast</span>
-          </button>
-          <button className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase">
+          </Link>
+          <Link
+            to="/avisos"
+            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
+          >
             <span className="material-symbols-outlined text-lg font-bold">add</span>
             <span>Nuevo Aviso</span>
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -66,40 +129,42 @@ export default function AdminDashboard() {
                 stroke="currentColor"
                 strokeWidth="10"
                 strokeDasharray="314.159"
-                strokeDashoffset="18.85"
+                strokeDashoffset={314.159 - (314.159 * healthPct / 100)}
                 strokeLinecap="round"
                 className="text-tertiary transition-all duration-1000 ease-out"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-headline font-black text-slate-900 tracking-tighter">94%</span>
-              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Óptimo</span>
+              <span className="text-5xl font-headline font-black text-slate-900 tracking-tighter">{healthPct}%</span>
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
+                {healthPct >= 90 ? 'Óptimo' : healthPct >= 70 ? 'Bueno' : 'Atención'}
+              </span>
             </div>
           </div>
           <div className="relative z-10">
             <h3 className="text-xl font-headline font-extrabold text-slate-900 mb-2">Salud del Edificio</h3>
             <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-[240px]">
-              Ecosistema operativo estable. 2 incidentes críticos resueltos hoy.
+              Ecosistema operativo estable. {state.paquetes.filter(p => p.status === 'Pendiente').length} paquetes pendientes de entrega.
             </p>
           </div>
         </div>
 
         <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-emerald-200 transition-colors">
+          <Link to="/pagos" className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-emerald-200 transition-colors">
             <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
               <span className="material-symbols-outlined">payments</span>
             </div>
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Recaudación</p>
               <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">92%</span>
-                <span className="text-xs font-bold text-emerald-600">+2.4%</span>
+                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{recaudacionPct}%</span>
+                <span className="text-xs font-bold text-emerald-600">{paidPagos}/{totalPagos}</span>
               </div>
             </div>
             <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full" style={{ width: '92%' }}></div>
+              <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: `${recaudacionPct}%` }}></div>
             </div>
-          </div>
+          </Link>
 
           <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-amber-200 transition-colors">
             <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
@@ -108,7 +173,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tickets Abiertos</p>
               <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">24</span>
+                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{approvals.length + 2}</span>
                 <span className="text-xs font-bold text-slate-400">Pendientes</span>
               </div>
             </div>
@@ -124,9 +189,9 @@ export default function AdminDashboard() {
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ocupación</p>
               <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">98%</span>
+                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{occupancyPct}%</span>
               </div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">124 de 126 residencias</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">{totalResidents} de 126 residencias</p>
             </div>
           </div>
         </div>
@@ -140,12 +205,15 @@ export default function AdminDashboard() {
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Staff en Turno</h3>
-              <button className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors">
+              <button
+                title="Próximamente: Gestión completa de personal"
+                className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors"
+              >
                 Gestionar <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
               </button>
             </div>
             <div className="grid gap-4">
-              {staffOnDuty.map((person) => (
+              {initialStaff.map((person) => (
                 <div key={person.name} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer">
                   <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
                     {person.name.split(' ').map(n => n[0]).join('')}
@@ -166,9 +234,9 @@ export default function AdminDashboard() {
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Centro de Avisos</h3>
-              <button className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors">
+              <Link to="/avisos" className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors">
                 Ver todos <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
-              </button>
+              </Link>
             </div>
             <div className="space-y-4">
               {recentNotices.map((notice) => (
@@ -200,7 +268,10 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="space-y-4">
-              {criticalAlerts.map((alert) => (
+              {[
+                { title: 'Falla en Bomba Principal', body: 'Presión baja detectada en Torre A y B.', severity: 'critical', icon: 'water_damage' },
+                { title: 'Cámara 04 Desconectada', body: 'Acceso perimetral norte sin monitoreo.', severity: 'warning', icon: 'videocam_off' },
+              ].map((alert) => (
                 <div key={alert.title} className={`p-6 border rounded-3xl shadow-sm flex items-center space-x-5 group transition-all ${
                   alert.severity === 'critical' ? 'bg-rose-50 border-rose-100' : 'bg-amber-50 border-amber-100'
                 }`}>
@@ -225,11 +296,17 @@ export default function AdminDashboard() {
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Cola de Aprobaciones</h3>
-              <span className="px-2 py-0.5 bg-slate-900 text-white text-[10px] font-black rounded-lg">{pendingApprovals.length}</span>
+              <span className="px-2 py-0.5 bg-slate-900 text-white text-[10px] font-black rounded-lg">{approvals.length}</span>
             </div>
             <div className="space-y-4">
-              {pendingApprovals.map((item) => (
-                <div key={item.detail} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center space-x-5 hover:border-slate-300 transition-all">
+              {approvals.length === 0 && (
+                <div className="p-8 text-center text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
+                  <span className="material-symbols-outlined text-3xl mb-2 block">check_circle</span>
+                  No hay aprobaciones pendientes
+                </div>
+              )}
+              {approvals.map((item) => (
+                <div key={item.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center space-x-5 hover:border-slate-300 transition-all">
                   <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-primary border border-slate-100">
                     <span className="material-symbols-outlined text-lg font-bold">{item.icon}</span>
                   </div>
@@ -239,10 +316,18 @@ export default function AdminDashboard() {
                     <p className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tight">{item.date}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all flex items-center justify-center">
+                    <button
+                      onClick={() => handleApproval(item.id, 'approve')}
+                      className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all flex items-center justify-center"
+                      title="Aprobar"
+                    >
                       <span className="material-symbols-outlined font-bold">check</span>
                     </button>
-                    <button className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center">
+                    <button
+                      onClick={() => handleApproval(item.id, 'reject')}
+                      className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center"
+                      title="Rechazar"
+                    >
                       <span className="material-symbols-outlined">close</span>
                     </button>
                   </div>
@@ -273,9 +358,12 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <button className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg">
+              <Link
+                to="/votaciones"
+                className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg block text-center"
+              >
                 Gestionar Asamblea
-              </button>
+              </Link>
             </div>
           </section>
         </div>

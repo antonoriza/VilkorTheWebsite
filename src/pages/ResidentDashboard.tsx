@@ -1,16 +1,54 @@
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useStore } from '../data/store'
+
 export default function ResidentDashboard() {
+  const { apartment } = useAuth()
+  const { state } = useStore()
+
+  // Live data from store
+  const pendingPaquetes = useMemo(
+    () => state.paquetes.filter(p => p.apartment === apartment && p.status === 'Pendiente').length,
+    [state.paquetes, apartment]
+  )
+
+  const myPagos = useMemo(
+    () => state.pagos.filter(p => p.apartment === apartment),
+    [state.pagos, apartment]
+  )
+  const hasPendingPayment = myPagos.some(p => p.status === 'Pendiente')
+  const paymentStatusLabel = hasPendingPayment ? 'Saldo pendiente' : 'Al Corriente'
+  const daysUntilDue = hasPendingPayment ? 'Pago requerido' : 'Vence en 12d'
+
+  const nextReservation = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0]
+    return state.reservaciones
+      .filter(r => r.apartment === apartment && r.date >= today && r.status !== 'Cancelado')
+      .sort((a, b) => a.date.localeCompare(b.date))[0] || null
+  }, [state.reservaciones, apartment])
+
+  const recentAvisos = useMemo(() => state.avisos.slice(0, 3), [state.avisos])
+
+  // Building operativity from store data
+  const totalPagos = state.pagos.length
+  const paidPagos = state.pagos.filter(p => p.status === 'Pagado').length
+  const operativityPct = totalPagos > 0 ? Math.round((paidPagos / totalPagos) * 100) : 100
+
   return (
     <div className="flex gap-10">
       {/* Central Column */}
       <div className="flex-1 space-y-10">
-        {/* Simplified Building Status: Estado del Lote */}
+        {/* Building Status: Estado del Lote */}
         <section>
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 hero-pattern relative overflow-hidden flex flex-col md:flex-row items-center justify-between">
             <div className="relative z-10 space-y-2">
               <h3 className="font-headline font-extrabold text-slate-900 uppercase tracking-widest text-[11px]">Estado del Lote</h3>
               <div className="flex items-baseline space-x-2">
-                <span className="text-6xl font-headline font-extrabold text-slate-900 tracking-tight">98%</span>
-                <span className="text-sm font-bold text-emerald-600 uppercase tracking-wider bg-emerald-50 px-2 py-0.5 rounded">Operativo</span>
+                <span className="text-6xl font-headline font-extrabold text-slate-900 tracking-tight">{operativityPct}%</span>
+                <span className={`text-sm font-bold uppercase tracking-wider px-2 py-0.5 rounded ${operativityPct >= 90 ? 'text-emerald-600 bg-emerald-50' : 'text-amber-600 bg-amber-50'}`}>
+                  {operativityPct >= 90 ? 'Operativo' : 'Atención'}
+                </span>
               </div>
               <p className="text-slate-500 text-sm max-w-sm font-medium leading-relaxed">
                 La infraestructura general se encuentra en óptimas condiciones. Todos los servicios esenciales están funcionando correctamente.
@@ -18,10 +56,13 @@ export default function ResidentDashboard() {
             </div>
             
             <div className="relative z-10 mt-6 md:mt-0">
-              <button className="px-6 py-2.5 bg-slate-900 text-white font-bold uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center shadow-lg shadow-slate-200 text-[10px] whitespace-nowrap">
+              <Link
+                to="/avisos"
+                className="px-6 py-2.5 bg-slate-900 text-white font-bold uppercase tracking-widest rounded-lg hover:bg-slate-800 transition-all flex items-center justify-center shadow-lg shadow-slate-200 text-[10px] whitespace-nowrap"
+              >
                 VER MÁS
                 <span className="material-symbols-outlined text-[16px] ml-2">chevron_right</span>
-              </button>
+              </Link>
             </div>
             
             <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 opacity-[0.02] pointer-events-none">
@@ -35,9 +76,9 @@ export default function ResidentDashboard() {
           <div className="space-y-6">
             <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
               <h3 className="font-headline font-extrabold text-slate-900 uppercase tracking-widest text-[11px]">Mis Tickets Activos</h3>
-              <a className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors tracking-widest uppercase" href="#">
+              <Link to="/admin" className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors tracking-widest uppercase">
                 Ver todos <span className="material-symbols-outlined text-[14px]">trending_flat</span>
-              </a>
+              </Link>
             </div>
             
             <div className="space-y-4">
@@ -83,9 +124,6 @@ export default function ResidentDashboard() {
           <div className="space-y-6">
             <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
               <h3 className="font-headline font-extrabold text-slate-900 uppercase tracking-widest text-[11px]">Personal de Seguridad</h3>
-              <a className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors tracking-widest uppercase" href="#">
-                Ver todos <span className="material-symbols-outlined text-[14px]">trending_flat</span>
-              </a>
             </div>
             
             <div className="bg-white border border-slate-200 p-2 rounded-2xl shadow-sm space-y-1">
@@ -98,7 +136,10 @@ export default function ResidentDashboard() {
                   <p className="text-sm font-bold text-slate-900 truncate">Roberto Mendez</p>
                   <p className="text-[10px] text-slate-500 truncate font-semibold uppercase tracking-widest">Lobby Principal</p>
                 </div>
-                <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all">
+                <button
+                  title="Llamar a Roberto Mendez (Demo — sin funcionalidad telefónica)"
+                  className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all"
+                >
                   <span className="material-symbols-outlined text-xl">phone_in_talk</span>
                 </button>
               </div>
@@ -112,7 +153,10 @@ export default function ResidentDashboard() {
                   <p className="text-sm font-bold text-slate-900 truncate">Laura Gutierrez</p>
                   <p className="text-[10px] text-slate-500 truncate font-semibold uppercase tracking-widest">Acceso Vehicular</p>
                 </div>
-                <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all">
+                <button
+                  title="Llamar a Laura Gutierrez (Demo — sin funcionalidad telefónica)"
+                  className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all"
+                >
                   <span className="material-symbols-outlined text-xl">phone_in_talk</span>
                 </button>
               </div>
@@ -142,11 +186,17 @@ export default function ResidentDashboard() {
             </div>
             
             <div className="flex items-center gap-4">
-              <button className="flex items-center gap-2 px-5 py-2.5 text-[11px] font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition-all tracking-widest uppercase">
+              <button
+                title="Próximamente: Directorio completo del staff"
+                className="flex items-center gap-2 px-5 py-2.5 text-[11px] font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition-all tracking-widest uppercase"
+              >
                 <span className="material-symbols-outlined text-lg">groups</span>
                 VER TODO EL STAFF
               </button>
-              <button className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+              <button
+                title="Llamar a Administración (Demo — sin funcionalidad telefónica)"
+                className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+              >
                 <span className="material-symbols-outlined">phone_in_talk</span>
               </button>
             </div>
@@ -160,38 +210,52 @@ export default function ResidentDashboard() {
           <h3 className="font-headline font-extrabold text-slate-900 uppercase tracking-widest text-[11px]">Resumen de Cuenta</h3>
           
           <div className="space-y-4">
-            <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:border-indigo-200 transition-all">
+            <Link to="/pagos" className="block bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:border-indigo-200 transition-all">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
                   <span className="material-symbols-outlined">payments</span>
                 </div>
-                <span className="text-[9px] font-bold text-indigo-700 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded">Vence en 12d</span>
+                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${hasPendingPayment ? 'text-amber-700 bg-amber-50' : 'text-indigo-700 bg-indigo-50'}`}>
+                  {daysUntilDue}
+                </span>
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estado actual</p>
-              <span className="text-slate-900 font-extrabold text-2xl tracking-tight">Al Corriente</span>
-            </div>
+              <span className={`font-extrabold text-2xl tracking-tight ${hasPendingPayment ? 'text-amber-700' : 'text-slate-900'}`}>
+                {paymentStatusLabel}
+              </span>
+            </Link>
             
-            <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:border-orange-200 transition-all">
+            <Link to="/paqueteria" className="block bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:border-orange-200 transition-all">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
                   <span className="material-symbols-outlined">inventory_2</span>
                 </div>
-                <a className="text-[9px] font-bold text-orange-700 uppercase tracking-widest bg-orange-50 hover:bg-orange-100 px-2 py-0.5 rounded transition-colors" href="#">Ver Detalles</a>
+                <span className="text-[9px] font-bold text-orange-700 uppercase tracking-widest bg-orange-50 hover:bg-orange-100 px-2 py-0.5 rounded transition-colors">
+                  Ver Detalles
+                </span>
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Paquetes en lobby</p>
-              <span className="text-slate-900 font-extrabold text-3xl tracking-tight">03</span>
-            </div>
+              <span className="text-slate-900 font-extrabold text-3xl tracking-tight">
+                {String(pendingPaquetes).padStart(2, '0')}
+              </span>
+            </Link>
             
-            <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:border-teal-200 transition-all">
+            <Link to="/asadores" className="block bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:border-teal-200 transition-all">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600">
                   <span className="material-symbols-outlined">event_available</span>
                 </div>
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Próxima Reserva</p>
-              <p className="text-base font-bold text-slate-900">Asador #3</p>
-              <p className="text-[10px] font-bold text-teal-600 uppercase tracking-tight mt-1">Mañana • 14:00 - 18:00</p>
-            </div>
+              {nextReservation ? (
+                <>
+                  <p className="text-base font-bold text-slate-900">{nextReservation.grill}</p>
+                  <p className="text-[10px] font-bold text-teal-600 uppercase tracking-tight mt-1">{nextReservation.date}</p>
+                </>
+              ) : (
+                <p className="text-base font-bold text-slate-400">Sin reservaciones</p>
+              )}
+            </Link>
           </div>
         </div>
 
@@ -199,34 +263,23 @@ export default function ResidentDashboard() {
           <h3 className="font-headline font-extrabold text-slate-900 uppercase tracking-widest text-[11px]">Avisos Recientes</h3>
           
           <div className="space-y-6">
-            <div className="flex items-start space-x-3 group cursor-pointer">
-              <div className="mt-1.5 w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></div>
-              <div>
-                <h5 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">Corte de Agua - Torre B</h5>
-                <p className="text-[10px] text-slate-500 font-medium line-clamp-2 mt-1 leading-relaxed">Mantenimiento preventivo este viernes de 10:00 a 14:00.</p>
+            {recentAvisos.map((aviso, i) => (
+              <div key={aviso.id} className={`flex items-start space-x-3 group cursor-pointer ${i > 0 ? 'opacity-60 hover:opacity-100 transition-opacity' : ''}`}>
+                <div className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${i === 0 ? 'bg-emerald-500' : 'bg-slate-300'}`}></div>
+                <div>
+                  <h5 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{aviso.title}</h5>
+                  <p className="text-[10px] text-slate-500 font-medium line-clamp-1 mt-1">{aviso.attachment}</p>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-start space-x-3 group cursor-pointer opacity-60 hover:opacity-100 transition-opacity">
-              <div className="mt-1.5 w-2 h-2 rounded-full bg-slate-300 flex-shrink-0"></div>
-              <div>
-                <h5 className="text-xs font-bold text-slate-900">Nueva Normativa Basura</h5>
-                <p className="text-[10px] text-slate-500 font-medium line-clamp-1 mt-1">Nuevos horarios de recolección para residuos orgánicos.</p>
-              </div>
-            </div>
-            
-            <div className="flex items-start space-x-3 group cursor-pointer opacity-60 hover:opacity-100 transition-opacity">
-              <div className="mt-1.5 w-2 h-2 rounded-full bg-slate-300 flex-shrink-0"></div>
-              <div>
-                <h5 className="text-xs font-bold text-slate-900">Asamblea Ordinaria</h5>
-                <p className="text-[10px] text-slate-500 font-medium line-clamp-1 mt-1">Convocatoria oficial para el próximo mes de Julio.</p>
-              </div>
-            </div>
+            ))}
           </div>
           
-          <button className="w-full mt-4 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-bold rounded-xl uppercase tracking-widest hover:bg-slate-100 transition-colors">
+          <Link
+            to="/avisos"
+            className="w-full mt-4 py-3 bg-slate-50 border border-slate-100 text-slate-600 text-[10px] font-bold rounded-xl uppercase tracking-widest hover:bg-slate-100 transition-colors block text-center"
+          >
             Ver todo
-          </button>
+          </Link>
         </div>
       </aside>
     </div>

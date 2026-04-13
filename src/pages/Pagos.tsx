@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useStore } from '../data/store'
 import StatusBadge from '../components/StatusBadge'
+import Modal from '../components/Modal'
+import { seedResidents } from '../data/seed'
 
 export default function Pagos() {
   const { role, apartment } = useAuth()
@@ -9,6 +11,11 @@ export default function Pagos() {
   const [search, setSearch] = useState('')
   const [filterDept, setFilterDept] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [formResident, setFormResident] = useState('')
+  const [formMonth, setFormMonth] = useState('')
+  const [formAmount, setFormAmount] = useState('1700')
+  const [formStatus, setFormStatus] = useState<'Pagado' | 'Pendiente'>('Pendiente')
 
   const isAdmin = role === 'admin'
 
@@ -35,13 +42,40 @@ export default function Pagos() {
 
   const departments = [...new Set(state.pagos.map(p => p.apartment))].sort()
 
-  const handleMarkPaid = (id: string) => {
+  const handleToggleStatus = (id: string) => {
     const pago = state.pagos.find(p => p.id === id)
     if (!pago) return
+    const newStatus = pago.status === 'Pendiente' ? 'Pagado' : 'Pendiente'
     dispatch({
       type: 'UPDATE_PAGO',
-      payload: { ...pago, status: 'Pagado', paymentDate: new Date().toISOString().split('T')[0] },
+      payload: {
+        ...pago,
+        status: newStatus,
+        paymentDate: newStatus === 'Pagado' ? new Date().toISOString().split('T')[0] : null,
+      },
     })
+  }
+
+  const handleAddPago = () => {
+    if (!formResident || !formMonth.trim()) return
+    const resident = seedResidents.find(r => r.name === formResident)
+    dispatch({
+      type: 'ADD_PAGO',
+      payload: {
+        id: `pg-${Date.now()}`,
+        apartment: resident?.apartment || 'A101',
+        resident: formResident,
+        month: formMonth,
+        amount: Number(formAmount) || 1700,
+        status: formStatus,
+        paymentDate: formStatus === 'Pagado' ? new Date().toISOString().split('T')[0] : null,
+      },
+    })
+    setFormResident('')
+    setFormMonth('')
+    setFormAmount('1700')
+    setFormStatus('Pendiente')
+    setShowModal(false)
   }
 
   return (
@@ -52,7 +86,10 @@ export default function Pagos() {
           Estado de Cuenta y Pagos
         </h1>
         {isAdmin && (
-          <button className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
+          >
             <span className="material-symbols-outlined text-lg">upload</span>
             <span>Subir estado de cuenta</span>
           </button>
@@ -134,18 +171,12 @@ export default function Pagos() {
                   <td className="px-8 py-5"><StatusBadge status={pago.status} /></td>
                   <td className="px-8 py-5 text-sm text-slate-500 font-medium">{pago.paymentDate || '–'}</td>
                   <td className="px-8 py-5">
-                    {pago.status === 'Pendiente' ? (
-                      <button
-                        onClick={() => handleMarkPaid(pago.id)}
-                        className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest transition-colors"
-                      >
-                        {isAdmin ? 'Actualizar' : 'Subir comprobante'}
-                      </button>
-                    ) : isAdmin ? (
-                      <button className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        Actualizar
-                      </button>
-                    ) : null}
+                    <button
+                      onClick={() => handleToggleStatus(pago.id)}
+                      className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest transition-colors"
+                    >
+                      {isAdmin ? 'Actualizar' : (pago.status === 'Pendiente' ? 'Subir comprobante' : 'Ver detalle')}
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -153,6 +184,61 @@ export default function Pagos() {
           </table>
         </div>
       </div>
+
+      {/* Add Payment Modal (Admin) */}
+      <Modal open={showModal} onClose={() => setShowModal(false)} title="Registrar Pago">
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Residente</label>
+            <select
+              value={formResident}
+              onChange={(e) => setFormResident(e.target.value)}
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+            >
+              <option value="">Seleccionar residente...</option>
+              {seedResidents.map(r => <option key={r.name} value={r.name}>{r.name} — {r.apartment}</option>)}
+            </select>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mes</label>
+            <input
+              type="text"
+              value={formMonth}
+              onChange={(e) => setFormMonth(e.target.value)}
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              placeholder="mayo de 2026"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto</label>
+              <input
+                type="number"
+                value={formAmount}
+                onChange={(e) => setFormAmount(e.target.value)}
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estado</label>
+              <select
+                value={formStatus}
+                onChange={(e) => setFormStatus(e.target.value as 'Pagado' | 'Pendiente')}
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              >
+                <option value="Pendiente">Pendiente</option>
+                <option value="Pagado">Pagado</option>
+              </select>
+            </div>
+          </div>
+          <button
+            onClick={handleAddPago}
+            className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
+          >
+            Registrar Pago
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

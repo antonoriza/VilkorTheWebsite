@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from 'react-router-dom'
+import { Outlet, NavLink, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 
@@ -16,20 +16,23 @@ export default function DashboardLayout() {
   const { user, apartment, role, toggleRole } = useAuth()
   const [showNotif, setShowNotif] = useState(false)
 
+  const homePath = role === 'admin' ? '/admin' : '/dashboard'
+
   return (
     <div className="bg-[#F8FAFC] text-on-surface flex min-h-screen">
       {/* SideNavBar */}
       <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-slate-200 bg-white z-50">
-        <div className="p-8">
+        <Link to={homePath} className="p-8 block hover:opacity-80 transition-opacity">
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Lote Alemania</h1>
           <p className="text-[10px] font-bold font-label tracking-widest text-slate-400 mt-1 uppercase">Cosmopol HU LIFESTYLE</p>
-        </div>
+        </Link>
         
         <nav className="flex-1 px-4 space-y-1">
           {mainNavItems.map((item) => (
             <NavLink
               key={item.to}
-              to={item.to}
+              to={item.label === 'Inicio' ? homePath : item.to}
+              end={item.label === 'Inicio'}
               className={({ isActive }) => 
                 `flex items-center px-4 py-3 rounded-lg transition-colors duration-200 group ${
                   isActive 
