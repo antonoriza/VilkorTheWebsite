@@ -1,5 +1,3 @@
-import './AdminDashboard.css'
-
 const staffOnDuty = [
   { name: 'Carlos Mendoza', role: 'Seguridad', location: 'Puerta Principal', status: 'online' },
   { name: 'Juan Pérez', role: 'Mantenimiento', location: 'Eléctrico', status: 'online' },
@@ -24,150 +22,167 @@ const pendingApprovals = [
 
 export default function AdminDashboard() {
   return (
-    <div className="admin-dashboard">
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page header */}
-      <section className="ad-header animate-fade-in-up">
-        <div className="ad-header__left">
-          <span className="label-md" style={{ color: 'var(--on-surface-variant)' }}>Panel de Administración</span>
-          <h1 className="headline-lg">Lote Alemania</h1>
-          <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>
-            Cosmopol HU Lifestyle — Estado Operativo
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+        <div>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+            The Control Tower
+          </span>
+          <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
+            Lote Alemania
+          </h1>
+          <p className="text-slate-500 font-medium mt-1">
+            Cosmopol HU Lifestyle — Gestión Operativa Global
           </p>
         </div>
-        <div className="ad-header__actions">
-          <button className="btn btn-secondary">
-            <span className="icon icon-sm">campaign</span>
-            Broadcast
+        <div className="flex items-center gap-4">
+          <button className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm text-[11px] tracking-widest uppercase">
+            <span className="material-symbols-outlined text-lg">campaign</span>
+            <span>Broadcast</span>
           </button>
-          <button className="btn btn-primary">
-            <span className="icon icon-sm">add</span>
-            Nuevo Aviso
+          <button className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase">
+            <span className="material-symbols-outlined text-lg font-bold">add</span>
+            <span>Nuevo Aviso</span>
           </button>
         </div>
-      </section>
+      </header>
 
       {/* Health gauge — Main metrics */}
-      <section className="ad-health animate-fade-in-up stagger-1">
-        <div className="ad-health__hero card">
-          <div className="ad-health__gauge">
-            <svg viewBox="0 0 120 120" className="ad-gauge-svg">
+      <section className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+        <div className="xl:col-span-4 bg-white border border-slate-200 rounded-3xl p-8 hero-pattern relative overflow-hidden shadow-sm flex flex-col justify-center items-center text-center">
+          <div className="relative w-48 h-48 mb-6">
+            <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
               <circle
-                cx="60" cy="60" r="52"
+                cx="60" cy="60" r="50"
                 fill="none"
-                stroke="var(--surface-container-high)"
-                strokeWidth="8"
+                stroke="currentColor"
+                strokeWidth="10"
+                className="text-slate-100"
               />
               <circle
-                cx="60" cy="60" r="52"
+                cx="60" cy="60" r="50"
                 fill="none"
-                stroke="var(--tertiary)"
-                strokeWidth="8"
+                stroke="currentColor"
+                strokeWidth="10"
+                strokeDasharray="314.159"
+                strokeDashoffset="18.85"
                 strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 52 * 0.94} ${2 * Math.PI * 52 * 0.06}`}
-                transform="rotate(-90 60 60)"
-                className="ad-gauge-progress"
+                className="text-tertiary transition-all duration-1000 ease-out"
               />
             </svg>
-            <div className="ad-gauge-value">
-              <span className="display-sm">94</span>
-              <span className="label-sm">%</span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-5xl font-headline font-black text-slate-900 tracking-tighter">94%</span>
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Óptimo</span>
             </div>
           </div>
-          <div className="ad-health__info">
-            <span className="title-lg">Salud del Edificio</span>
-            <p className="body-md" style={{ color: 'var(--on-surface-variant)' }}>
-              El ecosistema de la propiedad se mantiene en niveles óptimos. 2 incidentes críticos resueltos en las últimas 24 horas.
+          <div className="relative z-10">
+            <h3 className="text-xl font-headline font-extrabold text-slate-900 mb-2">Salud del Edificio</h3>
+            <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-[240px]">
+              Ecosistema operativo estable. 2 incidentes críticos resueltos hoy.
             </p>
           </div>
         </div>
 
-        <div className="ad-metrics">
-          <div className="ad-metric card">
-            <div className="ad-metric__icon" style={{ background: 'var(--tertiary-container)', color: 'var(--on-tertiary-container)' }}>
-              <span className="icon">payments</span>
+        <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-emerald-200 transition-colors">
+            <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+              <span className="material-symbols-outlined">payments</span>
             </div>
-            <div className="ad-metric__content">
-              <span className="label-md" style={{ color: 'var(--on-surface-variant)' }}>Recaudación</span>
-              <span className="headline-md">92%</span>
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Recaudación</p>
+              <div className="flex items-baseline space-x-2">
+                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">92%</span>
+                <span className="text-xs font-bold text-emerald-600">+2.4%</span>
+              </div>
             </div>
-            <div className="ad-metric__bar">
-              <div className="ad-metric__bar-fill" style={{ width: '92%', background: 'var(--tertiary)' }} />
-            </div>
-          </div>
-          <div className="ad-metric card">
-            <div className="ad-metric__icon" style={{ background: 'var(--secondary-container)', color: 'var(--on-secondary-container)' }}>
-              <span className="icon">confirmation_number</span>
-            </div>
-            <div className="ad-metric__content">
-              <span className="label-md" style={{ color: 'var(--on-surface-variant)' }}>Tickets Pendientes</span>
-              <span className="headline-md">24</span>
-            </div>
-            <div className="ad-metric__bar">
-              <div className="ad-metric__bar-fill" style={{ width: '40%', background: 'var(--secondary)' }} />
+            <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
+              <div className="h-full bg-emerald-500 rounded-full" style={{ width: '92%' }}></div>
             </div>
           </div>
-          <div className="ad-metric card">
-            <div className="ad-metric__icon" style={{ background: 'var(--primary-container)', color: 'var(--on-primary-container)' }}>
-              <span className="icon">apartment</span>
+
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-amber-200 transition-colors">
+            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
+              <span className="material-symbols-outlined">confirmation_number</span>
             </div>
-            <div className="ad-metric__content">
-              <span className="label-md" style={{ color: 'var(--on-surface-variant)' }}>Ocupación</span>
-              <span className="headline-md">98%</span>
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tickets Abiertos</p>
+              <div className="flex items-baseline space-x-2">
+                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">24</span>
+                <span className="text-xs font-bold text-slate-400">Pendientes</span>
+              </div>
             </div>
-            <span className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>124 de 126 unidades</span>
+            <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
+              <div className="h-full bg-amber-500 rounded-full" style={{ width: '40%' }}></div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-primary-container transition-colors">
+            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+              <span className="material-symbols-outlined">apartment</span>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ocupación</p>
+              <div className="flex items-baseline space-x-2">
+                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">98%</span>
+              </div>
+              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">124 de 126 residencias</p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Content grid */}
-      <div className="ad-grid">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Left column */}
-        <div className="ad-grid__left">
+        <div className="space-y-10">
           {/* Staff on duty */}
-          <section className="ad-section animate-fade-in-up stagger-2">
-            <div className="ad-section__header">
-              <h2 className="title-lg">Staff en Turno</h2>
-              <button className="btn btn-ghost btn-sm">
-                Gestionar <span className="icon icon-sm">arrow_forward</span>
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Staff en Turno</h3>
+              <button className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors">
+                Gestionar <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
               </button>
             </div>
-            <div className="ad-staff">
+            <div className="grid gap-4">
               {staffOnDuty.map((person) => (
-                <div key={person.name} className="ad-staff-item card">
-                  <div className="avatar">{person.name.split(' ').map(n => n[0]).join('')}</div>
-                  <div className="ad-staff-item__info">
-                    <span className="title-sm">{person.name}</span>
-                    <span className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>
-                      {person.role} — {person.location}
-                    </span>
+                <div key={person.name} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer">
+                  <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
+                    {person.name.split(' ').map(n => n[0]).join('')}
                   </div>
-                  <div className={`status-dot status-${person.status}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate tracking-tight">{person.name}</p>
+                    <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                      {person.role} — {person.location}
+                    </p>
+                  </div>
+                  <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" title="Online" />
                 </div>
               ))}
             </div>
           </section>
 
           {/* Notices */}
-          <section className="ad-section animate-fade-in-up stagger-3">
-            <div className="ad-section__header">
-              <h2 className="title-lg">Centro de Avisos</h2>
-              <button className="btn btn-ghost btn-sm">
-                Ver todos <span className="icon icon-sm">arrow_forward</span>
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Centro de Avisos</h3>
+              <button className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors">
+                Ver todos <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
               </button>
             </div>
-            
-            <h3 className="title-sm" style={{ color: 'var(--on-surface-variant)', marginBottom: 'var(--space-sm)' }}>Avisos Recientes</h3>
-            <div className="ad-notices">
+            <div className="space-y-4">
               {recentNotices.map((notice) => (
-                <div key={notice.title} className="ad-notice card">
-                  <div className="ad-notice__icon">
-                    <span className="icon">{notice.icon}</span>
+                <div key={notice.title} className="flex items-start space-x-5 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                  <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 flex-shrink-0">
+                    <span className="material-symbols-outlined">{notice.icon}</span>
                   </div>
-                  <div className="ad-notice__content">
-                    <span className="title-sm">{notice.title}</span>
-                    <span className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>{notice.body}</span>
+                  <div className="flex-1 space-y-1">
+                    <div className="flex justify-between items-start">
+                      <h4 className="text-[15px] font-bold text-slate-900 leading-tight">{notice.title}</h4>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{notice.time}</span>
+                    </div>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{notice.body}</p>
                   </div>
-                  <span className="body-sm" style={{ color: 'var(--outline)', whiteSpace: 'nowrap' }}>{notice.time}</span>
                 </div>
               ))}
             </div>
@@ -175,27 +190,31 @@ export default function AdminDashboard() {
         </div>
 
         {/* Right column */}
-        <div className="ad-grid__right">
+        <div className="space-y-10">
           {/* Critical alerts */}
-          <section className="ad-section animate-fade-in-up stagger-2">
-            <div className="ad-section__header">
-              <div className="flex items-center gap-sm">
-                <span className="icon" style={{ color: 'var(--error)' }}>warning</span>
-                <h2 className="title-lg">Alertas Críticas</h2>
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-rose-600 text-[18px]">warning</span>
+                <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Alertas Críticas</h3>
               </div>
             </div>
-            <div className="ad-alerts">
+            <div className="space-y-4">
               {criticalAlerts.map((alert) => (
-                <div key={alert.title} className={`ad-alert card ad-alert--${alert.severity}`}>
-                  <div className="ad-alert__icon">
-                    <span className="icon">{alert.icon}</span>
+                <div key={alert.title} className={`p-6 border rounded-3xl shadow-sm flex items-center space-x-5 group transition-all ${
+                  alert.severity === 'critical' ? 'bg-rose-50 border-rose-100' : 'bg-amber-50 border-amber-100'
+                }`}>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                    alert.severity === 'critical' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
+                  }`}>
+                    <span className="material-symbols-outlined">{alert.icon}</span>
                   </div>
-                  <div className="ad-alert__content">
-                    <span className="title-sm">{alert.title}</span>
-                    <span className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>{alert.body}</span>
+                  <div className="flex-1">
+                    <h4 className="text-[15px] font-bold text-slate-900">{alert.title}</h4>
+                    <p className="text-sm text-slate-600 font-medium mt-1">{alert.body}</p>
                   </div>
-                  <button className="btn btn-ghost btn-sm">
-                    <span className="icon icon-sm">arrow_forward</span>
+                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100">
+                    <span className="material-symbols-outlined">trending_flat</span>
                   </button>
                 </div>
               ))}
@@ -203,28 +222,28 @@ export default function AdminDashboard() {
           </section>
 
           {/* Approval queue */}
-          <section className="ad-section animate-fade-in-up stagger-3">
-            <div className="ad-section__header">
-              <h2 className="title-lg">Cola de Aprobaciones</h2>
-              <div className="chip chip-default">{pendingApprovals.length}</div>
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Cola de Aprobaciones</h3>
+              <span className="px-2 py-0.5 bg-slate-900 text-white text-[10px] font-black rounded-lg">{pendingApprovals.length}</span>
             </div>
-            <div className="ad-approvals">
+            <div className="space-y-4">
               {pendingApprovals.map((item) => (
-                <div key={item.detail} className="ad-approval card">
-                  <div className="ad-approval__icon">
-                    <span className="icon icon-sm">{item.icon}</span>
+                <div key={item.detail} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center space-x-5 hover:border-slate-300 transition-all">
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-primary border border-slate-100">
+                    <span className="material-symbols-outlined text-lg font-bold">{item.icon}</span>
                   </div>
-                  <div className="ad-approval__content">
-                    <span className="label-md" style={{ color: 'var(--primary)' }}>{item.type}</span>
-                    <span className="title-sm">{item.detail}</span>
-                    <span className="body-sm" style={{ color: 'var(--outline)' }}>{item.date}</span>
+                  <div className="flex-1">
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest block mb-1">{item.type}</span>
+                    <h4 className="text-[14px] font-bold text-slate-900">{item.detail}</h4>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tight">{item.date}</p>
                   </div>
-                  <div className="ad-approval__actions">
-                    <button className="btn btn-tertiary btn-sm">
-                      <span className="icon icon-sm">check</span>
+                  <div className="flex items-center gap-2">
+                    <button className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all flex items-center justify-center">
+                      <span className="material-symbols-outlined font-bold">check</span>
                     </button>
-                    <button className="btn btn-ghost btn-sm">
-                      <span className="icon icon-sm">close</span>
+                    <button className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center">
+                      <span className="material-symbols-outlined">close</span>
                     </button>
                   </div>
                 </div>
@@ -232,27 +251,29 @@ export default function AdminDashboard() {
             </div>
           </section>
 
-          {/* Assembly reminder */}
-          <section className="ad-section animate-fade-in-up stagger-4">
-            <div className="ad-assembly card">
-              <div className="ad-assembly__header">
-                <span className="icon" style={{ color: 'var(--primary)' }}>event</span>
-                <span className="label-md" style={{ color: 'var(--on-surface-variant)' }}>Próxima Asamblea</span>
+          {/* Assembly info */}
+          <section className="bg-slate-900 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-slate-200 text-white">
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <span className="material-symbols-outlined text-[8rem]">event</span>
+            </div>
+            <div className="relative z-10 space-y-6">
+              <div>
+                <span className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] block mb-2 font-label">Próxima Asamblea</span>
+                <h3 className="text-2xl font-headline font-black tracking-tight">Asamblea Ordinaria</h3>
+                <p className="text-white/70 font-medium mt-1 italic">15 de Julio, 2025 • 19:00 hrs</p>
               </div>
-              <span className="title-lg">Asamblea Ordinaria</span>
-              <span className="body-md" style={{ color: 'var(--on-surface-variant)' }}>
-                15 de Julio, 2025 • 19:00 hrs
-              </span>
-              <div className="ad-assembly__quorum">
-                <div className="ad-assembly__quorum-bar">
-                  <div className="ad-assembly__quorum-fill" style={{ width: '45%' }} />
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/50">
+                  <span>Quórum Confirmado</span>
+                  <span className="text-white">45%</span>
                 </div>
-                <span className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>
-                  45% quórum confirmado
-                </span>
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-primary-fixed rounded-full shadow-[0_0_12px_rgba(216,227,251,0.5)]" style={{ width: '45%' }}></div>
+                </div>
               </div>
-              <button className="btn btn-secondary w-full">
-                <span className="icon icon-sm">edit</span>
+
+              <button className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg">
                 Gestionar Asamblea
               </button>
             </div>
