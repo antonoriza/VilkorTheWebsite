@@ -1,0 +1,267 @@
+# CantonAlfa — Unified Design & Implementation Blueprint
+
+> **Repository:** PropertyPulse  
+> **Stitch Project:** CantonAlfa (`projects/6918613930765938320`)  
+> **Design System:** "The Architectural Minimalist" — *The Digital Estate*  
+> **First Iteration:** [v0-condominio-assistant.vercel.app](https://v0-condominio-assistant.vercel.app/)
+
+---
+
+## 1. Executive Summary
+
+CantonAlfa is the evolution of the Condominio Assistant — a **multi-tenant residential management platform** that maximizes property value and resident quality of life by digitizing every physical interaction within a residential complex.
+
+**Business Goal:** Achieve **Zero-Friction Management** — communication, financials, logistics, and security through a single, unified, delegable interface.
+
+**Design Goal:** Transcend the standard "SaaS dashboard" to create a **"Digital Estate"** — an editorial-inspired interface that values negative space as much as data, built on the CantonAlfa Stitch design system.
+
+---
+
+## 2. Strategic Value Pillars
+
+| Pillar | Description |
+|:---|:---|
+| **Operational Excellence** | Reduce admin overhead via automation of payments, reservations, ticketing |
+| **Safety & Trust** | "Secure Perimeter" through digital access control and visitor traceability |
+| **Community Cohesion** | Internal economies and social participation to increase resident retention |
+| **Asset Preservation** | Proactive maintenance tracking to protect long-term real estate value |
+
+---
+
+## 3. Design System — "The Architectural Minimalist"
+
+> *Creative North Star: "The Digital Estate"*  
+> Structured, expansive, high-end. Moving away from the cluttered "utility" look toward editorial rigor.
+
+### 3.1 Color Palette — "Slate & Forest"
+
+| Token | Hex | Usage |
+|:---|:---|:---|
+| **Primary** | `#545F73` | Structural backbone — actions, nav |
+| **Primary Dim** | `#485367` | Gradient terminus for "milled metal" CTAs |
+| **Secondary** | `#526074` | Secondary nav anchors |
+| **Tertiary** | `#2C6A55` | Forest green accent — growth, success, CTAs |
+| **Surface** | `#F7F9FB` | Global canvas |
+| **Surface Container Low** | `#F0F4F7` | Secondary backdrop |
+| **Surface Container Lowest** | `#FFFFFF` | Active content cards |
+| **Surface Container High** | `#E1E9EE` | Input field backgrounds |
+| **On-Surface** | `#2A3439` | All "black" text (never use `#000`) |
+| **Outline Variant** | `#A9B4B9` | Ghost borders at 20% opacity |
+| **Error** | `#9F403D` | Error states |
+
+### 3.2 The "No-Line" Rule
+
+> [!IMPORTANT]
+> **Borders are prohibited for sectioning content.** Structure through:
+> 1. **Background shifts** — `surface-container-lowest` card on `surface-container-low` backdrop
+> 2. **Negative space** — Minimum 32px–48px padding between logical groups
+
+### 3.3 Typography — Dual-Font Editorial
+
+| Role | Font | Usage |
+|:---|:---|:---|
+| **The Voice** | **Manrope** | `display` + `headline` — Editorial magazine-like headers |
+| **The Engine** | **Inter** | `title`, `body`, `label` — Data tables, legibility |
+
+**Hierarchical rules:**
+- Pair `display-md` with `body-sm` metadata — the scale jump creates sophistication
+- `label-sm` / `label-md`: +0.05em letter-spacing, uppercase — "archival" aesthetic
+
+### 3.4 Elevation & Depth — Tonal Layering
+
+```
+Base:       surface (#F7F9FB)
+  └─ Section:   surface-container-low (#F0F4F7)
+       └─ Active Card:  surface-container-lowest (#FFFFFF)
+            └─ Input/Focus:  surface-container-high (#E1E9EE)
+```
+
+- **Floating elements:** Diffused shadow `0 12px 40px rgba(42,52,57, 0.06)`
+- **Glassmorphism nav:** `surface` at 80% opacity + `backdrop-blur: 20px`
+- **CTA gradient:** `linear-gradient(135deg, #545F73, #485367)` — "milled metal" feel
+
+### 3.5 Component Primitives
+
+| Component | Specification |
+|:---|:---|
+| **Primary Button** | `border-radius: 0.375rem`, primary→primary-dim gradient, `label-md` in `on-primary` |
+| **Tertiary Button** | `tertiary_container` bg + `on_tertiary_container` text — "Inquire"/"Apply" |
+| **Cards** | No dividers, `surface-container-low` track + `surface-container-lowest` item, `border-radius: 0.75rem` |
+| **Input Fields** | Floating labels (`label-sm`), `surface-container-high` bg, focus → `surface-container-lowest` + 1px primary ring |
+| **Status Chips** | `secondary_container` bg, `on_secondary_container` text, pill-shaped `border-radius: 9999px` |
+
+---
+
+## 4. Module Architecture
+
+### Phase A — Core Operations (Level 1)
+
+| Module | Business Purpose | Key Capabilities |
+|:---|:---|:---|
+| **Avisos** (Bulletin) | Information Governance | Document archiving, push notifications, multi-language alerts |
+| **Pagos** (Ledger) | Revenue Assurance | Receipt verification, delinquency tracking, 12-month financial history |
+| **Paquetería** (Logistics) | Last-Mile Efficiency | Intake logging, storage aging, automated pickup alerts |
+| **Amenity Manager** | Resource Optimization | Reservation workflows, conflict resolution, capacity control |
+| **Governance** (Voting) | Democratic Legitimacy | One-vote-per-unit logic, real-time participation analytics |
+
+### Phase B — Smart Infrastructure (Level 2)
+
+| Module | Business Purpose | Key Capabilities |
+|:---|:---|:---|
+| **Smart Access** (IoT) | Frictionless Security | Guest QR codes, NFC digital keys, biometric entry |
+| **Visitor Concierge** | Perimeter Control | Pre-registration, digital entry logs, blacklist management |
+| **Utility Monitor** | Sustainability & Savings | Smart meter visualization, leak detection, consumption benchmarks |
+
+### Phase C — Community & Maintenance (Level 3)
+
+| Module | Business Purpose | Key Capabilities |
+|:---|:---|:---|
+| **Service Desk** | Asset Maintenance | Photo incident reports, work order tracking, vendor directory |
+| **Marketplace** | Circular Economy | Internal classifieds, skill-sharing, resource lending |
+| **Emergency Hub** | Risk Mitigation | Mass alerts, panic button, evacuation "Safe-Check" status |
+
+---
+
+## 5. User Personas & Dashboard Views
+
+### 5.1 Resident — "The Tenant Hub"
+
+**Objective:** Convenience, lifestyle, safety.
+
+**Dashboard widgets:**
+- **Account Balance** — Green (paid) / Red (overdue)
+- **Package Counter** — Pending packages in lobby
+- **Next Event** — Countdown to next reservation
+
+**Quick Actions:**
+- "Report a Problem" → Service Desk
+- "Invite Guest" → QR Code generation
+- "Pay Now" → Payment portal
+
+### 5.2 Administrator — "The Control Tower"
+
+**Objective:** Strategic oversight, legal compliance, financial health.
+
+**Dashboard widgets:**
+- **Revenue Meter** — % of monthly fees collected (gauge)
+- **Critical Issues** — High-priority Service Desk tickets
+- **Building Occupancy** — Active visitors, scheduled moves
+
+**Shortcuts:**
+- "Broadcast Message" → Push to all units
+- "Approval Queue" → Pending reservations & receipt verifications
+
+### 5.3 Support Staff — "The Operations Desk"
+
+**Objective:** Tactical execution, day-to-day resident service.
+
+**Dashboard widgets:**
+- **Inbound Log** — Quick package scan/entry
+- **Visitor Monitor** — Pre-registered guests arriving in next 2 hours
+- **Assigned Work** — Maintenance tasks delegated by admin
+
+> [!NOTE]
+> Support Staff operates under **Customizable Permissions** — can log packages but cannot see financial ledgers, per Admin configuration.
+
+---
+
+## 6. Identity & Profile Layer
+
+### 6.1 Access Gateway (Login)
+- Multi-Factor Authentication (optional biometric/SMS/Email)
+- Automatic role redirection → Admin / Staff / Resident dashboard
+- "Forgot Password/Apartment" recovery linked to resident DB
+- German-themed "Digital Estate" visuals (slate/forest palette)
+
+### 6.2 Resident Profile
+- Unit details + authorized inhabitants list
+- Vehicle registry (linked to Smart Access)
+- Notification preferences (Email / SMS / Push toggles)
+
+### 6.3 Support Staff Profile
+- **Permission Badge** — Visual role indicator ("Security — Logistics Enabled, Finance Restricted")
+- **Activity Log** — Timestamped action history
+- **Work Schedule** — Calendar view of shifts
+
+### 6.4 Admin Management Portal
+- **Staff Delegation Matrix** — Checkbox grid for per-module access control
+- **Global Settings** — Building-wide rules (max reservation time, etc.)
+- **Master Resident List** — Full CRUD for unit owners/tenants
+
+---
+
+## 7. Cross-Module Automation
+
+> [!WARNING]
+> These are critical business rules that span multiple modules:
+
+| Trigger | Effect |
+|:---|:---|
+| Resident flagged "Overdue" in **Pagos** | **Smart Access** restricts premium amenity access (Gym/Grill) |
+| "Panic Button" pressed in **Emergency Hub** | **Visitor Concierge** locks gates + **Smart Access** grants emergency services entry |
+
+**Permission Model:** Granular RBAC — Admin toggles per-module access for Staff (*View Only*, *Edit*, *No Access*).
+
+---
+
+## 8. Stitch Screens Inventory (Visible)
+
+| Screen | ID | Type | Content |
+|:---|:---|:---|:---|
+| **Login** | `0f9b57fafccd485da0f841e0f4665e38` | Desktop | EstateDigital sign-in |
+| **Home Screen** | `85006f47a17a4d87889ad5c8eadcd3f3` | Desktop | "Panel de Estado del Edificio" — Building status dashboard |
+| **Home (Mobile)** | `d823fe2ff99d4e8fa1a804a39848593e` | Mobile | Mobile building status |
+| **Admin Panel** | `087863594a6d4ed5837927280380d762` | Desktop | "Panel de Administración (Estilo Unificado)" |
+| **Admin (Mobile)** | `83a4cfba119d40a6b9842ad1bc5d584d` | Mobile | Mobile admin panel |
+
+---
+
+## 9. Implementation Roadmap
+
+### Level 1: Management Foundation (Current Sprint)
+- [ ] Set up Vite + React + TypeScript project structure
+- [ ] Implement design system CSS (tokens, typography, spacing from Stitch)
+- [ ] Build Login screen (matching Stitch `0f9b57fa`)
+- [ ] Build Resident Home Dashboard (matching Stitch `85006f47`)
+- [ ] Build mobile responsive variants
+- [ ] Solidify Avisos, Pagos, Amenity Manager views
+
+### Level 2: Connectivity & Delegation
+- [ ] Service Desk module
+- [ ] Visitor Concierge module
+- [ ] Support Staff role with Admin permission management
+- [ ] Marketplace for community engagement
+
+### Level 3: Intelligence (State-of-the-Art)
+- [ ] IoT Access Control integration
+- [ ] Utility Monitoring dashboard
+- [ ] Emergency Hub with panic button
+- [ ] AI-driven Concierge for 24/7 support
+
+---
+
+## 10. Success KPIs
+
+| Metric | Target |
+|:---|:---|
+| Delinquency Reduction | 20% improvement via automated reminders |
+| Administrative Efficiency | 60% reduction in manual data entry |
+| Resident Engagement | >70% poll participation |
+| Service Desk Response | <2 hour average ticket response |
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Key decisions needed before proceeding:**
+
+1. **Tech stack confirmation** — Your existing `designDoc.md` specifies Next.js 15 + Supabase. The Stitch screens are standalone HTML. Should we:
+   - **(A)** Initialize a Vite + React + TS project (lighter, faster for frontend prototyping)?
+   - **(B)** Initialize a Next.js 15 App Router project (production-grade, matches your locked schema)?
+
+2. **Scope of first build** — Should we start with just the **Login + Resident Home Dashboard** (2 screens matching Stitch), or go broader with the Admin Panel as well?
+
+3. **Branding name** — The Stitch screens use "EstateDigital" / "Estate Ethos" / "Lote Alemania". Should the codebase use **"CantonAlfa"** as the product name, or one of the others?
+
+4. **Data layer** — For this iteration, should we use mock/dummy data, or connect to Supabase immediately?
