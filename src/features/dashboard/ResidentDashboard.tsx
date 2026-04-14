@@ -55,6 +55,15 @@ export default function ResidentDashboard() {
 
   const recentAvisos = useMemo(() => state.avisos.slice(0, 3), [state.avisos])
 
+  /**
+   * Recent active tickets for the resident
+   */
+  const activeTickets = useMemo(
+    () => state.tickets.filter(t => t.apartment === apartment && t.status !== 'Cerrado' && t.status !== 'Resuelto').slice(0, 2),
+    [state.tickets, apartment]
+  )
+  const totalActiveTicketsCount = state.tickets.filter(t => t.apartment === apartment && t.status !== 'Cerrado' && t.status !== 'Resuelto').length
+
   /** 
    * Aggregate building collection rate (proxy for building operativity/health) 
    */
@@ -114,31 +123,48 @@ export default function ResidentDashboard() {
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <h3 className="font-headline font-extrabold text-slate-900 uppercase tracking-widest text-[11px]">Tickets de Servicio</h3>
-              <span className="text-[10px] font-bold text-slate-400">Total: 02</span>
+              <span className="text-[10px] font-bold text-slate-400">Activos: {String(totalActiveTicketsCount).padStart(2, '0')}</span>
             </div>
             
             <div className="space-y-4">
-              <div className="group p-6 bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-xl hover:border-slate-300 transition-all cursor-pointer relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-6 opacity-5">
-                   <span className="material-symbols-outlined text-5xl">build</span>
+              {activeTickets.length > 0 ? (
+                activeTickets.map(ticket => (
+                  <Link key={ticket.id} to="/tickets" className="block group p-6 bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-xl hover:border-slate-300 transition-all cursor-pointer relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-6 opacity-5">
+                       <span className="material-symbols-outlined text-5xl">build</span>
+                    </div>
+                    <div className="flex justify-between items-start relative z-10">
+                      <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{ticket.category}</p>
+                        <p className="text-[17px] font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">{ticket.subject}</p>
+                      </div>
+                      <span className="text-[10px] font-bold px-3 py-1 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 font-mono">#{ticket.number}</span>
+                    </div>
+                    <div className="mt-8 flex items-center justify-between border-t border-slate-50 pt-4">
+                      <span className="flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-wide">
+                        <span className="material-symbols-outlined text-[14px] mr-2 text-slate-300">update</span> {new Date(ticket.updatedAt).toLocaleDateString()}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        {ticket.status === 'En Proceso' && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${
+                          ticket.status === 'En Proceso' ? 'text-emerald-600' :
+                          ticket.status === 'Asignado' ? 'text-purple-600' :
+                          'text-indigo-600'
+                        }`}>{ticket.status}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <div className="p-8 text-center bg-transparent rounded-3xl border border-dashed border-slate-200">
+                  <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">No hay tickets activos</p>
                 </div>
-                <div className="flex justify-between items-start relative z-10">
-                  <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Mantenimiento</p>
-                    <p className="text-[17px] font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">Reparación de Bomba</p>
-                  </div>
-                  <span className="text-[10px] font-bold px-3 py-1 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 font-mono">#2940</span>
-                </div>
-                <div className="mt-8 flex items-center justify-between border-t border-slate-50 pt-4">
-                  <span className="flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-wide">
-                    <span className="material-symbols-outlined text-[14px] mr-2 text-slate-300">update</span> Hace 2 horas
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">En Proceso</span>
-                  </div>
-                </div>
-              </div>
+              )}
+              {totalActiveTicketsCount > 2 && (
+                <Link to="/tickets" className="block text-center text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-colors">
+                  Ver {totalActiveTicketsCount - 2} más
+                </Link>
+              )}
             </div>
           </div>
           

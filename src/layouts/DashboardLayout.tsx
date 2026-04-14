@@ -26,6 +26,7 @@ const baseNavItems = [
   { to: '/paqueteria', icon: 'package_2', label: 'Paquetería', roles: ['resident', 'admin'] },
   { to: '/amenidades', icon: 'outdoor_grill', label: 'Amenidades', roles: ['resident', 'admin'], requiresAmenities: true },
   { to: '/votaciones', icon: 'how_to_vote', label: 'Votaciones', roles: ['resident', 'admin'] },
+  { to: '/tickets', icon: 'confirmation_number', label: 'Tickets', roles: ['resident', 'admin'] },
   { to: '/usuarios', icon: 'group', label: 'Usuarios', roles: ['admin'] },
 ]
 

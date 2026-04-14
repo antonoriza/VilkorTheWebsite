@@ -184,6 +184,64 @@ export interface BuildingConfig {
   adminPhone: string
 }
 
+// ─── Ticket ──────────────────────────────────────────────────────────
+
+/** Allowed service categories for tickets */
+export type TicketCategory = 'Plomería' | 'Electricidad' | 'Áreas Comunes' | 'Seguridad' | 'Limpieza' | 'Otro'
+
+/** Priority levels affecting visual urgency indicators */
+export type TicketPriority = 'Alta' | 'Media' | 'Baja'
+
+/**
+ * Lifecycle states — ordered progression.
+ * Valid transitions:
+ *   Nuevo → Asignado → En Proceso → Resuelto → Cerrado
+ *   Any state → Cerrado (admin can close at any time)
+ */
+export type TicketStatus = 'Nuevo' | 'Asignado' | 'En Proceso' | 'Resuelto' | 'Cerrado'
+
+/** A single timestamped entry in the ticket's activity log */
+export interface TicketActivity {
+  id: string
+  /** Who posted this note — "Sistema", admin name, or resident name */
+  author: string
+  /**
+   * Visibility scope:
+   *   - "internal" — admin-only work notes (not visible to residents)
+   *   - "public"   — visible to both admin and resident
+   */
+  visibility: 'internal' | 'public'
+  message: string
+  /** ISO timestamp when this entry was created */
+  createdAt: string
+}
+
+/** A service request / incident ticket submitted by a resident */
+export interface Ticket {
+  id: string
+  /** Auto-incrementing display number for human reference (e.g. "#2941") */
+  number: number
+  subject: string
+  description: string
+  category: TicketCategory
+  priority: TicketPriority
+  status: TicketStatus
+  /** Name of the resident who created the ticket */
+  createdBy: string
+  /** Apartment of the creator (e.g. "A101") */
+  apartment: string
+  /** Optional location within the building (e.g. "Lobby", "Estacionamiento P2") */
+  location?: string
+  /** ISO timestamp when ticket was created */
+  createdAt: string
+  /** ISO timestamp of last status change or activity */
+  updatedAt: string
+  /** ISO timestamp when ticket was resolved (null if still open) */
+  resolvedAt: string | null
+  /** Chronological activity log — work notes and public responses */
+  activities: TicketActivity[]
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // SEED DATA — Initial state for a fresh installation
 // ═══════════════════════════════════════════════════════════════════════
@@ -302,5 +360,127 @@ export const seedVotaciones: Votacion[] = [
       { label: 'Blanco', votes: 15 },
     ],
     voters: [],
+  },
+]
+
+/**
+ * Initial ticket counter — new tickets will start from this number + 1.
+ * Set to 2940 so the first three seeds are 2941, 2942, 2943.
+ */
+export const seedTicketCounter = 2943
+
+/**
+ * Demo tickets showcasing different lifecycle stages:
+ *   - #2941: En Proceso with activity history
+ *   - #2942: Nuevo (freshly submitted)
+ *   - #2943: Resuelto (completed with resolution note)
+ */
+export const seedTickets: Ticket[] = [
+  {
+    id: 'tkt-1',
+    number: 2941,
+    subject: 'Reparación de Bomba de Agua',
+    description: 'La bomba de agua del edificio presenta ruidos anormales y baja presión en los pisos superiores de la Torre A. Se requiere inspección y posible reemplazo de componentes.',
+    category: 'Plomería',
+    priority: 'Alta',
+    status: 'En Proceso',
+    createdBy: 'Sofía Torres',
+    apartment: 'A101',
+    location: 'Cuarto de Máquinas',
+    createdAt: '2026-04-12T09:30:00.000Z',
+    updatedAt: '2026-04-13T14:00:00.000Z',
+    resolvedAt: null,
+    activities: [
+      {
+        id: 'act-1',
+        author: 'Sistema',
+        visibility: 'public',
+        message: 'Ticket creado por Sofía Torres.',
+        createdAt: '2026-04-12T09:30:00.000Z',
+      },
+      {
+        id: 'act-2',
+        author: 'Administrador General',
+        visibility: 'internal',
+        message: 'Se contactó al proveedor de mantenimiento hidráulico. Visita programada para mañana.',
+        createdAt: '2026-04-12T11:15:00.000Z',
+      },
+      {
+        id: 'act-3',
+        author: 'Administrador General',
+        visibility: 'public',
+        message: 'Hemos asignado un técnico especializado. La reparación está programada para el día de mañana entre 9:00 y 12:00 hrs.',
+        createdAt: '2026-04-12T11:20:00.000Z',
+      },
+      {
+        id: 'act-4',
+        author: 'Administrador General',
+        visibility: 'internal',
+        message: 'Técnico en sitio. Diagnóstico: impeller desgastado, se requiere reemplazo. Pieza en camino.',
+        createdAt: '2026-04-13T10:00:00.000Z',
+      },
+    ],
+  },
+  {
+    id: 'tkt-2',
+    number: 2942,
+    subject: 'Luminaria fundida en estacionamiento',
+    description: 'La luminaria del nivel P1 del estacionamiento, zona cercana al elevador, se encuentra fundida. El área queda completamente oscura por las noches.',
+    category: 'Electricidad',
+    priority: 'Media',
+    status: 'Nuevo',
+    createdBy: 'Carlos Gómez',
+    apartment: 'A203',
+    location: 'Estacionamiento P1',
+    createdAt: '2026-04-14T08:45:00.000Z',
+    updatedAt: '2026-04-14T08:45:00.000Z',
+    resolvedAt: null,
+    activities: [
+      {
+        id: 'act-5',
+        author: 'Sistema',
+        visibility: 'public',
+        message: 'Ticket creado por Carlos Gómez.',
+        createdAt: '2026-04-14T08:45:00.000Z',
+      },
+    ],
+  },
+  {
+    id: 'tkt-3',
+    number: 2943,
+    subject: 'Limpieza profunda lobby Torre B',
+    description: 'Se solicita limpieza profunda del lobby de Torre B. Hay manchas en el piso de mármol y los vidrios de la entrada necesitan atención.',
+    category: 'Limpieza',
+    priority: 'Baja',
+    status: 'Resuelto',
+    createdBy: 'Laura Ramírez',
+    apartment: 'B101',
+    location: 'Lobby Torre B',
+    createdAt: '2026-04-10T16:00:00.000Z',
+    updatedAt: '2026-04-12T09:00:00.000Z',
+    resolvedAt: '2026-04-12T09:00:00.000Z',
+    activities: [
+      {
+        id: 'act-6',
+        author: 'Sistema',
+        visibility: 'public',
+        message: 'Ticket creado por Laura Ramírez.',
+        createdAt: '2026-04-10T16:00:00.000Z',
+      },
+      {
+        id: 'act-7',
+        author: 'Administrador General',
+        visibility: 'public',
+        message: 'Se programó limpieza profunda para el viernes 12 de abril en horario de 7:00 a 9:00 hrs.',
+        createdAt: '2026-04-11T10:30:00.000Z',
+      },
+      {
+        id: 'act-8',
+        author: 'Administrador General',
+        visibility: 'public',
+        message: 'Limpieza completada satisfactoriamente. Se aplicó tratamiento especial al mármol.',
+        createdAt: '2026-04-12T09:00:00.000Z',
+      },
+    ],
   },
 ]

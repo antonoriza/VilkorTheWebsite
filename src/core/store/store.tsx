@@ -17,8 +17,10 @@ import { createContext, useContext, useReducer, useEffect, type ReactNode } from
 import {
   seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
   seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
+  seedTickets, seedTicketCounter,
   type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
-  type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig
+  type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
+  type Ticket, type TicketActivity
 } from './seed'
 
 // ─── State Shape ─────────────────────────────────────────────────────
@@ -35,6 +37,10 @@ export interface StoreState {
   staff: StaffMember[]
   amenities: Amenity[]
   buildingConfig: BuildingConfig
+  /** Service request / incident tickets */
+  tickets: Ticket[]
+  /** Auto-incrementing counter for ticket display numbers */
+  ticketCounter: number
 }
 
 // ─── Action Types ────────────────────────────────────────────────────
@@ -66,6 +72,10 @@ type Action =
   | { type: 'ADD_AMENITY'; payload: Amenity }
   | { type: 'DELETE_AMENITY'; payload: string }
   | { type: 'UPDATE_BUILDING_CONFIG'; payload: Partial<BuildingConfig> }
+  | { type: 'ADD_TICKET'; payload: Ticket }
+  | { type: 'UPDATE_TICKET'; payload: Ticket }
+  | { type: 'ADD_TICKET_ACTIVITY'; payload: { ticketId: string; activity: TicketActivity } }
+  | { type: 'SET_TICKET_COUNTER'; payload: number }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'RESET' }
 
@@ -153,6 +163,10 @@ function loadInitialState(): StoreState {
         }))
       }
 
+      // Migrate: add tickets slice if missing (upgrade from pre-ticket schema)
+      if (!parsed.tickets) parsed.tickets = seedTickets
+      if (!parsed.ticketCounter && parsed.ticketCounter !== 0) parsed.ticketCounter = seedTicketCounter
+
       return parsed
     }
   } catch { /* fall through to seed data on any error */ }
@@ -169,6 +183,8 @@ function loadInitialState(): StoreState {
     staff: seedStaff,
     amenities: seedAmenities,
     buildingConfig: seedBuildingConfig,
+    tickets: seedTickets,
+    ticketCounter: seedTicketCounter,
   }
 }
 
@@ -261,6 +277,35 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'UPDATE_BUILDING_CONFIG':
       return { ...state, buildingConfig: { ...state.buildingConfig, ...action.payload } }
 
+    // Tickets — service request lifecycle management
+    case 'ADD_TICKET':
+      return {
+        ...state,
+        tickets: [action.payload, ...state.tickets],
+        ticketCounter: Math.max(state.ticketCounter, action.payload.number),
+      }
+    case 'UPDATE_TICKET':
+      return {
+        ...state,
+        tickets: state.tickets.map(t => t.id === action.payload.id ? action.payload : t),
+      }
+    case 'ADD_TICKET_ACTIVITY': {
+      const { ticketId, activity } = action.payload
+      return {
+        ...state,
+        tickets: state.tickets.map(t => {
+          if (t.id !== ticketId) return t
+          return {
+            ...t,
+            activities: [...t.activities, activity],
+            updatedAt: activity.createdAt,
+          }
+        }),
+      }
+    }
+    case 'SET_TICKET_COUNTER':
+      return { ...state, ticketCounter: action.payload }
+
     // Auto-cleanup of expired/delivered packages
     case 'CLEANUP_EXPIRED': {
       const now = new Date(action.payload.nowIso)
@@ -293,6 +338,8 @@ function reducer(state: StoreState, action: Action): StoreState {
         staff: seedStaff,
         amenities: seedAmenities,
         buildingConfig: seedBuildingConfig,
+        tickets: seedTickets,
+        ticketCounter: seedTicketCounter,
       }
 
     default:

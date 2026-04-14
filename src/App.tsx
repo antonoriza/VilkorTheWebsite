@@ -9,6 +9,7 @@ import PaqueteriaPage from './features/paqueteria/PaqueteriaPage'
 import AmenidadesPage from './features/amenidades/AmenidadesPage'
 import VotacionesPage from './features/votaciones/VotacionesPage'
 import UsuariosPage from './features/usuarios/UsuariosPage'
+import TicketsPage from './features/tickets/TicketsPage'
 import AdminConfiguracion from './features/configuracion/AdminConfiguracion'
 import ResidentConfiguracion from './features/configuracion/ResidentConfiguracion'
 import DashboardLayout from './layouts/DashboardLayout'
@@ -54,6 +55,7 @@ function App() {
         <Route path="/amenidades" element={<AmenidadesPage />} />
         <Route path="/asadores" element={<Navigate to="/amenidades" replace />} />
         <Route path="/votaciones" element={<VotacionesPage />} />
+        <Route path="/tickets" element={<TicketsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>

@@ -27,6 +27,12 @@ const colorMap: Record<string, string> = {
   'Cerrada': 'bg-slate-50 text-slate-500 border-slate-100',
   'EN PROCESO': 'bg-emerald-50 text-emerald-700 border-emerald-100',
   'PROGRAMADO': 'bg-slate-50 text-slate-500 border-slate-100',
+  // Ticket statuses
+  'Nuevo': 'bg-indigo-50 text-indigo-700 border-indigo-100',
+  'Asignado': 'bg-purple-50 text-purple-700 border-purple-100',
+  'En Proceso': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+  'Resuelto': 'bg-teal-50 text-teal-700 border-teal-100',
+  'Cerrado': 'bg-slate-50 text-slate-500 border-slate-100',
 }
 
 export default function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
