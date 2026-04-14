@@ -1,5 +1,6 @@
 import { Outlet, NavLink, Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useStore } from '../data/store'
 import { useState } from 'react'
 
 // Sidebar items with role visibility
@@ -15,6 +16,7 @@ const allNavItems = [
 
 export default function DashboardLayout() {
   const { user, apartment, role, isAuthenticated, logout } = useAuth()
+  const { state, dispatch } = useStore()
   const [showNotif, setShowNotif] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -25,6 +27,11 @@ export default function DashboardLayout() {
 
   const homePath = role === 'admin' ? '/admin' : '/dashboard'
   const navItems = allNavItems.filter(item => item.roles.includes(role))
+
+  // Filter notifications for this user
+  const myNotifs = state.notificaciones.filter(n => 
+    role === 'admin' ? n.userId === 'admin' : n.userId === user
+  )
 
   return (
     <div className="bg-[#F8FAFC] text-on-surface flex min-h-screen">
@@ -108,14 +115,38 @@ export default function DashboardLayout() {
             <div className="relative">
               <button
                 onClick={() => setShowNotif(!showNotif)}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 transition-colors"
+                className="relative w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 transition-colors"
               >
                 <span className="material-symbols-outlined">notifications</span>
+                {myNotifs.some(n => !n.read) && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
+                )}
               </button>
               {showNotif && (
-                <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-200 border border-slate-100 p-6 animate-in fade-in zoom-in-95 duration-200">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Notificaciones</p>
-                  <p className="text-sm text-slate-500 font-medium">No tienes notificaciones</p>
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl shadow-slate-200 border border-slate-100 p-6 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Notificaciones</p>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto space-y-3 pr-2">
+                    {myNotifs.length === 0 ? (
+                      <p className="text-sm text-slate-500 font-medium text-center py-4">No tienes notificaciones</p>
+                    ) : (
+                      myNotifs.map(n => (
+                        <div key={n.id} className={`p-3 rounded-xl border ${n.read ? 'bg-slate-50 border-slate-100' : 'bg-primary-container/20 border-primary-dim'}`}>
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="text-xs font-bold text-slate-900">{n.title}</span>
+                            {!n.read && (
+                              <button onClick={() => dispatch({ type: 'MARK_NOTIFICACION_READ', payload: n.id })} className="text-[10px] text-primary font-bold uppercase hover:underline">
+                                Marcar
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-slate-600 leading-tight mb-2">{n.message}</p>
+                          <span className="text-[9px] font-bold text-slate-400">{n.date}</span>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
             </div>

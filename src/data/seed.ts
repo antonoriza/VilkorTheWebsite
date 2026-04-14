@@ -1,10 +1,22 @@
 // ── Seed Data ────────────────────────────────────────────────────────
 // Mirrors the v0 prototype at v0-condominio-assistant.vercel.app
 
+export interface Notificacion {
+  id: string
+  userId: string // 'admin' or an email or name for resident
+  title: string
+  message: string
+  date: string
+  read: boolean
+}
+
 export interface Aviso {
   id: string
   title: string
+  description?: string
   attachment: string
+  startDate?: string
+  endDate?: string | null
   date: string
 }
 
@@ -23,6 +35,8 @@ export interface Paquete {
   recipient: string
   apartment: string
   receivedDate: string
+  expirationDays?: number
+  deliveredDate?: string | null
   status: 'Entregado' | 'Pendiente'
   location: string
 }
@@ -39,6 +53,8 @@ export interface Reservacion {
 export interface VoteOption {
   label: string
   votes: number
+  color?: string
+  emoji?: string
 }
 
 export interface Votacion {
@@ -49,7 +65,7 @@ export interface Votacion {
   periodEnd: string
   status: 'Activa' | 'Cerrada'
   options: VoteOption[]
-  voters: string[]
+  voters: { name: string; apartment: string }[]
 }
 
 export interface Resident {
@@ -73,6 +89,8 @@ export const seedResidents: Resident[] = [
   { name: 'María López', apartment: 'B203', email: 'mlopez@property.com' },
   { name: 'Gabriela Sánchez', apartment: 'B204', email: 'gabriela@property.com' },
 ]
+
+export const seedNotificaciones: Notificacion[] = []
 
 // ── Avisos ──
 export const seedAvisos: Aviso[] = [

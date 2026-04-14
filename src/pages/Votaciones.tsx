@@ -3,14 +3,17 @@ import { useAuth } from '../context/AuthContext'
 import { useStore } from '../data/store'
 import StatusBadge from '../components/StatusBadge'
 import Modal from '../components/Modal'
+import { type Votacion } from '../data/seed'
 
 export default function Votaciones() {
-  const { role, user } = useAuth()
+  const { role, user, apartment } = useAuth()
   const { state, dispatch } = useStore()
   const [showModal, setShowModal] = useState(false)
+  const [viewAuditModal, setViewAuditModal] = useState<Votacion | null>(null)
+  
   const [formTitle, setFormTitle] = useState('')
   const [formDesc, setFormDesc] = useState('')
-  const [formOptions, setFormOptions] = useState('')
+  const [formOptions, setFormOptions] = useState<string[]>(['Opción 1', 'Opción 2'])
   const [selections, setSelections] = useState<Record<string, string>>({})
 
   const isAdmin = role === 'admin'
@@ -18,12 +21,13 @@ export default function Votaciones() {
   const handleVote = (votacionId: string) => {
     const selected = selections[votacionId]
     if (!selected) return
-    dispatch({ type: 'VOTE', payload: { votacionId, optionLabel: selected, voterId: user } })
+    dispatch({ type: 'VOTE', payload: { votacionId, optionLabel: selected, voter: { name: user, apartment: apartment || 'N/A' } } })
   }
 
   const handleAdd = () => {
-    if (!formTitle.trim() || !formOptions.trim()) return
-    const options = formOptions.split(',').map(o => o.trim()).filter(Boolean)
+    const validOptions = formOptions.map(o => o.trim()).filter(Boolean)
+    if (!formTitle.trim() || validOptions.length < 2) return
+    
     dispatch({
       type: 'ADD_VOTACION',
       payload: {
@@ -33,15 +37,37 @@ export default function Votaciones() {
         periodStart: new Date().toISOString().split('T')[0],
         periodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         status: 'Activa',
-        options: options.map(label => ({ label, votes: 0 })),
-        voters: [],
+        options: validOptions.map(label => ({ label, votes: 0 })),
+        voters: [], // Updated seed type has an array of objects here!
       },
     })
     setFormTitle('')
     setFormDesc('')
-    setFormOptions('')
+    setFormOptions(['Opción 1', 'Opción 2'])
     setShowModal(false)
   }
+
+  const handleAddOption = () => {
+    setFormOptions([...formOptions, `Opción ${formOptions.length + 1}`])
+  }
+  
+  const updateOption = (index: number, val: string) => {
+    const newOptions = [...formOptions]
+    newOptions[index] = val
+    setFormOptions(newOptions)
+  }
+  
+  const removeOption = (index: number) => {
+    setFormOptions(formOptions.filter((_, i) => i !== index))
+  }
+
+  const PRESET_COLORS = [
+    'from-rose-400 to-amber-400',
+    'from-emerald-400 to-teal-400',
+    'from-sky-400 to-indigo-400',
+    'from-fuchsia-400 to-purple-400',
+    'from-orange-400 to-rose-400'
+  ]
 
   return (
     <div className="space-y-8">
@@ -65,7 +91,12 @@ export default function Votaciones() {
       <div className="space-y-8">
         {state.votaciones.map((vot) => {
           const totalVotes = vot.options.reduce((sum, o) => sum + o.votes, 0)
-          const hasVoted = vot.voters.includes(user)
+          
+          // Compat with old and new voters format
+          const votersList = Array.isArray(vot.voters) ? vot.voters : []
+          const hasVoted = votersList.some((v: any) => 
+            (typeof v === 'string' ? v : v.userId) === user
+          )
 
           return (
             <div
@@ -73,18 +104,18 @@ export default function Votaciones() {
               className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm hover:shadow-md transition-all"
             >
               {/* Title & Status */}
-              <div className="flex items-start justify-between gap-4 mb-2">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-2">
                 <div>
                   <h3 className="text-xl font-headline font-extrabold text-slate-900 tracking-tight">
                     {vot.title}
                   </h3>
-                  <p className="text-sm text-slate-500 font-medium mt-1">{vot.description}</p>
+                  <p className="text-sm text-slate-500 font-medium mt-1 leading-relaxed">{vot.description}</p>
                 </div>
                 <StatusBadge status={vot.status} size="md" />
               </div>
 
               {/* Period */}
-              <div className="flex items-center space-x-2 text-slate-400 mb-8">
+              <div className="flex items-center space-x-2 text-slate-400 mb-8 mt-4">
                 <span className="material-symbols-outlined text-base">calendar_today</span>
                 <span className="text-[10px] font-bold uppercase tracking-widest">
                   Periodo: {vot.periodStart} — {vot.periodEnd}
@@ -93,8 +124,9 @@ export default function Votaciones() {
 
               {/* Options */}
               <div className="space-y-5">
-                {vot.options.map((opt) => {
+                {vot.options.map((opt, idx) => {
                   const pct = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0
+                  const colorGradient = PRESET_COLORS[idx % PRESET_COLORS.length]
 
                   return (
                     <div key={opt.label} className="space-y-2">
@@ -121,7 +153,7 @@ export default function Votaciones() {
                         </div>
                         {(isAdmin || hasVoted) && (
                           <span className="text-xs font-bold text-slate-500 tabular-nums">
-                            {pct}% ({opt.votes} Total de votos)
+                            {pct}% ({opt.votes} Votos)
                           </span>
                         )}
                       </div>
@@ -130,7 +162,7 @@ export default function Votaciones() {
                       {(isAdmin || hasVoted) && (
                         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-rose-400 to-amber-400 rounded-full transition-all duration-700"
+                            className={`h-full bg-gradient-to-r ${colorGradient} rounded-full transition-all duration-700`}
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -155,7 +187,7 @@ export default function Votaciones() {
               {hasVoted && !isAdmin && (
                 <p className="mt-6 text-sm text-emerald-600 font-bold flex items-center space-x-2">
                   <span className="material-symbols-outlined text-base">check_circle</span>
-                  <span>Tu voto ha sido registrado</span>
+                  <span>Tu voto ha sido registrado con éxito.</span>
                 </p>
               )}
 
@@ -165,9 +197,12 @@ export default function Votaciones() {
                   Total de votos: {totalVotes}
                 </span>
                 {isAdmin && (
-                  <button className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest transition-colors flex items-center space-x-1">
-                    <span className="material-symbols-outlined text-sm">group</span>
-                    <span>Votantes</span>
+                  <button 
+                    onClick={() => setViewAuditModal(vot)}
+                    className="text-[10px] font-bold text-primary hover:text-primary-dim hover:bg-primary-container/20 px-4 py-2 rounded-lg border border-transparent hover:border-primary-dim uppercase tracking-widest transition-colors flex items-center space-x-1"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">group</span>
+                    <span>Lista de Votantes</span>
                   </button>
                 )}
               </div>
@@ -185,7 +220,7 @@ export default function Votaciones() {
               type="text"
               value={formTitle}
               onChange={(e) => setFormTitle(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
               placeholder="Nombre de la votación..."
             />
           </div>
@@ -194,29 +229,101 @@ export default function Votaciones() {
             <textarea
               value={formDesc}
               onChange={(e) => setFormDesc(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium resize-none h-20"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium resize-none h-20"
               placeholder="Descripción de la votación..."
             />
           </div>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-              Opciones (separadas por coma)
-            </label>
-            <input
-              type="text"
-              value={formOptions}
-              onChange={(e) => setFormOptions(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
-              placeholder="Opción 1, Opción 2, Opción 3"
-            />
+          <div className="space-y-3">
+             <div className="flex items-center justify-between">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                  Opciones (Mínimo 2)
+                </label>
+                {formOptions.length < 6 && (
+                   <button 
+                     onClick={handleAddOption}
+                     className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center transition-colors hover:text-primary-dim"
+                   >
+                     <span className="material-symbols-outlined text-[14px]">add</span>
+                     Agregar
+                   </button>
+                )}
+             </div>
+             {formOptions.map((opt, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={opt}
+                    onChange={(e) => updateOption(idx, e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
+                    placeholder={`Opción ${idx + 1}`}
+                  />
+                  {formOptions.length > 2 && (
+                    <button 
+                      onClick={() => removeOption(idx)}
+                      className="w-10 h-10 flex items-center justify-center shrink-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                    >
+                       <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  )}
+                </div>
+             ))}
           </div>
           <button
             onClick={handleAdd}
-            className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
+            className="w-full py-3 mt-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
           >
             Crear Votación
           </button>
         </div>
+      </Modal>
+
+      {/* Audit Modal */}
+      <Modal open={!!viewAuditModal} onClose={() => setViewAuditModal(null)} title="Auditoría de Votantes">
+        {viewAuditModal && (
+          <div className="space-y-4">
+             <p className="text-sm font-medium text-slate-600 mb-4">
+               Lista de residentes que han participado en: <strong className="text-slate-900">{viewAuditModal.title}</strong>
+             </p>
+             <div className="max-h-64 overflow-y-auto border border-slate-200 rounded-2xl">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-50 sticky top-0 border-b border-slate-200">
+                     <tr>
+                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Residente</th>
+                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Elección</th>
+                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fecha/Hora</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {Array.isArray(viewAuditModal.voters) && viewAuditModal.voters.map((v: any, idx: number) => {
+                       const isObj = typeof v === 'object'
+                       const name = isObj ? v.userId : v
+                       const option = isObj ? v.optionLabel : 'N/A'
+                       const timestamp = isObj ? new Date(v.voteTimestamp).toLocaleString() : 'N/A'
+
+                       return (
+                         <tr key={idx} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
+                            <td className="px-4 py-3 text-sm font-bold text-slate-900 capitalize">{name}</td>
+                            <td className="px-4 py-3 text-sm font-medium text-slate-700">{option}</td>
+                            <td className="px-4 py-3 text-xs font-medium text-slate-500">{timestamp}</td>
+                         </tr>
+                       )
+                     })}
+                     {viewAuditModal.voters.length === 0 && (
+                       <tr>
+                         <td colSpan={3} className="px-4 py-6 text-center text-slate-400 font-medium text-sm">Nadie ha votado aún</td>
+                       </tr>
+                     )}
+                  </tbody>
+                </table>
+             </div>
+             <button
+               onClick={() => setViewAuditModal(null)}
+               className="w-full py-3 mt-4 bg-slate-100 text-slate-700 font-bold rounded-2xl hover:bg-slate-200 transition-all uppercase tracking-widest text-[11px]"
+             >
+               Cerrar
+             </button>
+          </div>
+        )}
       </Modal>
     </div>
   )

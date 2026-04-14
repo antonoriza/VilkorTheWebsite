@@ -96,13 +96,6 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-4">
           <Link
             to="/avisos"
-            className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all shadow-sm text-[11px] tracking-widest uppercase"
-          >
-            <span className="material-symbols-outlined text-lg">campaign</span>
-            <span>Broadcast</span>
-          </Link>
-          <Link
-            to="/avisos"
             className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
           >
             <span className="material-symbols-outlined text-lg font-bold">add</span>

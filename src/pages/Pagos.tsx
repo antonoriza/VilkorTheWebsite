@@ -8,9 +8,12 @@ import { seedResidents } from '../data/seed'
 export default function Pagos() {
   const { role, apartment } = useAuth()
   const { state, dispatch } = useStore()
-  const [search, setSearch] = useState('')
+  
+  const [filterMonth, setFilterMonth] = useState('')
+  const [filterTower, setFilterTower] = useState('')
   const [filterDept, setFilterDept] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
+
   const [showModal, setShowModal] = useState(false)
   const [formResident, setFormResident] = useState('')
   const [formMonth, setFormMonth] = useState('')
@@ -19,32 +22,42 @@ export default function Pagos() {
 
   const isAdmin = role === 'admin'
 
+  const availableMonths = [...new Set(state.pagos.map(p => p.month))]
+  const availableDepts = [...new Set(state.pagos.map(p => p.apartment))].sort()
+  const availableTowers = [...new Set(availableDepts.map(d => d[0]))].sort() // e.g. 'A', 'B'
+
   const filteredPagos = useMemo(() => {
     let data = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === apartment)
-    if (search) {
-      const q = search.toLowerCase()
-      data = data.filter(p =>
-        p.month.toLowerCase().includes(q) ||
-        p.resident.toLowerCase().includes(q) ||
-        p.status.toLowerCase().includes(q) ||
-        p.apartment.toLowerCase().includes(q)
-      )
+    
+    if (filterMonth) {
+      data = data.filter(p => p.month.toLowerCase().includes(filterMonth.toLowerCase()))
     }
-    if (filterDept) data = data.filter(p => p.apartment === filterDept)
-    if (filterStatus) data = data.filter(p => p.status === filterStatus)
+    if (filterTower) {
+      data = data.filter(p => p.apartment.startsWith(filterTower.toUpperCase()))
+    }
+    if (filterDept) {
+      data = data.filter(p => p.apartment.toLowerCase().includes(filterDept.toLowerCase()))
+    }
+    if (filterStatus) {
+      data = data.filter(p => p.status === filterStatus)
+    }
     return data
-  }, [state.pagos, isAdmin, apartment, search, filterDept, filterStatus])
+  }, [state.pagos, isAdmin, apartment, filterMonth, filterTower, filterDept, filterStatus])
 
   const pendingTotal = useMemo(
     () => filteredPagos.filter(p => p.status === 'Pendiente').reduce((sum, p) => sum + p.amount, 0),
     [filteredPagos]
   )
 
-  const departments = [...new Set(state.pagos.map(p => p.apartment))].sort()
-
   const handleToggleStatus = (id: string) => {
     const pago = state.pagos.find(p => p.id === id)
     if (!pago) return
+    
+    if (pago.status === 'Pagado') {
+      const confirm = window.confirm(`Estás a punto de marcar el pago de ${pago.resident} del mes de ${pago.month} como PENDIENTE.\n\n¿Estás seguro de revocar este pago?`)
+      if (!confirm) return
+    }
+
     const newStatus = pago.status === 'Pendiente' ? 'Pagado' : 'Pendiente'
     dispatch({
       type: 'UPDATE_PAGO',
@@ -98,31 +111,53 @@ export default function Pagos() {
 
       {/* Search & filters (admin) */}
       {isAdmin && (
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
-            <span className="absolute inset-y-0 left-4 flex items-center text-slate-400">
-              <span className="material-symbols-outlined text-xl">search</span>
-            </span>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="relative">
             <input
               type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por mes, estado o residente..."
-              className="block w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              list="month-options"
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              placeholder="Mes (ej. abril de 2026)"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
             />
+            <datalist id="month-options">
+              {availableMonths.map(m => <option key={m} value={m} />)}
+            </datalist>
           </div>
-          <select
-            value={filterDept}
-            onChange={(e) => setFilterDept(e.target.value)}
-            className="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 font-medium outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all"
-          >
-            <option value="">Todos los deptos.</option>
-            {departments.map(d => <option key={d} value={d}>{d}</option>)}
-          </select>
+          
+          <div className="relative">
+            <input
+              type="text"
+              list="tower-options"
+              value={filterTower}
+              onChange={(e) => setFilterTower(e.target.value)}
+              placeholder="Torre (ej. A)"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
+            />
+            <datalist id="tower-options">
+              {availableTowers.map(t => <option key={t} value={t} />)}
+            </datalist>
+          </div>
+
+          <div className="relative">
+            <input
+              type="text"
+              list="dept-options"
+              value={filterDept}
+              onChange={(e) => setFilterDept(e.target.value)}
+              placeholder="Departamento (ej. A101)"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
+            />
+            <datalist id="dept-options">
+              {availableDepts.map(d => <option key={d} value={d} />)}
+            </datalist>
+          </div>
+          
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 font-medium outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all"
+            className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
           >
             <option value="">Todos los estados</option>
             <option value="Pagado">Pagado</option>
@@ -137,12 +172,13 @@ export default function Pagos() {
           <div>
             <h2 className="text-xl font-headline font-extrabold text-slate-900">Historial de pagos</h2>
             <p className="text-sm text-slate-500 font-medium mt-1">
-              {isAdmin ? 'Todos los deptos.' : `Departamento ${apartment}`}
+              {isAdmin && !filterTower && !filterDept ? 'Todos los deptos.' : 
+               isAdmin ? `Filtro Activo` : `Departamento ${apartment}`}
             </p>
           </div>
           {pendingTotal > 0 && (
-            <div className="flex items-center space-x-2 text-sm font-bold text-slate-700 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
-              <span className="material-symbols-outlined text-base">attach_money</span>
+            <div className="flex items-center space-x-2 text-sm font-bold text-slate-700 bg-slate-50 px-4 py-2 rounded-full border border-slate-100 mt-4 md:mt-0">
+              <span className="material-symbols-outlined text-base text-rose-600">error</span>
               <span>Saldo pendiente: ${pendingTotal.toLocaleString()}</span>
             </div>
           )}
@@ -153,33 +189,49 @@ export default function Pagos() {
             <thead>
               <tr className="border-t border-slate-100">
                 {isAdmin && <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Depto.</th>}
-                {isAdmin && <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Residente</th>}
                 <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mes</th>
                 <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monto</th>
                 <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
                 <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha de pago</th>
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
+                <th className="px-8 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center justify-center">Acción</th>
               </tr>
             </thead>
             <tbody>
               {filteredPagos.map((pago) => (
                 <tr key={pago.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
-                  {isAdmin && <td className="px-8 py-5 text-sm font-bold text-slate-900">{pago.apartment}</td>}
-                  {isAdmin && <td className="px-8 py-5 text-sm font-medium text-slate-700">{pago.resident}</td>}
-                  <td className="px-8 py-5 text-sm font-medium text-slate-700">{pago.month}</td>
-                  <td className="px-8 py-5 text-sm font-bold text-slate-900">${pago.amount.toLocaleString()}</td>
+                  {isAdmin && (
+                    <td className="px-8 py-5">
+                      <p className="text-sm font-bold text-slate-900">{pago.apartment}</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase">{pago.resident}</p>
+                    </td>
+                  )}
+                  <td className="px-8 py-5 text-sm font-medium text-slate-700 capitalize">{pago.month}</td>
+                  <td className="px-8 py-5 text-sm font-bold text-slate-900 border-l border-slate-50">${pago.amount.toLocaleString()}</td>
                   <td className="px-8 py-5"><StatusBadge status={pago.status} /></td>
-                  <td className="px-8 py-5 text-sm text-slate-500 font-medium">{pago.paymentDate || '–'}</td>
-                  <td className="px-8 py-5">
-                    <button
-                      onClick={() => handleToggleStatus(pago.id)}
-                      className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest transition-colors"
-                    >
-                      {isAdmin ? 'Actualizar' : (pago.status === 'Pendiente' ? 'Subir comprobante' : 'Ver detalle')}
-                    </button>
+                  <td className="px-8 py-5 text-xs text-slate-500 font-bold uppercase tracking-widest">{pago.paymentDate || '—'}</td>
+                  <td className="px-8 py-5 flex items-center justify-center">
+                    {isAdmin ? (
+                      <button
+                        onClick={() => handleToggleStatus(pago.id)}
+                        className={`text-[10px] font-bold uppercase tracking-widest transition-colors px-4 py-2 rounded-lg border ${
+                          pago.status === 'Pendiente' ? 'bg-primary-container/20 text-primary border-primary-dim hover:bg-primary-container/50' : 'bg-slate-50 text-slate-500 border-slate-200 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200'
+                        }`}
+                      >
+                        {pago.status === 'Pendiente' ? 'Aprobar' : 'Revocar'}
+                      </button>
+                    ) : (
+                      <button className="text-[10px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-widest transition-colors">Detalle</button>
+                    )}
                   </td>
                 </tr>
               ))}
+              {filteredPagos.length === 0 && (
+                <tr>
+                  <td colSpan={isAdmin ? 6 : 5} className="px-8 py-12 text-center text-slate-400 font-medium">
+                    No hay registros de pago que coincidan con los filtros.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -193,7 +245,7 @@ export default function Pagos() {
             <select
               value={formResident}
               onChange={(e) => setFormResident(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
             >
               <option value="">Seleccionar residente...</option>
               {seedResidents.map(r => <option key={r.name} value={r.name}>{r.name} — {r.apartment}</option>)}
@@ -205,7 +257,7 @@ export default function Pagos() {
               type="text"
               value={formMonth}
               onChange={(e) => setFormMonth(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
               placeholder="mayo de 2026"
             />
           </div>
@@ -216,7 +268,7 @@ export default function Pagos() {
                 type="number"
                 value={formAmount}
                 onChange={(e) => setFormAmount(e.target.value)}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
               />
             </div>
             <div className="space-y-2">
@@ -224,7 +276,7 @@ export default function Pagos() {
               <select
                 value={formStatus}
                 onChange={(e) => setFormStatus(e.target.value as 'Pagado' | 'Pendiente')}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
               >
                 <option value="Pendiente">Pendiente</option>
                 <option value="Pagado">Pagado</option>

@@ -28,12 +28,6 @@ export default function Paqueteria() {
     return data
   }, [state.paquetes, isAdmin, apartment, search])
 
-  const handleDeliver = (id: string) => {
-    const pkg = state.paquetes.find(p => p.id === id)
-    if (!pkg) return
-    dispatch({ type: 'UPDATE_PAQUETE', payload: { ...pkg, status: 'Entregado', location: 'N/A' } })
-  }
-
   const handleCleanDelivered = () => dispatch({ type: 'DELETE_PAQUETES_DELIVERED' })
 
   const handleAdd = () => {
@@ -134,22 +128,27 @@ export default function Paqueteria() {
                   <td className="px-8 py-5"><StatusBadge status={pkg.status} /></td>
                   <td className="px-8 py-5 text-sm text-slate-500 font-medium">{pkg.location}</td>
                   <td className="px-8 py-5">
-                    {pkg.status === 'Pendiente' && isAdmin && (
+                    {isAdmin ? (
                       <button
-                        onClick={() => handleDeliver(pkg.id)}
-                        className="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all"
-                        title="Marcar como entregado"
+                        onClick={() => {
+                          const newStatus = pkg.status === 'Pendiente' ? 'Entregado' : 'Pendiente'
+                          dispatch({ type: 'UPDATE_PAQUETE', payload: { ...pkg, status: newStatus, location: newStatus === 'Entregado' ? 'N/A' : pkg.location } })
+                        }}
+                        className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all ${
+                          pkg.status === 'Entregado' 
+                            ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' 
+                            : 'bg-slate-50 text-slate-400 hover:bg-emerald-50 hover:text-emerald-500 border border-slate-200 hover:border-emerald-200'
+                        }`}
+                        title={pkg.status === 'Pendiente' ? 'Marcar como entregado' : 'Cambiar a pendiente'}
                       >
                         <span className="material-symbols-outlined text-lg font-bold">check_circle</span>
                       </button>
-                    )}
-                    {pkg.status === 'Pendiente' && !isAdmin && (
-                      <span className="inline-flex items-center text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
-                        En espera
+                    ) : (
+                      <span className={`inline-flex items-center text-[10px] font-bold px-2 py-1 rounded-full ${
+                        pkg.status === 'Pendiente' ? 'text-amber-600 bg-amber-50' : 'text-emerald-600 bg-emerald-50'
+                      }`}>
+                        {pkg.status === 'Pendiente' ? 'En espera' : 'Recibido'}
                       </span>
-                    )}
-                    {pkg.status === 'Entregado' && (
-                      <span className="material-symbols-outlined text-lg text-slate-300">task_alt</span>
                     )}
                   </td>
                 </tr>

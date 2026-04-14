@@ -51,6 +51,20 @@ export default function Asadores() {
         status: 'Reservado',
       },
     })
+    
+    // Notify admin
+    dispatch({
+      type: 'ADD_NOTIFICACION',
+      payload: {
+        id: `notif-${Date.now()}`,
+        userId: 'admin',
+        title: 'Nueva Reservación',
+        message: `${user} (${apartment}) reservó ${formGrill} el ${formDate}.`,
+        date: new Date().toLocaleDateString(),
+        read: false
+      }
+    })
+
     setFormDate('')
     setFormGrill('Asador 1')
     setFormTimeSlot(TIME_SLOTS[0])
@@ -63,6 +77,19 @@ export default function Asadores() {
     if (!res) return
     const newStatus = res.status === 'Por confirmar' ? 'Reservado' : 'Por confirmar'
     dispatch({ type: 'UPDATE_RESERVACION', payload: { ...res, status: newStatus } })
+    
+    // Notify resident
+    dispatch({
+      type: 'ADD_NOTIFICACION',
+      payload: {
+        id: `notif-${Date.now()}`,
+        userId: res.resident,
+        title: 'Cambio de Estado',
+        message: `Tu reservación de ${res.grill} ha cambiado a: ${newStatus}.`,
+        date: new Date().toLocaleDateString(),
+        read: false
+      }
+    })
   }
 
   return (
