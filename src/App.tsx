@@ -1,15 +1,16 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from './context/AuthContext'
-import Login from './pages/Login'
-import ResidentDashboard from './pages/ResidentDashboard'
-import AdminDashboard from './pages/AdminDashboard'
-import Avisos from './pages/Avisos'
-import Pagos from './pages/Pagos'
-import Paqueteria from './pages/Paqueteria'
-import Asadores from './pages/Asadores'
-import Votaciones from './pages/Votaciones'
-import Usuarios from './pages/Usuarios'
-import Configuracion from './pages/Configuracion'
+import { useAuth } from './core/auth/AuthContext'
+import LoginPage from './features/auth/LoginPage'
+import ResidentDashboard from './features/dashboard/ResidentDashboard'
+import AdminDashboard from './features/dashboard/AdminDashboard'
+import AvisosPage from './features/avisos/AvisosPage'
+import PagosPage from './features/pagos/PagosPage'
+import PaqueteriaPage from './features/paqueteria/PaqueteriaPage'
+import AmenidadesPage from './features/amenidades/AmenidadesPage'
+import VotacionesPage from './features/votaciones/VotacionesPage'
+import UsuariosPage from './features/usuarios/UsuariosPage'
+import AdminConfiguracion from './features/configuracion/AdminConfiguracion'
+import ResidentConfiguracion from './features/configuracion/ResidentConfiguracion'
 import DashboardLayout from './layouts/DashboardLayout'
 
 /** Redirects to login if not authenticated, or to the correct home if wrong role */
@@ -25,7 +26,7 @@ function RequireRole({ allowed, children }: { allowed: ('resident' | 'admin')[];
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route element={<DashboardLayout />}>
         {/* Resident-only home */}
         <Route path="/dashboard" element={
@@ -37,17 +38,22 @@ function App() {
         } />
         {/* Admin-only management */}
         <Route path="/usuarios" element={
-          <RequireRole allowed={['admin']}><Usuarios /></RequireRole>
+          <RequireRole allowed={['admin']}><UsuariosPage /></RequireRole>
         } />
         <Route path="/configuracion" element={
-          <RequireRole allowed={['admin']}><Configuracion /></RequireRole>
+          <RequireRole allowed={['admin']}><AdminConfiguracion /></RequireRole>
+        } />
+        {/* Resident settings */}
+        <Route path="/mi-configuracion" element={
+          <RequireRole allowed={['resident']}><ResidentConfiguracion /></RequireRole>
         } />
         {/* Shared modules */}
-        <Route path="/avisos" element={<Avisos />} />
-        <Route path="/pagos" element={<Pagos />} />
-        <Route path="/paqueteria" element={<Paqueteria />} />
-        <Route path="/asadores" element={<Asadores />} />
-        <Route path="/votaciones" element={<Votaciones />} />
+        <Route path="/avisos" element={<AvisosPage />} />
+        <Route path="/pagos" element={<PagosPage />} />
+        <Route path="/paqueteria" element={<PaqueteriaPage />} />
+        <Route path="/amenidades" element={<AmenidadesPage />} />
+        <Route path="/asadores" element={<Navigate to="/amenidades" replace />} />
+        <Route path="/votaciones" element={<VotacionesPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
@@ -55,3 +61,4 @@ function App() {
 }
 
 export default App
+

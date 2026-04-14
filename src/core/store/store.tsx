@@ -1,10 +1,29 @@
+/**
+ * Store — Centralized state management for CantonAlfa.
+ *
+ * Uses React's useReducer + Context to provide a single source of truth
+ * for all operational data. State is persisted to localStorage under
+ * the key "cantonalfa_store" and auto-saved on every state change.
+ *
+ * Architecture:
+ *   - loadInitialState() — Loads from localStorage or falls back to seed data.
+ *     Includes migration logic for legacy schemas (old settings key, missing
+ *     towers, staff role normalization, voter format upgrades).
+ *   - reducer() — Pure function handling all CRUD actions.
+ *   - StoreProvider — React context provider wrapping the app.
+ *   - useStore() — Hook to access { state, dispatch }.
+ */
 import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
 import {
-  seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones, seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
-  type Aviso, type Pago, type Paquete, type Reservacion, type Votacion, type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig
+  seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
+  seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
+  type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
+  type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig
 } from './seed'
 
-// ── State shape ──
+// ─── State Shape ─────────────────────────────────────────────────────
+
+/** Complete application state stored in context */
 export interface StoreState {
   notificaciones: Notificacion[]
   avisos: Aviso[]
@@ -18,7 +37,9 @@ export interface StoreState {
   buildingConfig: BuildingConfig
 }
 
-// ── Actions ──
+// ─── Action Types ────────────────────────────────────────────────────
+
+/** Union of all dispatchable actions */
 type Action =
   | { type: 'ADD_NOTIFICACION'; payload: Notificacion }
   | { type: 'MARK_NOTIFICACION_READ'; payload: string }
@@ -48,8 +69,13 @@ type Action =
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'RESET' }
 
+/** localStorage key for persisting state */
 const STORAGE_KEY = 'cantonalfa_store'
 
+/**
+ * Normalizes legacy staff role strings into the three allowed categories.
+ * Handles various Spanish spelling variations from older data schemas.
+ */
 function migrateStaffRole(role: string): 'Jardinero' | 'Limpieza' | 'Guardia' {
   const r = role.toLowerCase()
   if (r.includes('seguridad') || r.includes('guardia')) return 'Guardia'
@@ -59,18 +85,25 @@ function migrateStaffRole(role: string): 'Jardinero' | 'Limpieza' | 'Guardia' {
   return 'Limpieza'
 }
 
+/**
+ * Loads the initial state from localStorage, applying migrations
+ * for schema changes from previous versions. Falls back to seed
+ * data if no stored state exists or if parsing fails.
+ */
 function loadInitialState(): StoreState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
-      // Defaults for missing slices
+
+      // Ensure all slices exist (handles upgrades from older schemas)
       if (!parsed.notificaciones) parsed.notificaciones = []
       if (!parsed.residents) parsed.residents = seedResidents
       if (!parsed.staff) parsed.staff = seedStaff
       if (!parsed.amenities) parsed.amenities = seedAmenities
+
+      // Migrate from the old separate "cantonalfa_settings" localStorage key
       if (!parsed.buildingConfig) {
-        // Migrate from old separate settings key
         let bc = { ...seedBuildingConfig }
         try {
           const oldSettings = localStorage.getItem('cantonalfa_settings')
@@ -85,10 +118,11 @@ function loadInitialState(): StoreState {
             bc.totalUnits = os.totalUnits || bc.totalUnits
             localStorage.removeItem('cantonalfa_settings')
           }
-        } catch { /* ignore */ }
+        } catch { /* ignore legacy parse errors */ }
         parsed.buildingConfig = bc
       }
-      // Migrate residents: add tower if missing
+
+      // Migrate residents: infer tower from apartment prefix if missing
       if (parsed.residents) {
         parsed.residents = parsed.residents.map((r: any) => {
           if (!r.tower) {
@@ -98,14 +132,16 @@ function loadInitialState(): StoreState {
           return r
         })
       }
-      // Migrate staff: remove location, fix role
+
+      // Migrate staff: remove deprecated "location" field, normalize role
       if (parsed.staff) {
         parsed.staff = parsed.staff.map((s: any) => {
           const { location: _loc, ...rest } = s
           return { ...rest, role: migrateStaffRole(s.role || 'Limpieza') }
         })
       }
-      // Migrate old voters format
+
+      // Migrate voters: upgrade from old string-only format to object format
       if (parsed.votaciones) {
         parsed.votaciones = parsed.votaciones.map((v: any) => ({
           ...v,
@@ -116,9 +152,12 @@ function loadInitialState(): StoreState {
           })
         }))
       }
+
       return parsed
     }
-  } catch { /* use seed */ }
+  } catch { /* fall through to seed data on any error */ }
+
+  // No stored state found — return fresh seed data
   return {
     notificaciones: seedNotificaciones,
     avisos: seedAvisos,
@@ -133,13 +172,18 @@ function loadInitialState(): StoreState {
   }
 }
 
+// ─── Reducer ─────────────────────────────────────────────────────────
+
+/** Pure reducer handling all state transitions */
 function reducer(state: StoreState, action: Action): StoreState {
   switch (action.type) {
+    // Notifications
     case 'ADD_NOTIFICACION':
       return { ...state, notificaciones: [action.payload, ...state.notificaciones] }
     case 'MARK_NOTIFICACION_READ':
       return { ...state, notificaciones: state.notificaciones.map(n => n.id === action.payload ? { ...n, read: true } : n) }
 
+    // Announcements (Avisos)
     case 'ADD_AVISO':
       return { ...state, avisos: [action.payload, ...state.avisos] }
     case 'UPDATE_AVISO':
@@ -147,11 +191,13 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'DELETE_AVISO':
       return { ...state, avisos: state.avisos.filter(a => a.id !== action.payload) }
 
+    // Payments
     case 'ADD_PAGO':
       return { ...state, pagos: [...state.pagos, action.payload] }
     case 'UPDATE_PAGO':
       return { ...state, pagos: state.pagos.map(p => p.id === action.payload.id ? action.payload : p) }
 
+    // Packages
     case 'ADD_PAQUETE':
       return { ...state, paquetes: [action.payload, ...state.paquetes] }
     case 'UPDATE_PAQUETE':
@@ -161,6 +207,7 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'DELETE_PAQUETES_DELIVERED':
       return { ...state, paquetes: state.paquetes.filter(p => p.status !== 'Entregado') }
 
+    // Amenity Reservations
     case 'ADD_RESERVACION':
       return { ...state, reservaciones: [...state.reservaciones, action.payload] }
     case 'UPDATE_RESERVACION':
@@ -168,11 +215,13 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'DELETE_RESERVACION':
       return { ...state, reservaciones: state.reservaciones.filter(r => r.id !== action.payload) }
 
+    // Voting
     case 'ADD_VOTACION':
       return { ...state, votaciones: [action.payload, ...state.votaciones] }
     case 'DELETE_VOTACION':
       return { ...state, votaciones: state.votaciones.filter(v => v.id !== action.payload) }
     case 'VOTE': {
+      // Enforce one vote per apartment
       const { votacionId, voter } = action.payload
       return {
         ...state,
@@ -188,6 +237,7 @@ function reducer(state: StoreState, action: Action): StoreState {
       }
     }
 
+    // Residents
     case 'ADD_RESIDENT':
       return { ...state, residents: [...state.residents, action.payload] }
     case 'UPDATE_RESIDENT':
@@ -195,25 +245,31 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'DELETE_RESIDENT':
       return { ...state, residents: state.residents.filter(r => r.id !== action.payload) }
 
+    // Staff
     case 'ADD_STAFF':
       return { ...state, staff: [...state.staff, action.payload] }
     case 'DELETE_STAFF':
       return { ...state, staff: state.staff.filter(s => s.id !== action.payload) }
 
+    // Amenities
     case 'ADD_AMENITY':
       return { ...state, amenities: [...state.amenities, action.payload] }
     case 'DELETE_AMENITY':
       return { ...state, amenities: state.amenities.filter(a => a.id !== action.payload) }
 
+    // Building Configuration
     case 'UPDATE_BUILDING_CONFIG':
       return { ...state, buildingConfig: { ...state.buildingConfig, ...action.payload } }
 
+    // Auto-cleanup of expired/delivered packages
     case 'CLEANUP_EXPIRED': {
       const now = new Date(action.payload.nowIso)
       const pqs = state.paquetes.filter(p => {
+        // Remove packages delivered more than 24 hours ago
         if (p.status === 'Entregado' && p.deliveredDate) {
           return (now.getTime() - new Date(p.deliveredDate).getTime()) / (1000 * 60 * 60) < 24
         }
+        // Remove packages past their expiration window
         if (p.status === 'Pendiente' && p.expirationDays) {
           return (now.getTime() - new Date(p.receivedDate).getTime()) / (1000 * 60 * 60 * 24) <= p.expirationDays
         }
@@ -222,6 +278,7 @@ function reducer(state: StoreState, action: Action): StoreState {
       return { ...state, paquetes: pqs }
     }
 
+    // Full system reset to seed data
     case 'RESET':
       localStorage.removeItem(STORAGE_KEY)
       localStorage.removeItem('cantonalfa_settings')
@@ -237,24 +294,32 @@ function reducer(state: StoreState, action: Action): StoreState {
         amenities: seedAmenities,
         buildingConfig: seedBuildingConfig,
       }
+
     default:
       return state
   }
 }
 
-// ── Context ──
+// ─── Context & Provider ──────────────────────────────────────────────
+
 const StoreContext = createContext<{
   state: StoreState
   dispatch: React.Dispatch<Action>
 } | null>(null)
 
+/**
+ * StoreProvider — Wraps the app to provide centralized state.
+ * Runs expired-package cleanup on mount and auto-saves to localStorage.
+ */
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, loadInitialState)
 
+  // Run cleanup for expired packages on initial mount
   useEffect(() => {
     dispatch({ type: 'CLEANUP_EXPIRED', payload: { nowIso: new Date().toISOString() } })
   }, [])
 
+  // Persist state to localStorage on every change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   }, [state])
@@ -266,6 +331,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   )
 }
 
+/**
+ * useStore — Hook to access the centralized store.
+ * Returns { state, dispatch } for reading data and dispatching actions.
+ * Throws if used outside of a StoreProvider.
+ */
 export function useStore() {
   const ctx = useContext(StoreContext)
   if (!ctx) throw new Error('useStore must be used within StoreProvider')

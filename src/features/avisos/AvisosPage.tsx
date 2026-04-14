@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useStore } from '../data/store'
-import Modal from '../components/Modal'
-import { type Aviso } from '../data/seed'
+import { useAuth } from '../../core/auth/AuthContext'
+import { useStore } from '../../core/store/store'
+import Modal from '../../core/components/Modal'
+import { type Aviso } from '../../core/store/seed'
 
 export default function Avisos() {
   const { role } = useAuth()

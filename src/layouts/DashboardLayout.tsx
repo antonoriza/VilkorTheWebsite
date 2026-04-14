@@ -1,16 +1,30 @@
+/**
+ * DashboardLayout — Main application shell with sidebar navigation.
+ *
+ * Provides the persistent UI frame (sidebar + top bar) for all
+ * authenticated pages. Uses React Router's <Outlet> to render
+ * child routes inside the main content area.
+ *
+ * Features:
+ *   - Dynamic sidebar navigation filtered by user role
+ *   - Conditional "Amenidades" nav item (hidden when no amenities exist)
+ *   - Notification dropdown with deep-link navigation
+ *   - Profile menu with logout
+ *   - Dynamic building name/address from store
+ */
 import { Outlet, NavLink, Link, Navigate, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { useStore } from '../data/store'
-import { useState } from 'react'
+import { useAuth } from '../core/auth/AuthContext'
+import { useStore } from '../core/store/store'
+import { useState, useMemo } from 'react'
 
-// Sidebar items with role visibility
-const allNavItems = [
+/** Navigation item definition with role-based filtering */
+const baseNavItems = [
   { to: '/dashboard', icon: 'home', label: 'Inicio', roles: ['resident'] },
   { to: '/admin', icon: 'dashboard', label: 'Panel Admin', roles: ['admin'] },
   { to: '/avisos', icon: 'notifications', label: 'Avisos', roles: ['resident', 'admin'] },
   { to: '/pagos', icon: 'payments', label: 'Pagos', roles: ['resident', 'admin'] },
   { to: '/paqueteria', icon: 'package_2', label: 'Paquetería', roles: ['resident', 'admin'] },
-  { to: '/asadores', icon: 'outdoor_grill', label: 'Asadores', roles: ['resident', 'admin'] },
+  { to: '/amenidades', icon: 'outdoor_grill', label: 'Amenidades', roles: ['resident', 'admin'], requiresAmenities: true },
   { to: '/votaciones', icon: 'how_to_vote', label: 'Votaciones', roles: ['resident', 'admin'] },
   { to: '/usuarios', icon: 'group', label: 'Usuarios', roles: ['admin'] },
 ]
@@ -27,14 +41,25 @@ export default function DashboardLayout() {
     return <Navigate to="/login" replace />
   }
 
+  const bc = state.buildingConfig
+  const hasAmenities = state.amenities.length > 0
   const homePath = role === 'admin' ? '/admin' : '/dashboard'
-  const navItems = allNavItems.filter(item => item.roles.includes(role))
 
-  // Filter notifications for this user
+  // Filter nav items by role and amenity availability
+  const navItems = useMemo(() =>
+    baseNavItems.filter(item => {
+      if (!item.roles.includes(role)) return false
+      if ((item as any).requiresAmenities && !hasAmenities) return false
+      return true
+    }),
+  [role, hasAmenities])
+
+  // Filter notifications for the current user
   const myNotifs = state.notificaciones.filter(n => 
     role === 'admin' ? n.userId === 'admin' : n.userId === user
   )
 
+  /** Marks a notification as read and navigates to its deep-link target */
   const handleNotifClick = (n: typeof myNotifs[0]) => {
     if (!n.read) {
       dispatch({ type: 'MARK_NOTIFICACION_READ', payload: n.id })
@@ -47,13 +72,15 @@ export default function DashboardLayout() {
 
   return (
     <div className="bg-[#F8FAFC] text-on-surface flex min-h-screen">
-      {/* SideNavBar */}
+      {/* ── Sidebar Navigation ── */}
       <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-slate-200 bg-white z-50">
+        {/* Building name / home link */}
         <Link to={homePath} className="p-8 block hover:opacity-80 transition-opacity">
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">Lote Alemania</h1>
-          <p className="text-[10px] font-bold font-label tracking-widest text-slate-400 mt-1 uppercase">Cosmopol HU LIFESTYLE</p>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">{bc.buildingName}</h1>
+          <p className="text-[10px] font-bold font-label tracking-widest text-slate-400 mt-1 uppercase">{bc.buildingAddress}</p>
         </Link>
         
+        {/* Navigation links */}
         <nav className="flex-1 px-4 space-y-1">
           {navItems.map((item) => (
             <NavLink
@@ -74,6 +101,7 @@ export default function DashboardLayout() {
           ))}
         </nav>
 
+        {/* Bottom: user card + utility links */}
         <div className="mt-auto p-4 border-t border-slate-100">
           <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 mb-4 border border-slate-100">
             <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-black text-sm ring-2 ring-white">
@@ -87,11 +115,12 @@ export default function DashboardLayout() {
             </div>
           </div>
           <div className="space-y-1">
-            {role === 'admin' && (
-              <Link to="/configuracion" className="flex items-center px-4 py-2 text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors">
-                <span className="material-symbols-outlined text-lg mr-3">settings</span> Configuración
-              </Link>
-            )}
+            <Link
+              to={role === 'admin' ? '/configuracion' : '/mi-configuracion'}
+              className="flex items-center px-4 py-2 text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors"
+            >
+              <span className="material-symbols-outlined text-lg mr-3">settings</span> Configuración
+            </Link>
             <a className="flex items-center px-4 py-2 text-slate-500 hover:text-slate-900 text-sm font-medium" href="#">
               <span className="material-symbols-outlined text-lg mr-3">help</span> Soporte
             </a>
@@ -105,13 +134,13 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Main Canvas */}
+      {/* ── Main Content Area ── */}
       <main className="ml-64 w-full min-h-screen flex flex-col">
-        {/* TopAppBar */}
+        {/* Top bar with role badge, notifications, and profile */}
         <header className="flex justify-between items-center px-10 h-20 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
           <div />
           <div className="flex items-center space-x-3">
-            {/* Role badge */}
+            {/* Role indicator badge */}
             <div
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl border text-[11px] font-black uppercase tracking-widest ${
                 role === 'admin'
@@ -125,7 +154,7 @@ export default function DashboardLayout() {
               <span>{role === 'admin' ? 'Administrador' : 'Residente'}</span>
             </div>
 
-            {/* Notifications */}
+            {/* Notification bell with dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowNotif(!showNotif)}
@@ -206,7 +235,7 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        {/* Page Content */}
+        {/* Routed page content */}
         <div className="p-10 max-w-full mx-auto w-full">
           <Outlet />
         </div>

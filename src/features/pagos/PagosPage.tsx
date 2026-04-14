@@ -1,74 +1,102 @@
+/**
+ * PagosPage — Payment management page.
+ *
+ * Admin view: Full payment ledger with filtering by month, tower,
+ * apartment, and status. Payment reversal requires confirmation.
+ * Resident view: Personal payment history with balance summary.
+ *
+ * BUG FIX: Replaced window.confirm() for payment revocation
+ * (Pagado → Pendiente) with an in-app ConfirmDialog component.
+ */
 import { useState, useMemo } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useStore } from '../data/store'
-import StatusBadge from '../components/StatusBadge'
-import Modal from '../components/Modal'
-import { seedResidents } from '../data/seed'
+import { useAuth } from '../../core/auth/AuthContext'
+import { useStore } from '../../core/store/store'
+import StatusBadge from '../../core/components/StatusBadge'
+import Modal from '../../core/components/Modal'
+import ConfirmDialog from '../../core/components/ConfirmDialog'
+import { seedResidents } from '../../core/store/seed'
 
-export default function Pagos() {
+export default function PagosPage() {
   const { role, apartment } = useAuth()
   const { state, dispatch } = useStore()
   
+  // Filter state
   const [filterMonth, setFilterMonth] = useState('')
   const [filterTower, setFilterTower] = useState('')
   const [filterDept, setFilterDept] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
 
+  // Add-payment modal state
   const [showModal, setShowModal] = useState(false)
   const [formResident, setFormResident] = useState('')
   const [formMonth, setFormMonth] = useState('')
   const [formAmount, setFormAmount] = useState('1700')
   const [formStatus, setFormStatus] = useState<'Pagado' | 'Pendiente'>('Pendiente')
 
+  // Confirm dialog state for payment revocation
+  const [revokeTarget, setRevokeTarget] = useState<{ id: string; resident: string; month: string } | null>(null)
+
   const isAdmin = role === 'admin'
 
+  // Extract unique filter options from existing data
   const availableMonths = [...new Set(state.pagos.map(p => p.month))]
   const availableDepts = [...new Set(state.pagos.map(p => p.apartment))].sort()
-  const availableTowers = [...new Set(availableDepts.map(d => d[0]))].sort() // e.g. 'A', 'B'
+  const availableTowers = [...new Set(availableDepts.map(d => d[0]))].sort()
 
+  // Apply all active filters to the payment list
   const filteredPagos = useMemo(() => {
     let data = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === apartment)
-    
-    if (filterMonth) {
-      data = data.filter(p => p.month.toLowerCase().includes(filterMonth.toLowerCase()))
-    }
-    if (filterTower) {
-      data = data.filter(p => p.apartment.startsWith(filterTower.toUpperCase()))
-    }
-    if (filterDept) {
-      data = data.filter(p => p.apartment.toLowerCase().includes(filterDept.toLowerCase()))
-    }
-    if (filterStatus) {
-      data = data.filter(p => p.status === filterStatus)
-    }
+    if (filterMonth) data = data.filter(p => p.month.toLowerCase().includes(filterMonth.toLowerCase()))
+    if (filterTower) data = data.filter(p => p.apartment.startsWith(filterTower.toUpperCase()))
+    if (filterDept) data = data.filter(p => p.apartment.toLowerCase().includes(filterDept.toLowerCase()))
+    if (filterStatus) data = data.filter(p => p.status === filterStatus)
     return data
   }, [state.pagos, isAdmin, apartment, filterMonth, filterTower, filterDept, filterStatus])
 
+  // Calculate pending balance for the current filter
   const pendingTotal = useMemo(
     () => filteredPagos.filter(p => p.status === 'Pendiente').reduce((sum, p) => sum + p.amount, 0),
     [filteredPagos]
   )
 
+  /**
+   * Handles payment status toggle.
+   * Pendiente → Pagado: immediate toggle.
+   * Pagado → Pendiente: opens confirm dialog first (prevents accidental revocation).
+   */
   const handleToggleStatus = (id: string) => {
     const pago = state.pagos.find(p => p.id === id)
     if (!pago) return
-    
+
     if (pago.status === 'Pagado') {
-      const confirm = window.confirm(`Estás a punto de marcar el pago de ${pago.resident} del mes de ${pago.month} como PENDIENTE.\n\n¿Estás seguro de revocar este pago?`)
-      if (!confirm) return
+      // Open confirm dialog for revocation
+      setRevokeTarget({ id: pago.id, resident: pago.resident, month: pago.month })
+      return
     }
 
-    const newStatus = pago.status === 'Pendiente' ? 'Pagado' : 'Pendiente'
+    // Direct approval for Pendiente → Pagado
     dispatch({
       type: 'UPDATE_PAGO',
       payload: {
         ...pago,
-        status: newStatus,
-        paymentDate: newStatus === 'Pagado' ? new Date().toISOString().split('T')[0] : null,
+        status: 'Pagado',
+        paymentDate: new Date().toISOString().split('T')[0],
       },
     })
   }
 
+  /** Executes the payment revocation after user confirms */
+  const confirmRevoke = () => {
+    if (!revokeTarget) return
+    const pago = state.pagos.find(p => p.id === revokeTarget.id)
+    if (!pago) return
+    dispatch({
+      type: 'UPDATE_PAGO',
+      payload: { ...pago, status: 'Pendiente', paymentDate: null },
+    })
+  }
+
+  /** Adds a new payment record from the modal form */
   const handleAddPago = () => {
     if (!formResident || !formMonth.trim()) return
     const resident = seedResidents.find(r => r.name === formResident)
@@ -109,15 +137,11 @@ export default function Pagos() {
         )}
       </div>
 
-      {/* Search & filters (admin) */}
+      {/* Filters (admin only) */}
       {isAdmin && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="relative">
-            <input
-              type="text"
-              list="month-options"
-              value={filterMonth}
-              onChange={(e) => setFilterMonth(e.target.value)}
+            <input type="text" list="month-options" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}
               placeholder="Mes (ej. abril de 2026)"
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
             />
@@ -125,13 +149,8 @@ export default function Pagos() {
               {availableMonths.map(m => <option key={m} value={m} />)}
             </datalist>
           </div>
-          
           <div className="relative">
-            <input
-              type="text"
-              list="tower-options"
-              value={filterTower}
-              onChange={(e) => setFilterTower(e.target.value)}
+            <input type="text" list="tower-options" value={filterTower} onChange={(e) => setFilterTower(e.target.value)}
               placeholder="Torre (ej. A)"
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
             />
@@ -139,13 +158,8 @@ export default function Pagos() {
               {availableTowers.map(t => <option key={t} value={t} />)}
             </datalist>
           </div>
-
           <div className="relative">
-            <input
-              type="text"
-              list="dept-options"
-              value={filterDept}
-              onChange={(e) => setFilterDept(e.target.value)}
+            <input type="text" list="dept-options" value={filterDept} onChange={(e) => setFilterDept(e.target.value)}
               placeholder="Departamento (ej. A101)"
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
             />
@@ -153,10 +167,7 @@ export default function Pagos() {
               {availableDepts.map(d => <option key={d} value={d} />)}
             </datalist>
           </div>
-          
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
             className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
           >
             <option value="">Todos los estados</option>
@@ -166,7 +177,7 @@ export default function Pagos() {
         </div>
       )}
 
-      {/* Table */}
+      {/* Payment table */}
       <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between p-8 pb-4">
           <div>
@@ -237,14 +248,12 @@ export default function Pagos() {
         </div>
       </div>
 
-      {/* Add Payment Modal (Admin) */}
+      {/* Add Payment Modal */}
       <Modal open={showModal} onClose={() => setShowModal(false)} title="Registrar Pago">
         <div className="space-y-5">
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Residente</label>
-            <select
-              value={formResident}
-              onChange={(e) => setFormResident(e.target.value)}
+            <select value={formResident} onChange={(e) => setFormResident(e.target.value)}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
             >
               <option value="">Seleccionar residente...</option>
@@ -253,10 +262,7 @@ export default function Pagos() {
           </div>
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mes</label>
-            <input
-              type="text"
-              value={formMonth}
-              onChange={(e) => setFormMonth(e.target.value)}
+            <input type="text" value={formMonth} onChange={(e) => setFormMonth(e.target.value)}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
               placeholder="mayo de 2026"
             />
@@ -264,18 +270,13 @@ export default function Pagos() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto</label>
-              <input
-                type="number"
-                value={formAmount}
-                onChange={(e) => setFormAmount(e.target.value)}
+              <input type="number" value={formAmount} onChange={(e) => setFormAmount(e.target.value)}
                 className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
               />
             </div>
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estado</label>
-              <select
-                value={formStatus}
-                onChange={(e) => setFormStatus(e.target.value as 'Pagado' | 'Pendiente')}
+              <select value={formStatus} onChange={(e) => setFormStatus(e.target.value as 'Pagado' | 'Pendiente')}
                 className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium"
               >
                 <option value="Pendiente">Pendiente</option>
@@ -283,14 +284,27 @@ export default function Pagos() {
               </select>
             </div>
           </div>
-          <button
-            onClick={handleAddPago}
+          <button onClick={handleAddPago}
             className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
           >
             Registrar Pago
           </button>
         </div>
       </Modal>
+
+      {/* ── Confirm Dialog for Payment Revocation ── */}
+      <ConfirmDialog
+        open={!!revokeTarget}
+        onClose={() => setRevokeTarget(null)}
+        onConfirm={confirmRevoke}
+        title="Revocar Pago"
+        confirmLabel="Revocar Pago"
+        variant="danger"
+      >
+        {revokeTarget
+          ? `Estás a punto de marcar el pago de ${revokeTarget.resident} del mes de ${revokeTarget.month} como PENDIENTE. ¿Estás seguro de revocar este pago?`
+          : ''}
+      </ConfirmDialog>
     </div>
   )
 }

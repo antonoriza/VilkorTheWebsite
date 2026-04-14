@@ -1,8 +1,21 @@
+/**
+ * AdminDashboard — Admin control panel (home page for admin role).
+ *
+ * Displays KPIs (health gauge, collection rate, occupancy),
+ * staff management, approval queue, critical alerts, and
+ * quick-access aviso creation via inline modal.
+ *
+ * BUG FIX: Replaced window.confirm() for staff deletion with
+ * an in-app ConfirmDialog component.
+ */
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { useStore } from '../data/store'
-import Modal from '../components/Modal'
+import { useStore } from '../../core/store/store'
+import Modal from '../../core/components/Modal'
+import ConfirmDialog from '../../core/components/ConfirmDialog'
+import type { StaffRole } from '../../core/store/seed'
 
+/** Static type for approval queue items */
 interface ApprovalItem {
   id: string
   type: string
@@ -11,11 +24,22 @@ interface ApprovalItem {
   icon: string
 }
 
+/** Initial demo approval items */
 const initialApprovals: ApprovalItem[] = [
   { id: 'appr-1', type: 'Reserva', detail: 'Salón Eventos — A304', date: '15 Apr', icon: 'event' },
   { id: 'appr-2', type: 'Pago', detail: 'Comprobante — B102', date: '14 Apr', icon: 'receipt_long' },
   { id: 'appr-3', type: 'Acceso', detail: 'Visitante — C201', date: '14 Apr', icon: 'badge' },
 ]
+
+/** Allowed staff role categories */
+const STAFF_ROLES: StaffRole[] = ['Guardia', 'Jardinero', 'Limpieza']
+
+/** Material icon for each staff role */
+const ROLE_ICONS: Record<StaffRole, string> = {
+  Guardia: 'shield_person',
+  Jardinero: 'yard',
+  Limpieza: 'mop',
+}
 
 export default function AdminDashboard() {
   const { state, dispatch } = useStore()
@@ -25,21 +49,32 @@ export default function AdminDashboard() {
   // Staff management modal
   const [showStaffModal, setShowStaffModal] = useState(false)
   const [staffName, setStaffName] = useState('')
-  const [staffRole, setStaffRole] = useState('')
-  const [staffLocation, setStaffLocation] = useState('')
+  const [staffRole, setStaffRole] = useState<StaffRole>('Guardia')
   const [staffShiftStart, setStaffShiftStart] = useState('08:00')
   const [staffShiftEnd, setStaffShiftEnd] = useState('17:00')
 
-  // KPI calculations
+  // Inline aviso creation modal
+  const [showAvisoModal, setShowAvisoModal] = useState(false)
+  const [avisoTitle, setAvisoTitle] = useState('')
+  const [avisoDesc, setAvisoDesc] = useState('')
+
+  // In-app confirm dialog state (replaces window.confirm)
+  const [confirmDeleteStaffId, setConfirmDeleteStaffId] = useState<string | null>(null)
+
+  const bc = state.buildingConfig
+
+  // ── KPI Calculations ──
   const totalPagos = state.pagos.length
   const paidPagos = state.pagos.filter(p => p.status === 'Pagado').length
   const recaudacionPct = totalPagos > 0 ? Math.round((paidPagos / totalPagos) * 100) : 0
-
   const pendingPaquetes = state.paquetes.filter(p => p.status === 'Pendiente').length
   const totalResidents = state.residents?.length || 12
-  const occupancyPct = Math.round((totalResidents / 126) * 100)
+  const totalUnits = bc.totalUnits || 126
+  const occupancyPct = Math.round((totalResidents / totalUnits) * 100)
+  // Composite health score: 50% payment, 30% occupancy, 20% package delivery
   const healthPct = Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
 
+  // Most recent announcements for the sidebar
   const recentNotices = useMemo(() => {
     const icons = ['description', 'park', 'pool', 'campaign', 'notifications']
     return state.avisos.slice(0, 2).map((a, i) => ({
@@ -50,6 +85,7 @@ export default function AdminDashboard() {
     }))
   }, [state.avisos])
 
+  /** Handles approve/reject for approval queue items with toast feedback */
   const handleApproval = (id: string, action: 'approve' | 'reject') => {
     const item = approvals.find(a => a.id === id)
     if (!item) return
@@ -60,37 +96,63 @@ export default function AdminDashboard() {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== toastId)), 3000)
   }
 
+  /** Adds a new staff member from the modal form */
   const handleAddStaff = () => {
-    if (!staffName.trim() || !staffRole.trim()) return
+    if (!staffName.trim()) return
     dispatch({
       type: 'ADD_STAFF',
       payload: {
         id: `staff-${Date.now()}`,
         name: staffName,
         role: staffRole,
-        location: staffLocation || 'General',
         shiftStart: staffShiftStart,
         shiftEnd: staffShiftEnd,
       }
     })
     setStaffName('')
-    setStaffRole('')
-    setStaffLocation('')
+    setStaffRole('Guardia')
     setStaffShiftStart('08:00')
     setStaffShiftEnd('17:00')
   }
 
+  /** Opens the in-app confirm dialog for staff deletion */
   const handleDeleteStaff = (id: string) => {
-    if (window.confirm('¿Seguro que desea eliminar a este miembro del staff?')) {
-      dispatch({ type: 'DELETE_STAFF', payload: id })
+    setConfirmDeleteStaffId(id)
+  }
+
+  /** Executes staff deletion after user confirms */
+  const confirmDeleteStaff = () => {
+    if (confirmDeleteStaffId) {
+      dispatch({ type: 'DELETE_STAFF', payload: confirmDeleteStaffId })
     }
+  }
+
+  /** Creates a new aviso from the inline dashboard modal */
+  const handleAddAviso = () => {
+    if (!avisoTitle.trim()) return
+    dispatch({
+      type: 'ADD_AVISO',
+      payload: {
+        id: `av-${Date.now()}`,
+        title: avisoTitle,
+        description: avisoDesc || undefined,
+        attachment: '',
+        date: new Date().toISOString().split('T')[0],
+      }
+    })
+    setAvisoTitle('')
+    setAvisoDesc('')
+    setShowAvisoModal(false)
+    const toastId = `toast-${Date.now()}`
+    setToasts(prev => [...prev, { id: toastId, message: `Aviso "${avisoTitle}" publicado`, type: 'approve' }])
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== toastId)), 3000)
   }
 
   const staff = state.staff || []
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Toasts */}
+      {/* ── Toast Notifications ── */}
       <div className="fixed top-24 right-10 z-[200] space-y-3">
         {toasts.map(t => (
           <div
@@ -109,32 +171,33 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Page header */}
+      {/* ── Page Header ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
         <div>
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
             The Control Tower
           </span>
           <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
-            Lote Alemania
+            {bc.buildingName}
           </h1>
           <p className="text-slate-500 font-medium mt-1">
-            Cosmopol HU Lifestyle — Gestión Operativa Global
+            {bc.buildingAddress} — Gestión Operativa Global
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Link
-            to="/avisos"
+          <button
+            onClick={() => setShowAvisoModal(true)}
             className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
           >
             <span className="material-symbols-outlined text-lg font-bold">add</span>
             <span>Nuevo Aviso</span>
-          </Link>
+          </button>
         </div>
       </header>
 
-      {/* Health gauge */}
+      {/* ── Health Gauge + KPI Cards ── */}
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+        {/* Composite health gauge */}
         <div className="xl:col-span-4 bg-white border border-slate-200 rounded-3xl p-8 hero-pattern relative overflow-hidden shadow-sm flex flex-col justify-center items-center text-center">
           <div className="relative w-48 h-48 mb-6">
             <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
@@ -161,6 +224,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* KPI cards */}
         <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link to="/pagos" className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-emerald-200 transition-colors">
             <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
@@ -203,15 +267,15 @@ export default function AdminDashboard() {
               <div className="flex items-baseline space-x-2">
                 <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{occupancyPct}%</span>
               </div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">{totalResidents} de 126 residencias</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">{totalResidents} de {totalUnits} residencias</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Content grid */}
+      {/* ── Two-Column Content Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Left column */}
+        {/* Left column: Staff + Notices */}
         <div className="space-y-10">
           {/* Staff on duty */}
           <section className="space-y-6">
@@ -234,16 +298,12 @@ export default function AdminDashboard() {
               {staff.map((person) => (
                 <div key={person.id} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer">
                   <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
-                    {person.name.split(' ').map(n => n[0]).join('')}
+                    <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role as StaffRole] || 'person'}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-slate-900 truncate tracking-tight">{person.name}</p>
-                    <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
-                      {person.role} — {person.location}
-                    </p>
-                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5">
-                      {person.shiftStart} – {person.shiftEnd}
-                    </p>
+                    <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">{person.role}</p>
+                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{person.shiftStart} – {person.shiftEnd}</p>
                   </div>
                   <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" title="Online" />
                 </div>
@@ -251,7 +311,7 @@ export default function AdminDashboard() {
             </div>
           </section>
 
-          {/* Notices */}
+          {/* Centro de Avisos */}
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Centro de Avisos</h3>
@@ -278,7 +338,7 @@ export default function AdminDashboard() {
           </section>
         </div>
 
-        {/* Right column */}
+        {/* Right column: Alerts + Approvals + Assembly */}
         <div className="space-y-10">
           {/* Critical alerts */}
           <section className="space-y-6">
@@ -337,18 +397,10 @@ export default function AdminDashboard() {
                     <p className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tight">{item.date}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleApproval(item.id, 'approve')}
-                      className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all flex items-center justify-center"
-                      title="Aprobar"
-                    >
+                    <button onClick={() => handleApproval(item.id, 'approve')} className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all flex items-center justify-center" title="Aprobar">
                       <span className="material-symbols-outlined font-bold">check</span>
                     </button>
-                    <button
-                      onClick={() => handleApproval(item.id, 'reject')}
-                      className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center"
-                      title="Rechazar"
-                    >
+                    <button onClick={() => handleApproval(item.id, 'reject')} className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center" title="Rechazar">
                       <span className="material-symbols-outlined">close</span>
                     </button>
                   </div>
@@ -357,7 +409,7 @@ export default function AdminDashboard() {
             </div>
           </section>
 
-          {/* Assembly */}
+          {/* Assembly card */}
           <section className="bg-slate-900 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-slate-200 text-white">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <span className="material-symbols-outlined text-[8rem]">event</span>
@@ -377,10 +429,7 @@ export default function AdminDashboard() {
                   <div className="h-full bg-primary-fixed rounded-full shadow-[0_0_12px_rgba(216,227,251,0.5)]" style={{ width: '45%' }}></div>
                 </div>
               </div>
-              <Link
-                to="/votaciones"
-                className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg block text-center"
-              >
+              <Link to="/votaciones" className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg block text-center">
                 Gestionar Asamblea
               </Link>
             </div>
@@ -388,7 +437,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Staff Management Modal */}
+      {/* ── Staff Management Modal ── */}
       <Modal open={showStaffModal} onClose={() => setShowStaffModal(false)} title="Gestión de Personal">
         <div className="space-y-6">
           {/* Add staff form */}
@@ -397,48 +446,33 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
                 <input
-                  type="text"
-                  value={staffName}
-                  onChange={(e) => setStaffName(e.target.value)}
+                  type="text" value={staffName} onChange={(e) => setStaffName(e.target.value)}
                   className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
                   placeholder="Nombre completo"
                 />
               </div>
-              <input
-                type="text"
-                value={staffRole}
-                onChange={(e) => setStaffRole(e.target.value)}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                placeholder="Cargo/Rol"
-              />
-              <input
-                type="text"
-                value={staffLocation}
-                onChange={(e) => setStaffLocation(e.target.value)}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                placeholder="Ubicación/Puesto"
-              />
+              <div className="col-span-2">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Categoría</label>
+                <select value={staffRole} onChange={(e) => setStaffRole(e.target.value as StaffRole)}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                >
+                  {STAFF_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
               <div className="space-y-1">
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Entrada</label>
-                <input
-                  type="time"
-                  value={staffShiftStart}
-                  onChange={(e) => setStaffShiftStart(e.target.value)}
+                <input type="time" value={staffShiftStart} onChange={(e) => setStaffShiftStart(e.target.value)}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
                 />
               </div>
               <div className="space-y-1">
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Salida</label>
-                <input
-                  type="time"
-                  value={staffShiftEnd}
-                  onChange={(e) => setStaffShiftEnd(e.target.value)}
+                <input type="time" value={staffShiftEnd} onChange={(e) => setStaffShiftEnd(e.target.value)}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
                 />
               </div>
             </div>
-            <button
-              onClick={handleAddStaff}
+            <button onClick={handleAddStaff}
               className="w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
             >
               Agregar al Staff
@@ -454,18 +488,17 @@ export default function AdminDashboard() {
             {staff.map((s) => (
               <div key={s.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-100">
-                    {s.name.split(' ').map(n => n[0]).join('')}
+                  <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-500 border border-slate-100">
+                    <span className="material-symbols-outlined text-lg">{ROLE_ICONS[s.role as StaffRole] || 'person'}</span>
                   </div>
                   <div>
                     <p className="text-sm font-bold text-slate-900">{s.name}</p>
                     <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
-                      {s.role} • {s.location} • {s.shiftStart}–{s.shiftEnd}
+                      {s.role} • {s.shiftStart}–{s.shiftEnd}
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleDeleteStaff(s.id)}
+                <button onClick={() => handleDeleteStaff(s.id)}
                   className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
                 >
                   <span className="material-symbols-outlined text-[18px]">delete</span>
@@ -475,6 +508,43 @@ export default function AdminDashboard() {
           </div>
         </div>
       </Modal>
+
+      {/* ── Inline Aviso Creation Modal ── */}
+      <Modal open={showAvisoModal} onClose={() => setShowAvisoModal(false)} title="Publicar Nuevo Aviso">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Título *</label>
+            <input type="text" value={avisoTitle} onChange={(e) => setAvisoTitle(e.target.value)}
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+              placeholder="Ej: Mantenimiento de elevadores"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción</label>
+            <textarea value={avisoDesc} onChange={(e) => setAvisoDesc(e.target.value)} rows={3}
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm resize-none"
+              placeholder="Descripción opcional del aviso..."
+            />
+          </div>
+          <button onClick={handleAddAviso}
+            className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
+          >
+            Publicar Aviso
+          </button>
+        </div>
+      </Modal>
+
+      {/* ── In-App Confirm Dialog for Staff Deletion ── */}
+      <ConfirmDialog
+        open={!!confirmDeleteStaffId}
+        onClose={() => setConfirmDeleteStaffId(null)}
+        onConfirm={confirmDeleteStaff}
+        title="Eliminar Miembro del Staff"
+        confirmLabel="Eliminar"
+        variant="danger"
+      >
+        ¿Seguro que desea eliminar a este miembro del staff? Esta acción no se puede deshacer.
+      </ConfirmDialog>
     </div>
   )
 }

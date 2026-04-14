@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { useStore } from '../data/store'
-import StatusBadge from '../components/StatusBadge'
-import Modal from '../components/Modal'
-import { type Votacion } from '../data/seed'
+import { useAuth } from '../../core/auth/AuthContext'
+import { useStore } from '../../core/store/store'
+import StatusBadge from '../../core/components/StatusBadge'
+import Modal from '../../core/components/Modal'
+import { type Votacion } from '../../core/store/seed'
 
 export default function Votaciones() {
   const { role, user, apartment } = useAuth()

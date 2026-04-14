@@ -1,55 +1,102 @@
-// ── Seed Data ────────────────────────────────────────────────────────
+/**
+ * Seed Data — Type definitions and initial demo data.
+ *
+ * This file serves two purposes:
+ *   1. Defines all TypeScript interfaces used across the app
+ *   2. Provides initial seed data for a fresh application state
+ *
+ * To reset the app to these values, use the "Restablecer Sistema"
+ * button in the admin Configuration page.
+ */
 
+// ─── Notification ────────────────────────────────────────────────────
+
+/** A notification sent to a specific user (admin or resident) */
 export interface Notificacion {
   id: string
+  /** Target user ID — "admin" for admin, or a resident name */
   userId: string
   title: string
   message: string
+  /** ISO date string (YYYY-MM-DD) */
   date: string
   read: boolean
+  /** Optional deep-link path (e.g. "/amenidades") for click navigation */
   actionLink?: string
 }
 
+// ─── Announcement ────────────────────────────────────────────────────
+
+/** A community announcement posted by the admin */
 export interface Aviso {
   id: string
   title: string
+  /** Optional rich text description */
   description?: string
+  /** File name of the attached document */
   attachment: string
+  /** Optional: ISO date when the announcement becomes visible */
   startDate?: string
+  /** Optional: ISO date when the announcement expires */
   endDate?: string | null
+  /** ISO date when the announcement was created */
   date: string
 }
 
+// ─── Payment ─────────────────────────────────────────────────────────
+
+/** A monthly condo fee payment record */
 export interface Pago {
   id: string
+  /** Apartment identifier (e.g. "A101") */
   apartment: string
+  /** Name of the responsible resident */
   resident: string
+  /** Human-readable month (e.g. "abril de 2026") */
   month: string
+  /** Payment amount in MXN */
   amount: number
   status: 'Pagado' | 'Pendiente'
+  /** ISO date of payment, null if unpaid */
   paymentDate: string | null
 }
 
+// ─── Package ─────────────────────────────────────────────────────────
+
+/** A package received at the building for a resident */
 export interface Paquete {
   id: string
+  /** Name of the package recipient */
   recipient: string
   apartment: string
+  /** ISO date when the package was received */
   receivedDate: string
+  /** Optional: auto-expire after N days */
   expirationDays?: number
+  /** ISO date when it was handed to the resident */
   deliveredDate?: string | null
   status: 'Entregado' | 'Pendiente'
+  /** Physical location (e.g. "Caseta", "Lobby") */
   location: string
 }
 
+// ─── Amenity Reservation ─────────────────────────────────────────────
+
+/** A reservation for a shared amenity (grill, pool, etc.) */
 export interface Reservacion {
   id: string
+  /** ISO date of the reservation */
   date: string
+  /** Name of the amenity + time slot */
   grill: string
   resident: string
   apartment: string
   status: 'Reservado' | 'Por confirmar' | 'Cancelado'
 }
 
+// ─── Voting ──────────────────────────────────────────────────────────
+
+/** A single option within a community vote */
 export interface VoteOption {
   label: string
   votes: number
@@ -57,60 +104,90 @@ export interface VoteOption {
   emoji?: string
 }
 
+/** A record of a resident's vote */
 export interface Voter {
   name: string
   apartment: string
+  /** Which option they selected */
   optionLabel: string
+  /** ISO timestamp of when they voted */
   votedAt: string
 }
 
+/** A community governance poll */
 export interface Votacion {
   id: string
   title: string
   description: string
+  /** ISO date — voting opens */
   periodStart: string
+  /** ISO date — voting closes */
   periodEnd: string
   status: 'Activa' | 'Cerrada'
   options: VoteOption[]
+  /** Audit trail: who voted and when */
   voters: Voter[]
 }
 
+// ─── Resident ────────────────────────────────────────────────────────
+
+/** A registered resident in the building */
 export interface Resident {
   id: string
   name: string
+  /** Apartment identifier (e.g. "A101") */
   apartment: string
+  /** Tower/section identifier (e.g. "A", "B") */
   tower: string
   email: string
 }
 
+// ─── Staff ───────────────────────────────────────────────────────────
+
+/** Allowed staff role categories */
 export type StaffRole = 'Jardinero' | 'Limpieza' | 'Guardia'
 
+/** A building staff member */
 export interface StaffMember {
   id: string
   name: string
   role: StaffRole
+  /** Shift start time (HH:mm) */
   shiftStart: string
+  /** Shift end time (HH:mm) */
   shiftEnd: string
 }
 
+// ─── Amenity ─────────────────────────────────────────────────────────
+
+/** A bookable shared amenity */
 export interface Amenity {
   id: string
   name: string
 }
 
+// ─── Building Configuration ──────────────────────────────────────────
+
+/** Global building settings managed by the admin */
 export interface BuildingConfig {
+  /** Property type: "towers" for high-rise, "houses" for low-rise */
   type: 'towers' | 'houses'
+  /** List of tower/section identifiers (e.g. ["A", "B"]) */
   towers: string[]
   buildingName: string
   buildingAddress: string
   managementCompany: string
+  /** Total number of residential units */
   totalUnits: number
   adminName: string
   adminEmail: string
   adminPhone: string
 }
 
-// ── Building Config ──
+// ═══════════════════════════════════════════════════════════════════════
+// SEED DATA — Initial state for a fresh installation
+// ═══════════════════════════════════════════════════════════════════════
+
 export const seedBuildingConfig: BuildingConfig = {
   type: 'towers',
   towers: ['A', 'B'],
@@ -123,14 +200,12 @@ export const seedBuildingConfig: BuildingConfig = {
   adminPhone: '+52 55 1234 5678',
 }
 
-// ── Amenities ──
 export const seedAmenities: Amenity[] = [
   { id: 'amen-1', name: 'Asador 1' },
   { id: 'amen-2', name: 'Asador 2' },
   { id: 'amen-3', name: 'Asador 3' },
 ]
 
-// ── Residents ──
 export const seedResidents: Resident[] = [
   { id: 'res-1', name: 'Sofía Torres', apartment: 'A101', tower: 'A', email: 'sofia@property.com' },
   { id: 'res-2', name: 'Luis Díaz', apartment: 'A102', tower: 'A', email: 'luis@property.com' },
@@ -148,14 +223,12 @@ export const seedResidents: Resident[] = [
 
 export const seedNotificaciones: Notificacion[] = []
 
-// ── Staff ──
 export const seedStaff: StaffMember[] = [
   { id: 'staff-1', name: 'Carlos Mendoza', role: 'Guardia', shiftStart: '07:00', shiftEnd: '19:00' },
   { id: 'staff-2', name: 'Juan Pérez', role: 'Jardinero', shiftStart: '08:00', shiftEnd: '17:00' },
   { id: 'staff-3', name: 'María López', role: 'Limpieza', shiftStart: '06:00', shiftEnd: '14:00' },
 ]
 
-// ── Avisos ──
 export const seedAvisos: Aviso[] = [
   { id: 'av-1', title: 'Mantenimiento de elevadores', attachment: 'mantenimiento.pdf', date: '2025-04-15' },
   { id: 'av-2', title: 'Cambio de administración', attachment: 'cambio-admin.pdf', date: '2025-04-10' },
@@ -164,7 +237,6 @@ export const seedAvisos: Aviso[] = [
   { id: 'av-5', title: 'Nueva Normativa Basura', attachment: 'normativa-basura.pdf', date: '2025-03-28' },
 ]
 
-// ── Pagos ──
 export const seedPagos: Pago[] = [
   { id: 'pg-1', apartment: 'A101', resident: 'Sofía Torres', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-13' },
   { id: 'pg-2', apartment: 'A102', resident: 'Luis Díaz', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-20' },
@@ -183,7 +255,6 @@ export const seedPagos: Pago[] = [
   { id: 'pg-15', apartment: 'B101', resident: 'Laura Ramírez', month: 'marzo de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-03-15' },
 ]
 
-// ── Paquetería ──
 export const seedPaquetes: Paquete[] = [
   { id: 'pq-1', recipient: 'Luis Martínez', apartment: 'A101', receivedDate: '2026-04-11', status: 'Entregado', location: 'N/A' },
   { id: 'pq-2', recipient: 'Carlos Díaz', apartment: 'A102', receivedDate: '2026-04-11', status: 'Entregado', location: 'N/A' },
@@ -195,7 +266,6 @@ export const seedPaquetes: Paquete[] = [
   { id: 'pq-8', recipient: 'Juan Antonio', apartment: 'A201', receivedDate: '2026-04-13', status: 'Pendiente', location: 'Lobby' },
 ]
 
-// ── Reservaciones ──
 export const seedReservaciones: Reservacion[] = [
   { id: 'rsv-1', date: '2025-04-20', grill: 'Asador 1', resident: 'Juan Pérez', apartment: 'A101', status: 'Reservado' },
   { id: 'rsv-2', date: '2025-04-21', grill: 'Asador 1', resident: 'María López', apartment: 'B203', status: 'Reservado' },
@@ -204,7 +274,6 @@ export const seedReservaciones: Reservacion[] = [
   { id: 'rsv-5', date: '2025-04-25', grill: 'Asador 3', resident: 'Juan Antonio', apartment: 'A201', status: 'Reservado' },
 ]
 
-// ── Votaciones ──
 export const seedVotaciones: Votacion[] = [
   {
     id: 'vot-1',
