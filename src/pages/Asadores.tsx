@@ -61,7 +61,8 @@ export default function Asadores() {
         title: 'Nueva Reservación',
         message: `${user} (${apartment}) reservó ${formGrill} el ${formDate}.`,
         date: new Date().toLocaleDateString(),
-        read: false
+        read: false,
+        actionLink: '/asadores',
       }
     })
 

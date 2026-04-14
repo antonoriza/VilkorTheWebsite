@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useStore } from '../data/store'
+import Modal from '../components/Modal'
 
 interface ApprovalItem {
   id: string
@@ -10,12 +11,6 @@ interface ApprovalItem {
   icon: string
 }
 
-const initialStaff = [
-  { name: 'Carlos Mendoza', role: 'Seguridad', location: 'Puerta Principal', status: 'online' },
-  { name: 'Juan Pérez', role: 'Mantenimiento', location: 'Eléctrico', status: 'online' },
-  { name: 'María López', role: 'Limpieza', location: 'Torre A', status: 'online' },
-]
-
 const initialApprovals: ApprovalItem[] = [
   { id: 'appr-1', type: 'Reserva', detail: 'Salón Eventos — A304', date: '15 Apr', icon: 'event' },
   { id: 'appr-2', type: 'Pago', detail: 'Comprobante — B102', date: '14 Apr', icon: 'receipt_long' },
@@ -23,20 +18,26 @@ const initialApprovals: ApprovalItem[] = [
 ]
 
 export default function AdminDashboard() {
-  const { state } = useStore()
+  const { state, dispatch } = useStore()
   const [approvals, setApprovals] = useState<ApprovalItem[]>(initialApprovals)
   const [toasts, setToasts] = useState<{ id: string; message: string; type: 'approve' | 'reject' }[]>([])
 
-  // KPI calculations from real store data
+  // Staff management modal
+  const [showStaffModal, setShowStaffModal] = useState(false)
+  const [staffName, setStaffName] = useState('')
+  const [staffRole, setStaffRole] = useState('')
+  const [staffLocation, setStaffLocation] = useState('')
+  const [staffShiftStart, setStaffShiftStart] = useState('08:00')
+  const [staffShiftEnd, setStaffShiftEnd] = useState('17:00')
+
+  // KPI calculations
   const totalPagos = state.pagos.length
   const paidPagos = state.pagos.filter(p => p.status === 'Pagado').length
   const recaudacionPct = totalPagos > 0 ? Math.round((paidPagos / totalPagos) * 100) : 0
 
   const pendingPaquetes = state.paquetes.filter(p => p.status === 'Pendiente').length
-  const totalResidents = 12 // from seedResidents
-  const occupancyPct = Math.round((totalResidents / 126) * 100) // 126 total units
-
-  // Building health from combined metrics
+  const totalResidents = state.residents?.length || 12
+  const occupancyPct = Math.round((totalResidents / 126) * 100)
   const healthPct = Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
 
   const recentNotices = useMemo(() => {
@@ -58,6 +59,34 @@ export default function AdminDashboard() {
     setToasts(prev => [...prev, { id: toastId, message: msg, type: action }])
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== toastId)), 3000)
   }
+
+  const handleAddStaff = () => {
+    if (!staffName.trim() || !staffRole.trim()) return
+    dispatch({
+      type: 'ADD_STAFF',
+      payload: {
+        id: `staff-${Date.now()}`,
+        name: staffName,
+        role: staffRole,
+        location: staffLocation || 'General',
+        shiftStart: staffShiftStart,
+        shiftEnd: staffShiftEnd,
+      }
+    })
+    setStaffName('')
+    setStaffRole('')
+    setStaffLocation('')
+    setStaffShiftStart('08:00')
+    setStaffShiftEnd('17:00')
+  }
+
+  const handleDeleteStaff = (id: string) => {
+    if (window.confirm('¿Seguro que desea eliminar a este miembro del staff?')) {
+      dispatch({ type: 'DELETE_STAFF', payload: id })
+    }
+  }
+
+  const staff = state.staff || []
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -104,23 +133,13 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* Health gauge — Main metrics */}
+      {/* Health gauge */}
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         <div className="xl:col-span-4 bg-white border border-slate-200 rounded-3xl p-8 hero-pattern relative overflow-hidden shadow-sm flex flex-col justify-center items-center text-center">
           <div className="relative w-48 h-48 mb-6">
             <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-              <circle
-                cx="60" cy="60" r="50"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="10"
-                className="text-slate-100"
-              />
-              <circle
-                cx="60" cy="60" r="50"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="10"
+              <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" strokeWidth="10" className="text-slate-100" />
+              <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" strokeWidth="10"
                 strokeDasharray="314.159"
                 strokeDashoffset={314.159 - (314.159 * healthPct / 100)}
                 strokeLinecap="round"
@@ -137,7 +156,7 @@ export default function AdminDashboard() {
           <div className="relative z-10">
             <h3 className="text-xl font-headline font-extrabold text-slate-900 mb-2">Salud del Edificio</h3>
             <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-[240px]">
-              Ecosistema operativo estable. {state.paquetes.filter(p => p.status === 'Pendiente').length} paquetes pendientes de entrega.
+              Ecosistema operativo estable. {pendingPaquetes} paquetes pendientes de entrega.
             </p>
           </div>
         </div>
@@ -199,15 +218,21 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Staff en Turno</h3>
               <button
-                title="Próximamente: Gestión completa de personal"
+                onClick={() => setShowStaffModal(true)}
                 className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors"
               >
                 Gestionar <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
               </button>
             </div>
             <div className="grid gap-4">
-              {initialStaff.map((person) => (
-                <div key={person.name} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer">
+              {staff.length === 0 && (
+                <div className="p-8 text-center text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
+                  <span className="material-symbols-outlined text-3xl mb-2 block">person_off</span>
+                  No hay personal registrado
+                </div>
+              )}
+              {staff.map((person) => (
+                <div key={person.id} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer">
                   <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
                     {person.name.split(' ').map(n => n[0]).join('')}
                   </div>
@@ -215,6 +240,9 @@ export default function AdminDashboard() {
                     <p className="text-sm font-bold text-slate-900 truncate tracking-tight">{person.name}</p>
                     <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
                       {person.role} — {person.location}
+                    </p>
+                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5">
+                      {person.shiftStart} – {person.shiftEnd}
                     </p>
                   </div>
                   <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" title="Online" />
@@ -329,7 +357,7 @@ export default function AdminDashboard() {
             </div>
           </section>
 
-          {/* Assembly info */}
+          {/* Assembly */}
           <section className="bg-slate-900 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-slate-200 text-white">
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <span className="material-symbols-outlined text-[8rem]">event</span>
@@ -340,7 +368,6 @@ export default function AdminDashboard() {
                 <h3 className="text-2xl font-headline font-black tracking-tight">Asamblea Ordinaria</h3>
                 <p className="text-white/70 font-medium mt-1 italic">15 de Julio, 2025 • 19:00 hrs</p>
               </div>
-              
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/50">
                   <span>Quórum Confirmado</span>
@@ -350,7 +377,6 @@ export default function AdminDashboard() {
                   <div className="h-full bg-primary-fixed rounded-full shadow-[0_0_12px_rgba(216,227,251,0.5)]" style={{ width: '45%' }}></div>
                 </div>
               </div>
-
               <Link
                 to="/votaciones"
                 className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg block text-center"
@@ -361,6 +387,94 @@ export default function AdminDashboard() {
           </section>
         </div>
       </div>
+
+      {/* Staff Management Modal */}
+      <Modal open={showStaffModal} onClose={() => setShowStaffModal(false)} title="Gestión de Personal">
+        <div className="space-y-6">
+          {/* Add staff form */}
+          <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agregar Personal</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <input
+                  type="text"
+                  value={staffName}
+                  onChange={(e) => setStaffName(e.target.value)}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                  placeholder="Nombre completo"
+                />
+              </div>
+              <input
+                type="text"
+                value={staffRole}
+                onChange={(e) => setStaffRole(e.target.value)}
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                placeholder="Cargo/Rol"
+              />
+              <input
+                type="text"
+                value={staffLocation}
+                onChange={(e) => setStaffLocation(e.target.value)}
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                placeholder="Ubicación/Puesto"
+              />
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Entrada</label>
+                <input
+                  type="time"
+                  value={staffShiftStart}
+                  onChange={(e) => setStaffShiftStart(e.target.value)}
+                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Salida</label>
+                <input
+                  type="time"
+                  value={staffShiftEnd}
+                  onChange={(e) => setStaffShiftEnd(e.target.value)}
+                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                />
+              </div>
+            </div>
+            <button
+              onClick={handleAddStaff}
+              className="w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
+            >
+              Agregar al Staff
+            </button>
+          </div>
+
+          {/* Current staff list */}
+          <div className="space-y-3">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Personal Activo ({staff.length})</p>
+            {staff.length === 0 && (
+              <p className="text-sm text-slate-400 text-center py-4">No hay personal registrado</p>
+            )}
+            {staff.map((s) => (
+              <div key={s.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-100">
+                    {s.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900">{s.name}</p>
+                    <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                      {s.role} • {s.location} • {s.shiftStart}–{s.shiftEnd}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleDeleteStaff(s.id)}
+                  className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                >
+                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

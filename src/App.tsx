@@ -8,6 +8,8 @@ import Pagos from './pages/Pagos'
 import Paqueteria from './pages/Paqueteria'
 import Asadores from './pages/Asadores'
 import Votaciones from './pages/Votaciones'
+import Usuarios from './pages/Usuarios'
+import Configuracion from './pages/Configuracion'
 import DashboardLayout from './layouts/DashboardLayout'
 
 /** Redirects to login if not authenticated, or to the correct home if wrong role */
@@ -33,7 +35,14 @@ function App() {
         <Route path="/admin" element={
           <RequireRole allowed={['admin']}><AdminDashboard /></RequireRole>
         } />
-        {/* Shared modules — both roles can access */}
+        {/* Admin-only management */}
+        <Route path="/usuarios" element={
+          <RequireRole allowed={['admin']}><Usuarios /></RequireRole>
+        } />
+        <Route path="/configuracion" element={
+          <RequireRole allowed={['admin']}><Configuracion /></RequireRole>
+        } />
+        {/* Shared modules */}
         <Route path="/avisos" element={<Avisos />} />
         <Route path="/pagos" element={<Pagos />} />
         <Route path="/paqueteria" element={<Paqueteria />} />

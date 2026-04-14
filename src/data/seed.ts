@@ -3,11 +3,12 @@
 
 export interface Notificacion {
   id: string
-  userId: string // 'admin' or an email or name for resident
+  userId: string // 'admin' or resident name
   title: string
   message: string
   date: string
   read: boolean
+  actionLink?: string // optional route to navigate on click
 }
 
 export interface Aviso {
@@ -57,6 +58,13 @@ export interface VoteOption {
   emoji?: string
 }
 
+export interface Voter {
+  name: string
+  apartment: string
+  optionLabel: string
+  votedAt: string
+}
+
 export interface Votacion {
   id: string
   title: string
@@ -65,32 +73,49 @@ export interface Votacion {
   periodEnd: string
   status: 'Activa' | 'Cerrada'
   options: VoteOption[]
-  voters: { name: string; apartment: string }[]
+  voters: Voter[]
 }
 
 export interface Resident {
+  id: string
   name: string
   apartment: string
   email: string
 }
 
+export interface StaffMember {
+  id: string
+  name: string
+  role: string
+  location: string
+  shiftStart: string // HH:mm
+  shiftEnd: string   // HH:mm
+}
+
 // ── Residents ──
 export const seedResidents: Resident[] = [
-  { name: 'Sofía Torres', apartment: 'A101', email: 'sofia@property.com' },
-  { name: 'Luis Díaz', apartment: 'A102', email: 'luis@property.com' },
-  { name: 'Luis Martínez', apartment: 'A103', email: 'martinez@property.com' },
-  { name: 'Pedro Sánchez', apartment: 'A104', email: 'pedro@property.com' },
-  { name: 'Ana López', apartment: 'A201', email: 'ana@property.com' },
-  { name: 'María Ramírez', apartment: 'A202', email: 'maria@property.com' },
-  { name: 'Carlos Gómez', apartment: 'A203', email: 'carlos@property.com' },
-  { name: 'Juan Pérez', apartment: 'A204', email: 'juan@property.com' },
-  { name: 'Laura Ramírez', apartment: 'B101', email: 'laura@property.com' },
-  { name: 'Roberto Mendez', apartment: 'B102', email: 'roberto@property.com' },
-  { name: 'María López', apartment: 'B203', email: 'mlopez@property.com' },
-  { name: 'Gabriela Sánchez', apartment: 'B204', email: 'gabriela@property.com' },
+  { id: 'res-1', name: 'Sofía Torres', apartment: 'A101', email: 'sofia@property.com' },
+  { id: 'res-2', name: 'Luis Díaz', apartment: 'A102', email: 'luis@property.com' },
+  { id: 'res-3', name: 'Luis Martínez', apartment: 'A103', email: 'martinez@property.com' },
+  { id: 'res-4', name: 'Pedro Sánchez', apartment: 'A104', email: 'pedro@property.com' },
+  { id: 'res-5', name: 'Ana López', apartment: 'A201', email: 'ana@property.com' },
+  { id: 'res-6', name: 'María Ramírez', apartment: 'A202', email: 'maria@property.com' },
+  { id: 'res-7', name: 'Carlos Gómez', apartment: 'A203', email: 'carlos@property.com' },
+  { id: 'res-8', name: 'Juan Pérez', apartment: 'A204', email: 'juan@property.com' },
+  { id: 'res-9', name: 'Laura Ramírez', apartment: 'B101', email: 'laura@property.com' },
+  { id: 'res-10', name: 'Roberto Mendez', apartment: 'B102', email: 'roberto@property.com' },
+  { id: 'res-11', name: 'María López', apartment: 'B203', email: 'mlopez@property.com' },
+  { id: 'res-12', name: 'Gabriela Sánchez', apartment: 'B204', email: 'gabriela@property.com' },
 ]
 
 export const seedNotificaciones: Notificacion[] = []
+
+// ── Staff ──
+export const seedStaff: StaffMember[] = [
+  { id: 'staff-1', name: 'Carlos Mendoza', role: 'Seguridad', location: 'Puerta Principal', shiftStart: '07:00', shiftEnd: '19:00' },
+  { id: 'staff-2', name: 'Juan Pérez', role: 'Mantenimiento', location: 'Eléctrico', shiftStart: '08:00', shiftEnd: '17:00' },
+  { id: 'staff-3', name: 'María López', role: 'Limpieza', location: 'Torre A', shiftStart: '06:00', shiftEnd: '14:00' },
+]
 
 // ── Avisos ──
 export const seedAvisos: Aviso[] = [

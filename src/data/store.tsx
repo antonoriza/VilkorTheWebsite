@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
 import {
-  seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones, seedNotificaciones,
-  type Aviso, type Pago, type Paquete, type Reservacion, type Votacion, type Notificacion
+  seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones, seedNotificaciones, seedResidents, seedStaff,
+  type Aviso, type Pago, type Paquete, type Reservacion, type Votacion, type Notificacion, type Resident, type StaffMember
 } from './seed'
 
 // ── State shape ──
@@ -12,6 +12,8 @@ export interface StoreState {
   paquetes: Paquete[]
   reservaciones: Reservacion[]
   votaciones: Votacion[]
+  residents: Resident[]
+  staff: StaffMember[]
 }
 
 // ── Actions ──
@@ -32,7 +34,11 @@ type Action =
   | { type: 'DELETE_RESERVACION'; payload: string }
   | { type: 'ADD_VOTACION'; payload: Votacion }
   | { type: 'DELETE_VOTACION'; payload: string }
-  | { type: 'VOTE'; payload: { votacionId: string; optionLabel: string; voter: { name: string, apartment: string } } }
+  | { type: 'VOTE'; payload: { votacionId: string; optionLabel: string; voter: { name: string; apartment: string; optionLabel: string; votedAt: string } } }
+  | { type: 'ADD_RESIDENT'; payload: Resident }
+  | { type: 'DELETE_RESIDENT'; payload: string }
+  | { type: 'ADD_STAFF'; payload: StaffMember }
+  | { type: 'DELETE_STAFF'; payload: string }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'RESET' }
 
@@ -43,13 +49,21 @@ function loadInitialState(): StoreState {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
-      // Provide defaults for old data
+      // Provide defaults for old/missing slices
       if (!parsed.notificaciones) parsed.notificaciones = []
-      // Fix old voters array
-      parsed.votaciones = parsed.votaciones.map((v: any) => ({
-        ...v,
-        voters: v.voters.map((vot: any) => typeof vot === 'string' ? { name: vot, apartment: 'N/A' } : vot)
-      }))
+      if (!parsed.residents) parsed.residents = seedResidents
+      if (!parsed.staff) parsed.staff = seedStaff
+      // Migrate old voters format (string[] or {name,apartment}[] without optionLabel)
+      if (parsed.votaciones) {
+        parsed.votaciones = parsed.votaciones.map((v: any) => ({
+          ...v,
+          voters: (v.voters || []).map((vot: any) => {
+            if (typeof vot === 'string') return { name: vot, apartment: 'N/A', optionLabel: 'N/A', votedAt: '' }
+            if (!vot.optionLabel) return { ...vot, optionLabel: 'N/A', votedAt: vot.votedAt || '' }
+            return vot
+          })
+        }))
+      }
       return parsed
     }
   } catch { /* use seed */ }
@@ -60,6 +74,8 @@ function loadInitialState(): StoreState {
     paquetes: seedPaquetes,
     reservaciones: seedReservaciones,
     votaciones: seedVotaciones,
+    residents: seedResidents,
+    staff: seedStaff,
   }
 }
 
@@ -108,22 +124,33 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'DELETE_VOTACION':
       return { ...state, votaciones: state.votaciones.filter(v => v.id !== action.payload) }
     case 'VOTE': {
-      const { votacionId, optionLabel, voter } = action.payload
+      const { votacionId, voter } = action.payload
       return {
         ...state,
         votaciones: state.votaciones.map(v => {
           if (v.id !== votacionId) return v
-          if (v.voters.some(vot => vot.name === voter.name)) return v // already voted
+          // 1 vote per apartment
+          if (v.voters.some(vot => vot.apartment === voter.apartment)) return v
           return {
             ...v,
             voters: [...v.voters, voter],
             options: v.options.map(o =>
-              o.label === optionLabel ? { ...o, votes: o.votes + 1 } : o
+              o.label === voter.optionLabel ? { ...o, votes: o.votes + 1 } : o
             ),
           }
         }),
       }
     }
+
+    case 'ADD_RESIDENT':
+      return { ...state, residents: [...state.residents, action.payload] }
+    case 'DELETE_RESIDENT':
+      return { ...state, residents: state.residents.filter(r => r.id !== action.payload) }
+
+    case 'ADD_STAFF':
+      return { ...state, staff: [...state.staff, action.payload] }
+    case 'DELETE_STAFF':
+      return { ...state, staff: state.staff.filter(s => s.id !== action.payload) }
     
     case 'CLEANUP_EXPIRED': {
       const now = new Date(action.payload.nowIso)
@@ -132,9 +159,8 @@ function reducer(state: StoreState, action: Action): StoreState {
       const pqs = state.paquetes.filter(p => {
         if (p.status === 'Entregado' && p.deliveredDate) {
           const hours = (now.getTime() - new Date(p.deliveredDate).getTime()) / (1000 * 60 * 60)
-          return hours < 24 // Keep if less than 24h
+          return hours < 24
         }
-        // Remove pending packages if expired
         if (p.status === 'Pendiente' && p.expirationDays) {
           const days = (now.getTime() - new Date(p.receivedDate).getTime()) / (1000 * 60 * 60 * 24)
           return days <= p.expirationDays
@@ -146,7 +172,17 @@ function reducer(state: StoreState, action: Action): StoreState {
     }
 
     case 'RESET':
-      return loadInitialState()
+      localStorage.removeItem(STORAGE_KEY)
+      return {
+        notificaciones: seedNotificaciones,
+        avisos: seedAvisos,
+        pagos: seedPagos,
+        paquetes: seedPaquetes,
+        reservaciones: seedReservaciones,
+        votaciones: seedVotaciones,
+        residents: seedResidents,
+        staff: seedStaff,
+      }
     default:
       return state
   }

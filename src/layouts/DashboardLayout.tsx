@@ -1,4 +1,4 @@
-import { Outlet, NavLink, Link, Navigate } from 'react-router-dom'
+import { Outlet, NavLink, Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useStore } from '../data/store'
 import { useState } from 'react'
@@ -12,11 +12,13 @@ const allNavItems = [
   { to: '/paqueteria', icon: 'package_2', label: 'Paquetería', roles: ['resident', 'admin'] },
   { to: '/asadores', icon: 'outdoor_grill', label: 'Asadores', roles: ['resident', 'admin'] },
   { to: '/votaciones', icon: 'how_to_vote', label: 'Votaciones', roles: ['resident', 'admin'] },
+  { to: '/usuarios', icon: 'group', label: 'Usuarios', roles: ['admin'] },
 ]
 
 export default function DashboardLayout() {
   const { user, apartment, role, isAuthenticated, logout } = useAuth()
   const { state, dispatch } = useStore()
+  const navigate = useNavigate()
   const [showNotif, setShowNotif] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -32,6 +34,16 @@ export default function DashboardLayout() {
   const myNotifs = state.notificaciones.filter(n => 
     role === 'admin' ? n.userId === 'admin' : n.userId === user
   )
+
+  const handleNotifClick = (n: typeof myNotifs[0]) => {
+    if (!n.read) {
+      dispatch({ type: 'MARK_NOTIFICACION_READ', payload: n.id })
+    }
+    if (n.actionLink) {
+      setShowNotif(false)
+      navigate(n.actionLink)
+    }
+  }
 
   return (
     <div className="bg-[#F8FAFC] text-on-surface flex min-h-screen">
@@ -75,9 +87,11 @@ export default function DashboardLayout() {
             </div>
           </div>
           <div className="space-y-1">
-            <a className="flex items-center px-4 py-2 text-slate-500 hover:text-slate-900 text-sm font-medium" href="#">
-              <span className="material-symbols-outlined text-lg mr-3">settings</span> Configuración
-            </a>
+            {role === 'admin' && (
+              <Link to="/configuracion" className="flex items-center px-4 py-2 text-slate-500 hover:text-slate-900 text-sm font-medium transition-colors">
+                <span className="material-symbols-outlined text-lg mr-3">settings</span> Configuración
+              </Link>
+            )}
             <a className="flex items-center px-4 py-2 text-slate-500 hover:text-slate-900 text-sm font-medium" href="#">
               <span className="material-symbols-outlined text-lg mr-3">help</span> Soporte
             </a>
@@ -97,7 +111,7 @@ export default function DashboardLayout() {
         <header className="flex justify-between items-center px-10 h-20 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
           <div />
           <div className="flex items-center space-x-3">
-            {/* Role badge (read-only indicator) */}
+            {/* Role badge */}
             <div
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl border text-[11px] font-black uppercase tracking-widest ${
                 role === 'admin'
@@ -126,19 +140,31 @@ export default function DashboardLayout() {
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl shadow-slate-200 border border-slate-100 p-6 animate-in fade-in zoom-in-95 duration-200">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Notificaciones</p>
+                    <button
+                      onClick={() => setShowNotif(false)}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">close</span>
+                    </button>
                   </div>
                   <div className="max-h-64 overflow-y-auto space-y-3 pr-2">
                     {myNotifs.length === 0 ? (
                       <p className="text-sm text-slate-500 font-medium text-center py-4">No tienes notificaciones</p>
                     ) : (
                       myNotifs.map(n => (
-                        <div key={n.id} className={`p-3 rounded-xl border ${n.read ? 'bg-slate-50 border-slate-100' : 'bg-primary-container/20 border-primary-dim'}`}>
+                        <div
+                          key={n.id}
+                          onClick={() => handleNotifClick(n)}
+                          className={`p-3 rounded-xl border transition-all ${
+                            n.read ? 'bg-slate-50 border-slate-100' : 'bg-primary-container/20 border-primary-dim'
+                          } ${n.actionLink ? 'cursor-pointer hover:shadow-md' : ''}`}
+                        >
                           <div className="flex justify-between items-start mb-1">
                             <span className="text-xs font-bold text-slate-900">{n.title}</span>
-                            {!n.read && (
-                              <button onClick={() => dispatch({ type: 'MARK_NOTIFICACION_READ', payload: n.id })} className="text-[10px] text-primary font-bold uppercase hover:underline">
-                                Marcar
-                              </button>
+                            {n.actionLink && (
+                              <span className="text-[10px] text-primary font-bold uppercase flex items-center">
+                                Ver <span className="material-symbols-outlined text-[12px] ml-0.5">arrow_forward</span>
+                              </span>
                             )}
                           </div>
                           <p className="text-[11px] text-slate-600 leading-tight mb-2">{n.message}</p>

@@ -21,7 +21,19 @@ export default function Votaciones() {
   const handleVote = (votacionId: string) => {
     const selected = selections[votacionId]
     if (!selected) return
-    dispatch({ type: 'VOTE', payload: { votacionId, optionLabel: selected, voter: { name: user, apartment: apartment || 'N/A' } } })
+    dispatch({
+      type: 'VOTE',
+      payload: {
+        votacionId,
+        optionLabel: selected,
+        voter: {
+          name: user,
+          apartment: apartment || 'N/A',
+          optionLabel: selected,
+          votedAt: new Date().toISOString(),
+        }
+      }
+    })
   }
 
   const handleAdd = () => {
@@ -38,7 +50,7 @@ export default function Votaciones() {
         periodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         status: 'Activa',
         options: validOptions.map(label => ({ label, votes: 0 })),
-        voters: [], // Updated seed type has an array of objects here!
+        voters: [],
       },
     })
     setFormTitle('')
@@ -92,11 +104,9 @@ export default function Votaciones() {
         {state.votaciones.map((vot) => {
           const totalVotes = vot.options.reduce((sum, o) => sum + o.votes, 0)
           
-          // Compat with old and new voters format
+          // 1 vote per apartment
           const votersList = Array.isArray(vot.voters) ? vot.voters : []
-          const hasVoted = votersList.some((v: any) => 
-            (typeof v === 'string' ? v : v.userId) === user
-          )
+          const hasVoted = votersList.some(v => v.apartment === (apartment || 'N/A'))
 
           return (
             <div
@@ -132,7 +142,6 @@ export default function Votaciones() {
                     <div key={opt.label} className="space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          {/* Resident: radio to vote. Admin: just show label */}
                           {!isAdmin && vot.status === 'Activa' && !hasVoted ? (
                             <label className="flex items-center space-x-2 cursor-pointer group">
                               <input
@@ -158,7 +167,6 @@ export default function Votaciones() {
                         )}
                       </div>
 
-                      {/* Progress bar (shown to admin or after voting) */}
                       {(isAdmin || hasVoted) && (
                         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                           <div
@@ -277,7 +285,7 @@ export default function Votaciones() {
         </div>
       </Modal>
 
-      {/* Audit Modal */}
+      {/* Audit Modal — Fixed to read correct voter fields */}
       <Modal open={!!viewAuditModal} onClose={() => setViewAuditModal(null)} title="Auditoría de Votantes">
         {viewAuditModal && (
           <div className="space-y-4">
@@ -289,28 +297,25 @@ export default function Votaciones() {
                   <thead className="bg-slate-50 sticky top-0 border-b border-slate-200">
                      <tr>
                         <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Residente</th>
+                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Depto</th>
                         <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Elección</th>
                         <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fecha/Hora</th>
                      </tr>
                   </thead>
                   <tbody>
-                     {Array.isArray(viewAuditModal.voters) && viewAuditModal.voters.map((v: any, idx: number) => {
-                       const isObj = typeof v === 'object'
-                       const name = isObj ? v.userId : v
-                       const option = isObj ? v.optionLabel : 'N/A'
-                       const timestamp = isObj ? new Date(v.voteTimestamp).toLocaleString() : 'N/A'
-
-                       return (
-                         <tr key={idx} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
-                            <td className="px-4 py-3 text-sm font-bold text-slate-900 capitalize">{name}</td>
-                            <td className="px-4 py-3 text-sm font-medium text-slate-700">{option}</td>
-                            <td className="px-4 py-3 text-xs font-medium text-slate-500">{timestamp}</td>
-                         </tr>
-                       )
-                     })}
+                     {Array.isArray(viewAuditModal.voters) && viewAuditModal.voters.map((v, idx) => (
+                       <tr key={idx} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
+                          <td className="px-4 py-3 text-sm font-bold text-slate-900">{v.name}</td>
+                          <td className="px-4 py-3 text-sm font-medium text-slate-700">{v.apartment}</td>
+                          <td className="px-4 py-3 text-sm font-medium text-slate-700">{v.optionLabel || 'N/A'}</td>
+                          <td className="px-4 py-3 text-xs font-medium text-slate-500">
+                            {v.votedAt ? new Date(v.votedAt).toLocaleString('es-MX') : '—'}
+                          </td>
+                       </tr>
+                     ))}
                      {viewAuditModal.voters.length === 0 && (
                        <tr>
-                         <td colSpan={3} className="px-4 py-6 text-center text-slate-400 font-medium text-sm">Nadie ha votado aún</td>
+                         <td colSpan={4} className="px-4 py-6 text-center text-slate-400 font-medium text-sm">Nadie ha votado aún</td>
                        </tr>
                      )}
                   </tbody>

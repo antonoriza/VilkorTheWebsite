@@ -84,36 +84,6 @@ export default function Avisos() {
     dispatch({ type: 'DELETE_AVISO', payload: id })
   }
 
-  const handleDownload = (aviso: Aviso) => {
-    // Simulate file download with a generated text file
-    const content = [
-      `═══════════════════════════════════════`,
-      `  AVISO — ${aviso.title}`,
-      `═══════════════════════════════════════`,
-      ``,
-      `Fecha de publicación: ${aviso.date}`,
-      `Archivo original: ${aviso.attachment}`,
-      ``,
-      `Descripción:`,
-      aviso.description || 'Sin descripción.',
-      ``,
-      `Este es un documento de demostración generado por CantonAlfa.`,
-      `En producción, este botón descargaría el archivo real adjunto.`,
-      ``,
-      `Lote Alemania — Cosmopol HU Lifestyle`,
-      ``,
-    ].join('\n')
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = aviso.attachment.replace(/\.[^.]+$/, '') + '.txt'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
 
   const todayStr = new Date().toISOString().split('T')[0]
 
@@ -204,13 +174,7 @@ export default function Avisos() {
                     </button>
                   </>
                 )}
-                <button
-                  onClick={() => handleDownload(aviso)}
-                  className="flex items-center space-x-2 px-5 py-2.5 bg-slate-900 border border-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all text-[11px] tracking-widest uppercase"
-                >
-                  <span className="material-symbols-outlined text-[16px]">download</span>
-                  <span>Descargar Muestra</span>
-                </button>
+
               </div>
             </div>
           )
