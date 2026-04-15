@@ -160,6 +160,7 @@ export default function PagosPage() {
   const [mUnit, setMUnit]                     = useState('')
   const [mAmount, setMAmount]                 = useState('500')
   const [mConcepto, setMConcepto]             = useState('')
+  const [mSubConcepto, setMSubConcepto]       = useState('')
   const [mMulti, setMMulti]                   = useState(false)
   const [mMonths, setMMonths]                 = useState<string[]>([TODAY_KEY])
   const [mSingleMonth, setMSingleMonth]       = useState(TODAY_KEY)
@@ -453,7 +454,7 @@ export default function PagosPage() {
 
   // Reset & close helper
   const resetAndCloseModal = () => {
-    setMTower(''); setMUnit(''); setMAmount('500'); setMConcepto('')
+    setMTower(''); setMUnit(''); setMAmount('500'); setMConcepto(''); setMSubConcepto('')
     setMMulti(false); setMMonths([TODAY_KEY]); setMSingleMonth(TODAY_KEY)
     setMReceiptData(''); setMReceiptType(undefined); setMReceiptName(''); setMReceiptError('')
     setEgCategoria('mantenimiento'); setEgConcepto(''); setEgDescription(''); setEgAmount(''); setEgDate(new Date().toISOString().split('T')[0])
@@ -469,8 +470,9 @@ export default function PagosPage() {
     if (!mUnit) return
     const resident = state.residents.find(r => r.apartment === mUnit)
     const resName = resident?.name || mUnit
-    const concepto = mConcepto || 'Mensualidad'
-    const isMensualidad = concepto === 'Mensualidad'
+    const baseConcepto = mConcepto || 'Mensualidad'
+    const concepto = mSubConcepto ? `${baseConcepto} — ${mSubConcepto}` : baseConcepto
+    const isMensualidad = baseConcepto === 'Mensualidad'
     const todayIso = new Date().toISOString().split('T')[0]
     const todayMk = todayIso.slice(0, 7)
 
@@ -1106,11 +1108,38 @@ export default function PagosPage() {
               <div className="space-y-2">
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto *</label>
                 <select value={mConcepto || 'Mensualidad'}
-                  onChange={e => { setMConcepto(e.target.value); if (e.target.value !== 'Mensualidad') { setMMulti(false) } }}
+                  onChange={e => { setMConcepto(e.target.value); setMSubConcepto(''); if (e.target.value !== 'Mensualidad') { setMMulti(false) } }}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
                   {bc.conceptosPago.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
+              {/* Sub-Concepto (shown when concept has sub-items) */}
+              {(() => {
+                const subs = bc.subConceptos?.[(mConcepto || 'Mensualidad')]
+                if (!subs || subs.length === 0) return null
+                return (
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Detalle</label>
+                    <div className="space-y-1.5">
+                      {subs.map(sub => (
+                        <label key={sub} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition-all ${
+                          mSubConcepto === sub ? 'border-slate-900 bg-slate-900/5' : 'border-slate-100 hover:border-slate-200'
+                        }`}>
+                          <input type="radio" name="subConcepto" checked={mSubConcepto === sub} onChange={() => setMSubConcepto(sub)}
+                            className="w-4 h-4 accent-slate-900" />
+                          <span className={`text-sm font-medium ${mSubConcepto === sub ? 'text-slate-900 font-bold' : 'text-slate-600'}`}>{sub}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {mSubConcepto && (
+                      <button type="button" onClick={() => setMSubConcepto('')}
+                        className="text-[10px] text-slate-400 hover:text-slate-600 font-bold uppercase tracking-widest ml-1">
+                        Limpiar selección
+                      </button>
+                    )}
+                  </div>
+                )
+              })()}
               {/* Month — with multi-month toggle ONLY for Mensualidad */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">

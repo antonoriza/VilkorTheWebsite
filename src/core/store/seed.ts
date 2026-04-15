@@ -228,6 +228,8 @@ export interface BuildingConfig {
   adminPhone: string
   /** Admin-managed list of payment concepts (e.g. Mensualidad, Extraordinario) */
   conceptosPago: string[]
+  /** Admin-managed sub-items per concept (e.g. Extraordinario → ['Cuota pintura', 'Reparación elevador']) */
+  subConceptos?: Record<string, string[]>
   /** Admin-managed list of expense categories */
   categoriasEgreso?: EgresoCategoria[]
 }
@@ -375,6 +377,10 @@ export const seedBuildingConfig: BuildingConfig = {
   adminEmail: 'admin@property.com',
   adminPhone: '+52 55 1234 5678',
   conceptosPago: ['Mensualidad', 'Extraordinario', 'Multa', 'Adeudo', 'Reserva Amenidad'],
+  subConceptos: {
+    'Extraordinario': ['Cuota pintura fachada', 'Reparación elevador', 'Impermeabilización'],
+    'Multa': ['Ruido excesivo', 'Uso indebido de cajón', 'Mascota sin registro', 'Basura fuera de horario'],
+  },
   categoriasEgreso: ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros'],
 }
 

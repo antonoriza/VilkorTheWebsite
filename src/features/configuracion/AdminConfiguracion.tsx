@@ -28,6 +28,8 @@ export default function AdminConfiguracion() {
   const [newTower, setNewTower] = useState('')
   const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget>(null)
   const [newConcepto, setNewConcepto] = useState('')
+  const [expandedConcepto, setExpandedConcepto] = useState<string | null>(null)
+  const [newSubConcepto, setNewSubConcepto] = useState('')
 
   /** Dispatches a partial building config update */
   const update = (key: string, value: string | number) => {
@@ -286,27 +288,87 @@ export default function AdminConfiguracion() {
           Define los conceptos disponibles al registrar pagos, multas o adeudos. "Mensualidad" es obligatorio y no puede eliminarse.
         </p>
         <div className="space-y-2">
-          {bc.conceptosPago.map(c => (
-            <div key={c} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-900">{c}</span>
-                {c === 'Mensualidad' && (
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-md">Obligatorio</span>
+          {bc.conceptosPago.map(c => {
+            const subs = bc.subConceptos?.[c] || []
+            const isExpanded = expandedConcepto === c
+            return (
+              <div key={c} className="rounded-xl border border-slate-100 hover:border-slate-200 transition-colors overflow-hidden">
+                <div className="flex items-center justify-between p-3">
+                  <button type="button" onClick={() => setExpandedConcepto(isExpanded ? null : c)}
+                    className="flex items-center gap-2 flex-1 text-left">
+                    <span className="material-symbols-outlined text-[14px] text-slate-400 transition-transform" style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>chevron_right</span>
+                    <span className="text-sm font-bold text-slate-900">{c}</span>
+                    {c === 'Mensualidad' && (
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-md">Obligatorio</span>
+                    )}
+                    {subs.length > 0 && (
+                      <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md tabular-nums">{subs.length}</span>
+                    )}
+                  </button>
+                  {c !== 'Mensualidad' && (
+                    <button
+                      onClick={() => {
+                        const updated = bc.conceptosPago.filter(x => x !== c)
+                        // Also remove sub-concepts for this concepto
+                        const updatedSubs = { ...bc.subConceptos }
+                        delete updatedSubs[c]
+                        dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { conceptosPago: updated, subConceptos: updatedSubs } })
+                      }}
+                      className="text-slate-400 hover:text-rose-600 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                  )}
+                </div>
+                {/* Sub-concepts accordion */}
+                {isExpanded && (
+                  <div className="px-4 pb-3 pt-1 bg-slate-50/50 border-t border-slate-100 space-y-2">
+                    <p className="text-[10px] text-slate-400 font-medium">Sub-conceptos para "{c}":</p>
+                    {subs.map(sub => (
+                      <div key={sub} className="flex items-center justify-between px-3 py-2 bg-white border border-slate-100 rounded-lg">
+                        <span className="text-xs font-medium text-slate-700">{sub}</span>
+                        <button onClick={() => {
+                          const updated = { ...bc.subConceptos }
+                          updated[c] = (updated[c] || []).filter(s => s !== sub)
+                          if (updated[c].length === 0) delete updated[c]
+                          dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { subConceptos: updated } })
+                        }} className="text-slate-300 hover:text-rose-500 transition-colors">
+                          <span className="material-symbols-outlined text-[14px]">close</span>
+                        </button>
+                      </div>
+                    ))}
+                    <div className="flex gap-2">
+                      <input type="text" value={newSubConcepto} onChange={e => setNewSubConcepto(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            const val = newSubConcepto.trim()
+                            if (!val || subs.includes(val)) return
+                            const updated = { ...bc.subConceptos }
+                            updated[c] = [...(updated[c] || []), val]
+                            dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { subConceptos: updated } })
+                            setNewSubConcepto('')
+                          }
+                        }}
+                        placeholder={`Ej: Sub-concepto de ${c}…`}
+                        className={inputClass + ' flex-1 !py-1.5 !text-xs'}
+                      />
+                      <button onClick={() => {
+                        const val = newSubConcepto.trim()
+                        if (!val || subs.includes(val)) return
+                        const updated = { ...bc.subConceptos }
+                        updated[c] = [...(updated[c] || []), val]
+                        dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { subConceptos: updated } })
+                        setNewSubConcepto('')
+                      }}
+                        className="px-3 py-1.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-all text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">
+                        + Agregar
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
-              {c !== 'Mensualidad' && (
-                <button
-                  onClick={() => {
-                    const updated = bc.conceptosPago.filter(x => x !== c)
-                    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { conceptosPago: updated } })
-                  }}
-                  className="text-slate-400 hover:text-rose-600 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-lg">delete</span>
-                </button>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
         <div className="flex gap-2">
           <input type="text" value={newConcepto} onChange={(e) => setNewConcepto(e.target.value)}
