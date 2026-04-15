@@ -13,13 +13,15 @@
  * Admin sees both tabs + KPIs + unit balance panel.
  * Resident sees ledger tab only + adeudo summary card.
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
-import { type Pago, type AdeudoType } from '../../core/store/seed'
+import { type Pago, type AdeudoType, type EgresoCategoria, EGRESO_CATEGORIA_LABELS } from '../../core/store/seed'
+import { pdf } from '@react-pdf/renderer'
+import FinancialReportPDF, { type ReportData, type IncomeRow, type ExpenseRow } from './FinancialReportPDF'
 
 // ─── Shared helpers ──────────────────────────────────────────────────
 
@@ -89,7 +91,7 @@ const CHARGE_TYPES: { key: ChargeType; label: string; icon: string; desc: string
 type LedgerSortKey = 'apartment' | 'concepto' | 'month' | 'amount' | 'paymentDate' | 'status'
 type ExpSortKey = 'apartment' | 'type' | 'concepto' | 'amount' | 'status' | 'createdAt'
 type SortDir = 'asc' | 'desc'
-type ActiveTab = 'ledger' | 'expediente'
+type ActiveTab = 'ledger' | 'expediente' | 'report'
 
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -142,6 +144,22 @@ export default function PagosPage() {
   // ── Confirm dialogs ──
   const [revokeTarget, setRevokeTarget] = useState<{ id: string; apartment: string; month: string } | null>(null)
   const [expConfirm, setExpConfirm] = useState<{ id: string; action: 'annul' | 'resolve_llamado' | 'delete'; apartment: string } | null>(null)
+
+  // ── Financial report tab ──
+  const [reportPeriod, setReportPeriod] = useState<'month' | 'ytd'>('month')
+  const [reportMonth, setReportMonth] = useState(TODAY_KEY)
+  const [pdfLoading, setPdfLoading] = useState(false)
+
+  // ── Egreso modal ──
+  const [showEgresoModal, setShowEgresoModal] = useState(false)
+  const [egCategoria, setEgCategoria] = useState<EgresoCategoria>('mantenimiento')
+  const [egConcepto, setEgConcepto] = useState('')
+  const [egDescription, setEgDescription] = useState('')
+  const [egAmount, setEgAmount] = useState('')
+  const [egDate, setEgDate] = useState(new Date().toISOString().split('T')[0])
+
+  // ── Egreso delete confirm ──
+  const [deleteEgresoId, setDeleteEgresoId] = useState<string | null>(null)
 
   // ── Topology ──
   const towers = bc.towers.sort()
@@ -233,6 +251,82 @@ export default function PagosPage() {
   }, [state.adeudos])
 
   // ═════════════════════════════════════════════════════════════════════
+  // FINANCIAL REPORT tab data
+  // ═════════════════════════════════════════════════════════════════════
+
+  const reportMonthKeys = useMemo(() => {
+    if (reportPeriod === 'month') return [reportMonth]
+    // YTD: January of current year through current month
+    const year = new Date().getFullYear()
+    const curMonth = new Date().getMonth() + 1
+    const keys: string[] = []
+    for (let m = 1; m <= curMonth; m++) keys.push(`${year}-${String(m).padStart(2, '0')}`)
+    return keys
+  }, [reportPeriod, reportMonth])
+
+  const reportData = useMemo((): ReportData => {
+    const monthSet = new Set(reportMonthKeys)
+
+    // INGRESOS: paid pagos in period, grouped by concepto
+    const paidPagos = state.pagos.filter(p => p.status === 'Pagado' && monthSet.has(p.monthKey || ''))
+    const incomeMap = new Map<string, number>()
+    paidPagos.forEach(p => {
+      const key = p.concepto || 'Mensualidad'
+      incomeMap.set(key, (incomeMap.get(key) || 0) + p.amount)
+    })
+    const ingresos: IncomeRow[] = [...incomeMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([concepto, amount]) => ({ concepto, amount }))
+    const totalIngresos = ingresos.reduce((s, r) => s + r.amount, 0)
+
+    // EGRESOS: expenses in period, grouped by categoria
+    const periodEgresos = state.egresos.filter(e => monthSet.has(e.monthKey))
+    const expenseMap = new Map<EgresoCategoria, { amount: number; items: { concepto: string; amount: number }[] }>()
+    periodEgresos.forEach(e => {
+      const entry = expenseMap.get(e.categoria) || { amount: 0, items: [] }
+      entry.amount += e.amount
+      entry.items.push({ concepto: e.concepto, amount: e.amount })
+      expenseMap.set(e.categoria, entry)
+    })
+    const egresos: ExpenseRow[] = [...expenseMap.entries()]
+      .sort((a, b) => b[1].amount - a[1].amount)
+      .map(([cat, data]) => ({ categoria: cat, label: EGRESO_CATEGORIA_LABELS[cat], amount: data.amount, items: data.items }))
+    const totalEgresos = egresos.reduce((s, r) => s + r.amount, 0)
+
+    // Pending + Adeudos
+    const pendingCharges = state.pagos.filter(p => p.status === 'Pendiente' && monthSet.has(p.monthKey || '')).reduce((s, p) => s + p.amount, 0)
+    const activeAdeudosList = state.adeudos.filter(a => a.status === 'Activo' && a.amount > 0)
+
+    const periodLabel = reportPeriod === 'month'
+      ? monthKeyToLabel(reportMonth)
+      : `Enero – ${monthKeyToLabel(TODAY_KEY)} ${new Date().getFullYear()} (acumulado)`
+
+    return {
+      buildingName: bc.buildingName,
+      buildingAddress: bc.buildingAddress,
+      managementCompany: bc.managementCompany,
+      periodLabel,
+      generatedAt: new Date().toLocaleString('es-MX', { dateStyle: 'long', timeStyle: 'short' }),
+      ingresos,
+      totalIngresos,
+      egresos,
+      totalEgresos,
+      netResult: totalIngresos - totalEgresos,
+      pendingCharges,
+      activeAdeudos: activeAdeudosList.length,
+      activeAdeudosAmount: activeAdeudosList.reduce((s, a) => s + a.amount, 0),
+    }
+  }, [state.pagos, state.egresos, state.adeudos, reportMonthKeys, reportPeriod, reportMonth, bc])
+
+  // Egresos for current report period (for the grid)
+  const periodEgresosFiltered = useMemo(() => {
+    const monthSet = new Set(reportMonthKeys)
+    return state.egresos
+      .filter(e => monthSet.has(e.monthKey))
+      .sort((a, b) => b.date.localeCompare(a.date))
+  }, [state.egresos, reportMonthKeys])
+
+  // ═════════════════════════════════════════════════════════════════════
   // SORT HELPERS
   // ═════════════════════════════════════════════════════════════════════
 
@@ -298,6 +392,45 @@ export default function PagosPage() {
         break
     }
   }
+
+  // Egreso registration
+  const handleRegisterEgreso = () => {
+    if (!egConcepto.trim() || !egAmount || Number(egAmount) <= 0) return
+    const monthKey = egDate.slice(0, 7) // YYYY-MM from date
+    dispatch({
+      type: 'ADD_EGRESO',
+      payload: {
+        id: `eg-${Date.now()}`,
+        categoria: egCategoria,
+        concepto: egConcepto.trim(),
+        description: egDescription.trim() || undefined,
+        amount: Number(egAmount),
+        monthKey,
+        date: egDate,
+        registeredBy: bc.adminName,
+      },
+    })
+    setEgCategoria('mantenimiento'); setEgConcepto(''); setEgDescription(''); setEgAmount(''); setEgDate(new Date().toISOString().split('T')[0])
+    setShowEgresoModal(false)
+  }
+
+  // PDF download
+  const handleDownloadPDF = useCallback(async () => {
+    setPdfLoading(true)
+    try {
+      const blob = await pdf(<FinancialReportPDF data={reportData} />).toBlob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `Estado_Resultados_${reportData.periodLabel.replace(/\s+/g, '_')}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error('PDF generation error:', err)
+    } finally {
+      setPdfLoading(false)
+    }
+  }, [reportData])
 
   // Receipt upload
   const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -454,6 +587,7 @@ export default function PagosPage() {
           {([
             { key: 'ledger' as ActiveTab, label: 'Estado de Cuenta', icon: 'receipt_long' },
             { key: 'expediente' as ActiveTab, label: 'Expediente', icon: 'gavel' },
+            { key: 'report' as ActiveTab, label: 'Reporte', icon: 'analytics' },
           ]).map(tab => (
             <button
               key={tab.key}
@@ -907,6 +1041,204 @@ export default function PagosPage() {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
+      {/* TAB 3: REPORTE FINANCIERO (admin only)                        */}
+      {/* ═══════════════════════════════════════════════════════════════ */}
+
+      {isAdmin && activeTab === 'report' && (
+        <>
+          {/* ── Period selector + actions ── */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center bg-slate-100 rounded-xl p-0.5">
+                <button onClick={() => setReportPeriod('month')}
+                  className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all ${
+                    reportPeriod === 'month' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-700'
+                  }`}>Mensual</button>
+                <button onClick={() => setReportPeriod('ytd')}
+                  className={`px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all ${
+                    reportPeriod === 'ytd' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-700'
+                  }`}>Acumulado Anual</button>
+              </div>
+              {reportPeriod === 'month' && (
+                <input type="month" value={reportMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
+                  onChange={e => setReportMonth(e.target.value)}
+                  className="px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setShowEgresoModal(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase">
+                <span className="material-symbols-outlined text-[16px]">remove_circle_outline</span>
+                Registrar Egreso
+              </button>
+              <button onClick={handleDownloadPDF} disabled={pdfLoading}
+                className={`flex items-center gap-2 px-5 py-2.5 font-bold rounded-xl text-[11px] tracking-widest uppercase transition-all ${
+                  pdfLoading ? 'bg-slate-200 text-slate-400 cursor-wait' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-95 shadow-lg shadow-slate-900/10'
+                }`}>
+                <span className="material-symbols-outlined text-[16px]">{pdfLoading ? 'hourglass_empty' : 'picture_as_pdf'}</span>
+                {pdfLoading ? 'Generando…' : 'Descargar PDF'}
+              </button>
+            </div>
+          </div>
+
+          {/* ── Income Statement Card ── */}
+          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            {/* Header */}
+            <div className="px-8 py-6 border-b border-slate-100">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">{bc.managementCompany}</p>
+              <h2 className="text-xl font-headline font-extrabold text-slate-900 mt-1">Estado de Resultados</h2>
+              <p className="text-sm text-slate-500 font-medium mt-0.5">
+                {reportPeriod === 'month' ? `Período: ${monthKeyToLabel(reportMonth)}` : `Acumulado Enero — ${monthKeyToLabel(TODAY_KEY)} ${new Date().getFullYear()}`}
+              </p>
+            </div>
+
+            <div className="px-8 py-6 space-y-6">
+              {/* ── INGRESOS ── */}
+              <div>
+                <h3 className="text-[10px] font-bold text-emerald-600 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[14px]">trending_up</span>
+                  Ingresos
+                </h3>
+                <div className="space-y-0.5">
+                  {reportData.ingresos.length === 0 ? (
+                    <p className="text-sm text-slate-400 font-medium py-2">Sin ingresos cobrados en este período.</p>
+                  ) : reportData.ingresos.map((row, i) => (
+                    <div key={row.concepto} className={`flex items-center justify-between px-4 py-2.5 rounded-lg ${i % 2 === 0 ? '' : 'bg-slate-50/70'}`}>
+                      <span className="text-sm font-medium text-slate-700">{row.concepto}</span>
+                      <span className="text-sm font-black text-slate-900 tabular-nums">${row.amount.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between px-4 py-3 mt-1 border-t-2 border-emerald-200 bg-emerald-50/50 rounded-lg">
+                  <span className="text-sm font-bold text-emerald-800">Total Ingresos</span>
+                  <span className="text-lg font-headline font-black text-emerald-700 tabular-nums">${reportData.totalIngresos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+
+              {/* ── EGRESOS ── */}
+              <div>
+                <h3 className="text-[10px] font-bold text-rose-600 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[14px]">trending_down</span>
+                  Egresos
+                </h3>
+                <div className="space-y-0.5">
+                  {reportData.egresos.length === 0 ? (
+                    <p className="text-sm text-slate-400 font-medium py-2">Sin egresos registrados en este período.</p>
+                  ) : reportData.egresos.map((cat, i) => (
+                    <div key={cat.categoria}>
+                      <div className={`flex items-center justify-between px-4 py-2.5 rounded-lg ${i % 2 === 0 ? '' : 'bg-slate-50/70'}`}>
+                        <span className="text-sm font-semibold text-slate-700">{EGRESO_CATEGORIA_LABELS[cat.categoria]}</span>
+                        <span className="text-sm font-black text-slate-900 tabular-nums">${cat.amount.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                      </div>
+                      {cat.items.map(item => (
+                        <div key={item.concepto} className="flex items-center justify-between px-8 py-1.5">
+                          <span className="text-xs text-slate-400 font-medium">• {item.concepto}</span>
+                          <span className="text-xs text-slate-500 tabular-nums">${item.amount.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between px-4 py-3 mt-1 border-t-2 border-rose-200 bg-rose-50/50 rounded-lg">
+                  <span className="text-sm font-bold text-rose-800">Total Egresos</span>
+                  <span className="text-lg font-headline font-black text-rose-700 tabular-nums">${reportData.totalEgresos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+
+              {/* ── NET RESULT ── */}
+              <div className={`flex items-center justify-between px-6 py-5 rounded-2xl border-2 ${
+                reportData.netResult >= 0 ? 'border-emerald-300 bg-emerald-50' : 'border-rose-300 bg-rose-50'
+              }`}>
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Resultado del Período</p>
+                  <p className="text-sm font-bold text-slate-600 mt-0.5">Ingresos − Egresos</p>
+                </div>
+                <p className={`text-3xl font-headline font-black tabular-nums ${reportData.netResult >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+                  ${reportData.netResult.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+
+              {/* ── DELINQUENCY ── */}
+              {(reportData.pendingCharges > 0 || reportData.activeAdeudos > 0) && (
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                  <h3 className="text-[10px] font-bold text-amber-700 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[14px]">warning</span>
+                    Cartera Pendiente
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xl font-headline font-black text-amber-800 tabular-nums">${reportData.pendingCharges.toLocaleString('es-MX')}</p>
+                      <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-0.5">Cargos sin cobrar</p>
+                    </div>
+                    <div>
+                      <p className="text-xl font-headline font-black text-amber-800 tabular-nums">${reportData.activeAdeudosAmount.toLocaleString('es-MX')}</p>
+                      <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest mt-0.5">{reportData.activeAdeudos} adeudo(s) activo(s)</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Egresos Grid ── */}
+          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div>
+                <h2 className="text-base font-headline font-extrabold text-slate-900">Detalle de Egresos</h2>
+                <p className="text-[11px] text-slate-400 font-medium mt-0.5">{periodEgresosFiltered.length} registro(s)</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/60">
+                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
+                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoría</th>
+                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Concepto</th>
+                    <th className="px-5 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monto</th>
+                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {periodEgresosFiltered.map(eg => (
+                    <tr key={eg.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
+                      <td className="px-5 py-4 text-xs font-semibold text-slate-500 tabular-nums whitespace-nowrap">{eg.date}</td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600">
+                          {EGRESO_CATEGORIA_LABELS[eg.categoria]}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <p className="text-sm font-semibold text-slate-900">{eg.concepto}</p>
+                        {eg.description && <p className="text-xs text-slate-400 font-medium mt-0.5">{eg.description}</p>}
+                      </td>
+                      <td className="px-5 py-4 text-sm font-black text-slate-900 text-right tabular-nums">${eg.amount.toLocaleString('es-MX')}</td>
+                      <td className="px-5 py-4 text-center">
+                        <button onClick={() => setDeleteEgresoId(eg.id)}
+                          className="text-slate-200 hover:text-rose-500 transition-colors p-1" title="Eliminar">
+                          <span className="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {periodEgresosFiltered.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-16 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <span className="material-symbols-outlined text-4xl text-slate-200">account_balance</span>
+                          <p className="text-slate-400 font-medium text-sm">Sin egresos registrados en este período.</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════ */}
       {/* UNIFIED REGISTRATION MODAL                                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
 
@@ -1113,6 +1445,66 @@ export default function PagosPage() {
         {expConfirm?.action === 'annul' ? `¿Anular este registro del depto. ${expConfirm.apartment}? Equivale a una exención.`
           : expConfirm?.action === 'delete' ? `¿Eliminar permanentemente este registro del depto. ${expConfirm?.apartment}?`
           : `¿Confirmar que el llamado del depto. ${expConfirm?.apartment} fue atendido?`}
+      </ConfirmDialog>
+
+      {/* ═══ Egreso Registration Modal ═══ */}
+      <Modal open={showEgresoModal} onClose={() => setShowEgresoModal(false)} title="Registrar Egreso">
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Categoría *</label>
+            <div className="grid grid-cols-2 gap-2">
+              {(Object.keys(EGRESO_CATEGORIA_LABELS) as EgresoCategoria[]).map(cat => (
+                <button key={cat} onClick={() => setEgCategoria(cat)}
+                  className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border-2 transition-all text-left ${
+                    egCategoria === cat ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                  }`}>
+                  {EGRESO_CATEGORIA_LABELS[cat]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto *</label>
+            <input type="text" value={egConcepto} onChange={e => setEgConcepto(e.target.value)}
+              placeholder="Ej: Pago mensual jardinero, Recibo de luz…"
+              className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) *</label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+              <input type="number" value={egAmount} onChange={e => setEgAmount(e.target.value)}
+                className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fecha *</label>
+            <input type="date" value={egDate} onChange={e => setEgDate(e.target.value)}
+              className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Notas <span className="text-slate-300">(opcional)</span></label>
+            <textarea value={egDescription} onChange={e => setEgDescription(e.target.value)}
+              rows={2} maxLength={500} placeholder="Detalle adicional…"
+              className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm resize-none" />
+          </div>
+          <button onClick={handleRegisterEgreso}
+            disabled={!egConcepto.trim() || !egAmount || Number(egAmount) <= 0}
+            className={`w-full py-3 font-bold rounded-2xl transition-all uppercase tracking-widest text-[11px] ${
+              !egConcepto.trim() || !egAmount || Number(egAmount) <= 0
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99]'
+            }`}>
+            Registrar Egreso
+          </button>
+        </div>
+      </Modal>
+
+      {/* ═══ Egreso delete confirm ═══ */}
+      <ConfirmDialog open={!!deleteEgresoId} onClose={() => setDeleteEgresoId(null)}
+        onConfirm={() => { if (deleteEgresoId) dispatch({ type: 'DELETE_EGRESO', payload: deleteEgresoId }) }}
+        title="Eliminar Egreso" confirmLabel="Eliminar" variant="danger">
+        ¿Eliminar permanentemente este registro de egreso?
       </ConfirmDialog>
     </div>
   )

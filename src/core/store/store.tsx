@@ -17,10 +17,10 @@ import { createContext, useContext, useReducer, useEffect, type ReactNode } from
 import {
   seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
   seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
-  seedTickets, seedTicketCounter, seedAdeudos,
+  seedTickets, seedTicketCounter, seedAdeudos, seedEgresos,
   type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
   type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
-  type Ticket, type TicketActivity, type Adeudo
+  type Ticket, type TicketActivity, type Adeudo, type Egreso
 } from './seed'
 
 // ─── State Shape ─────────────────────────────────────────────────────
@@ -43,6 +43,8 @@ export interface StoreState {
   ticketCounter: number
   /** Administrative records: fines, warnings, and debts */
   adeudos: Adeudo[]
+  /** Operational expenses for the building */
+  egresos: Egreso[]
 }
 
 // ─── Action Types ────────────────────────────────────────────────────
@@ -84,6 +86,9 @@ type Action =
   | { type: 'ADD_ADEUDO'; payload: Adeudo }
   | { type: 'UPDATE_ADEUDO'; payload: Adeudo }
   | { type: 'DELETE_ADEUDO'; payload: string }
+  | { type: 'ADD_EGRESO'; payload: Egreso }
+  | { type: 'UPDATE_EGRESO'; payload: Egreso }
+  | { type: 'DELETE_EGRESO'; payload: string }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'RESET' }
 
@@ -218,6 +223,14 @@ function loadInitialState(): StoreState {
         })
       }
 
+      // Migrate: add egresos slice if missing
+      if (!parsed.egresos) parsed.egresos = seedEgresos
+
+      // Migrate buildingConfig: ensure categoriasEgreso exists
+      if (!parsed.buildingConfig.categoriasEgreso) {
+        parsed.buildingConfig.categoriasEgreso = ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros']
+      }
+
       return parsed
 
     }
@@ -238,6 +251,7 @@ function loadInitialState(): StoreState {
     tickets: seedTickets,
     ticketCounter: seedTicketCounter,
     adeudos: seedAdeudos,
+    egresos: seedEgresos,
   }
 }
 
@@ -402,6 +416,14 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'DELETE_ADEUDO':
       return { ...state, adeudos: state.adeudos.filter(a => a.id !== action.payload) }
 
+    // Egresos (Operational Expenses)
+    case 'ADD_EGRESO':
+      return { ...state, egresos: [action.payload, ...state.egresos] }
+    case 'UPDATE_EGRESO':
+      return { ...state, egresos: state.egresos.map(e => e.id === action.payload.id ? action.payload : e) }
+    case 'DELETE_EGRESO':
+      return { ...state, egresos: state.egresos.filter(e => e.id !== action.payload) }
+
     // Auto-cleanup of expired/delivered packages
     case 'CLEANUP_EXPIRED': {
       const now = new Date(action.payload.nowIso)
@@ -437,6 +459,7 @@ function reducer(state: StoreState, action: Action): StoreState {
         tickets: seedTickets,
         ticketCounter: seedTicketCounter,
         adeudos: seedAdeudos,
+        egresos: seedEgresos,
       }
 
     default:

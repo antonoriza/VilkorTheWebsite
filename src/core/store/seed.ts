@@ -224,8 +224,10 @@ export interface BuildingConfig {
   adminName: string
   adminEmail: string
   adminPhone: string
-  /** Admin-managed list of payment concepts (e.g. Mensualidad, Multa) */
+  /** Admin-managed list of payment concepts (e.g. Mensualidad, Extraordinario) */
   conceptosPago: string[]
+  /** Admin-managed list of expense categories */
+  categoriasEgreso?: EgresoCategoria[]
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
@@ -315,6 +317,47 @@ export interface Adeudo {
   pagoId?: string
 }
 
+// ─── Egreso (Operational Expense) ────────────────────────────────────
+
+/** Category of operational expense */
+export type EgresoCategoria =
+  | 'nomina'
+  | 'mantenimiento'
+  | 'servicios'
+  | 'equipo'
+  | 'seguros'
+  | 'administracion'
+  | 'otros'
+
+export const EGRESO_CATEGORIA_LABELS: Record<EgresoCategoria, string> = {
+  nomina: 'Nómina / Personal',
+  mantenimiento: 'Mantenimiento',
+  servicios: 'Servicios (Agua, Luz, Gas)',
+  equipo: 'Equipo y Suministros',
+  seguros: 'Seguros',
+  administracion: 'Administración',
+  otros: 'Otros Egresos',
+}
+
+/** An operational expense record for the building */
+export interface Egreso {
+  id: string
+  /** Expense category */
+  categoria: EgresoCategoria
+  /** Short description (e.g. "Pago mensual jardinero") */
+  concepto: string
+  /** Detailed notes */
+  description?: string
+  /** Amount in MXN */
+  amount: number
+  /** ISO YYYY-MM period this expense belongs to */
+  monthKey: string
+  /** ISO date of the expense */
+  date: string
+  /** Admin who recorded this expense */
+  registeredBy: string
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // SEED DATA — Initial state for a fresh installation
 // ═══════════════════════════════════════════════════════════════════════
@@ -330,6 +373,7 @@ export const seedBuildingConfig: BuildingConfig = {
   adminEmail: 'admin@property.com',
   adminPhone: '+52 55 1234 5678',
   conceptosPago: ['Mensualidad', 'Extraordinario'],
+  categoriasEgreso: ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros'],
 }
 
 export const seedAmenities: Amenity[] = [
@@ -619,5 +663,66 @@ export const seedAdeudos: Adeudo[] = [
     resolvedAt: null,
     resolvedBy: null,
     pagoId: undefined,
+  },
+]
+
+export const seedEgresos: Egreso[] = [
+  {
+    id: 'eg-1',
+    categoria: 'nomina',
+    concepto: 'Nómina jardinero — abril 2026',
+    description: 'Pago quincenal (1ra quincena) al jardinero contratado.',
+    amount: 4500,
+    monthKey: '2026-04',
+    date: '2026-04-15',
+    registeredBy: 'Administrador General',
+  },
+  {
+    id: 'eg-2',
+    categoria: 'nomina',
+    concepto: 'Nómina guardia — abril 2026',
+    description: 'Pago mensual al guardia de seguridad nocturno.',
+    amount: 8000,
+    monthKey: '2026-04',
+    date: '2026-04-01',
+    registeredBy: 'Administrador General',
+  },
+  {
+    id: 'eg-3',
+    categoria: 'servicios',
+    concepto: 'Recibo de agua — marzo 2026',
+    amount: 3200,
+    monthKey: '2026-03',
+    date: '2026-03-20',
+    registeredBy: 'Administrador General',
+  },
+  {
+    id: 'eg-4',
+    categoria: 'servicios',
+    concepto: 'Recibo de luz — marzo 2026',
+    amount: 5800,
+    monthKey: '2026-03',
+    date: '2026-03-22',
+    registeredBy: 'Administrador General',
+  },
+  {
+    id: 'eg-5',
+    categoria: 'mantenimiento',
+    concepto: 'Reparación elevador Torre A',
+    description: 'Servicio correctivo por fallo en sensor de piso 3.',
+    amount: 12000,
+    monthKey: '2026-03',
+    date: '2026-03-10',
+    registeredBy: 'Administrador General',
+  },
+  {
+    id: 'eg-6',
+    categoria: 'administracion',
+    concepto: 'Honorarios administración — abril 2026',
+    description: 'Cuota mensual de la empresa administradora.',
+    amount: 15000,
+    monthKey: '2026-04',
+    date: '2026-04-01',
+    registeredBy: 'Administrador General',
   },
 ]
