@@ -22,7 +22,7 @@ const baseNavItems = [
   { to: '/dashboard', icon: 'home', label: 'Inicio', roles: ['resident'] },
   { to: '/admin', icon: 'dashboard', label: 'Panel Admin', roles: ['admin'] },
   { to: '/avisos', icon: 'notifications', label: 'Avisos', roles: ['resident', 'admin'] },
-  { to: '/pagos', icon: 'payments', label: 'Pagos', roles: ['resident', 'admin'] },
+  { to: '/pagos', icon: 'account_balance', label: 'Finanzas', roles: ['resident', 'admin'] },
   { to: '/paqueteria', icon: 'package_2', label: 'Paquetería', roles: ['resident', 'admin'] },
   { to: '/amenidades', icon: 'outdoor_grill', label: 'Amenidades', roles: ['resident', 'admin'], requiresAmenities: true },
   { to: '/votaciones', icon: 'how_to_vote', label: 'Votaciones', roles: ['resident', 'admin'] },

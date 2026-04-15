@@ -51,6 +51,7 @@ function App() {
         {/* Shared modules */}
         <Route path="/avisos" element={<AvisosPage />} />
         <Route path="/pagos" element={<PagosPage />} />
+        <Route path="/adeudos" element={<Navigate to="/pagos" replace />} />
         <Route path="/paqueteria" element={<PaqueteriaPage />} />
         <Route path="/amenidades" element={<AmenidadesPage />} />
         <Route path="/asadores" element={<Navigate to="/amenidades" replace />} />

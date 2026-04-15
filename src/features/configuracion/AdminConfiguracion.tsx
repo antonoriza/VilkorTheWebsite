@@ -27,6 +27,7 @@ export default function AdminConfiguracion() {
   const [newAmenity, setNewAmenity] = useState('')
   const [newTower, setNewTower] = useState('')
   const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget>(null)
+  const [newConcepto, setNewConcepto] = useState('')
 
   /** Dispatches a partial building config update */
   const update = (key: string, value: string | number) => {
@@ -268,6 +269,65 @@ export default function AdminConfiguracion() {
             className={inputClass + ' flex-1'}
           />
           <button onClick={handleAddAmenity}
+            className="px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all text-sm font-bold whitespace-nowrap"
+          >
+            Agregar
+          </button>
+        </div>
+      </section>
+
+      {/* Conceptos de Pago */}
+      <section className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
+        <div className="flex items-center space-x-3 border-b border-slate-100 pb-4">
+          <span className="material-symbols-outlined text-primary text-xl">receipt_long</span>
+          <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Conceptos de Pago</h3>
+        </div>
+        <p className="text-[11px] text-slate-500 font-medium">
+          Define los conceptos disponibles al registrar pagos, multas o adeudos. "Mensualidad" es obligatorio y no puede eliminarse.
+        </p>
+        <div className="space-y-2">
+          {bc.conceptosPago.map(c => (
+            <div key={c} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-slate-900">{c}</span>
+                {c === 'Mensualidad' && (
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-md">Obligatorio</span>
+                )}
+              </div>
+              {c !== 'Mensualidad' && (
+                <button
+                  onClick={() => {
+                    const updated = bc.conceptosPago.filter(x => x !== c)
+                    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { conceptosPago: updated } })
+                  }}
+                  className="text-slate-400 hover:text-rose-600 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-lg">delete</span>
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input type="text" value={newConcepto} onChange={(e) => setNewConcepto(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const val = newConcepto.trim()
+                if (!val || bc.conceptosPago.includes(val)) return
+                dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { conceptosPago: [...bc.conceptosPago, val] } })
+                setNewConcepto('')
+              }
+            }}
+            placeholder="Ej: Cuota Extraordinaria, Penalización..."
+            className={inputClass + ' flex-1'}
+          />
+          <button
+            onClick={() => {
+              const val = newConcepto.trim()
+              if (!val || bc.conceptosPago.includes(val)) return
+              dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { conceptosPago: [...bc.conceptosPago, val] } })
+              setNewConcepto('')
+            }}
             className="px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all text-sm font-bold whitespace-nowrap"
           >
             Agregar

@@ -17,10 +17,10 @@ import { createContext, useContext, useReducer, useEffect, type ReactNode } from
 import {
   seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
   seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
-  seedTickets, seedTicketCounter,
+  seedTickets, seedTicketCounter, seedAdeudos,
   type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
   type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
-  type Ticket, type TicketActivity
+  type Ticket, type TicketActivity, type Adeudo
 } from './seed'
 
 // ─── State Shape ─────────────────────────────────────────────────────
@@ -41,6 +41,8 @@ export interface StoreState {
   tickets: Ticket[]
   /** Auto-incrementing counter for ticket display numbers */
   ticketCounter: number
+  /** Administrative records: fines, warnings, and debts */
+  adeudos: Adeudo[]
 }
 
 // ─── Action Types ────────────────────────────────────────────────────
@@ -52,6 +54,8 @@ type Action =
   | { type: 'ADD_AVISO'; payload: Aviso }
   | { type: 'UPDATE_AVISO'; payload: Aviso }
   | { type: 'DELETE_AVISO'; payload: string }
+  | { type: 'TOGGLE_PIN_AVISO'; payload: string }
+  | { type: 'TRACK_AVISO'; payload: { avisoId: string, apartment: string, resident: string, type: 'view' | 'confirm', timestamp: string } }
   | { type: 'ADD_PAGO'; payload: Pago }
   | { type: 'UPDATE_PAGO'; payload: Pago }
   | { type: 'ADD_PAQUETE'; payload: Paquete }
@@ -68,6 +72,7 @@ type Action =
   | { type: 'UPDATE_RESIDENT'; payload: Resident }
   | { type: 'DELETE_RESIDENT'; payload: string }
   | { type: 'ADD_STAFF'; payload: StaffMember }
+  | { type: 'UPDATE_STAFF'; payload: StaffMember }
   | { type: 'DELETE_STAFF'; payload: string }
   | { type: 'ADD_AMENITY'; payload: Amenity }
   | { type: 'DELETE_AMENITY'; payload: string }
@@ -76,6 +81,9 @@ type Action =
   | { type: 'UPDATE_TICKET'; payload: Ticket }
   | { type: 'ADD_TICKET_ACTIVITY'; payload: { ticketId: string; activity: TicketActivity } }
   | { type: 'SET_TICKET_COUNTER'; payload: number }
+  | { type: 'ADD_ADEUDO'; payload: Adeudo }
+  | { type: 'UPDATE_ADEUDO'; payload: Adeudo }
+  | { type: 'DELETE_ADEUDO'; payload: string }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'RESET' }
 
@@ -167,7 +175,51 @@ function loadInitialState(): StoreState {
       if (!parsed.tickets) parsed.tickets = seedTickets
       if (!parsed.ticketCounter && parsed.ticketCounter !== 0) parsed.ticketCounter = seedTicketCounter
 
+      // Migrate pagos: backfill monthKey for records that predate this field
+      const MONTH_ES: Record<string, string> = {
+        enero:'01', febrero:'02', marzo:'03', abril:'04', mayo:'05', junio:'06',
+        julio:'07', agosto:'08', septiembre:'09', octubre:'10', noviembre:'11', diciembre:'12'
+      }
+      if (parsed.pagos) {
+        parsed.pagos = parsed.pagos.map((p: any) => {
+          // Backfill monthKey
+          if (!p.monthKey) {
+            const m = (p.month || '').toLowerCase().match(/(\w+)\s+de\s+(\d{4})/)
+            p.monthKey = m ? `${m[2]}-${MONTH_ES[m[1]] || '00'}` : ''
+          }
+          // Backfill concepto
+          if (!p.concepto) p.concepto = 'Mensualidad'
+          // Backfill adeudoId (new field)
+          if (!('adeudoId' in p)) p.adeudoId = undefined
+          return p
+        })
+      }
+
+      // Migrate buildingConfig: ensure conceptosPago exists + purge disciplinary concepts
+      if (!parsed.buildingConfig.conceptosPago) {
+        parsed.buildingConfig.conceptosPago = ['Mensualidad', 'Extraordinario']
+      } else {
+        const DISCIPLINARY = ['Multa', 'Penalización', 'Penalizacion']
+        parsed.buildingConfig.conceptosPago = parsed.buildingConfig.conceptosPago
+          .filter((c: string) => !DISCIPLINARY.includes(c))
+        if (!parsed.buildingConfig.conceptosPago.includes('Mensualidad')) {
+          parsed.buildingConfig.conceptosPago.unshift('Mensualidad')
+        }
+      }
+
+      // Migrate: add adeudos slice if missing
+      if (!parsed.adeudos) {
+        parsed.adeudos = seedAdeudos
+      } else {
+        // Backfill pagoId (new field)
+        parsed.adeudos = parsed.adeudos.map((a: any) => {
+          if (!('pagoId' in a)) a.pagoId = undefined
+          return a
+        })
+      }
+
       return parsed
+
     }
   } catch { /* fall through to seed data on any error */ }
 
@@ -185,6 +237,7 @@ function loadInitialState(): StoreState {
     buildingConfig: seedBuildingConfig,
     tickets: seedTickets,
     ticketCounter: seedTicketCounter,
+    adeudos: seedAdeudos,
   }
 }
 
@@ -206,6 +259,39 @@ function reducer(state: StoreState, action: Action): StoreState {
       return { ...state, avisos: state.avisos.map(a => a.id === action.payload.id ? action.payload : a) }
     case 'DELETE_AVISO':
       return { ...state, avisos: state.avisos.filter(a => a.id !== action.payload) }
+    case 'TOGGLE_PIN_AVISO':
+      return {
+        ...state,
+        avisos: state.avisos.map(a =>
+          a.id === action.payload ? { ...a, pinned: !a.pinned } : a
+        )
+      }
+    case 'TRACK_AVISO':
+      return {
+        ...state,
+        avisos: state.avisos.map(a => {
+          if (a.id === action.payload.avisoId) {
+            const current = (a.tracking || [])
+            // check if this identical event (same resident, same type) already exists
+            if (current.some(t => t.resident === action.payload.resident && t.type === action.payload.type)) {
+              return a 
+            }
+            return {
+              ...a,
+              tracking: [
+                ...current,
+                {
+                  type: action.payload.type,
+                  apartment: action.payload.apartment,
+                  resident: action.payload.resident,
+                  timestamp: action.payload.timestamp
+                }
+              ]
+            }
+          }
+          return a
+        })
+      }
 
     // Payments
     case 'ADD_PAGO':
@@ -264,6 +350,8 @@ function reducer(state: StoreState, action: Action): StoreState {
     // Staff
     case 'ADD_STAFF':
       return { ...state, staff: [...state.staff, action.payload] }
+    case 'UPDATE_STAFF':
+      return { ...state, staff: state.staff.map(s => s.id === action.payload.id ? action.payload : s) }
     case 'DELETE_STAFF':
       return { ...state, staff: state.staff.filter(s => s.id !== action.payload) }
 
@@ -306,6 +394,14 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'SET_TICKET_COUNTER':
       return { ...state, ticketCounter: action.payload }
 
+    // Adeudos (Fines / Warnings / Debts)
+    case 'ADD_ADEUDO':
+      return { ...state, adeudos: [action.payload, ...state.adeudos] }
+    case 'UPDATE_ADEUDO':
+      return { ...state, adeudos: state.adeudos.map(a => a.id === action.payload.id ? action.payload : a) }
+    case 'DELETE_ADEUDO':
+      return { ...state, adeudos: state.adeudos.filter(a => a.id !== action.payload) }
+
     // Auto-cleanup of expired/delivered packages
     case 'CLEANUP_EXPIRED': {
       const now = new Date(action.payload.nowIso)
@@ -340,6 +436,7 @@ function reducer(state: StoreState, action: Action): StoreState {
         buildingConfig: seedBuildingConfig,
         tickets: seedTickets,
         ticketCounter: seedTicketCounter,
+        adeudos: seedAdeudos,
       }
 
     default:

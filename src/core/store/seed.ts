@@ -27,10 +27,24 @@ export interface Notificacion {
 
 // ─── Announcement ────────────────────────────────────────────────────
 
-/** A community announcement posted by the admin */
+/** Event tracking for communications (Universal Data Models - Event-Party linkage) */
+export interface AvisoTrackingEvent {
+  /** Nature of the tracking: passive view or intentional confirm */
+  type: 'view' | 'confirm'
+  /** Identifier of the interacting party (e.g. "A101") */
+  apartment: string
+  /** Human reference to the resident name */
+  resident: string
+  /** ISO Date of the tracking */
+  timestamp: string
+}
+
+/** A community announcement or communication event posted by the admin */
 export interface Aviso {
   id: string
   title: string
+  /** Event Category classification */
+  category: 'general' | 'asamblea'
   /** Optional rich text description */
   description?: string
   /** File name of the attached document */
@@ -41,11 +55,23 @@ export interface Aviso {
   endDate?: string | null
   /** ISO date when the announcement was created */
   date: string
+  /** Event start time (HH:mm) — required for asamblea */
+  startTime?: string
+  /** Event end time (HH:mm) — required for asamblea */
+  endTime?: string
+  /** Base64 string of the uploaded file */
+  attachmentData?: string
+  /** Type of attachment to help rendering */
+  attachmentType?: 'image' | 'pdf'
+  /** Whether this announcement is pinned to the top of the list */
+  pinned?: boolean
+  /** Audit log of recipients who have formally interacted with this communication event */
+  tracking?: AvisoTrackingEvent[]
 }
 
 // ─── Payment ─────────────────────────────────────────────────────────
 
-/** A monthly condo fee payment record */
+/** A charge/payment record in the billing ledger for a residential unit */
 export interface Pago {
   id: string
   /** Apartment identifier (e.g. "A101") */
@@ -54,11 +80,23 @@ export interface Pago {
   resident: string
   /** Human-readable month (e.g. "abril de 2026") */
   month: string
-  /** Payment amount in MXN */
+  /** ISO YYYY-MM used for reliable ordering and filtering */
+  monthKey: string
+  /** Billing concept — admin-defined, non-disciplinary (e.g. "Mensualidad", "Extraordinario") */
+  concepto: string
+  /** Amount in MXN */
   amount: number
   status: 'Pagado' | 'Pendiente'
   /** ISO date of payment, null if unpaid */
   paymentDate: string | null
+  /** If this pago was auto-generated from an Adeudo, stores the source adeudo id */
+  adeudoId?: string
+  /** Base64 data URL of the uploaded receipt (image or PDF) */
+  receiptData?: string
+  /** MIME category for rendering the receipt */
+  receiptType?: 'image' | 'pdf'
+  /** Original filename of the receipt */
+  receiptName?: string
 }
 
 // ─── Package ─────────────────────────────────────────────────────────
@@ -156,6 +194,10 @@ export interface StaffMember {
   shiftStart: string
   /** Shift end time (HH:mm) */
   shiftEnd: string
+  /** Base64 image data URL */
+  photo?: string
+  /** Active working days, e.g., ['L', 'M', 'Mi', 'J', 'V'] */
+  workDays?: string[]
 }
 
 // ─── Amenity ─────────────────────────────────────────────────────────
@@ -182,6 +224,8 @@ export interface BuildingConfig {
   adminName: string
   adminEmail: string
   adminPhone: string
+  /** Admin-managed list of payment concepts (e.g. Mensualidad, Multa) */
+  conceptosPago: string[]
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
@@ -242,6 +286,35 @@ export interface Ticket {
   activities: TicketActivity[]
 }
 
+// ─── Adeudo (Debt / Fine / Warning) ──────────────────────────────────
+
+/** Type of administrative record against a unit */
+export type AdeudoType = 'multa' | 'llamado_atencion' | 'adeudo'
+
+/** An administrative record: fine, formal warning, or collected overdue debt */
+export interface Adeudo {
+  id: string
+  /** Target unit/apartment (e.g. "A101") */
+  apartment: string
+  /** Classification */
+  type: AdeudoType
+  /** Free-text description of the reason (e.g. "Mensualidad atrasada Mar-2025", "Daños en elevador") */
+  concepto: string
+  /** Admin notes / detailed reason for this record */
+  description: string
+  /** Amount in MXN (0 for llamado_atencion) */
+  amount: number
+  status: 'Activo' | 'Pagado' | 'Anulado'
+  /** ISO timestamp when this record was created */
+  createdAt: string
+  /** ISO timestamp when resolved, null if still active */
+  resolvedAt: string | null
+  /** Name of the admin who resolved it */
+  resolvedBy: string | null
+  /** If a billing charge was generated from this adeudo, stores the linked Pago id */
+  pagoId?: string
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // SEED DATA — Initial state for a fresh installation
 // ═══════════════════════════════════════════════════════════════════════
@@ -256,6 +329,7 @@ export const seedBuildingConfig: BuildingConfig = {
   adminName: 'Administrador General',
   adminEmail: 'admin@property.com',
   adminPhone: '+52 55 1234 5678',
+  conceptosPago: ['Mensualidad', 'Extraordinario'],
 }
 
 export const seedAmenities: Amenity[] = [
@@ -282,36 +356,57 @@ export const seedResidents: Resident[] = [
 export const seedNotificaciones: Notificacion[] = []
 
 export const seedStaff: StaffMember[] = [
-  { id: 'staff-1', name: 'Carlos Mendoza', role: 'Guardia', shiftStart: '07:00', shiftEnd: '19:00' },
-  { id: 'staff-2', name: 'Juan Pérez', role: 'Jardinero', shiftStart: '08:00', shiftEnd: '17:00' },
-  { id: 'staff-3', name: 'María López', role: 'Limpieza', shiftStart: '06:00', shiftEnd: '14:00' },
+  { id: 'staff-1', name: 'Carlos Mendoza', role: 'Guardia', shiftStart: '07:00', shiftEnd: '19:00', workDays: ['L', 'M', 'Mi', 'J', 'V', 'S'], photo: '' },
+  { id: 'staff-2', name: 'Juan Pérez', role: 'Jardinero', shiftStart: '08:00', shiftEnd: '17:00', workDays: ['L', 'Mi', 'V'], photo: '' },
+  { id: 'staff-3', name: 'María López', role: 'Limpieza', shiftStart: '06:00', shiftEnd: '14:00', workDays: ['L', 'M', 'Mi', 'J', 'V'], photo: '' },
 ]
 
 export const seedAvisos: Aviso[] = [
-  { id: 'av-1', title: 'Mantenimiento de elevadores', attachment: 'mantenimiento.pdf', date: '2025-04-15' },
-  { id: 'av-2', title: 'Cambio de administración', attachment: 'cambio-admin.pdf', date: '2025-04-10' },
-  { id: 'av-3', title: 'Estado de cuenta mensual - Abril', attachment: 'estado-cuenta-abril.pdf', date: '2025-04-05' },
-  { id: 'av-4', title: 'Corte de Agua - Torre B', attachment: 'corte-agua.pdf', date: '2025-04-01' },
-  { id: 'av-5', title: 'Nueva Normativa Basura', attachment: 'normativa-basura.pdf', date: '2025-03-28' },
+  { id: 'av-1', category: 'general', title: 'Mantenimiento de elevadores', attachment: 'mantenimiento.pdf', date: '2025-04-15' },
+  { id: 'av-2', category: 'general', title: 'Cambio de administración', attachment: 'cambio-admin.pdf', date: '2025-04-10' },
+  { 
+    id: 'av-3', 
+    category: 'asamblea', 
+    pinned: true,
+    title: 'Asamblea Ordinaria General', 
+    description: 'Convocatoria formal para la próxima Asamblea Ordinaria donde se discutirán presupuestos, estado de áreas comunes y elección de comité de vigilancia. Favor de confirmar su asistencia para contemplar el quórum reglamentario.', 
+    attachment: 'Convocatoria_Asamblea_2025.pdf', 
+    date: '2025-04-12',
+    startDate: '2025-04-20',
+    endDate: '2027-12-31',
+    startTime: '18:00',
+    endTime: '20:00',
+    tracking: [
+      { type: 'view', apartment: 'A101', resident: 'Sofía Torres', timestamp: new Date(Date.now() - 6 * 3600 * 1000).toISOString() },
+      { type: 'confirm', apartment: 'A101', resident: 'Sofía Torres', timestamp: new Date(Date.now() - 5 * 3600 * 1000).toISOString() },
+      { type: 'view', apartment: 'A101', resident: 'Carlos Torres', timestamp: new Date(Date.now() - 4 * 3600 * 1000).toISOString() },
+      { type: 'view', apartment: 'B102', resident: 'Roberto Mendez', timestamp: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
+      { type: 'confirm', apartment: 'B102', resident: 'Roberto Mendez', timestamp: new Date(Date.now() - 1 * 3600 * 1000).toISOString() }
+    ]
+  },
+  { id: 'av-4', category: 'general', title: 'Corte de Agua - Torre B', attachment: 'corte-agua.pdf', date: '2025-04-01' },
+  { id: 'av-5', category: 'general', title: 'Nueva Normativa Basura', attachment: 'normativa-basura.pdf', date: '2025-03-28' },
 ]
 
 export const seedPagos: Pago[] = [
-  { id: 'pg-1', apartment: 'A101', resident: 'Sofía Torres', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-13' },
-  { id: 'pg-2', apartment: 'A102', resident: 'Luis Díaz', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-20' },
-  { id: 'pg-3', apartment: 'A103', resident: 'Luis Martínez', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-11' },
-  { id: 'pg-4', apartment: 'A104', resident: 'Pedro Sánchez', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-02' },
-  { id: 'pg-5', apartment: 'A201', resident: 'Ana López', month: 'abril de 2026', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-6', apartment: 'A202', resident: 'María Ramírez', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-12' },
-  { id: 'pg-7', apartment: 'A203', resident: 'Carlos Gómez', month: 'abril de 2026', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-8', apartment: 'A204', resident: 'Juan Pérez', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-08' },
-  { id: 'pg-9', apartment: 'B101', resident: 'Laura Ramírez', month: 'abril de 2026', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-10', apartment: 'B102', resident: 'Roberto Mendez', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-15' },
-  { id: 'pg-11', apartment: 'B203', resident: 'María López', month: 'abril de 2026', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-12', apartment: 'B204', resident: 'Gabriela Sánchez', month: 'abril de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-04-09' },
-  { id: 'pg-13', apartment: 'A101', resident: 'Sofía Torres', month: 'marzo de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-03-10' },
-  { id: 'pg-14', apartment: 'A201', resident: 'Ana López', month: 'marzo de 2026', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-15', apartment: 'B101', resident: 'Laura Ramírez', month: 'marzo de 2026', amount: 1700, status: 'Pagado', paymentDate: '2026-03-15' },
+  { id: 'pg-1',  apartment: 'A101', resident: 'Sofía Torres',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-13' },
+  { id: 'pg-2',  apartment: 'A102', resident: 'Luis Díaz',        month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-20' },
+  { id: 'pg-3',  apartment: 'A103', resident: 'Luis Martínez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-11' },
+  { id: 'pg-4',  apartment: 'A104', resident: 'Pedro Sánchez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-02' },
+  { id: 'pg-5',  apartment: 'A201', resident: 'Ana López',        month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
+  { id: 'pg-6',  apartment: 'A202', resident: 'María Ramírez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-12' },
+  { id: 'pg-7',  apartment: 'A203', resident: 'Carlos Gómez',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
+  { id: 'pg-8',  apartment: 'A204', resident: 'Juan Pérez',       month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-08' },
+  { id: 'pg-9',  apartment: 'B101', resident: 'Laura Ramírez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
+  { id: 'pg-10', apartment: 'B102', resident: 'Roberto Mendez',   month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-15' },
+  { id: 'pg-11', apartment: 'B203', resident: 'María López',      month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
+  { id: 'pg-12', apartment: 'B204', resident: 'Gabriela Sánchez', month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-09' },
+  { id: 'pg-13', apartment: 'A101', resident: 'Sofía Torres',     month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-10' },
+  { id: 'pg-14', apartment: 'A201', resident: 'Ana López',        month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
+  { id: 'pg-15', apartment: 'B101', resident: 'Laura Ramírez',    month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-15' },
+  { id: 'pg-16', apartment: 'A203', resident: 'Carlos Gómez',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Multa',        amount: 500,  status: 'Pendiente', paymentDate: null },
 ]
+
 
 export const seedPaquetes: Paquete[] = [
   { id: 'pq-1', recipient: 'Luis Martínez', apartment: 'A101', receivedDate: '2026-04-11', status: 'Entregado', location: 'N/A' },
@@ -482,5 +577,47 @@ export const seedTickets: Ticket[] = [
         createdAt: '2026-04-12T09:00:00.000Z',
       },
     ],
+  },
+]
+
+export const seedAdeudos: Adeudo[] = [
+  {
+    id: 'ad-1',
+    apartment: 'A203',
+    type: 'multa',
+    concepto: 'Multa',
+    description: 'Uso indebido de cajón de estacionamiento ajeno. Se le ha notificado previamente.',
+    amount: 500,
+    status: 'Activo',
+    createdAt: '2026-04-10T10:00:00.000Z',
+    resolvedAt: null,
+    resolvedBy: null,
+    pagoId: undefined,
+  },
+  {
+    id: 'ad-2',
+    apartment: 'B203',
+    type: 'llamado_atencion',
+    concepto: 'Llamado de atención',
+    description: 'Ruido excesivo después de las 22:00 hrs. reportado por vecinos del piso 2.',
+    amount: 0,
+    status: 'Activo',
+    createdAt: '2026-04-08T09:30:00.000Z',
+    resolvedAt: null,
+    resolvedBy: null,
+    pagoId: undefined,
+  },
+  {
+    id: 'ad-3',
+    apartment: 'A201',
+    type: 'adeudo',
+    concepto: 'Mensualidades atrasadas Mar-Abr 2026',
+    description: 'Adeudo acumulado de 2 meses de mantenimiento (marzo y abril 2026).',
+    amount: 3400,
+    status: 'Activo',
+    createdAt: '2026-04-01T08:00:00.000Z',
+    resolvedAt: null,
+    resolvedBy: null,
+    pagoId: undefined,
   },
 ]

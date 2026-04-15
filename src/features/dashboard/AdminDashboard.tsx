@@ -13,23 +13,10 @@ import { Link } from 'react-router-dom'
 import { useStore } from '../../core/store/store'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
-import type { StaffRole } from '../../core/store/seed'
+import AvisoFormModal from '../../core/components/AvisoFormModal'
+import type { Aviso, StaffRole } from '../../core/store/seed'
 
-/** Static type for approval queue items */
-interface ApprovalItem {
-  id: string
-  type: string
-  detail: string
-  date: string
-  icon: string
-}
-
-/** Initial demo approval items */
-const initialApprovals: ApprovalItem[] = [
-  { id: 'appr-1', type: 'Reserva', detail: 'Salón Eventos — A304', date: '15 Apr', icon: 'event' },
-  { id: 'appr-2', type: 'Pago', detail: 'Comprobante — B102', date: '14 Apr', icon: 'receipt_long' },
-  { id: 'appr-3', type: 'Acceso', detail: 'Visitante — C201', date: '14 Apr', icon: 'badge' },
-]
+const DAYS_OF_WEEK = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D']
 
 /** Allowed staff role categories */
 const STAFF_ROLES: StaffRole[] = ['Guardia', 'Jardinero', 'Limpieza']
@@ -43,25 +30,47 @@ const ROLE_ICONS: Record<StaffRole, string> = {
 
 export default function AdminDashboard() {
   const { state, dispatch } = useStore()
-  const [approvals, setApprovals] = useState<ApprovalItem[]>(initialApprovals)
   const [toasts, setToasts] = useState<{ id: string; message: string; type: 'approve' | 'reject' }[]>([])
+
+  // Derived approvals from reservations
+  const approvals = useMemo(() => {
+    return state.reservaciones
+      .filter(r => r.status === 'Por confirmar')
+      .map(r => ({
+        id: r.id,
+        type: 'Reserva',
+        detail: `${r.grill.split(' (')[0]} — ${r.apartment}`,
+        date: r.date,
+        icon: 'event',
+        original: r
+      }))
+  }, [state.reservaciones])
 
   // Staff management modal
   const [showStaffModal, setShowStaffModal] = useState(false)
+  const [editingStaffId, setEditingStaffId] = useState<string | null>(null)
   const [staffName, setStaffName] = useState('')
   const [staffRole, setStaffRole] = useState<StaffRole>('Guardia')
   const [staffShiftStart, setStaffShiftStart] = useState('08:00')
   const [staffShiftEnd, setStaffShiftEnd] = useState('17:00')
+  const [staffPhoto, setStaffPhoto] = useState('')
+  const [staffWorkDays, setStaffWorkDays] = useState<string[]>(['L', 'M', 'Mi', 'J', 'V'])
 
-  // Inline aviso creation modal
+  // Inline aviso creation via unified component
   const [showAvisoModal, setShowAvisoModal] = useState(false)
-  const [avisoTitle, setAvisoTitle] = useState('')
-  const [avisoDesc, setAvisoDesc] = useState('')
 
   // In-app confirm dialog state (replaces window.confirm)
   const [confirmDeleteStaffId, setConfirmDeleteStaffId] = useState<string | null>(null)
 
   const bc = state.buildingConfig
+  const todayISO = new Date().toISOString().split('T')[0]
+
+  /** Check if there is already an active assembly */
+  const hasActiveAsamblea = useMemo(() => {
+    return state.avisos.some(a =>
+      a.category === 'asamblea' && (!a.endDate || a.endDate >= todayISO)
+    )
+  }, [state.avisos, todayISO])
 
   // ── KPI Calculations ──
   const totalPagos = state.pagos.length
@@ -89,30 +98,70 @@ export default function AdminDashboard() {
   const handleApproval = (id: string, action: 'approve' | 'reject') => {
     const item = approvals.find(a => a.id === id)
     if (!item) return
-    setApprovals(prev => prev.filter(a => a.id !== id))
+    
+    dispatch({
+      type: 'UPDATE_RESERVACION',
+      payload: { ...item.original, status: action === 'approve' ? 'Reservado' : 'Cancelado' }
+    })
+    
     const msg = action === 'approve' ? `${item.type} aprobado: ${item.detail}` : `${item.type} rechazado: ${item.detail}`
     const toastId = `toast-${Date.now()}`
     setToasts(prev => [...prev, { id: toastId, message: msg, type: action }])
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== toastId)), 3000)
   }
 
-  /** Adds a new staff member from the modal form */
-  const handleAddStaff = () => {
-    if (!staffName.trim()) return
-    dispatch({
-      type: 'ADD_STAFF',
-      payload: {
-        id: `staff-${Date.now()}`,
-        name: staffName,
-        role: staffRole,
-        shiftStart: staffShiftStart,
-        shiftEnd: staffShiftEnd,
-      }
-    })
+  const resetStaffForm = () => {
+    setEditingStaffId(null)
     setStaffName('')
     setStaffRole('Guardia')
     setStaffShiftStart('08:00')
     setStaffShiftEnd('17:00')
+    setStaffPhoto('')
+    setStaffWorkDays(['L', 'M', 'Mi', 'J', 'V'])
+    setShowStaffModal(false)
+  }
+
+  const openEditStaff = (staff: any) => {
+    setEditingStaffId(staff.id)
+    setStaffName(staff.name)
+    setStaffRole(staff.role as StaffRole)
+    setStaffShiftStart(staff.shiftStart)
+    setStaffShiftEnd(staff.shiftEnd)
+    setStaffPhoto(staff.photo || '')
+    setStaffWorkDays(staff.workDays || ['L', 'M', 'Mi', 'J', 'V'])
+    setShowStaffModal(true)
+  }
+
+  const handleSaveStaff = () => {
+    if (!staffName.trim()) return
+    const payload = {
+      id: editingStaffId || `staff-${Date.now()}`,
+      name: staffName,
+      role: staffRole,
+      shiftStart: staffShiftStart,
+      shiftEnd: staffShiftEnd,
+      photo: staffPhoto,
+      workDays: staffWorkDays,
+    }
+
+    if (editingStaffId) {
+      dispatch({ type: 'UPDATE_STAFF', payload })
+    } else {
+      dispatch({ type: 'ADD_STAFF', payload })
+    }
+    resetStaffForm()
+  }
+
+  const handleStaffPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => setStaffPhoto(event.target?.result as string)
+    reader.readAsDataURL(file)
+  }
+
+  const toggleWorkDay = (day: string) => {
+    setStaffWorkDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day])
   }
 
   /** Opens the in-app confirm dialog for staff deletion */
@@ -125,30 +174,51 @@ export default function AdminDashboard() {
     if (confirmDeleteStaffId) {
       dispatch({ type: 'DELETE_STAFF', payload: confirmDeleteStaffId })
     }
+    setConfirmDeleteStaffId(null)
   }
 
-  /** Creates a new aviso from the inline dashboard modal */
-  const handleAddAviso = () => {
-    if (!avisoTitle.trim()) return
-    dispatch({
-      type: 'ADD_AVISO',
-      payload: {
-        id: `av-${Date.now()}`,
-        title: avisoTitle,
-        description: avisoDesc || undefined,
-        attachment: '',
-        date: new Date().toISOString().split('T')[0],
+  /** Creates a new aviso from the unified modal */
+  const handleSaveAviso = (data: Omit<Aviso, 'id'> & { id?: string }) => {
+    if (data.id) {
+      const existing = state.avisos.find(a => a.id === data.id)
+      if (existing) {
+        dispatch({ type: 'UPDATE_AVISO', payload: { ...existing, ...data } as Aviso })
       }
-    })
-    setAvisoTitle('')
-    setAvisoDesc('')
+    } else {
+      dispatch({
+        type: 'ADD_AVISO',
+        payload: { id: `av-${Date.now()}`, ...data } as Aviso,
+      })
+    }
     setShowAvisoModal(false)
     const toastId = `toast-${Date.now()}`
-    setToasts(prev => [...prev, { id: toastId, message: `Aviso "${avisoTitle}" publicado`, type: 'approve' }])
+    setToasts(prev => [...prev, { id: toastId, message: `Aviso "${data.title}" publicado`, type: 'approve' }])
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== toastId)), 3000)
   }
 
   const staff = state.staff || []
+  
+  const upcomingAsamblea = useMemo(() => state.avisos.find(a => a.category === 'asamblea'), [state.avisos])
+  const asambleaStats = useMemo(() => {
+    if (!upcomingAsamblea) return { confirmedApartments: 0, trackingByApartment: {} }
+    const tracking = upcomingAsamblea.tracking || []
+    
+    // Group by apartment
+    const byApartment: Record<string, typeof tracking> = {}
+    tracking.forEach(t => {
+      if (!byApartment[t.apartment]) byApartment[t.apartment] = []
+      byApartment[t.apartment].push(t)
+    })
+
+    let confirmedApartments = 0
+    Object.values(byApartment).forEach(list => {
+      if (list.some(t => t.type === 'confirm')) confirmedApartments++
+    })
+
+    return { confirmedApartments, trackingByApartment: byApartment }
+  }, [upcomingAsamblea])
+
+  const [viewAsambleaModal, setViewAsambleaModal] = useState(false)
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -242,7 +312,7 @@ export default function AdminDashboard() {
             </div>
           </Link>
 
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-amber-200 transition-colors">
+          <Link to="/tickets" className="block bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-amber-200 transition-colors">
             <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
               <span className="material-symbols-outlined">confirmation_number</span>
             </div>
@@ -256,9 +326,9 @@ export default function AdminDashboard() {
             <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
               <div className="h-full bg-amber-500 rounded-full" style={{ width: '40%' }}></div>
             </div>
-          </div>
+          </Link>
 
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-primary-container transition-colors">
+          <Link to="/usuarios" className="block bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-primary-container transition-colors">
             <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
               <span className="material-symbols-outlined">apartment</span>
             </div>
@@ -269,7 +339,7 @@ export default function AdminDashboard() {
               </div>
               <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">{totalResidents} de {totalUnits} residencias</p>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
 
@@ -296,14 +366,20 @@ export default function AdminDashboard() {
                 </div>
               )}
               {staff.map((person) => (
-                <div key={person.id} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer">
-                  <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
-                    <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role as StaffRole] || 'person'}</span>
-                  </div>
+                <div key={person.id} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer" onClick={() => openEditStaff(person)}>
+                  {person.photo ? (
+                    <img src={person.photo} alt={person.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
+                  ) : (
+                    <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
+                      <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role as StaffRole] || 'person'}</span>
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-slate-900 truncate tracking-tight">{person.name}</p>
                     <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">{person.role}</p>
-                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{person.shiftStart} – {person.shiftEnd}</p>
+                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {person.shiftStart} – {person.shiftEnd} • {(person.workDays || ['L','M','Mi','J','V']).join(' ')}
+                    </p>
                   </div>
                   <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" title="Online" />
                 </div>
@@ -320,20 +396,27 @@ export default function AdminDashboard() {
               </Link>
             </div>
             <div className="space-y-4">
-              {recentNotices.map((notice) => (
-                <div key={notice.title} className="flex items-start space-x-5 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
-                  <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 flex-shrink-0">
-                    <span className="material-symbols-outlined">{notice.icon}</span>
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <div className="flex justify-between items-start">
-                      <h4 className="text-[15px] font-bold text-slate-900 leading-tight">{notice.title}</h4>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{notice.time}</span>
-                    </div>
-                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{notice.body}</p>
-                  </div>
+              {recentNotices.length === 0 ? (
+                <div className="p-8 text-center text-emerald-600 font-medium bg-emerald-50/50 border border-emerald-100/50 rounded-2xl animate-in fade-in">
+                  <span className="material-symbols-outlined text-2xl mb-1 block">check_circle</span>
+                  <span className="text-[11px] uppercase tracking-widest font-black">Todo en orden</span>
                 </div>
-              ))}
+              ) : (
+                recentNotices.map((notice) => (
+                  <div key={notice.title} className="flex items-start space-x-5 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                    <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 flex-shrink-0">
+                      <span className="material-symbols-outlined">{notice.icon}</span>
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex justify-between items-start">
+                        <h4 className="text-[15px] font-bold text-slate-900 leading-tight">{notice.title}</h4>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{notice.time}</span>
+                      </div>
+                      <p className="text-sm text-slate-500 font-medium leading-relaxed">{notice.body}</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </section>
         </div>
@@ -349,27 +432,38 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="space-y-4">
-              {[
-                { title: 'Falla en Bomba Principal', body: 'Presión baja detectada en Torre A y B.', severity: 'critical', icon: 'water_damage' },
-                { title: 'Cámara 04 Desconectada', body: 'Acceso perimetral norte sin monitoreo.', severity: 'warning', icon: 'videocam_off' },
-              ].map((alert) => (
-                <div key={alert.title} className={`p-6 border rounded-3xl shadow-sm flex items-center space-x-5 group transition-all ${
-                  alert.severity === 'critical' ? 'bg-rose-50 border-rose-100' : 'bg-amber-50 border-amber-100'
-                }`}>
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                    alert.severity === 'critical' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
+              {(() => {
+                // Using an empty array to render the "Todo en orden" state
+                const currentAlerts: any[] = [] 
+                
+                if (currentAlerts.length === 0) {
+                  return (
+                    <div className="p-8 text-center text-emerald-600 font-medium bg-emerald-50/50 border border-emerald-100/50 rounded-2xl animate-in fade-in">
+                      <span className="material-symbols-outlined text-2xl mb-1 block">check_circle</span>
+                      <span className="text-[11px] uppercase tracking-widest font-black">Todo en orden</span>
+                    </div>
+                  )
+                }
+
+                return currentAlerts.map((alert) => (
+                  <div key={alert.title} className={`p-6 border rounded-3xl shadow-sm flex items-center space-x-5 group transition-all ${
+                    alert.severity === 'critical' ? 'bg-rose-50 border-rose-100' : 'bg-amber-50 border-amber-100'
                   }`}>
-                    <span className="material-symbols-outlined">{alert.icon}</span>
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                      alert.severity === 'critical' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
+                    }`}>
+                      <span className="material-symbols-outlined">{alert.icon}</span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-[15px] font-bold text-slate-900">{alert.title}</h4>
+                      <p className="text-sm text-slate-600 font-medium mt-1">{alert.body}</p>
+                    </div>
+                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100">
+                      <span className="material-symbols-outlined">trending_flat</span>
+                    </button>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-[15px] font-bold text-slate-900">{alert.title}</h4>
-                    <p className="text-sm text-slate-600 font-medium mt-1">{alert.body}</p>
-                  </div>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100">
-                    <span className="material-symbols-outlined">trending_flat</span>
-                  </button>
-                </div>
-              ))}
+                ))
+              })()}
             </div>
           </section>
 
@@ -381,9 +475,9 @@ export default function AdminDashboard() {
             </div>
             <div className="space-y-4">
               {approvals.length === 0 && (
-                <div className="p-8 text-center text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
-                  <span className="material-symbols-outlined text-3xl mb-2 block">check_circle</span>
-                  No hay aprobaciones pendientes
+                <div className="p-8 text-center text-emerald-600 font-medium bg-emerald-50/50 border border-emerald-100/50 rounded-2xl animate-in fade-in">
+                  <span className="material-symbols-outlined text-2xl mb-1 block">check_circle</span>
+                  <span className="text-[11px] uppercase tracking-widest font-black">Todo en orden</span>
                 </div>
               )}
               {approvals.map((item) => (
@@ -410,40 +504,49 @@ export default function AdminDashboard() {
           </section>
 
           {/* Assembly card */}
-          <section className="bg-slate-900 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-slate-200 text-white">
-            <div className="absolute top-0 right-0 p-8 opacity-10">
-              <span className="material-symbols-outlined text-[8rem]">event</span>
-            </div>
-            <div className="relative z-10 space-y-6">
-              <div>
-                <span className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] block mb-2 font-label">Próxima Asamblea</span>
-                <h3 className="text-2xl font-headline font-black tracking-tight">Asamblea Ordinaria</h3>
-                <p className="text-white/70 font-medium mt-1 italic">15 de Julio, 2025 • 19:00 hrs</p>
+          {upcomingAsamblea && (
+            <section className="bg-slate-900 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-slate-200 text-white">
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                <span className="material-symbols-outlined text-[8rem]">event</span>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/50">
-                  <span>Quórum Confirmado</span>
-                  <span className="text-white">45%</span>
+              <div className="relative z-10 space-y-6">
+                <div>
+                  <span className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] block mb-2 font-label">Próxima Asamblea</span>
+                  <h3 className="text-2xl font-headline font-black tracking-tight">{upcomingAsamblea.title}</h3>
+                  <p className="text-white/70 font-medium mt-1 italic">
+                    {upcomingAsamblea.startDate || upcomingAsamblea.date}
+                    {upcomingAsamblea.startTime && ` • ${upcomingAsamblea.startTime} – ${upcomingAsamblea.endTime}`}
+                  </p>
                 </div>
-                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary-fixed rounded-full shadow-[0_0_12px_rgba(216,227,251,0.5)]" style={{ width: '45%' }}></div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/50">
+                    <span>Quórum Confirmado</span>
+                    <span className="text-white">
+                      {Math.round((asambleaStats.confirmedApartments / bc.totalUnits) * 100)}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary-fixed rounded-full shadow-[0_0_12px_rgba(216,227,251,0.5)] transition-all duration-1000 delay-500" 
+                      style={{ width: `${Math.round((asambleaStats.confirmedApartments / bc.totalUnits) * 100)}%` }}
+                    />
+                  </div>
                 </div>
+                <button onClick={() => setViewAsambleaModal(true)} className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg block text-center">
+                  Auditoría de Asistencia
+                </button>
               </div>
-              <Link to="/votaciones" className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-[10px] shadow-lg block text-center">
-                Gestionar Asamblea
-              </Link>
-            </div>
-          </section>
+            </section>
+          )}
         </div>
       </div>
 
       {/* ── Staff Management Modal ── */}
-      <Modal open={showStaffModal} onClose={() => setShowStaffModal(false)} title="Gestión de Personal">
+      <Modal open={showStaffModal} onClose={resetStaffForm} title={editingStaffId ? 'Editar Personal' : 'Agregar Personal'}>
         <div className="space-y-6">
-          {/* Add staff form */}
           <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agregar Personal</p>
-            <div className="grid grid-cols-2 gap-3">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{editingStaffId ? 'Datos del empleado' : 'Nuevo Empleado'}</p>
+            <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
                 <input
                   type="text" value={staffName} onChange={(e) => setStaffName(e.target.value)}
@@ -451,88 +554,108 @@ export default function AdminDashboard() {
                   placeholder="Nombre completo"
                 />
               </div>
-              <div className="col-span-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Categoría</label>
+              <div className="col-span-2 md:col-span-1 space-y-2">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Categoría</label>
                 <select value={staffRole} onChange={(e) => setStaffRole(e.target.value as StaffRole)}
                   className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
                 >
                   {STAFF_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
-              <div className="space-y-1">
+              <div className="col-span-2 md:col-span-1 space-y-2">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Fotografía (Sugerido 200x200 1:1)</label>
+                <input type="file" accept="image/jpeg, image/png" onChange={handleStaffPhotoUpload}
+                  className="block w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-white"
+                />
+              </div>
+              <div className="col-span-2 space-y-2">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Días Laborales</label>
+                <div className="flex flex-wrap gap-2">
+                  {DAYS_OF_WEEK.map(day => (
+                    <button
+                      key={day}
+                      onClick={() => toggleWorkDay(day)}
+                      className={`w-9 h-9 rounded-lg font-bold text-xs border transition-all ${
+                        staffWorkDays.includes(day)
+                          ? 'bg-primary text-white border-primary shadow-sm'
+                          : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="col-span-1 space-y-1">
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Entrada</label>
                 <input type="time" value={staffShiftStart} onChange={(e) => setStaffShiftStart(e.target.value)}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
                 />
               </div>
-              <div className="space-y-1">
+              <div className="col-span-1 space-y-1">
                 <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Salida</label>
                 <input type="time" value={staffShiftEnd} onChange={(e) => setStaffShiftEnd(e.target.value)}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
                 />
               </div>
             </div>
-            <button onClick={handleAddStaff}
-              className="w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
+            <button onClick={handleSaveStaff}
+              className="w-full py-3 mt-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
             >
-              Agregar al Staff
+              {editingStaffId ? 'Guardar Cambios' : 'Agregar al Staff'}
             </button>
           </div>
 
-          {/* Current staff list */}
-          <div className="space-y-3">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Personal Activo ({staff.length})</p>
-            {staff.length === 0 && (
-              <p className="text-sm text-slate-400 text-center py-4">No hay personal registrado</p>
-            )}
-            {staff.map((s) => (
-              <div key={s.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-500 border border-slate-100">
-                    <span className="material-symbols-outlined text-lg">{ROLE_ICONS[s.role as StaffRole] || 'person'}</span>
+          {!editingStaffId && (
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Personal Activo ({staff.length})</p>
+              {staff.length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-4">No hay personal registrado</p>
+              )}
+              {staff.map((s) => (
+                <div key={s.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
+                  <div className="flex items-center space-x-3">
+                    {s.photo ? (
+                      <img src={s.photo} alt={s.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
+                    ) : (
+                      <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-500 border border-slate-100">
+                        <span className="material-symbols-outlined text-lg">{ROLE_ICONS[s.role as StaffRole] || 'person'}</span>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{s.name}</p>
+                      <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                        {s.role} • {s.shiftStart}–{s.shiftEnd} • {(s.workDays || []).join(' ')}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{s.name}</p>
-                    <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
-                      {s.role} • {s.shiftStart}–{s.shiftEnd}
-                    </p>
+                  <div className="flex gap-2">
+                    <button onClick={() => openEditStaff(s)}
+                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-container/30 rounded-lg transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                    <button onClick={() => handleDeleteStaff(s.id)}
+                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
                   </div>
                 </div>
-                <button onClick={() => handleDeleteStaff(s.id)}
-                  className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                >
-                  <span className="material-symbols-outlined text-[18px]">delete</span>
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </Modal>
 
       {/* ── Inline Aviso Creation Modal ── */}
-      <Modal open={showAvisoModal} onClose={() => setShowAvisoModal(false)} title="Publicar Nuevo Aviso">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Título *</label>
-            <input type="text" value={avisoTitle} onChange={(e) => setAvisoTitle(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-              placeholder="Ej: Mantenimiento de elevadores"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción</label>
-            <textarea value={avisoDesc} onChange={(e) => setAvisoDesc(e.target.value)} rows={3}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm resize-none"
-              placeholder="Descripción opcional del aviso..."
-            />
-          </div>
-          <button onClick={handleAddAviso}
-            className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
-          >
-            Publicar Aviso
-          </button>
-        </div>
-      </Modal>
+      {/* ── Unified Aviso Form Modal ── */}
+      <AvisoFormModal
+        open={showAvisoModal}
+        onClose={() => setShowAvisoModal(false)}
+        onSave={handleSaveAviso}
+        hasActiveAsamblea={hasActiveAsamblea}
+      />
 
       {/* ── In-App Confirm Dialog for Staff Deletion ── */}
       <ConfirmDialog
@@ -545,6 +668,80 @@ export default function AdminDashboard() {
       >
         ¿Seguro que desea eliminar a este miembro del staff? Esta acción no se puede deshacer.
       </ConfirmDialog>
+
+      {/* ── Auditoria Asamblea Modal ── */}
+      <Modal open={viewAsambleaModal} onClose={() => setViewAsambleaModal(false)} title="Auditoría de Asistencia">
+        {upcomingAsamblea && (
+          <div className="space-y-4">
+             <p className="text-sm font-medium text-slate-600 mb-4">
+               Lista de residentes que han confirmado su asistencia / acuse de recibo para: <strong className="text-slate-900">{upcomingAsamblea.title}</strong>
+             </p>
+             <div className="max-h-64 overflow-y-auto border border-slate-200 rounded-2xl">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-50 sticky top-0 border-b border-slate-200">
+                     <tr>
+                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Departamento</th>
+                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Actividad de Residentes</th>
+                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estatus Depto</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {Object.entries(asambleaStats.trackingByApartment).map(([apartment, events]) => {
+                       const isConfirmed = events.some(e => e.type === 'confirm')
+                       return (
+                         <tr key={apartment} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
+                            <td className="px-4 py-3 text-sm font-bold text-slate-900">{apartment}</td>
+                            <td className="px-4 py-3 text-xs text-slate-600">
+                               <div className="space-y-1">
+                                 {events.map((e, i) => (
+                                   <div key={i} className="flex items-center space-x-2">
+                                     {e.type === 'confirm' ? (
+                                        <span className="material-symbols-outlined text-[14px] text-emerald-500">check_circle</span>
+                                     ) : (
+                                        <span className="material-symbols-outlined text-[14px] text-slate-300">visibility</span>
+                                     )}
+                                     <span className={e.type === 'confirm' ? 'font-bold text-slate-900' : 'text-slate-500'}>
+                                        {e.resident} <span className="opacity-50 text-[10px]">({new Date(e.timestamp).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })})</span>
+                                     </span>
+                                   </div>
+                                 ))}
+                               </div>
+                            </td>
+                            <td className="px-4 py-3">
+                               {isConfirmed ? (
+                                 <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-widest rounded-lg border border-emerald-100">
+                                   Confirmado
+                                 </span>
+                               ) : (
+                                 <span className="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-widest rounded-lg border border-slate-200">
+                                   Solo Visto
+                                 </span>
+                               )}
+                            </td>
+                         </tr>
+                       )
+                     })}
+                     {Object.keys(asambleaStats.trackingByApartment).length === 0 && (
+                       <tr>
+                         <td colSpan={3} className="px-4 py-6 text-center text-slate-400 font-medium text-sm">Nadie ha interactuado aún</td>
+                       </tr>
+                     )}
+                  </tbody>
+                </table>
+             </div>
+             <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                <div>
+                   <p className="text-[10px] uppercase font-bold text-slate-400">Departamentos Confirmados</p>
+                   <p className="text-lg font-black text-slate-900">{asambleaStats.confirmedApartments} Unidades</p>
+                </div>
+                <div>
+                   <p className="text-[10px] uppercase font-bold text-slate-400">Quórum Pendiente</p>
+                   <p className="text-lg font-black text-slate-900">{bc.totalUnits - asambleaStats.confirmedApartments} Unidades</p>
+                </div>
+             </div>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }
