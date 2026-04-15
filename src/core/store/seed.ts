@@ -97,6 +97,8 @@ export interface Pago {
   receiptType?: 'image' | 'pdf'
   /** Original filename of the receipt */
   receiptName?: string
+  /** Admin/system notes (e.g. advance payment annotations) */
+  notes?: string
 }
 
 // ─── Package ─────────────────────────────────────────────────────────
@@ -372,7 +374,7 @@ export const seedBuildingConfig: BuildingConfig = {
   adminName: 'Administrador General',
   adminEmail: 'admin@property.com',
   adminPhone: '+52 55 1234 5678',
-  conceptosPago: ['Mensualidad', 'Extraordinario'],
+  conceptosPago: ['Mensualidad', 'Extraordinario', 'Multa', 'Adeudo', 'Reserva Amenidad'],
   categoriasEgreso: ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros'],
 }
 

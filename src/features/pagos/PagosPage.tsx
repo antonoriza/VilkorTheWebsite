@@ -62,11 +62,10 @@ const ADEUDO_TYPE_LABELS: Record<AdeudoType, string> = {
 
 
 // ── Charge type for unified modal ──
-type ChargeType = 'extraordinario' | 'ingreso' | 'egreso'
+type ChargeType = 'ingreso' | 'egreso'
 const CHARGE_TYPES: { key: ChargeType; label: string; icon: string; desc: string }[] = [
-  { key: 'extraordinario', label: 'Extraordinario',  icon: 'receipt_long',   desc: 'Cargo especial a una unidad (cuota extra, multa, etc.)' },
-  { key: 'ingreso',        label: 'Ingreso',         icon: 'savings',        desc: 'Registrar un pago recibido de un residente' },
-  { key: 'egreso',         label: 'Egreso',          icon: 'trending_down',  desc: 'Registrar un gasto operativo del edificio' },
+  { key: 'ingreso', label: 'Ingreso',  icon: 'savings',       desc: 'Registrar un pago o cargo a una unidad' },
+  { key: 'egreso',  label: 'Egreso',   icon: 'trending_down', desc: 'Registrar un gasto operativo del edificio' },
 ]
 
 // Sort types
@@ -156,7 +155,7 @@ export default function PagosPage() {
 
   // ── Unified modal ──
   const [showModal, setShowModal]             = useState(false)
-  const [chargeType, setChargeType]           = useState<ChargeType>('extraordinario')
+  const [chargeType, setChargeType]           = useState<ChargeType>('ingreso')
   const [mTower, setMTower]                   = useState('')
   const [mUnit, setMUnit]                     = useState('')
   const [mAmount, setMAmount]                 = useState('500')
@@ -470,30 +469,39 @@ export default function PagosPage() {
     if (!mUnit) return
     const resident = state.residents.find(r => r.apartment === mUnit)
     const resName = resident?.name || mUnit
+    const concepto = mConcepto || 'Mensualidad'
+    const isMensualidad = concepto === 'Mensualidad'
+    const todayIso = new Date().toISOString().split('T')[0]
+    const todayMk = todayIso.slice(0, 7)
 
-    if (chargeType === 'extraordinario') {
-      // ── Extraordinario → Cargo a una unidad (Pendiente por defecto) ──
-      const months = mMulti ? mMonths : [mSingleMonth]
-      const concepto = mConcepto || 'Extraordinario'
-      months.forEach(mk => {
+    if (isMensualidad && mMulti && mMonths.length > 0) {
+      // ── Multi-month Mensualidad (advance payments) ──
+      // Sort months chronologically
+      const sorted = [...mMonths].sort()
+      const firstMonth = sorted[0] // the "actual" payment month
+      sorted.forEach((mk, idx) => {
+        const isAdvance = idx > 0 // months after the first are advance payments
         dispatch({
           type: 'ADD_PAGO',
           payload: {
-            id: `pg-${Date.now()}-${mk}`,
+            id: `pg-${Date.now()}-${mk}-${idx}`,
             apartment: mUnit,
             resident: resName,
             month: monthKeyToLabel(mk),
             monthKey: mk,
             concepto,
-            amount: Number(mAmount) || 500,
-            status: 'Pendiente',
-            paymentDate: null,
+            amount: Number(mAmount) || 1700,
+            status: 'Pagado',
+            paymentDate: todayIso,
+            receiptData: mReceiptData || undefined,
+            receiptType: mReceiptType,
+            receiptName: mReceiptName || undefined,
+            notes: isAdvance ? `Pagado por adelanto en ${monthKeyToLabel(firstMonth)} (${todayMk})` : undefined,
           },
         })
       })
-    } else if (chargeType === 'ingreso') {
-      // ── Ingreso → Registrar pago recibido (Pagado por defecto) ──
-      const concepto = mConcepto || 'Mensualidad'
+    } else {
+      // ── Single month (any concepto) ──
       dispatch({
         type: 'ADD_PAGO',
         payload: {
@@ -505,7 +513,7 @@ export default function PagosPage() {
           concepto,
           amount: Number(mAmount) || 1700,
           status: 'Pagado',
-          paymentDate: new Date().toISOString().split('T')[0],
+          paymentDate: todayIso,
           receiptData: mReceiptData || undefined,
           receiptType: mReceiptType,
           receiptName: mReceiptName || undefined,
@@ -518,9 +526,14 @@ export default function PagosPage() {
 
   const toggleFormMonth = (mk: string) => setMMonths(prev => prev.includes(mk) ? prev.filter(m => m !== mk) : [...prev, mk])
 
+  const isMensualidadSelected = (mConcepto || 'Mensualidad') === 'Mensualidad'
+
   const formValid = (() => {
-    if (chargeType === 'extraordinario') return !!mUnit && (mMulti ? mMonths.length > 0 : !!mSingleMonth) && Number(mAmount) > 0
-    if (chargeType === 'ingreso') return !!mUnit && !!mSingleMonth && Number(mAmount) > 0 && !mReceiptError
+    if (chargeType === 'ingreso') {
+      if (!mUnit || Number(mAmount) <= 0 || mReceiptError) return false
+      if (isMensualidadSelected && mMulti) return mMonths.length > 0
+      return !!mSingleMonth
+    }
     if (chargeType === 'egreso') return !!egConcepto.trim() && Number(egAmount) > 0
     return false
   })()
@@ -797,12 +810,16 @@ export default function PagosPage() {
                           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest self-start ${
                             pago.adeudoId ? 'bg-rose-50 text-rose-700'
                             : pago.concepto === 'Extraordinario' ? 'bg-amber-50 text-amber-700'
+                            : pago.concepto === 'Multa' ? 'bg-rose-50 text-rose-700'
+                            : pago.concepto === 'Adeudo' ? 'bg-orange-50 text-orange-700'
                             : 'bg-slate-100 text-slate-600'
                           }`}>
                             {pago.adeudoId && <span className="material-symbols-outlined text-[11px]">gavel</span>}
                             {pago.concepto || 'Mensualidad'}
                           </span>
-
+                          {pago.notes && (
+                            <span className="text-[9px] text-amber-600 font-semibold ml-0.5 italic">{pago.notes}</span>
+                          )}
                         </div>
                       </td>
                       <td className="px-5 py-4 text-sm font-medium text-slate-700 capitalize">{pago.month}</td>
@@ -1066,73 +1083,6 @@ export default function PagosPage() {
             {CHARGE_TYPES.find(c => c.key === chargeType)?.desc}
           </p>
 
-          {/* ═══ EXTRAORDINARIO FORM ═══ */}
-          {chargeType === 'extraordinario' && (
-            <>
-              {/* Unit */}
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Unidad *</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <select value={mTower} onChange={e => { setMTower(e.target.value); setMUnit('') }}
-                    className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                    <option value="">Todas las torres</option>
-                    {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
-                  </select>
-                  <select value={mUnit} onChange={e => setMUnit(e.target.value)}
-                    className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                    <option value="">Seleccionar…</option>
-                    {modalUnits.map(u => <option key={u} value={u}>{u}</option>)}
-                  </select>
-                </div>
-              </div>
-              {/* Month */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mes(es) *</label>
-                  <button type="button" onClick={() => setMMulti(p => !p)}
-                    className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
-                    <div className={`relative w-8 h-4 rounded-full transition-colors ${mMulti ? 'bg-slate-900' : 'bg-slate-200'}`}>
-                      <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform ${mMulti ? 'translate-x-4' : 'translate-x-0'}`} />
-                    </div>
-                    Multi-mes
-                  </button>
-                </div>
-                {!mMulti ? (
-                  <input type="month" value={mSingleMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
-                    onChange={e => setMSingleMonth(e.target.value)}
-                    className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-                ) : (
-                  <div className="max-h-40 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-50">
-                    {MONTH_RANGE.slice().reverse().map(mk => (
-                      <label key={mk} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer">
-                        <input type="checkbox" checked={mMonths.includes(mk)} onChange={() => toggleFormMonth(mk)} className="w-4 h-4 rounded accent-slate-900" />
-                        <span className="text-sm font-medium text-slate-700 capitalize">{monthKeyToLabel(mk)}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-                {mMulti && mMonths.length > 0 && <p className="text-[10px] font-bold text-slate-500 ml-1">{mMonths.length} mes(es)</p>}
-              </div>
-              {/* Concepto */}
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto</label>
-                <select value={mConcepto || 'Extraordinario'} onChange={e => setMConcepto(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  {bc.conceptosPago.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              {/* Amount */}
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) *</label>
-                <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
-                  <input type="number" value={mAmount} onChange={e => setMAmount(e.target.value)}
-                    className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
-                </div>
-              </div>
-            </>
-          )}
-
           {/* ═══ INGRESO FORM ═══ */}
           {chargeType === 'ingreso' && (
             <>
@@ -1152,20 +1102,54 @@ export default function PagosPage() {
                   </select>
                 </div>
               </div>
-              {/* Month */}
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mes *</label>
-                <input type="month" value={mSingleMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
-                  onChange={e => setMSingleMonth(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-              </div>
               {/* Concepto */}
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto</label>
-                <select value={mConcepto || 'Mensualidad'} onChange={e => setMConcepto(e.target.value)}
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto *</label>
+                <select value={mConcepto || 'Mensualidad'}
+                  onChange={e => { setMConcepto(e.target.value); if (e.target.value !== 'Mensualidad') { setMMulti(false) } }}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
                   {bc.conceptosPago.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
+              </div>
+              {/* Month — with multi-month toggle ONLY for Mensualidad */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                    {isMensualidadSelected && mMulti ? 'Mes(es) *' : 'Mes *'}
+                  </label>
+                  {isMensualidadSelected && (
+                    <button type="button" onClick={() => setMMulti(p => !p)}
+                      className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
+                      <div className={`relative w-8 h-4 rounded-full transition-colors ${mMulti ? 'bg-slate-900' : 'bg-slate-200'}`}>
+                        <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform ${mMulti ? 'translate-x-4' : 'translate-x-0'}`} />
+                      </div>
+                      Multi-mes
+                    </button>
+                  )}
+                </div>
+                {isMensualidadSelected && mMulti ? (
+                  <>
+                    <div className="max-h-40 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-50">
+                      {MONTH_RANGE.slice().reverse().map(mk => (
+                        <label key={mk} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer">
+                          <input type="checkbox" checked={mMonths.includes(mk)} onChange={() => toggleFormMonth(mk)} className="w-4 h-4 rounded accent-slate-900" />
+                          <span className="text-sm font-medium text-slate-700 capitalize">{monthKeyToLabel(mk)}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {mMonths.length > 1 && (
+                      <p className="text-[10px] font-bold text-amber-600 ml-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[12px]">info</span>
+                        {mMonths.length} meses · los meses adelantados se anotan como "pago anticipado"
+                      </p>
+                    )}
+                    {mMonths.length > 0 && mMonths.length <= 1 && <p className="text-[10px] font-bold text-slate-500 ml-1">{mMonths.length} mes seleccionado</p>}
+                  </>
+                ) : (
+                  <input type="month" value={mSingleMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
+                    onChange={e => setMSingleMonth(e.target.value)}
+                    className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+                )}
               </div>
               {/* Amount */}
               <div className="space-y-2">
@@ -1175,6 +1159,11 @@ export default function PagosPage() {
                   <input type="number" value={mAmount} onChange={e => setMAmount(e.target.value)}
                     className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
                 </div>
+                {isMensualidadSelected && mMulti && mMonths.length > 1 && (
+                  <p className="text-[10px] text-slate-400 font-medium ml-1">
+                    Total: <span className="font-black text-slate-900">${((Number(mAmount) || 0) * mMonths.length).toLocaleString('es-MX')} MXN</span> ({mMonths.length} × ${(Number(mAmount) || 0).toLocaleString('es-MX')})
+                  </p>
+                )}
               </div>
               {/* Receipt */}
               <div className="space-y-2">
@@ -1248,8 +1237,8 @@ export default function PagosPage() {
             className={`w-full py-3 font-bold rounded-2xl transition-all uppercase tracking-widest text-[11px] ${
               !formValid ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99]'
             }`}>
-            {chargeType === 'extraordinario' ? (mMulti && mMonths.length > 1 ? `Registrar ${mMonths.length} cargos` : 'Registrar Cargo')
-              : chargeType === 'ingreso' ? 'Registrar Ingreso'
+            {chargeType === 'ingreso'
+              ? (isMensualidadSelected && mMulti && mMonths.length > 1 ? `Registrar ${mMonths.length} pagos` : 'Registrar Ingreso')
               : 'Registrar Egreso'}
           </button>
         </div>
