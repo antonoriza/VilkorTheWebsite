@@ -241,11 +241,14 @@ export default function PagosPage() {
     return [...set].sort()
   }, [state.pagos])
 
-  // Egresos total for same period as ledger (for KPI card)
-  const ledgerPeriodEgresosTotal = useMemo(() => {
-    if (!lFilterMonth) return state.egresos.reduce((s, e) => s + e.amount, 0)
-    return state.egresos.filter(e => e.monthKey === lFilterMonth).reduce((s, e) => s + e.amount, 0)
+  // Egresos filtered by the same month as the ledger (for KPI card + egresos grid)
+  const ledgerEgresos = useMemo(() => {
+    const data = lFilterMonth
+      ? state.egresos.filter(e => e.monthKey === lFilterMonth)
+      : state.egresos
+    return [...data].sort((a, b) => b.date.localeCompare(a.date))
   }, [state.egresos, lFilterMonth])
+  const ledgerPeriodEgresosTotal = useMemo(() => ledgerEgresos.reduce((s, e) => s + e.amount, 0), [ledgerEgresos])
 
   const ledgerKpis = useMemo(() => {
     const paid = filteredPagos.filter(p => p.status === 'Pagado')
@@ -332,13 +335,6 @@ export default function PagosPage() {
     }
   }, [state.pagos, state.egresos, state.adeudos, reportMonthKeys, reportPeriod, reportMonth, bc])
 
-  // Egresos for current report period (for the grid)
-  const periodEgresosFiltered = useMemo(() => {
-    const monthSet = new Set(reportMonthKeys)
-    return state.egresos
-      .filter(e => monthSet.has(e.monthKey))
-      .sort((a, b) => b.date.localeCompare(a.date))
-  }, [state.egresos, reportMonthKeys])
 
   // ═════════════════════════════════════════════════════════════════════
   // SORT HELPERS
@@ -854,6 +850,64 @@ export default function PagosPage() {
               </table>
             </div>
           </div>
+
+          {/* ── Egresos Grid (admin only) ── */}
+          {isAdmin && (
+            <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <div>
+                  <h2 className="text-base font-headline font-extrabold text-slate-900">Registro de Egresos</h2>
+                  <p className="text-[11px] text-slate-400 font-medium mt-0.5">{ledgerEgresos.length} registro(s)</p>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-slate-100 bg-slate-50/60">
+                      <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
+                      <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoría</th>
+                      <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Concepto</th>
+                      <th className="px-5 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monto</th>
+                      <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ledgerEgresos.map(eg => (
+                      <tr key={eg.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
+                        <td className="px-5 py-4 text-xs font-semibold text-slate-500 tabular-nums whitespace-nowrap">{eg.date}</td>
+                        <td className="px-5 py-4">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600">
+                            {EGRESO_CATEGORIA_LABELS[eg.categoria]}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4">
+                          <p className="text-sm font-semibold text-slate-900">{eg.concepto}</p>
+                          {eg.description && <p className="text-xs text-slate-400 font-medium mt-0.5">{eg.description}</p>}
+                        </td>
+                        <td className="px-5 py-4 text-sm font-black text-rose-600 text-right tabular-nums">-${eg.amount.toLocaleString('es-MX')}</td>
+                        <td className="px-5 py-4 text-center">
+                          <button onClick={() => setDeleteEgresoId(eg.id)}
+                            className="text-slate-200 hover:text-rose-500 transition-colors p-1" title="Eliminar">
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {ledgerEgresos.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-12 text-center">
+                          <div className="flex flex-col items-center gap-2">
+                            <span className="material-symbols-outlined text-3xl text-slate-200">account_balance</span>
+                            <p className="text-slate-400 font-medium text-sm">Sin egresos registrados en este período.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </>
       )}
 
@@ -995,61 +1049,7 @@ export default function PagosPage() {
             </div>
           </div>
 
-          {/* ── Egresos Grid ── */}
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <div>
-                <h2 className="text-base font-headline font-extrabold text-slate-900">Detalle de Egresos</h2>
-                <p className="text-[11px] text-slate-400 font-medium mt-0.5">{periodEgresosFiltered.length} registro(s)</p>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/60">
-                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
-                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoría</th>
-                    <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Concepto</th>
-                    <th className="px-5 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monto</th>
-                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {periodEgresosFiltered.map(eg => (
-                    <tr key={eg.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
-                      <td className="px-5 py-4 text-xs font-semibold text-slate-500 tabular-nums whitespace-nowrap">{eg.date}</td>
-                      <td className="px-5 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600">
-                          {EGRESO_CATEGORIA_LABELS[eg.categoria]}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-slate-900">{eg.concepto}</p>
-                        {eg.description && <p className="text-xs text-slate-400 font-medium mt-0.5">{eg.description}</p>}
-                      </td>
-                      <td className="px-5 py-4 text-sm font-black text-slate-900 text-right tabular-nums">${eg.amount.toLocaleString('es-MX')}</td>
-                      <td className="px-5 py-4 text-center">
-                        <button onClick={() => setDeleteEgresoId(eg.id)}
-                          className="text-slate-200 hover:text-rose-500 transition-colors p-1" title="Eliminar">
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {periodEgresosFiltered.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-16 text-center">
-                        <div className="flex flex-col items-center gap-3">
-                          <span className="material-symbols-outlined text-4xl text-slate-200">account_balance</span>
-                          <p className="text-slate-400 font-medium text-sm">Sin egresos registrados en este período.</p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          {/* Egresos grid moved to Estado de Cuenta */}
         </>
       )}
 
