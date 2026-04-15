@@ -62,11 +62,11 @@ const ADEUDO_TYPE_LABELS: Record<AdeudoType, string> = {
 
 
 // ── Charge type for unified modal ──
-type ChargeType = 'extraordinario' | 'multa' | 'adeudo'
+type ChargeType = 'extraordinario' | 'ingreso' | 'egreso'
 const CHARGE_TYPES: { key: ChargeType; label: string; icon: string; desc: string }[] = [
-  { key: 'extraordinario', label: 'Extraordinario',  icon: 'receipt_long',           desc: 'Cuota especial o proyecto' },
-  { key: 'multa',          label: 'Multa',           icon: 'gavel',                  desc: 'Infracción económica → Crea cargo + registro' },
-  { key: 'adeudo',         label: 'Adeudo',          icon: 'account_balance_wallet', desc: 'Deuda histórica → Crea cargo + registro' },
+  { key: 'extraordinario', label: 'Extraordinario',  icon: 'receipt_long',   desc: 'Cargo especial a una unidad (cuota extra, multa, etc.)' },
+  { key: 'ingreso',        label: 'Ingreso',         icon: 'savings',        desc: 'Registrar un pago recibido de un residente' },
+  { key: 'egreso',         label: 'Egreso',          icon: 'trending_down',  desc: 'Registrar un gasto operativo del edificio' },
 ]
 
 // Sort types
@@ -158,10 +158,8 @@ export default function PagosPage() {
   const [chargeType, setChargeType]           = useState<ChargeType>('extraordinario')
   const [mTower, setMTower]                   = useState('')
   const [mUnit, setMUnit]                     = useState('')
-  const [mAmount, setMAmount]                 = useState('1700')
+  const [mAmount, setMAmount]                 = useState('500')
   const [mConcepto, setMConcepto]             = useState('')
-  const [mDescription, setMDescription]       = useState('')
-  const [mStatus, setMStatus]                 = useState<'Pagado' | 'Pendiente'>('Pendiente')
   const [mMulti, setMMulti]                   = useState(false)
   const [mMonths, setMMonths]                 = useState<string[]>([TODAY_KEY])
   const [mSingleMonth, setMSingleMonth]       = useState(TODAY_KEY)
@@ -182,8 +180,7 @@ export default function PagosPage() {
   const [reportMonth, setReportMonth] = useState(TODAY_KEY)
   const [pdfLoading, setPdfLoading] = useState(false)
 
-  // ── Egreso modal ──
-  const [showEgresoModal, setShowEgresoModal] = useState(false)
+  // ── Egreso fields (inside unified modal) ──
   const [egCategoria, setEgCategoria] = useState<EgresoCategoria>('mantenimiento')
   const [egConcepto, setEgConcepto] = useState('')
   const [egDescription, setEgDescription] = useState('')
@@ -416,8 +413,7 @@ export default function PagosPage() {
         registeredBy: bc.adminName,
       },
     })
-    setEgCategoria('mantenimiento'); setEgConcepto(''); setEgDescription(''); setEgAmount(''); setEgDate(new Date().toISOString().split('T')[0])
-    setShowEgresoModal(false)
+    resetAndCloseModal()
   }
 
   // PDF download
@@ -455,18 +451,29 @@ export default function PagosPage() {
     reader.readAsDataURL(file)
   }
 
+  // Reset & close helper
+  const resetAndCloseModal = () => {
+    setMTower(''); setMUnit(''); setMAmount('500'); setMConcepto('')
+    setMMulti(false); setMMonths([TODAY_KEY]); setMSingleMonth(TODAY_KEY)
+    setMReceiptData(''); setMReceiptType(undefined); setMReceiptName(''); setMReceiptError('')
+    setEgCategoria('mantenimiento'); setEgConcepto(''); setEgDescription(''); setEgAmount(''); setEgDate(new Date().toISOString().split('T')[0])
+    setShowModal(false)
+  }
+
   // Unified register
   const handleRegister = () => {
+    if (chargeType === 'egreso') {
+      handleRegisterEgreso()
+      return
+    }
     if (!mUnit) return
     const resident = state.residents.find(r => r.apartment === mUnit)
     const resName = resident?.name || mUnit
-    const isFinancial = true  // all types now are financial
-    const isDisciplinary = chargeType === 'multa' || chargeType === 'adeudo'
 
-    if (isFinancial && !isDisciplinary) {
-      // ── Mensualidad / Extraordinario → Pago only ──
+    if (chargeType === 'extraordinario') {
+      // ── Extraordinario → Cargo a una unidad (Pendiente por defecto) ──
       const months = mMulti ? mMonths : [mSingleMonth]
-      const concepto = chargeType === 'extraordinario' ? 'Extraordinario' : (mConcepto || 'Extraordinario')
+      const concepto = mConcepto || 'Extraordinario'
       months.forEach(mk => {
         dispatch({
           type: 'ADD_PAGO',
@@ -477,72 +484,45 @@ export default function PagosPage() {
             month: monthKeyToLabel(mk),
             monthKey: mk,
             concepto,
-            amount: Number(mAmount) || 1700,
-            status: mStatus,
-            paymentDate: mStatus === 'Pagado' ? new Date().toISOString().split('T')[0] : null,
-            receiptData: mReceiptData || undefined,
-            receiptType: mReceiptType,
-            receiptName: mReceiptName || undefined,
+            amount: Number(mAmount) || 500,
+            status: 'Pendiente',
+            paymentDate: null,
           },
         })
       })
-    } else if (isDisciplinary) {
-      // ── Multa / Adeudo → creates BOTH Pago + Adeudo ──
-      const pagoId = `pg-${Date.now()}`
-      const adeudoId = `ad-${Date.now()}`
-      const concepto = mConcepto.trim() || (chargeType === 'multa' ? 'Multa' : 'Adeudo')
-      // Create pago (Pendiente)
+    } else if (chargeType === 'ingreso') {
+      // ── Ingreso → Registrar pago recibido (Pagado por defecto) ──
+      const concepto = mConcepto || 'Mensualidad'
       dispatch({
         type: 'ADD_PAGO',
         payload: {
-          id: pagoId,
+          id: `pg-${Date.now()}-${mSingleMonth}`,
           apartment: mUnit,
           resident: resName,
-          month: monthKeyToLabel(TODAY_KEY),
-          monthKey: TODAY_KEY,
+          month: monthKeyToLabel(mSingleMonth),
+          monthKey: mSingleMonth,
           concepto,
-          amount: Number(mAmount) || 0,
-          status: 'Pendiente',
-          paymentDate: null,
-          adeudoId,
-        },
-      })
-      // Create adeudo (linked)
-      dispatch({
-        type: 'ADD_ADEUDO',
-        payload: {
-          id: adeudoId,
-          apartment: mUnit,
-          type: chargeType as AdeudoType,
-          concepto,
-          description: mDescription.trim(),
-          amount: Number(mAmount) || 0,
-          status: 'Activo',
-          createdAt: new Date().toISOString(),
-          resolvedAt: null,
-          resolvedBy: null,
-          pagoId,
+          amount: Number(mAmount) || 1700,
+          status: 'Pagado',
+          paymentDate: new Date().toISOString().split('T')[0],
+          receiptData: mReceiptData || undefined,
+          receiptType: mReceiptType,
+          receiptName: mReceiptName || undefined,
         },
       })
     }
 
-    // Reset modal
-    setMTower(''); setMUnit(''); setMAmount('1700'); setMConcepto(''); setMDescription('')
-    setMStatus('Pendiente'); setMMulti(false); setMMonths([TODAY_KEY]); setMSingleMonth(TODAY_KEY)
-    setMReceiptData(''); setMReceiptType(undefined); setMReceiptName(''); setMReceiptError('')
-    setShowModal(false)
+    resetAndCloseModal()
   }
 
   const toggleFormMonth = (mk: string) => setMMonths(prev => prev.includes(mk) ? prev.filter(m => m !== mk) : [...prev, mk])
 
-  const isPaymentType = chargeType === 'extraordinario'
-  const isDisciplinaryType = chargeType === 'multa' || chargeType === 'adeudo'
-
-  const formValid = !!mUnit && (
-    isPaymentType ? (mMulti ? mMonths.length > 0 : !!mSingleMonth) && !mReceiptError
-    : isDisciplinaryType ? !!mDescription.trim() && Number(mAmount) > 0
-    : false
-  )
+  const formValid = (() => {
+    if (chargeType === 'extraordinario') return !!mUnit && (mMulti ? mMonths.length > 0 : !!mSingleMonth) && Number(mAmount) > 0
+    if (chargeType === 'ingreso') return !!mUnit && !!mSingleMonth && Number(mAmount) > 0 && !mReceiptError
+    if (chargeType === 'egreso') return !!egConcepto.trim() && Number(egAmount) > 0
+    return false
+  })()
 
   // ═════════════════════════════════════════════════════════════════════
   // RENDER
@@ -593,12 +573,7 @@ export default function PagosPage() {
         <>
           {/* ── Admin action bar ── */}
           {isAdmin && (
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowEgresoModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase shrink-0">
-                <span className="material-symbols-outlined text-[16px]">remove_circle_outline</span>
-                Registrar Egreso
-              </button>
+            <div className="flex justify-end">
               <button onClick={() => setShowModal(true)}
                 className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[11px] tracking-widest uppercase shrink-0">
                 <span className="material-symbols-outlined text-[18px]">add</span>
@@ -1057,148 +1032,200 @@ export default function PagosPage() {
       {/* UNIFIED REGISTRATION MODAL                                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
 
-      <Modal open={showModal} onClose={() => setShowModal(false)} title="Nuevo Cargo">
+      <Modal open={showModal} onClose={resetAndCloseModal} title="Nuevo Cargo">
         <div className="space-y-5">
 
-          {/* ── Step 1: Type selector ── */}
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tipo de cargo *</label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {CHARGE_TYPES.map(ct => (
-                <button key={ct.key} onClick={() => { setChargeType(ct.key); setMAmount('500') }}
-                  className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                    chargeType === ct.key ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                  }`}>
-                  <span className="material-symbols-outlined text-[20px]">{ct.icon}</span>
-                  {ct.label}
-                </button>
-              ))}
-            </div>
-            <p className="text-[10px] text-slate-400 font-medium ml-1">
-              {CHARGE_TYPES.find(c => c.key === chargeType)?.desc}
-            </p>
+          {/* ── Tab selector ── */}
+          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+            {CHARGE_TYPES.map(ct => (
+              <button key={ct.key} onClick={() => setChargeType(ct.key)}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${
+                  chargeType === ct.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                }`}>
+                <span className="material-symbols-outlined text-[16px]">{ct.icon}</span>
+                {ct.label}
+              </button>
+            ))}
           </div>
+          <p className="text-[10px] text-slate-400 font-medium ml-1 -mt-3">
+            {CHARGE_TYPES.find(c => c.key === chargeType)?.desc}
+          </p>
 
-          {/* ── Step 2: Unit ── */}
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Unidad *</label>
-            <div className="grid grid-cols-2 gap-2">
-              <select value={mTower} onChange={e => { setMTower(e.target.value); setMUnit('') }}
-                className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                <option value="">Todas las torres</option>
-                {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
-              </select>
-              <select value={mUnit} onChange={e => setMUnit(e.target.value)}
-                className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                <option value="">Seleccionar…</option>
-                {modalUnits.map(u => <option key={u} value={u}>{u}</option>)}
-              </select>
-            </div>
-          </div>
-
-          {/* ── Month (Mensualidad/Extraordinario only) ── */}
-          {isPaymentType && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mes(es) *</label>
-                <button type="button" onClick={() => setMMulti(p => !p)}
-                  className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
-                  <div className={`relative w-8 h-4 rounded-full transition-colors ${mMulti ? 'bg-slate-900' : 'bg-slate-200'}`}>
-                    <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform ${mMulti ? 'translate-x-4' : 'translate-x-0'}`} />
-                  </div>
-                  Multi-mes
-                </button>
+          {/* ═══ EXTRAORDINARIO FORM ═══ */}
+          {chargeType === 'extraordinario' && (
+            <>
+              {/* Unit */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Unidad *</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <select value={mTower} onChange={e => { setMTower(e.target.value); setMUnit('') }}
+                    className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                    <option value="">Todas las torres</option>
+                    {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
+                  </select>
+                  <select value={mUnit} onChange={e => setMUnit(e.target.value)}
+                    className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                    <option value="">Seleccionar…</option>
+                    {modalUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                  </select>
+                </div>
               </div>
-              {!mMulti ? (
+              {/* Month */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mes(es) *</label>
+                  <button type="button" onClick={() => setMMulti(p => !p)}
+                    className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
+                    <div className={`relative w-8 h-4 rounded-full transition-colors ${mMulti ? 'bg-slate-900' : 'bg-slate-200'}`}>
+                      <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform ${mMulti ? 'translate-x-4' : 'translate-x-0'}`} />
+                    </div>
+                    Multi-mes
+                  </button>
+                </div>
+                {!mMulti ? (
+                  <input type="month" value={mSingleMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
+                    onChange={e => setMSingleMonth(e.target.value)}
+                    className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+                ) : (
+                  <div className="max-h-40 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-50">
+                    {MONTH_RANGE.slice().reverse().map(mk => (
+                      <label key={mk} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer">
+                        <input type="checkbox" checked={mMonths.includes(mk)} onChange={() => toggleFormMonth(mk)} className="w-4 h-4 rounded accent-slate-900" />
+                        <span className="text-sm font-medium text-slate-700 capitalize">{monthKeyToLabel(mk)}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+                {mMulti && mMonths.length > 0 && <p className="text-[10px] font-bold text-slate-500 ml-1">{mMonths.length} mes(es)</p>}
+              </div>
+              {/* Concepto */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto</label>
+                <select value={mConcepto || 'Extraordinario'} onChange={e => setMConcepto(e.target.value)}
+                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                  {bc.conceptosPago.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              {/* Amount */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) *</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                  <input type="number" value={mAmount} onChange={e => setMAmount(e.target.value)}
+                    className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ═══ INGRESO FORM ═══ */}
+          {chargeType === 'ingreso' && (
+            <>
+              {/* Unit */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Unidad *</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <select value={mTower} onChange={e => { setMTower(e.target.value); setMUnit('') }}
+                    className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                    <option value="">Todas las torres</option>
+                    {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
+                  </select>
+                  <select value={mUnit} onChange={e => setMUnit(e.target.value)}
+                    className="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                    <option value="">Seleccionar…</option>
+                    {modalUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                  </select>
+                </div>
+              </div>
+              {/* Month */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mes *</label>
                 <input type="month" value={mSingleMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
                   onChange={e => setMSingleMonth(e.target.value)}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-              ) : (
-                <div className="max-h-40 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-50">
-                  {MONTH_RANGE.slice().reverse().map(mk => (
-                    <label key={mk} className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 cursor-pointer">
-                      <input type="checkbox" checked={mMonths.includes(mk)} onChange={() => toggleFormMonth(mk)} className="w-4 h-4 rounded accent-slate-900" />
-                      <span className="text-sm font-medium text-slate-700 capitalize">{monthKeyToLabel(mk)}</span>
-                    </label>
+              </div>
+              {/* Concepto */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto</label>
+                <select value={mConcepto || 'Mensualidad'} onChange={e => setMConcepto(e.target.value)}
+                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                  {bc.conceptosPago.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              {/* Amount */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) *</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                  <input type="number" value={mAmount} onChange={e => setMAmount(e.target.value)}
+                    className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
+                </div>
+              </div>
+              {/* Receipt */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                  Comprobante <span className="text-slate-300">(PDF ≤5MB · IMG ≤2MB)</span>
+                </label>
+                <input type="file" accept=".pdf, image/jpeg, image/png" onChange={handleReceiptUpload}
+                  className="block w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800" />
+                {mReceiptError && <p className="text-xs text-rose-600 font-bold ml-1">{mReceiptError}</p>}
+                {mReceiptName && !mReceiptError && (
+                  <div className="flex items-center gap-2 ml-1">
+                    <span className="material-symbols-outlined text-emerald-500 text-[14px]">check_circle</span>
+                    <span className="text-xs text-emerald-600 font-bold">{mReceiptName}</span>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* ═══ EGRESO FORM ═══ */}
+          {chargeType === 'egreso' && (
+            <>
+              {/* Category */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Categoría *</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {(Object.keys(EGRESO_CATEGORIA_LABELS) as EgresoCategoria[]).map(cat => (
+                    <button key={cat} onClick={() => setEgCategoria(cat)}
+                      className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border-2 transition-all text-left ${
+                        egCategoria === cat ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'
+                      }`}>
+                      {EGRESO_CATEGORIA_LABELS[cat]}
+                    </button>
                   ))}
                 </div>
-              )}
-              {mMulti && mMonths.length > 0 && <p className="text-[10px] font-bold text-slate-500 ml-1">{mMonths.length} mes(es)</p>}
-            </div>
-          )}
-
-          {/* ── Concepto ── */}
-          {isPaymentType ? (
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto</label>
-              <select value={mConcepto || (chargeType === 'extraordinario' ? 'Extraordinario' : 'Mensualidad')}
-                onChange={e => setMConcepto(e.target.value)}
-                className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                {bc.conceptosPago.map(c => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-          ) : isDisciplinaryType ? (
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto / Motivo corto</label>
-              <input type="text" value={mConcepto} onChange={e => setMConcepto(e.target.value)}
-                placeholder={chargeType === 'multa' ? 'Ej: Uso indebido de cajón, Ruido nocturno…' : 'Ej: Mensualidades atrasadas Ene–Mar 2025…'}
-                className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-            </div>
-          ) : null}
-
-          {/* ── Amount ── */}
-          {(
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) {isDisciplinaryType ? '*' : ''}</label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
-                <input type="number" value={mAmount} onChange={e => setMAmount(e.target.value)}
-                  className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
               </div>
-            </div>
-          )}
-
-          {/* ── Status (Mensualidad/Extraordinario only) ── */}
-          {isPaymentType && (
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estado</label>
-              <select value={mStatus} onChange={e => setMStatus(e.target.value as 'Pagado' | 'Pendiente')}
-                className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                <option value="Pendiente">Pendiente</option>
-                <option value="Pagado">Pagado</option>
-              </select>
-            </div>
-          )}
-
-          {/* ── Description (disciplinary) ── */}
-          {isDisciplinaryType && (
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                Descripción / Detalle *
-              </label>
-              <textarea value={mDescription} onChange={e => setMDescription(e.target.value)}
-                rows={3} maxLength={1000} placeholder="Describe el motivo con detalle…"
-                className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm resize-none" />
-              <p className="text-[10px] text-slate-400 font-medium text-right">{mDescription.length}/1000</p>
-            </div>
-          )}
-
-          {/* ── Receipt (payment types only) ── */}
-          {isPaymentType && (
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                Comprobante <span className="text-slate-300">(PDF ≤5MB · IMG ≤2MB)</span>
-              </label>
-              <input type="file" accept=".pdf, image/jpeg, image/png" onChange={handleReceiptUpload}
-                className="block w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800" />
-              {mReceiptError && <p className="text-xs text-rose-600 font-bold ml-1">{mReceiptError}</p>}
-              {mReceiptName && !mReceiptError && (
-                <div className="flex items-center gap-2 ml-1">
-                  <span className="material-symbols-outlined text-emerald-500 text-[14px]">check_circle</span>
-                  <span className="text-xs text-emerald-600 font-bold">{mReceiptName}</span>
+              {/* Concepto */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto *</label>
+                <input type="text" value={egConcepto} onChange={e => setEgConcepto(e.target.value)}
+                  placeholder="Ej: Pago mensual jardinero, Recibo de luz…"
+                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+              </div>
+              {/* Amount */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) *</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                  <input type="number" value={egAmount} onChange={e => setEgAmount(e.target.value)}
+                    className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
                 </div>
-              )}
-            </div>
+              </div>
+              {/* Date */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fecha *</label>
+                <input type="date" value={egDate} onChange={e => setEgDate(e.target.value)}
+                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+              </div>
+              {/* Notes */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Notas <span className="text-slate-300">(opcional)</span></label>
+                <textarea value={egDescription} onChange={e => setEgDescription(e.target.value)}
+                  rows={2} maxLength={500} placeholder="Detalle adicional…"
+                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm resize-none" />
+              </div>
+            </>
           )}
 
           {/* ── Submit ── */}
@@ -1206,9 +1233,9 @@ export default function PagosPage() {
             className={`w-full py-3 font-bold rounded-2xl transition-all uppercase tracking-widest text-[11px] ${
               !formValid ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99]'
             }`}>
-            {isPaymentType ? (mMulti && mMonths.length > 1 ? `Registrar ${mMonths.length} cargos` : 'Registrar Cargo')
-              : isDisciplinaryType ? `Registrar ${chargeType === 'multa' ? 'Multa' : 'Adeudo'} + Cargo`
-              : 'Registrar Llamado'}
+            {chargeType === 'extraordinario' ? (mMulti && mMonths.length > 1 ? `Registrar ${mMonths.length} cargos` : 'Registrar Cargo')
+              : chargeType === 'ingreso' ? 'Registrar Ingreso'
+              : 'Registrar Egreso'}
           </button>
         </div>
       </Modal>
@@ -1261,59 +1288,6 @@ export default function PagosPage() {
           : expConfirm?.action === 'delete' ? `¿Eliminar permanentemente este registro del depto. ${expConfirm?.apartment}?`
           : `¿Confirmar que el llamado del depto. ${expConfirm?.apartment} fue atendido?`}
       </ConfirmDialog>
-
-      {/* ═══ Egreso Registration Modal ═══ */}
-      <Modal open={showEgresoModal} onClose={() => setShowEgresoModal(false)} title="Registrar Egreso">
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Categoría *</label>
-            <div className="grid grid-cols-2 gap-2">
-              {(Object.keys(EGRESO_CATEGORIA_LABELS) as EgresoCategoria[]).map(cat => (
-                <button key={cat} onClick={() => setEgCategoria(cat)}
-                  className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border-2 transition-all text-left ${
-                    egCategoria === cat ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                  }`}>
-                  {EGRESO_CATEGORIA_LABELS[cat]}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto *</label>
-            <input type="text" value={egConcepto} onChange={e => setEgConcepto(e.target.value)}
-              placeholder="Ej: Pago mensual jardinero, Recibo de luz…"
-              className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) *</label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
-              <input type="number" value={egAmount} onChange={e => setEgAmount(e.target.value)}
-                className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fecha *</label>
-            <input type="date" value={egDate} onChange={e => setEgDate(e.target.value)}
-              className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Notas <span className="text-slate-300">(opcional)</span></label>
-            <textarea value={egDescription} onChange={e => setEgDescription(e.target.value)}
-              rows={2} maxLength={500} placeholder="Detalle adicional…"
-              className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm resize-none" />
-          </div>
-          <button onClick={handleRegisterEgreso}
-            disabled={!egConcepto.trim() || !egAmount || Number(egAmount) <= 0}
-            className={`w-full py-3 font-bold rounded-2xl transition-all uppercase tracking-widest text-[11px] ${
-              !egConcepto.trim() || !egAmount || Number(egAmount) <= 0
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99]'
-            }`}>
-            Registrar Egreso
-          </button>
-        </div>
-      </Modal>
 
       {/* ═══ Egreso delete confirm ═══ */}
       <ConfirmDialog open={!!deleteEgresoId} onClose={() => setDeleteEgresoId(null)}
