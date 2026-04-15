@@ -13,7 +13,7 @@
  * Admin sees both tabs + KPIs + unit balance panel.
  * Resident sees ledger tab only + adeudo summary card.
  */
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
@@ -54,44 +54,25 @@ const TODAY_KEY = (() => {
   return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`
 })()
 
-// ── Adeudo type labels & icons ──
+// ── Adeudo type labels ──
 
 const ADEUDO_TYPE_LABELS: Record<AdeudoType, string> = {
   multa: 'Multa', llamado_atencion: 'Llamado de Atención', adeudo: 'Adeudo',
 }
-const ADEUDO_TYPE_ICONS: Record<AdeudoType, string> = {
-  multa: 'gavel', llamado_atencion: 'warning', adeudo: 'account_balance_wallet',
-}
-const ADEUDO_TYPE_BADGE: Record<AdeudoType, string> = {
-  multa: 'bg-rose-50 text-rose-700 border-rose-200',
-  llamado_atencion: 'bg-amber-50 text-amber-700 border-amber-200',
-  adeudo: 'bg-sky-50 text-sky-700 border-sky-200',
-}
 
-function agingLabel(createdAt: string, status: string, amount: number): string | null {
-  if (status !== 'Activo' || amount <= 0) return null
-  const days = Math.floor((Date.now() - new Date(createdAt).getTime()) / 86_400_000)
-  if (days >= 90) return '90d+'
-  if (days >= 60) return '60d'
-  if (days >= 30) return '30d'
-  return null
-}
 
 // ── Charge type for unified modal ──
-type ChargeType = 'mensualidad' | 'extraordinario' | 'multa' | 'adeudo' | 'llamado'
+type ChargeType = 'extraordinario' | 'multa' | 'adeudo'
 const CHARGE_TYPES: { key: ChargeType; label: string; icon: string; desc: string }[] = [
-  { key: 'mensualidad',    label: 'Mensualidad',    icon: 'home',                   desc: 'Cuota mensual recurrente' },
   { key: 'extraordinario', label: 'Extraordinario',  icon: 'receipt_long',           desc: 'Cuota especial o proyecto' },
-  { key: 'multa',          label: 'Multa',           icon: 'gavel',                  desc: 'Infracción económica → Crea cargo + expediente' },
-  { key: 'adeudo',         label: 'Adeudo',          icon: 'account_balance_wallet', desc: 'Deuda histórica → Crea cargo + expediente' },
-  { key: 'llamado',        label: 'Llamado',         icon: 'warning',                desc: 'Aviso formal sin cargo económico' },
+  { key: 'multa',          label: 'Multa',           icon: 'gavel',                  desc: 'Infracción económica → Crea cargo + registro' },
+  { key: 'adeudo',         label: 'Adeudo',          icon: 'account_balance_wallet', desc: 'Deuda histórica → Crea cargo + registro' },
 ]
 
 // Sort types
 type LedgerSortKey = 'apartment' | 'concepto' | 'month' | 'amount' | 'paymentDate' | 'status'
-type ExpSortKey = 'apartment' | 'type' | 'concepto' | 'amount' | 'status' | 'createdAt'
 type SortDir = 'asc' | 'desc'
-type ActiveTab = 'ledger' | 'expediente' | 'report'
+type ActiveTab = 'ledger' | 'report'
 
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -104,26 +85,77 @@ export default function PagosPage() {
   // ── Tab ──
   const [activeTab, setActiveTab] = useState<ActiveTab>('ledger')
 
+  // ── Auto-delinquency: check once on mount ──
+  useEffect(() => {
+    if (!isAdmin) return
+    const now = new Date()
+    const curKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    // Collect past-due Pendiente pagos per unit
+    const pastDueByUnit = new Map<string, { total: number; concepts: string[] }>()
+    state.pagos.forEach(p => {
+      if (p.status !== 'Pendiente') return
+      const mk = p.monthKey || ''
+      const concepto = p.concepto || 'Mensualidad'
+      let isPastDue = false
+      if (concepto === 'Mensualidad') {
+        // Past due if monthKey < current month
+        isPastDue = mk < curKey
+      } else {
+        // Past due if > 30 days since start of that month
+        const [y, m] = mk.split('-').map(Number)
+        const monthEnd = new Date(y, m, 0) // last day of that month
+        isPastDue = (now.getTime() - monthEnd.getTime()) > 30 * 86_400_000
+      }
+      if (isPastDue) {
+        const entry = pastDueByUnit.get(p.apartment) || { total: 0, concepts: [] }
+        entry.total += p.amount
+        if (!entry.concepts.includes(concepto)) entry.concepts.push(concepto)
+        pastDueByUnit.set(p.apartment, entry)
+      }
+    })
+    // For each unit with past-due, ensure one auto-adeudo exists
+    pastDueByUnit.forEach((info, apt) => {
+      if (info.total <= 0) return
+      const existing = state.adeudos.find(a => a.apartment === apt && a.type === 'adeudo' && a.status === 'Activo' && a.concepto.startsWith('Adeudo acumulado'))
+      if (existing) {
+        // Update if amount changed
+        if (existing.amount !== info.total) {
+          dispatch({ type: 'UPDATE_ADEUDO', payload: { ...existing, amount: info.total, concepto: `Adeudo acumulado (${info.concepts.join(', ')})` } })
+        }
+      } else {
+        // Create new auto-adeudo
+        dispatch({
+          type: 'ADD_ADEUDO',
+          payload: {
+            id: `ad-auto-${apt}-${Date.now()}`,
+            apartment: apt,
+            type: 'adeudo',
+            concepto: `Adeudo acumulado (${info.concepts.join(', ')})`,
+            description: `Generado automáticamente. Cargos vencidos sin pago registrado.`,
+            amount: info.total,
+            status: 'Activo',
+            createdAt: new Date().toISOString(),
+            resolvedAt: null,
+            resolvedBy: null,
+          },
+        })
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Run once on mount
+
   // ── Ledger filters ──
   const [lFilterMonth, setLFilterMonth]   = useState(TODAY_KEY)
   const [lFilterTower, setLFilterTower]   = useState('')
   const [lFilterUnit, setLFilterUnit]     = useState('')
   const [lFilterStatus, setLFilterStatus] = useState('')
+  const [lFilterConcepto, setLFilterConcepto] = useState('')
   const [lSortKey, setLSortKey]           = useState<LedgerSortKey>('apartment')
   const [lSortDir, setLSortDir]           = useState<SortDir>('asc')
 
-  // ── Expediente filters ──
-  const [eFilterTower, setEFilterTower]   = useState('')
-  const [eFilterUnit, setEFilterUnit]     = useState('')
-  const [eFilterType, setEFilterType]     = useState<AdeudoType | ''>('')
-  const [eFilterStatus, setEFilterStatus] = useState('')
-  const [eSortKey, setESortKey]           = useState<ExpSortKey>('createdAt')
-  const [eSortDir, setESortDir]           = useState<SortDir>('desc')
-  const [expandedId, setExpandedId]       = useState<string | null>(null)
-
   // ── Unified modal ──
   const [showModal, setShowModal]             = useState(false)
-  const [chargeType, setChargeType]           = useState<ChargeType>('mensualidad')
+  const [chargeType, setChargeType]           = useState<ChargeType>('extraordinario')
   const [mTower, setMTower]                   = useState('')
   const [mUnit, setMUnit]                     = useState('')
   const [mAmount, setMAmount]                 = useState('1700')
@@ -172,7 +204,6 @@ export default function PagosPage() {
   }, [state.residents, state.pagos, state.adeudos])
 
   const lFilteredUnits = useMemo(() => lFilterTower ? allUnits.filter(u => u.startsWith(lFilterTower)) : allUnits, [allUnits, lFilterTower])
-  const eFilteredUnits = useMemo(() => eFilterTower ? allUnits.filter(u => u.startsWith(eFilterTower)) : allUnits, [allUnits, eFilterTower])
   const modalUnits     = useMemo(() => mTower ? allUnits.filter(u => u.startsWith(mTower)) : allUnits, [allUnits, mTower])
 
   // ═════════════════════════════════════════════════════════════════════
@@ -182,9 +213,10 @@ export default function PagosPage() {
   const filteredPagos = useMemo(() => {
     let data = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === myApartment)
     if (!isAdmin || lFilterMonth) data = data.filter(p => (p.monthKey || '') === lFilterMonth)
-    if (lFilterTower)  data = data.filter(p => p.apartment.startsWith(lFilterTower))
-    if (lFilterUnit)   data = data.filter(p => p.apartment === lFilterUnit)
-    if (lFilterStatus) data = data.filter(p => p.status === lFilterStatus)
+    if (lFilterTower)    data = data.filter(p => p.apartment.startsWith(lFilterTower))
+    if (lFilterUnit)     data = data.filter(p => p.apartment === lFilterUnit)
+    if (lFilterStatus)   data = data.filter(p => p.status === lFilterStatus)
+    if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mensualidad') === lFilterConcepto)
     return [...data].sort((a, b) => {
       let va: string | number, vb: string | number
       switch (lSortKey) {
@@ -200,7 +232,20 @@ export default function PagosPage() {
       if (va > vb) return lSortDir === 'asc' ? 1 : -1
       return 0
     })
-  }, [state.pagos, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lSortKey, lSortDir])
+  }, [state.pagos, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lFilterConcepto, lSortKey, lSortDir])
+
+  // Unique concepto values for filter dropdown
+  const conceptoOptions = useMemo(() => {
+    const set = new Set<string>()
+    state.pagos.forEach(p => set.add(p.concepto || 'Mensualidad'))
+    return [...set].sort()
+  }, [state.pagos])
+
+  // Egresos total for same period as ledger (for KPI card)
+  const ledgerPeriodEgresosTotal = useMemo(() => {
+    if (!lFilterMonth) return state.egresos.reduce((s, e) => s + e.amount, 0)
+    return state.egresos.filter(e => e.monthKey === lFilterMonth).reduce((s, e) => s + e.amount, 0)
+  }, [state.egresos, lFilterMonth])
 
   const ledgerKpis = useMemo(() => {
     const paid = filteredPagos.filter(p => p.status === 'Pagado')
@@ -217,38 +262,7 @@ export default function PagosPage() {
   // EXPEDIENTE tab data
   // ═════════════════════════════════════════════════════════════════════
 
-  const filteredAdeudos = useMemo(() => {
-    let data = state.adeudos
-    if (eFilterTower)  data = data.filter(a => a.apartment.startsWith(eFilterTower))
-    if (eFilterUnit)   data = data.filter(a => a.apartment === eFilterUnit)
-    if (eFilterType)   data = data.filter(a => a.type === eFilterType)
-    if (eFilterStatus) data = data.filter(a => a.status === eFilterStatus)
-    return [...data].sort((a, b) => {
-      let va: string | number, vb: string | number
-      switch (eSortKey) {
-        case 'apartment': va = a.apartment; vb = b.apartment; break
-        case 'type':      va = a.type;      vb = b.type;      break
-        case 'concepto':  va = a.concepto;  vb = b.concepto;  break
-        case 'amount':    va = a.amount;    vb = b.amount;    break
-        case 'status':    va = a.status;    vb = b.status;    break
-        case 'createdAt': va = a.createdAt; vb = b.createdAt; break
-        default: return 0
-      }
-      if (va < vb) return eSortDir === 'asc' ? -1 : 1
-      if (va > vb) return eSortDir === 'asc' ? 1 : -1
-      return 0
-    })
-  }, [state.adeudos, eFilterTower, eFilterUnit, eFilterType, eFilterStatus, eSortKey, eSortDir])
 
-  const expKpis = useMemo(() => {
-    const active = state.adeudos.filter(a => a.status === 'Activo')
-    return {
-      warnings: active.filter(a => a.type === 'llamado_atencion').length,
-      fines:    active.filter(a => a.type === 'multa').length,
-      debts:    active.filter(a => a.type === 'adeudo').length,
-      totalAmt: active.reduce((s, a) => s + a.amount, 0),
-    }
-  }, [state.adeudos])
 
   // ═════════════════════════════════════════════════════════════════════
   // FINANCIAL REPORT tab data
@@ -333,10 +347,6 @@ export default function PagosPage() {
   const handleLSort = (key: LedgerSortKey) => {
     if (lSortKey === key) setLSortDir(d => d === 'asc' ? 'desc' : 'asc')
     else { setLSortKey(key); setLSortDir('asc') }
-  }
-  const handleESort = (key: ExpSortKey) => {
-    if (eSortKey === key) setESortDir(d => d === 'asc' ? 'desc' : 'asc')
-    else { setESortKey(key); setESortDir('asc') }
   }
 
   // Reusable sort header
@@ -454,13 +464,13 @@ export default function PagosPage() {
     if (!mUnit) return
     const resident = state.residents.find(r => r.apartment === mUnit)
     const resName = resident?.name || mUnit
-    const isFinancial = chargeType !== 'llamado'
+    const isFinancial = true  // all types now are financial
     const isDisciplinary = chargeType === 'multa' || chargeType === 'adeudo'
 
     if (isFinancial && !isDisciplinary) {
       // ── Mensualidad / Extraordinario → Pago only ──
       const months = mMulti ? mMonths : [mSingleMonth]
-      const concepto = chargeType === 'extraordinario' ? 'Extraordinario' : (mConcepto || 'Mensualidad')
+      const concepto = chargeType === 'extraordinario' ? 'Extraordinario' : (mConcepto || 'Extraordinario')
       months.forEach(mk => {
         dispatch({
           type: 'ADD_PAGO',
@@ -518,24 +528,6 @@ export default function PagosPage() {
           pagoId,
         },
       })
-    } else {
-      // ── Llamado de Atención → Adeudo only ──
-      dispatch({
-        type: 'ADD_ADEUDO',
-        payload: {
-          id: `ad-${Date.now()}`,
-          apartment: mUnit,
-          type: 'llamado_atencion',
-          concepto: 'Llamado de atención',
-          description: mDescription.trim(),
-          amount: 0,
-          status: 'Activo',
-          createdAt: new Date().toISOString(),
-          resolvedAt: null,
-          resolvedBy: null,
-          pagoId: undefined,
-        },
-      })
     }
 
     // Reset modal
@@ -547,14 +539,13 @@ export default function PagosPage() {
 
   const toggleFormMonth = (mk: string) => setMMonths(prev => prev.includes(mk) ? prev.filter(m => m !== mk) : [...prev, mk])
 
-  const isPaymentType = chargeType === 'mensualidad' || chargeType === 'extraordinario'
+  const isPaymentType = chargeType === 'extraordinario'
   const isDisciplinaryType = chargeType === 'multa' || chargeType === 'adeudo'
-  const isLlamadoType = chargeType === 'llamado'
 
   const formValid = !!mUnit && (
     isPaymentType ? (mMulti ? mMonths.length > 0 : !!mSingleMonth) && !mReceiptError
     : isDisciplinaryType ? !!mDescription.trim() && Number(mAmount) > 0
-    : !!mDescription.trim() // llamado
+    : false
   )
 
   // ═════════════════════════════════════════════════════════════════════
@@ -572,13 +563,7 @@ export default function PagosPage() {
             Finanzas
           </h1>
         </div>
-        {isAdmin && (
-          <button onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[11px] tracking-widest uppercase shrink-0">
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            Nuevo Cargo
-          </button>
-        )}
+        {/* Buttons moved to individual tabs */}
       </div>
 
       {/* ═══ Tab bar (admin only) ═══ */}
@@ -586,7 +571,6 @@ export default function PagosPage() {
         <div className="flex items-center gap-1 bg-slate-100 rounded-2xl p-1 w-fit">
           {([
             { key: 'ledger' as ActiveTab, label: 'Estado de Cuenta', icon: 'receipt_long' },
-            { key: 'expediente' as ActiveTab, label: 'Expediente', icon: 'gavel' },
             { key: 'report' as ActiveTab, label: 'Reporte', icon: 'analytics' },
           ]).map(tab => (
             <button
@@ -611,9 +595,20 @@ export default function PagosPage() {
 
       {(activeTab === 'ledger' || !isAdmin) && (
         <>
+          {/* ── Admin action bar ── */}
+          {isAdmin && (
+            <div className="flex justify-end">
+              <button onClick={() => setShowModal(true)}
+                className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[11px] tracking-widest uppercase shrink-0">
+                <span className="material-symbols-outlined text-[18px]">add</span>
+                Nuevo Cargo
+              </button>
+            </div>
+          )}
+
           {/* ── Admin filters ── */}
           {isAdmin && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div className="col-span-2 md:col-span-1">
                 <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
                 <div className="flex items-center gap-2">
@@ -644,6 +639,14 @@ export default function PagosPage() {
                 </select>
               </div>
               <div>
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Concepto</label>
+                <select value={lFilterConcepto} onChange={e => setLFilterConcepto(e.target.value)}
+                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                  <option value="">Todos</option>
+                  {conceptoOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
                 <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
                 <select value={lFilterStatus} onChange={e => setLFilterStatus(e.target.value)}
                   className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
@@ -659,16 +662,16 @@ export default function PagosPage() {
           {isAdmin && (
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: 'Pagados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'check_circle', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
-                { label: 'Pendientes', value: ledgerKpis.pendingCount, amount: ledgerKpis.pendingTotal, icon: 'pending', color: 'text-rose-600 bg-rose-50 border-rose-200' },
+                { label: 'Ingresos', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+                { label: 'Egresos', value: null, amount: ledgerPeriodEgresosTotal, icon: 'trending_down', color: 'text-rose-600 bg-rose-50 border-rose-200' },
               ].map(k => (
                 <div key={k.label} className={`flex items-center gap-3 p-4 rounded-2xl border ${k.color}`}>
                   <div className="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center shadow-sm">
                     <span className="material-symbols-outlined text-lg">{k.icon}</span>
                   </div>
                   <div>
-                    <p className="text-xl font-headline font-black leading-none">{k.value} registros</p>
-                    <p className="text-xs font-bold opacity-70 mt-0.5">${k.amount.toLocaleString('es-MX')} MXN · {k.label}</p>
+                    <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
+                    <p className="text-xs font-bold opacity-70 mt-0.5">{k.label}{k.value != null ? ` · ${k.value} cobrados` : ''}</p>
                   </div>
                 </div>
               ))}
@@ -697,10 +700,9 @@ export default function PagosPage() {
                   <div className="text-center"><p className={`text-2xl font-headline font-black tabular-nums ${total > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>${total.toLocaleString('es-MX')}</p><p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Balance</p></div>
                 </div>
                 {aa > 0 && (
-                  <button onClick={() => { setActiveTab('expediente'); setEFilterUnit(lFilterUnit) }}
-                    className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold text-xs tracking-widest uppercase transition-all">
-                    <span className="material-symbols-outlined text-[14px]">gavel</span>Ver Expediente
-                  </button>
+                  <span className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-rose-500/20 rounded-xl text-rose-200 font-bold text-xs tracking-widest uppercase">
+                    <span className="material-symbols-outlined text-[14px]">warning</span>{uAdeudos.length} adeudo(s)
+                  </span>
                 )}
               </div>
             )
@@ -802,12 +804,7 @@ export default function PagosPage() {
                             {pago.adeudoId && <span className="material-symbols-outlined text-[11px]">gavel</span>}
                             {pago.concepto || 'Mensualidad'}
                           </span>
-                          {pago.adeudoId && isAdmin && (
-                            <button onClick={() => { setActiveTab('expediente') }}
-                              className="text-[9px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-widest transition-colors text-left">
-                              Ver expediente →
-                            </button>
-                          )}
+
                         </div>
                       </td>
                       <td className="px-5 py-4 text-sm font-medium text-slate-700 capitalize">{pago.month}</td>
@@ -855,190 +852,8 @@ export default function PagosPage() {
         </>
       )}
 
-      {/* ═══════════════════════════════════════════════════════════════ */}
-      {/* TAB 2: EXPEDIENTE (Compliance)                                */}
-      {/* ═══════════════════════════════════════════════════════════════ */}
 
-      {isAdmin && activeTab === 'expediente' && (
-        <>
-          {/* ── KPI strip ── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {([
-              { key: 'llamado_atencion' as AdeudoType, label: 'Llamados', value: expKpis.warnings, icon: 'warning', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-              { key: 'multa'           as AdeudoType, label: 'Multas',    value: expKpis.fines,    icon: 'gavel',   color: 'bg-rose-50 text-rose-700 border-rose-200' },
-              { key: 'adeudo'          as AdeudoType, label: 'Adeudos',   value: expKpis.debts,    icon: 'account_balance_wallet', color: 'bg-sky-50 text-sky-700 border-sky-200' },
-              { key: null,              label: 'Monto',    value: `$${expKpis.totalAmt.toLocaleString('es-MX')}`, icon: 'trending_up',
-                color: expKpis.totalAmt > 0 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-            ] as { key: AdeudoType | null; label: string; value: string | number; icon: string; color: string }[]).map(k => (
-              <button key={k.label}
-                onClick={() => k.key && setEFilterType(eFilterType === k.key ? '' : k.key)}
-                className={`flex items-center gap-3 p-4 rounded-2xl border transition-all text-left ${k.color} ${
-                  k.key && eFilterType === k.key ? 'ring-2 ring-offset-1 ring-current scale-[0.98]' : 'hover:scale-[0.98]'
-                } ${k.key ? 'cursor-pointer' : 'cursor-default'}`}>
-                <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center shadow-sm shrink-0">
-                  <span className="material-symbols-outlined text-[18px]">{k.icon}</span>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xl font-headline font-black leading-none tabular-nums">{k.value}</p>
-                  <p className="text-[10px] font-bold opacity-60 mt-0.5 uppercase tracking-widest truncate">{k.label} activos</p>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* ── Filters ── */}
-          <div className="bg-white border border-slate-200 rounded-2xl px-5 py-4 shadow-sm">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
-                <select value={eFilterTower} onChange={e => { setEFilterTower(e.target.value); setEFilterUnit('') }}
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  <option value="">Todas</option>
-                  {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Unidad</label>
-                <select value={eFilterUnit} onChange={e => setEFilterUnit(e.target.value)}
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  <option value="">Todas</option>
-                  {eFilteredUnits.map(u => <option key={u} value={u}>{u}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
-                <select value={eFilterStatus} onChange={e => setEFilterStatus(e.target.value)}
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  <option value="">Todos</option>
-                  <option value="Activo">Activo</option>
-                  <option value="Pagado">Resuelto</option>
-                  <option value="Anulado">Anulado</option>
-                </select>
-              </div>
-              {(eFilterTower || eFilterUnit || eFilterType || eFilterStatus) && (
-                <div className="flex items-end">
-                  <button onClick={() => { setEFilterTower(''); setEFilterUnit(''); setEFilterType(''); setEFilterStatus('') }}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-slate-500 hover:text-slate-900 hover:border-slate-300 font-bold text-xs transition-all">
-                    Limpiar
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ── Expediente grid ── */}
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100">
-              <h2 className="text-base font-headline font-extrabold text-slate-900">Registros</h2>
-              <p className="text-[11px] text-slate-400 font-medium mt-0.5">
-                {filteredAdeudos.length} registro{filteredAdeudos.length !== 1 ? 's' : ''}
-                {eFilterType ? ` · ${ADEUDO_TYPE_LABELS[eFilterType]}` : ''}
-              </p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/60">
-                    <SortTh col="apartment" label="Unidad" sortKey={eSortKey} sortDir={eSortDir} onSort={handleESort} />
-                    <SortTh col="type" label="Tipo" sortKey={eSortKey} sortDir={eSortDir} onSort={handleESort} />
-                    <SortTh col="concepto" label="Concepto" sortKey={eSortKey} sortDir={eSortDir} onSort={handleESort} />
-                    <SortTh col="amount" label="Monto" right sortKey={eSortKey} sortDir={eSortDir} onSort={handleESort} />
-                    <SortTh col="status" label="Estado" sortKey={eSortKey} sortDir={eSortDir} onSort={handleESort} />
-                    <SortTh col="createdAt" label="Fecha" sortKey={eSortKey} sortDir={eSortDir} onSort={handleESort} />
-                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAdeudos.map(ad => {
-                    const res = state.residents.find(r => r.apartment === ad.apartment)
-                    const aging = agingLabel(ad.createdAt, ad.status, ad.amount)
-                    const isExp = expandedId === ad.id
-                    const linkedPago = ad.pagoId ? state.pagos.find(p => p.id === ad.pagoId) : undefined
-                    return (
-                      <tr key={ad.id} className="border-t border-slate-50 hover:bg-slate-50/30 transition-colors">
-                        <td className="px-5 py-4 align-top">
-                          <p className="text-sm font-black text-slate-900 leading-none">{ad.apartment}</p>
-                          {res && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mt-0.5">{res.name}</p>}
-                        </td>
-                        <td className="px-5 py-4 align-top">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border ${ADEUDO_TYPE_BADGE[ad.type]}`}>
-                            <span className="material-symbols-outlined text-[12px]">{ADEUDO_TYPE_ICONS[ad.type]}</span>
-                            {ADEUDO_TYPE_LABELS[ad.type]}
-                          </span>
-                          {aging && <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-widest bg-rose-100 text-rose-800">{aging}</span>}
-                        </td>
-                        <td className="px-5 py-4 align-top max-w-xs">
-                          <p className="text-sm font-semibold text-slate-900 leading-none mb-0.5">{ad.concepto}</p>
-                          <p className={`text-xs text-slate-500 font-medium leading-snug ${isExp ? '' : 'line-clamp-1'}`}>{ad.description}</p>
-                          {ad.description.length > 50 && (
-                            <button onClick={() => setExpandedId(isExp ? null : ad.id)}
-                              className="text-[9px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-widest mt-0.5 transition-colors">
-                              {isExp ? 'Menos' : 'Más'}
-                            </button>
-                          )}
-                          {linkedPago && (
-                            <button onClick={() => setActiveTab('ledger')}
-                              className="mt-1 flex items-center gap-1 text-[9px] font-bold text-slate-500 hover:text-slate-900 uppercase tracking-widest transition-colors">
-                              <span className="material-symbols-outlined text-[11px]">receipt_long</span>
-                              Cargo · {linkedPago.status}
-                            </button>
-                          )}
-                        </td>
-                        <td className="px-5 py-4 text-sm font-black text-slate-900 text-right tabular-nums align-top whitespace-nowrap">
-                          {ad.amount > 0 ? `$${ad.amount.toLocaleString('es-MX')}` : '—'}
-                        </td>
-                        <td className="px-5 py-4 align-top">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border ${
-                            ad.status === 'Activo' ? 'bg-rose-50 text-rose-700 border-rose-200'
-                            : ad.status === 'Pagado' ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                            : 'bg-slate-100 text-slate-500 border-slate-200'
-                          }`}>{ad.status === 'Pagado' ? 'Resuelto' : ad.status}</span>
-                        </td>
-                        <td className="px-5 py-4 text-xs font-semibold text-slate-500 tabular-nums whitespace-nowrap align-top">
-                          {new Date(ad.createdAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="px-5 py-4 align-top">
-                          {ad.status === 'Activo' ? (
-                            <div className="flex flex-col gap-1.5 items-stretch min-w-[100px]">
-                              {ad.type === 'llamado_atencion' ? (
-                                <button onClick={() => setExpConfirm({ id: ad.id, action: 'resolve_llamado', apartment: ad.apartment })}
-                                  className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-1.5 rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 transition-all">
-                                  <span className="material-symbols-outlined text-[13px]">check</span>Resolver
-                                </button>
-                              ) : null}
-                              <button onClick={() => setExpConfirm({ id: ad.id, action: 'annul', apartment: ad.apartment })}
-                                className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-1.5 rounded-lg border bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 transition-all">
-                                <span className="material-symbols-outlined text-[13px]">block</span>Anular
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center">
-                              <button onClick={() => setExpConfirm({ id: ad.id, action: 'delete', apartment: ad.apartment })}
-                                className="text-slate-200 hover:text-rose-500 transition-colors p-1" title="Eliminar">
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                  {filteredAdeudos.length === 0 && (
-                    <tr>
-                      <td colSpan={7} className="px-6 py-16 text-center">
-                        <div className="flex flex-col items-center gap-3">
-                          <span className="material-symbols-outlined text-4xl text-slate-200">gavel</span>
-                          <p className="text-slate-400 font-medium text-sm">Sin registros para los filtros seleccionados.</p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
-      )}
+      {/* Expediente tab removed — compliance records visible via Concepto filter in Estado de Cuenta */}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* TAB 3: REPORTE FINANCIERO (admin only)                        */}
@@ -1250,7 +1065,7 @@ export default function PagosPage() {
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tipo de cargo *</label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {CHARGE_TYPES.map(ct => (
-                <button key={ct.key} onClick={() => { setChargeType(ct.key); setMAmount(ct.key === 'mensualidad' ? '1700' : '500') }}
+                <button key={ct.key} onClick={() => { setChargeType(ct.key); setMAmount('500') }}
                   className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 text-[10px] font-bold uppercase tracking-wider transition-all ${
                     chargeType === ct.key ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}>
@@ -1331,8 +1146,8 @@ export default function PagosPage() {
             </div>
           ) : null}
 
-          {/* ── Amount (not for llamado) ── */}
-          {!isLlamadoType && (
+          {/* ── Amount ── */}
+          {(
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN) {isDisciplinaryType ? '*' : ''}</label>
               <div className="relative">
@@ -1355,11 +1170,11 @@ export default function PagosPage() {
             </div>
           )}
 
-          {/* ── Description (disciplinary / llamado) ── */}
-          {(isDisciplinaryType || isLlamadoType) && (
+          {/* ── Description (disciplinary) ── */}
+          {isDisciplinaryType && (
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                {isLlamadoType ? 'Motivo del llamado *' : 'Descripción / Detalle *'}
+                Descripción / Detalle *
               </label>
               <textarea value={mDescription} onChange={e => setMDescription(e.target.value)}
                 rows={3} maxLength={1000} placeholder="Describe el motivo con detalle…"
