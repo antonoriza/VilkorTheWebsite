@@ -597,7 +597,12 @@ export default function PagosPage() {
         <>
           {/* ── Admin action bar ── */}
           {isAdmin && (
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowEgresoModal(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase shrink-0">
+                <span className="material-symbols-outlined text-[16px]">remove_circle_outline</span>
+                Registrar Egreso
+              </button>
               <button onClick={() => setShowModal(true)}
                 className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[11px] tracking-widest uppercase shrink-0">
                 <span className="material-symbols-outlined text-[18px]">add</span>
@@ -881,11 +886,6 @@ export default function PagosPage() {
               )}
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setShowEgresoModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase">
-                <span className="material-symbols-outlined text-[16px]">remove_circle_outline</span>
-                Registrar Egreso
-              </button>
               <button onClick={handleDownloadPDF} disabled={pdfLoading}
                 className={`flex items-center gap-2 px-5 py-2.5 font-bold rounded-xl text-[11px] tracking-widest uppercase transition-all ${
                   pdfLoading ? 'bg-slate-200 text-slate-400 cursor-wait' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-95 shadow-lg shadow-slate-900/10'
