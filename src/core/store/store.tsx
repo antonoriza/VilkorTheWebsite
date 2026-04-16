@@ -20,7 +20,7 @@ import {
   seedTickets, seedTicketCounter, seedAdeudos, seedEgresos,
   type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
   type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
-  type Ticket, type TicketActivity, type Adeudo, type Egreso
+  type Ticket, type TicketActivity, type Adeudo, type Egreso, type RecurringEgreso
 } from './seed'
 
 // ─── State Shape ─────────────────────────────────────────────────────
@@ -89,6 +89,7 @@ type Action =
   | { type: 'ADD_EGRESO'; payload: Egreso }
   | { type: 'UPDATE_EGRESO'; payload: Egreso }
   | { type: 'DELETE_EGRESO'; payload: string }
+  | { type: 'GENERATE_MONTHLY_RECORDS'; payload: { monthKey: string } }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'RESET' }
 
@@ -229,6 +230,22 @@ function loadInitialState(): StoreState {
       // Migrate buildingConfig: ensure categoriasEgreso exists
       if (!parsed.buildingConfig.categoriasEgreso) {
         parsed.buildingConfig.categoriasEgreso = ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros']
+      }
+
+      // Migrate buildingConfig: ensure monthlyFee and recurringEgresos exist
+      if (parsed.buildingConfig.monthlyFee == null) {
+        parsed.buildingConfig.monthlyFee = seedBuildingConfig.monthlyFee
+      }
+      if (!parsed.buildingConfig.recurringEgresos) {
+        parsed.buildingConfig.recurringEgresos = seedBuildingConfig.recurringEgresos
+      }
+
+      // Migrate egresos: backfill status field (default to 'Pagado' for existing records)
+      if (parsed.egresos) {
+        parsed.egresos = parsed.egresos.map((e: any) => {
+          if (!e.status) e.status = 'Pagado'
+          return e
+        })
       }
 
       return parsed
@@ -441,6 +458,68 @@ function reducer(state: StoreState, action: Action): StoreState {
       return { ...state, paquetes: pqs }
     }
 
+    // Auto-generate monthly pago + egreso records
+    case 'GENERATE_MONTHLY_RECORDS': {
+      const mk = action.payload.monthKey
+      const MONTH_NAMES_ES = [
+        'enero','febrero','marzo','abril','mayo','junio',
+        'julio','agosto','septiembre','octubre','noviembre','diciembre',
+      ]
+      const [yearStr, monthStr] = mk.split('-')
+      const monthLabel = `${MONTH_NAMES_ES[parseInt(monthStr, 10) - 1]} de ${yearStr}`
+      const fee = state.buildingConfig.monthlyFee || 1700
+
+      // 1. Generate one Mensualidad pago per resident for this month (if missing)
+      const newPagos: Pago[] = []
+      state.residents.forEach(res => {
+        const exists = state.pagos.some(
+          p => p.apartment === res.apartment && (p.monthKey || '') === mk && (p.concepto || 'Mensualidad') === 'Mensualidad'
+        )
+        if (!exists) {
+          newPagos.push({
+            id: `pg-auto-${res.apartment}-${mk}`,
+            apartment: res.apartment,
+            resident: res.name,
+            month: monthLabel,
+            monthKey: mk,
+            concepto: 'Mensualidad',
+            amount: fee,
+            status: 'Pendiente',
+            paymentDate: null,
+          })
+        }
+      })
+
+      // 2. Generate one egreso per recurring expense for this month (if missing)
+      const newEgresos: Egreso[] = []
+      const recurring = state.buildingConfig.recurringEgresos || []
+      recurring.forEach((re: RecurringEgreso) => {
+        const exists = state.egresos.some(
+          e => e.monthKey === mk && e.concepto === re.concepto
+        )
+        if (!exists) {
+          newEgresos.push({
+            id: `eg-auto-${re.id}-${mk}`,
+            categoria: re.categoria,
+            concepto: re.concepto,
+            description: re.description,
+            amount: re.amount,
+            monthKey: mk,
+            date: `${mk}-01`,
+            registeredBy: state.buildingConfig.adminName,
+            status: 'Pendiente',
+          })
+        }
+      })
+
+      if (newPagos.length === 0 && newEgresos.length === 0) return state
+      return {
+        ...state,
+        pagos: [...state.pagos, ...newPagos],
+        egresos: [...state.egresos, ...newEgresos],
+      }
+    }
+
     // Full system reset to seed data
     case 'RESET':
       localStorage.removeItem(STORAGE_KEY)
@@ -484,6 +563,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // Run cleanup for expired packages on initial mount
   useEffect(() => {
     dispatch({ type: 'CLEANUP_EXPIRED', payload: { nowIso: new Date().toISOString() } })
+    // Auto-generate monthly pago + egreso records for current month
+    const now = new Date()
+    const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    dispatch({ type: 'GENERATE_MONTHLY_RECORDS', payload: { monthKey } })
   }, [])
 
   // Persist state to localStorage on every change

@@ -86,7 +86,7 @@ export interface Pago {
   concepto: string
   /** Amount in MXN */
   amount: number
-  status: 'Pagado' | 'Pendiente'
+  status: 'Pagado' | 'Pendiente' | 'Por validar'
   /** ISO date of payment, null if unpaid */
   paymentDate: string | null
   /** If this pago was auto-generated from an Adeudo, stores the source adeudo id */
@@ -212,6 +212,15 @@ export interface Amenity {
 
 // ─── Building Configuration ──────────────────────────────────────────
 
+/** A recurring monthly expense configured by the admin */
+export interface RecurringEgreso {
+  id: string
+  concepto: string
+  categoria: EgresoCategoria
+  amount: number
+  description?: string
+}
+
 /** Global building settings managed by the admin */
 export interface BuildingConfig {
   /** Property type: "towers" for high-rise, "houses" for low-rise */
@@ -232,6 +241,10 @@ export interface BuildingConfig {
   subConceptos?: Record<string, string[]>
   /** Admin-managed list of expense categories */
   categoriasEgreso?: EgresoCategoria[]
+  /** Default monthly maintenance fee in MXN */
+  monthlyFee: number
+  /** Recurring monthly expenses auto-generated each month */
+  recurringEgresos: RecurringEgreso[]
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
@@ -360,6 +373,8 @@ export interface Egreso {
   date: string
   /** Admin who recorded this expense */
   registeredBy: string
+  /** Payment status — Pendiente until admin confirms disbursement */
+  status: 'Pendiente' | 'Pagado'
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -382,6 +397,15 @@ export const seedBuildingConfig: BuildingConfig = {
     'Multa': ['Ruido excesivo', 'Uso indebido de cajón', 'Mascota sin registro', 'Basura fuera de horario'],
   },
   categoriasEgreso: ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros'],
+  monthlyFee: 1700,
+  recurringEgresos: [
+    { id: 're-1', concepto: 'Salario Guardia — Carlos Mendoza',  categoria: 'nomina',         amount: 8000,  description: 'Pago mensual guardia de seguridad.' },
+    { id: 're-2', concepto: 'Salario Jardinero — Juan Pérez',    categoria: 'nomina',         amount: 4500,  description: 'Pago mensual jardinero.' },
+    { id: 're-3', concepto: 'Salario Limpieza — María López',   categoria: 'nomina',         amount: 6000,  description: 'Pago mensual personal de limpieza.' },
+    { id: 're-4', concepto: 'Recibo de Agua',                    categoria: 'servicios',      amount: 3200,  description: 'Servicio de agua potable.' },
+    { id: 're-5', concepto: 'Recibo de Luz',                     categoria: 'servicios',      amount: 5800,  description: 'Servicio de energía eléctrica áreas comunes.' },
+    { id: 're-6', concepto: 'Honorarios Administración',         categoria: 'administracion', amount: 15000, description: 'Cuota mensual de la empresa administradora.' },
+  ],
 }
 
 export const seedAmenities: Amenity[] = [
@@ -441,22 +465,34 @@ export const seedAvisos: Aviso[] = [
 ]
 
 export const seedPagos: Pago[] = [
-  { id: 'pg-1',  apartment: 'A101', resident: 'Sofía Torres',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-13' },
-  { id: 'pg-2',  apartment: 'A102', resident: 'Luis Díaz',        month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-20' },
-  { id: 'pg-3',  apartment: 'A103', resident: 'Luis Martínez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-11' },
-  { id: 'pg-4',  apartment: 'A104', resident: 'Pedro Sánchez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-02' },
-  { id: 'pg-5',  apartment: 'A201', resident: 'Ana López',        month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-6',  apartment: 'A202', resident: 'María Ramírez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-12' },
-  { id: 'pg-7',  apartment: 'A203', resident: 'Carlos Gómez',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-8',  apartment: 'A204', resident: 'Juan Pérez',       month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-08' },
-  { id: 'pg-9',  apartment: 'B101', resident: 'Laura Ramírez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-10', apartment: 'B102', resident: 'Roberto Mendez',   month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-15' },
-  { id: 'pg-11', apartment: 'B203', resident: 'María López',      month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-12', apartment: 'B204', resident: 'Gabriela Sánchez', month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-04-09' },
-  { id: 'pg-13', apartment: 'A101', resident: 'Sofía Torres',     month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-10' },
-  { id: 'pg-14', apartment: 'A201', resident: 'Ana López',        month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
-  { id: 'pg-15', apartment: 'B101', resident: 'Laura Ramírez',    month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-15' },
-  { id: 'pg-16', apartment: 'A203', resident: 'Carlos Gómez',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Multa',        amount: 500,  status: 'Pendiente', paymentDate: null },
+  // ── March 2026 ──
+  { id: 'pg-m3-1',  apartment: 'A101', resident: 'Sofía Torres',     month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-10' },
+  { id: 'pg-m3-2',  apartment: 'A102', resident: 'Luis Díaz',        month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-12' },
+  { id: 'pg-m3-3',  apartment: 'A103', resident: 'Luis Martínez',    month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-08' },
+  { id: 'pg-m3-4',  apartment: 'A104', resident: 'Pedro Sánchez',    month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-05' },
+  { id: 'pg-m3-5',  apartment: 'A201', resident: 'Ana López',        month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente', paymentDate: null },
+  { id: 'pg-m3-6',  apartment: 'A202', resident: 'María Ramírez',    month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-15' },
+  { id: 'pg-m3-7',  apartment: 'A203', resident: 'Carlos Gómez',     month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-20' },
+  { id: 'pg-m3-8',  apartment: 'A204', resident: 'Juan Pérez',       month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-11' },
+  { id: 'pg-m3-9',  apartment: 'B101', resident: 'Laura Ramírez',    month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-15' },
+  { id: 'pg-m3-10', apartment: 'B102', resident: 'Roberto Mendez',   month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-09' },
+  { id: 'pg-m3-11', apartment: 'B203', resident: 'María López',      month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-18' },
+  { id: 'pg-m3-12', apartment: 'B204', resident: 'Gabriela Sánchez', month: 'marzo de 2026',  monthKey: '2026-03', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',   paymentDate: '2026-03-07' },
+  // ── April 2026 ──
+  { id: 'pg-m4-1',  apartment: 'A101', resident: 'Sofía Torres',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',      paymentDate: '2026-04-13' },
+  { id: 'pg-m4-2',  apartment: 'A102', resident: 'Luis Díaz',        month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',      paymentDate: '2026-04-20' },
+  { id: 'pg-m4-3',  apartment: 'A103', resident: 'Luis Martínez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Por validar', paymentDate: '2026-04-14' },
+  { id: 'pg-m4-4',  apartment: 'A104', resident: 'Pedro Sánchez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',      paymentDate: '2026-04-02' },
+  { id: 'pg-m4-5',  apartment: 'A201', resident: 'Ana López',        month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente',   paymentDate: null },
+  { id: 'pg-m4-6',  apartment: 'A202', resident: 'María Ramírez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',      paymentDate: '2026-04-12' },
+  { id: 'pg-m4-7',  apartment: 'A203', resident: 'Carlos Gómez',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente',   paymentDate: null },
+  { id: 'pg-m4-8',  apartment: 'A204', resident: 'Juan Pérez',       month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',      paymentDate: '2026-04-08' },
+  { id: 'pg-m4-9',  apartment: 'B101', resident: 'Laura Ramírez',    month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Por validar', paymentDate: '2026-04-15' },
+  { id: 'pg-m4-10', apartment: 'B102', resident: 'Roberto Mendez',   month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',      paymentDate: '2026-04-15' },
+  { id: 'pg-m4-11', apartment: 'B203', resident: 'María López',      month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pendiente',   paymentDate: null },
+  { id: 'pg-m4-12', apartment: 'B204', resident: 'Gabriela Sánchez', month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Mensualidad', amount: 1700, status: 'Pagado',      paymentDate: '2026-04-09' },
+  // ── Extra charges ──
+  { id: 'pg-m4-13', apartment: 'A203', resident: 'Carlos Gómez',     month: 'abril de 2026',  monthKey: '2026-04', concepto: 'Multa',        amount: 500,  status: 'Pendiente',   paymentDate: null },
 ]
 
 
@@ -675,62 +711,19 @@ export const seedAdeudos: Adeudo[] = [
 ]
 
 export const seedEgresos: Egreso[] = [
-  {
-    id: 'eg-1',
-    categoria: 'nomina',
-    concepto: 'Nómina jardinero — abril 2026',
-    description: 'Pago quincenal (1ra quincena) al jardinero contratado.',
-    amount: 4500,
-    monthKey: '2026-04',
-    date: '2026-04-15',
-    registeredBy: 'Administrador General',
-  },
-  {
-    id: 'eg-2',
-    categoria: 'nomina',
-    concepto: 'Nómina guardia — abril 2026',
-    description: 'Pago mensual al guardia de seguridad nocturno.',
-    amount: 8000,
-    monthKey: '2026-04',
-    date: '2026-04-01',
-    registeredBy: 'Administrador General',
-  },
-  {
-    id: 'eg-3',
-    categoria: 'servicios',
-    concepto: 'Recibo de agua — marzo 2026',
-    amount: 3200,
-    monthKey: '2026-03',
-    date: '2026-03-20',
-    registeredBy: 'Administrador General',
-  },
-  {
-    id: 'eg-4',
-    categoria: 'servicios',
-    concepto: 'Recibo de luz — marzo 2026',
-    amount: 5800,
-    monthKey: '2026-03',
-    date: '2026-03-22',
-    registeredBy: 'Administrador General',
-  },
-  {
-    id: 'eg-5',
-    categoria: 'mantenimiento',
-    concepto: 'Reparación elevador Torre A',
-    description: 'Servicio correctivo por fallo en sensor de piso 3.',
-    amount: 12000,
-    monthKey: '2026-03',
-    date: '2026-03-10',
-    registeredBy: 'Administrador General',
-  },
-  {
-    id: 'eg-6',
-    categoria: 'administracion',
-    concepto: 'Honorarios administración — abril 2026',
-    description: 'Cuota mensual de la empresa administradora.',
-    amount: 15000,
-    monthKey: '2026-04',
-    date: '2026-04-01',
-    registeredBy: 'Administrador General',
-  },
+  // ── March 2026 (all paid — past month) ──
+  { id: 'eg-m3-1', categoria: 'nomina',         concepto: 'Salario Guardia — Carlos Mendoza',  description: 'Pago mensual guardia de seguridad.',          amount: 8000,  monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-m3-2', categoria: 'nomina',         concepto: 'Salario Jardinero — Juan Pérez',    description: 'Pago mensual jardinero.',                     amount: 4500,  monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-m3-3', categoria: 'nomina',         concepto: 'Salario Limpieza — María López',   description: 'Pago mensual personal de limpieza.',          amount: 6000,  monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-m3-4', categoria: 'servicios',      concepto: 'Recibo de Agua',                    description: 'Servicio de agua potable.',                   amount: 3200,  monthKey: '2026-03', date: '2026-03-20', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-m3-5', categoria: 'servicios',      concepto: 'Recibo de Luz',                     description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800,  monthKey: '2026-03', date: '2026-03-22', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-m3-6', categoria: 'administracion', concepto: 'Honorarios Administración',         description: 'Cuota mensual de la empresa administradora.', amount: 15000, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-m3-7', categoria: 'mantenimiento',  concepto: 'Reparación elevador Torre A',        description: 'Servicio correctivo por fallo en sensor de piso 3.', amount: 12000, monthKey: '2026-03', date: '2026-03-10', registeredBy: 'Administrador General', status: 'Pagado' },
+  // ── April 2026 (mix of paid and pending — current month) ──
+  { id: 'eg-m4-1', categoria: 'nomina',         concepto: 'Salario Guardia — Carlos Mendoza',  description: 'Pago mensual guardia de seguridad.',          amount: 8000,  monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-m4-2', categoria: 'nomina',         concepto: 'Salario Jardinero — Juan Pérez',    description: 'Pago mensual jardinero.',                     amount: 4500,  monthKey: '2026-04', date: '2026-04-15', registeredBy: 'Administrador General', status: 'Pendiente' },
+  { id: 'eg-m4-3', categoria: 'nomina',         concepto: 'Salario Limpieza — María López',   description: 'Pago mensual personal de limpieza.',          amount: 6000,  monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Administrador General', status: 'Pendiente' },
+  { id: 'eg-m4-4', categoria: 'servicios',      concepto: 'Recibo de Agua',                    description: 'Servicio de agua potable.',                   amount: 3200,  monthKey: '2026-04', date: '2026-04-15', registeredBy: 'Administrador General', status: 'Pendiente' },
+  { id: 'eg-m4-5', categoria: 'servicios',      concepto: 'Recibo de Luz',                     description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800,  monthKey: '2026-04', date: '2026-04-15', registeredBy: 'Administrador General', status: 'Pendiente' },
+  { id: 'eg-m4-6', categoria: 'administracion', concepto: 'Honorarios Administración',         description: 'Cuota mensual de la empresa administradora.', amount: 15000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Administrador General', status: 'Pagado' },
 ]

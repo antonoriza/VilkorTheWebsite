@@ -12,6 +12,7 @@
 import { useState } from 'react'
 import { useStore } from '../../core/store/store'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
+import { EGRESO_CATEGORIA_LABELS, type EgresoCategoria } from '../../core/store/seed'
 
 /** Tracks which confirmation dialog is currently visible */
 type ConfirmTarget =
@@ -30,6 +31,12 @@ export default function AdminConfiguracion() {
   const [newConcepto, setNewConcepto] = useState('')
   const [expandedConcepto, setExpandedConcepto] = useState<string | null>(null)
   const [newSubConcepto, setNewSubConcepto] = useState('')
+
+  // Recurring egresos form
+  const [reConcepto, setReConcepto] = useState('')
+  const [reCategoria, setReCategoria] = useState<EgresoCategoria>('nomina')
+  const [reAmount, setReAmount] = useState('')
+  const [reDescription, setReDescription] = useState('')
 
   /** Dispatches a partial building config update */
   const update = (key: string, value: string | number) => {
@@ -183,6 +190,15 @@ export default function AdminConfiguracion() {
           <div>
             <label className={labelClass}>Total de Unidades</label>
             <input type="number" value={bc.totalUnits} onChange={(e) => update('totalUnits', parseInt(e.target.value) || 0)} className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Cuota Mensual (MXN)</label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+              <input type="number" value={bc.monthlyFee || ''}
+                onChange={(e) => dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { monthlyFee: Number(e.target.value) || 0 } })}
+                className={inputClass + ' !pl-8'} />
+            </div>
           </div>
         </div>
       </section>
@@ -392,6 +408,104 @@ export default function AdminConfiguracion() {
             }}
             className="px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all text-sm font-bold whitespace-nowrap"
           >
+            Agregar
+          </button>
+        </div>
+      </section>
+
+      {/* Egresos Recurrentes */}
+      <section className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
+        <div className="flex items-center space-x-3 border-b border-slate-100 pb-4">
+          <span className="material-symbols-outlined text-primary text-xl">autorenew</span>
+          <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Egresos Recurrentes</h3>
+        </div>
+        <p className="text-[11px] text-slate-500 font-medium">
+          Gastos operativos que se generan automáticamente como "Pendiente" al inicio de cada mes (nóminas, servicios, etc.).
+        </p>
+        <div className="space-y-2">
+          {(bc.recurringEgresos || []).map(re => (
+            <div key={re.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-slate-900">{re.concepto}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-md">
+                    {EGRESO_CATEGORIA_LABELS[re.categoria]}
+                  </span>
+                  <span className="text-xs font-black text-slate-700 tabular-nums">${re.amount.toLocaleString('es-MX')} MXN</span>
+                </div>
+                {re.description && <p className="text-[10px] text-slate-400 font-medium mt-0.5">{re.description}</p>}
+              </div>
+              <button
+                onClick={() => {
+                  const updated = (bc.recurringEgresos || []).filter(r => r.id !== re.id)
+                  dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { recurringEgresos: updated } })
+                }}
+                className="text-slate-400 hover:text-rose-600 transition-colors ml-3"
+              >
+                <span className="material-symbols-outlined text-lg">delete</span>
+              </button>
+            </div>
+          ))}
+          {(bc.recurringEgresos || []).length === 0 && (
+            <p className="text-sm text-slate-400 font-medium py-2">No hay egresos recurrentes configurados.</p>
+          )}
+        </div>
+        {/* Add form */}
+        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-3">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Agregar Egreso Recurrente</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Concepto *</label>
+              <input type="text" value={reConcepto} onChange={e => setReConcepto(e.target.value)}
+                placeholder="Ej: Salario Guardia — Juan Pérez"
+                className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Categoría *</label>
+              <select value={reCategoria} onChange={e => setReCategoria(e.target.value as EgresoCategoria)}
+                className={inputClass}>
+                {(Object.keys(EGRESO_CATEGORIA_LABELS) as EgresoCategoria[]).map(cat => (
+                  <option key={cat} value={cat}>{EGRESO_CATEGORIA_LABELS[cat]}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Monto (MXN) *</label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">$</span>
+                <input type="number" value={reAmount} onChange={e => setReAmount(e.target.value)}
+                  placeholder="0"
+                  className={inputClass + ' !pl-8'} />
+              </div>
+            </div>
+            <div>
+              <label className={labelClass}>Descripción <span className="text-slate-300">(opcional)</span></label>
+              <input type="text" value={reDescription} onChange={e => setReDescription(e.target.value)}
+                placeholder="Detalle adicional…"
+                className={inputClass} />
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              if (!reConcepto.trim() || !reAmount || Number(reAmount) <= 0) return
+              const newEntry = {
+                id: `re-${Date.now()}`,
+                concepto: reConcepto.trim(),
+                categoria: reCategoria,
+                amount: Number(reAmount),
+                description: reDescription.trim() || undefined,
+              }
+              dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { recurringEgresos: [...(bc.recurringEgresos || []), newEntry] } })
+              setReConcepto(''); setReAmount(''); setReDescription('')
+            }}
+            disabled={!reConcepto.trim() || !reAmount || Number(reAmount) <= 0}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${
+              !reConcepto.trim() || !reAmount || Number(reAmount) <= 0
+                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                : 'bg-slate-900 text-white hover:bg-slate-800'
+            }`}
+          >
+            <span className="material-symbols-outlined text-[16px]">add</span>
             Agregar
           </button>
         </div>

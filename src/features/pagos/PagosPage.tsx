@@ -246,18 +246,32 @@ export default function PagosPage() {
       : state.egresos
     return [...data].sort((a, b) => b.date.localeCompare(a.date))
   }, [state.egresos, lFilterMonth])
-  const ledgerPeriodEgresosTotal = useMemo(() => ledgerEgresos.reduce((s, e) => s + e.amount, 0), [ledgerEgresos])
 
   const ledgerKpis = useMemo(() => {
     const paid = filteredPagos.filter(p => p.status === 'Pagado')
     const pending = filteredPagos.filter(p => p.status === 'Pendiente')
+    const porValidar = filteredPagos.filter(p => p.status === 'Por validar')
     return {
       paidTotal: paid.reduce((s, p) => s + p.amount, 0),
       pendingTotal: pending.reduce((s, p) => s + p.amount, 0),
+      porValidarTotal: porValidar.reduce((s, p) => s + p.amount, 0),
       paidCount: paid.length,
       pendingCount: pending.length,
+      porValidarCount: porValidar.length,
     }
   }, [filteredPagos])
+
+  const egresoKpis = useMemo(() => {
+    const paid = ledgerEgresos.filter(e => e.status === 'Pagado')
+    const pending = ledgerEgresos.filter(e => e.status === 'Pendiente')
+    return {
+      paidTotal: paid.reduce((s, e) => s + e.amount, 0),
+      pendingTotal: pending.reduce((s, e) => s + e.amount, 0),
+      paidCount: paid.length,
+      pendingCount: pending.length,
+      total: ledgerEgresos.reduce((s, e) => s + e.amount, 0),
+    }
+  }, [ledgerEgresos])
 
   // ═════════════════════════════════════════════════════════════════════
   // EXPEDIENTE tab data
@@ -362,15 +376,44 @@ export default function PagosPage() {
   // ACTIONS
   // ═════════════════════════════════════════════════════════════════════
 
-  // Ledger: toggle pago status
+  // Ledger: admin action on pago status
   const handleToggleStatus = (id: string) => {
     const pago = state.pagos.find(p => p.id === id)
     if (!pago) return
     if (pago.status === 'Pagado') {
+      // Pagado → confirm revoke → Pendiente
       setRevokeTarget({ id: pago.id, apartment: pago.apartment, month: pago.month })
       return
     }
+    if (pago.status === 'Por validar') {
+      // Admin approves: Por validar → Pagado
+      dispatch({ type: 'UPDATE_PAGO', payload: { ...pago, status: 'Pagado' } })
+      return
+    }
+    // Pendiente → Pagado (admin direct approval)
     dispatch({ type: 'UPDATE_PAGO', payload: { ...pago, status: 'Pagado', paymentDate: new Date().toISOString().split('T')[0] } })
+  }
+
+  // Admin rejects: Por validar → Pendiente (clears payment data)
+  const handleRejectPago = (id: string) => {
+    const pago = state.pagos.find(p => p.id === id)
+    if (!pago) return
+    dispatch({ type: 'UPDATE_PAGO', payload: { ...pago, status: 'Pendiente', paymentDate: null, receiptData: undefined, receiptType: undefined, receiptName: undefined } })
+  }
+
+  // Resident submits payment: Pendiente → Por validar
+  const handleResidentPay = (id: string) => {
+    const pago = state.pagos.find(p => p.id === id)
+    if (!pago) return
+    dispatch({ type: 'UPDATE_PAGO', payload: { ...pago, status: 'Por validar', paymentDate: new Date().toISOString().split('T')[0] } })
+  }
+
+  // Egreso: toggle status between Pendiente and Pagado
+  const handleToggleEgresoStatus = (id: string) => {
+    const egreso = state.egresos.find(e => e.id === id)
+    if (!egreso) return
+    const newStatus = egreso.status === 'Pendiente' ? 'Pagado' : 'Pendiente'
+    dispatch({ type: 'UPDATE_EGRESO', payload: { ...egreso, status: newStatus } })
   }
 
   const confirmRevoke = () => {
@@ -412,6 +455,7 @@ export default function PagosPage() {
         monthKey,
         date: egDate,
         registeredBy: bc.adminName,
+        status: 'Pagado',
       },
     })
     resetAndCloseModal()
@@ -560,24 +604,34 @@ export default function PagosPage() {
 
       {/* ═══ Tab bar (admin only) ═══ */}
       {isAdmin && (
-        <div className="flex items-center gap-1 bg-slate-100 rounded-2xl p-1 w-fit">
-          {([
-            { key: 'ledger' as ActiveTab, label: 'Estado de Cuenta', icon: 'receipt_long' },
-            { key: 'report' as ActiveTab, label: 'Reporte', icon: 'analytics' },
-          ]).map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all ${
-                activeTab === tab.key
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-700'
-              }`}
-            >
-              <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
-              {tab.label}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-1 bg-slate-100 rounded-2xl p-1 w-fit">
+            {([
+              { key: 'ledger' as ActiveTab, label: 'Estado de Cuenta', icon: 'receipt_long' },
+              { key: 'report' as ActiveTab, label: 'Reporte', icon: 'analytics' },
+            ]).map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all ${
+                  activeTab === tab.key
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-700'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === 'ledger' && (
+            <button onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[11px] tracking-widest uppercase shrink-0">
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Nuevo Cargo
             </button>
-          ))}
+          )}
         </div>
       )}
 
@@ -587,16 +641,6 @@ export default function PagosPage() {
 
       {(activeTab === 'ledger' || !isAdmin) && (
         <>
-          {/* ── Admin action bar ── */}
-          {isAdmin && (
-            <div className="flex justify-end">
-              <button onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[11px] tracking-widest uppercase shrink-0">
-                <span className="material-symbols-outlined text-[18px]">add</span>
-                Nuevo Cargo
-              </button>
-            </div>
-          )}
 
           {/* ── Admin filters ── */}
           {isAdmin && (
@@ -607,8 +651,8 @@ export default function PagosPage() {
                   <input type="month" value={lFilterMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
                     onChange={e => setLFilterMonth(e.target.value)}
                     className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-                  {lFilterMonth && (
-                    <button onClick={() => setLFilterMonth('')} className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-all shrink-0" title="Ver todos">
+                  {lFilterMonth && lFilterMonth !== TODAY_KEY && (
+                    <button onClick={() => setLFilterMonth(TODAY_KEY)} className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-all shrink-0" title="Mes actual">
                       <span className="material-symbols-outlined text-[14px]">close</span>
                     </button>
                   )}
@@ -651,11 +695,12 @@ export default function PagosPage() {
           )}
 
           {/* ── KPI strip (admin) ── */}
-          {isAdmin && (
-            <div className="grid grid-cols-2 gap-3">
+          {isAdmin && ledgerSubTab === 'ingresos' && (
+            <div className="grid grid-cols-3 gap-3">
               {[
-                { label: 'Ingresos', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
-                { label: 'Egresos', value: null, amount: ledgerPeriodEgresosTotal, icon: 'trending_down', color: 'text-rose-600 bg-rose-50 border-rose-200' },
+                { label: 'Cobrados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+                { label: 'Por validar', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'pending_actions', color: 'text-blue-700 bg-blue-50 border-blue-200' },
+                { label: 'Pendientes', value: ledgerKpis.pendingCount, amount: ledgerKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200' },
               ].map(k => (
                 <div key={k.label} className={`flex items-center gap-3 p-4 rounded-2xl border ${k.color}`}>
                   <div className="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center shadow-sm">
@@ -663,7 +708,26 @@ export default function PagosPage() {
                   </div>
                   <div>
                     <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
-                    <p className="text-xs font-bold opacity-70 mt-0.5">{k.label}{k.value != null ? ` · ${k.value} cobrados` : ''}</p>
+                    <p className="text-xs font-bold opacity-70 mt-0.5">{k.label} · {k.value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {isAdmin && ledgerSubTab === 'egresos' && (
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Pagados', value: egresoKpis.paidCount, amount: egresoKpis.paidTotal, icon: 'check_circle', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+                { label: 'Pendientes', value: egresoKpis.pendingCount, amount: egresoKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200' },
+                { label: 'Total egresos', value: ledgerEgresos.length, amount: egresoKpis.total, icon: 'trending_down', color: 'text-rose-600 bg-rose-50 border-rose-200' },
+              ].map(k => (
+                <div key={k.label} className={`flex items-center gap-3 p-4 rounded-2xl border ${k.color}`}>
+                  <div className="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-lg">{k.icon}</span>
+                  </div>
+                  <div>
+                    <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
+                    <p className="text-xs font-bold opacity-70 mt-0.5">{k.label} · {k.value}</p>
                   </div>
                 </div>
               ))}
@@ -704,6 +768,7 @@ export default function PagosPage() {
           {!isAdmin && (() => {
             const myPagos = state.pagos.filter(p => p.apartment === myApartment)
             const pending = myPagos.filter(p => p.status === 'Pendiente')
+            const porValidar = myPagos.filter(p => p.status === 'Por validar')
             const myAdeudos = state.adeudos.filter(a => a.apartment === myApartment && a.status === 'Activo')
             return (
               <div className="space-y-3">
@@ -715,16 +780,24 @@ export default function PagosPage() {
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total pagado</p>
                     </div>
                   </div>
-                  <div className={`border rounded-2xl p-5 flex items-center gap-4 ${pending.length > 0 ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200'}`}>
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${pending.length > 0 ? 'bg-rose-600' : 'bg-emerald-600'}`}>
-                      <span className="material-symbols-outlined text-white text-xl">{pending.length > 0 ? 'warning' : 'verified'}</span>
+                  <div className={`border rounded-2xl p-5 flex items-center gap-4 ${pending.length > 0 ? 'bg-rose-50 border-rose-200' : porValidar.length > 0 ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${pending.length > 0 ? 'bg-rose-600' : porValidar.length > 0 ? 'bg-blue-600' : 'bg-emerald-600'}`}>
+                      <span className="material-symbols-outlined text-white text-xl">{pending.length > 0 ? 'warning' : porValidar.length > 0 ? 'pending_actions' : 'verified'}</span>
                     </div>
                     <div>
-                      <p className={`text-2xl font-headline font-black ${pending.length > 0 ? 'text-rose-700' : 'text-emerald-700'}`}>
-                        {pending.length > 0 ? `$${pending.reduce((s, p) => s + p.amount, 0).toLocaleString('es-MX')}` : 'Al corriente'}
+                      <p className={`text-2xl font-headline font-black ${pending.length > 0 ? 'text-rose-700' : porValidar.length > 0 ? 'text-blue-700' : 'text-emerald-700'}`}>
+                        {pending.length > 0
+                          ? `$${pending.reduce((s, p) => s + p.amount, 0).toLocaleString('es-MX')}`
+                          : porValidar.length > 0
+                            ? `$${porValidar.reduce((s, p) => s + p.amount, 0).toLocaleString('es-MX')}`
+                            : 'Al corriente'}
                       </p>
-                      <p className={`text-[10px] font-bold uppercase tracking-widest ${pending.length > 0 ? 'text-rose-500' : 'text-emerald-600'}`}>
-                        {pending.length > 0 ? `${pending.length} cargo(s) pendiente(s)` : 'Sin cargos pendientes'}
+                      <p className={`text-[10px] font-bold uppercase tracking-widest ${pending.length > 0 ? 'text-rose-500' : porValidar.length > 0 ? 'text-blue-500' : 'text-emerald-600'}`}>
+                        {pending.length > 0
+                          ? `${pending.length} cargo(s) pendiente(s)`
+                          : porValidar.length > 0
+                            ? `${porValidar.length} pago(s) en revisión`
+                            : 'Sin cargos pendientes'}
                       </p>
                     </div>
                   </div>
@@ -795,7 +868,7 @@ export default function PagosPage() {
                     <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Comprobante</th>
                     <SortTh col="status" label="Estado" sortKey={lSortKey} sortDir={lSortDir} onSort={handleLSort} />
                     <SortTh col="paymentDate" label="Fecha" sortKey={lSortKey} sortDir={lSortDir} onSort={handleLSort} />
-                    {isAdmin && <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acción</th>}
+                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acción</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -840,14 +913,48 @@ export default function PagosPage() {
                       <td className="px-5 py-4 text-xs font-semibold text-slate-500 tabular-nums">{pago.paymentDate || '—'}</td>
                       {isAdmin && (
                         <td className="px-5 py-4 text-center">
-                          <button onClick={() => handleToggleStatus(pago.id)}
-                            className={`text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${
-                              pago.status === 'Pendiente'
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                                : 'bg-slate-50 text-slate-500 border-slate-200 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200'
-                            }`}>
-                            {pago.status === 'Pendiente' ? 'Aprobar' : 'Cancelar'}
-                          </button>
+                          <div className="flex items-center justify-center gap-1.5">
+                            {pago.status === 'Pendiente' && (
+                              <button onClick={() => handleToggleStatus(pago.id)}
+                                className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl border transition-all bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
+                                Aprobar
+                              </button>
+                            )}
+                            {pago.status === 'Por validar' && (
+                              <>
+                                <button onClick={() => handleToggleStatus(pago.id)}
+                                  className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl border transition-all bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
+                                  Aprobar
+                                </button>
+                                <button onClick={() => handleRejectPago(pago.id)}
+                                  className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl border transition-all bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100">
+                                  Rechazar
+                                </button>
+                              </>
+                            )}
+                            {pago.status === 'Pagado' && (
+                              <button onClick={() => handleToggleStatus(pago.id)}
+                                className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl border transition-all bg-slate-50 text-slate-500 border-slate-200 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200">
+                                Revocar
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
+                      {!isAdmin && (
+                        <td className="px-5 py-4 text-center">
+                          {pago.status === 'Pendiente' && (
+                            <button onClick={() => handleResidentPay(pago.id)}
+                              className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl border transition-all bg-slate-900 text-white border-slate-900 hover:bg-slate-800">
+                              Pagar
+                            </button>
+                          )}
+                          {pago.status === 'Por validar' && (
+                            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">En revisión</span>
+                          )}
+                          {pago.status === 'Pagado' && (
+                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">✓</span>
+                          )}
                         </td>
                       )}
                     </tr>
@@ -877,6 +984,7 @@ export default function PagosPage() {
                     <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoría</th>
                     <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Concepto</th>
                     <th className="px-5 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monto</th>
+                    <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
                     <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acción</th>
                   </tr>
                 </thead>
@@ -894,17 +1002,28 @@ export default function PagosPage() {
                         {eg.description && <p className="text-xs text-slate-400 font-medium mt-0.5">{eg.description}</p>}
                       </td>
                       <td className="px-5 py-4 text-sm font-black text-rose-600 text-right tabular-nums">-${eg.amount.toLocaleString('es-MX')}</td>
+                      <td className="px-5 py-4 text-center"><StatusBadge status={eg.status} /></td>
                       <td className="px-5 py-4 text-center">
-                        <button onClick={() => setDeleteEgresoId(eg.id)}
-                          className="text-slate-200 hover:text-rose-500 transition-colors p-1" title="Eliminar">
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button onClick={() => handleToggleEgresoStatus(eg.id)}
+                            className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl border transition-all ${
+                              eg.status === 'Pendiente'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                                : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                            }`}>
+                            {eg.status === 'Pendiente' ? 'Marcar Pagado' : 'Revertir'}
+                          </button>
+                          <button onClick={() => setDeleteEgresoId(eg.id)}
+                            className="text-slate-200 hover:text-rose-500 transition-colors p-1" title="Eliminar">
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                   {ledgerEgresos.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center">
+                      <td colSpan={6} className="px-6 py-12 text-center">
                         <div className="flex flex-col items-center gap-2">
                           <span className="material-symbols-outlined text-3xl text-slate-200">account_balance</span>
                           <p className="text-slate-400 font-medium text-sm">Sin egresos registrados en este período.</p>
