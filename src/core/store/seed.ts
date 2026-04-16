@@ -695,19 +695,6 @@ export const seedAdeudos: Adeudo[] = [
     resolvedBy: null,
     pagoId: undefined,
   },
-  {
-    id: 'ad-3',
-    apartment: 'A201',
-    type: 'adeudo',
-    concepto: 'Mensualidades atrasadas Mar-Abr 2026',
-    description: 'Adeudo acumulado de 2 meses de mantenimiento (marzo y abril 2026).',
-    amount: 3400,
-    status: 'Activo',
-    createdAt: '2026-04-01T08:00:00.000Z',
-    resolvedAt: null,
-    resolvedBy: null,
-    pagoId: undefined,
-  },
 ]
 
 export const seedEgresos: Egreso[] = [
