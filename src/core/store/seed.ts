@@ -1253,30 +1253,547 @@ export const seedStaff: StaffMember[] = [
 ]
 
 export const seedAvisos: Aviso[] = [
-  { id: 'av-1', category: 'general', title: 'Mantenimiento de elevadores', attachment: 'mantenimiento.pdf', date: '2025-04-15' },
-  { id: 'av-2', category: 'general', title: 'Cambio de administración', attachment: 'cambio-admin.pdf', date: '2025-04-10' },
-  { 
-    id: 'av-3', 
-    category: 'asamblea', 
-    pinned: true,
-    title: 'Asamblea Ordinaria General', 
-    description: 'Convocatoria formal para la próxima Asamblea Ordinaria donde se discutirán presupuestos, estado de áreas comunes y elección de comité de vigilancia. Favor de confirmar su asistencia para contemplar el quórum reglamentario.', 
-    attachment: 'Convocatoria_Asamblea_2025.pdf', 
-    date: '2025-04-12',
-    startDate: '2025-04-20',
-    endDate: '2027-12-31',
-    startTime: '18:00',
-    endTime: '20:00',
-    tracking: [
-      { type: 'view', apartment: 'A0101', resident: 'Florian Richardson', timestamp: new Date(Date.now() - 6 * 3600 * 1000).toISOString() },
-      { type: 'confirm', apartment: 'A0101', resident: 'Florian Richardson', timestamp: new Date(Date.now() - 5 * 3600 * 1000).toISOString() },
-      { type: 'view', apartment: 'A0101', resident: 'Florian Richardson', timestamp: new Date(Date.now() - 4 * 3600 * 1000).toISOString() },
-      { type: 'view', apartment: 'B0102', resident: 'Zyanya Rodriguez', timestamp: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
-      { type: 'confirm', apartment: 'B0102', resident: 'Zyanya Rodriguez', timestamp: new Date(Date.now() - 1 * 3600 * 1000).toISOString() }
+  {
+    "id": "av-1",
+    "category": "general",
+    "title": "Mantenimiento de elevadores",
+    "attachment": "mantenimiento.pdf",
+    "date": "2026-04-15"
+  },
+  {
+    "id": "av-2",
+    "category": "general",
+    "title": "Fiesta de Fin de Año",
+    "description": "Agradecemos a todos por participar en nuestra gran Fiesta de Fin de Año. Fue un evento inolvidable lleno de música, comida y gran convivencia vecinal.",
+    "attachment": "Memoria_Evento_2025.pdf",
+    "attachmentType": "pdf",
+    "date": "2025-12-15",
+    "startDate": "2025-12-15",
+    "endDate": "2026-01-05"
+  },
+  {
+    "id": "av-3",
+    "category": "asamblea",
+    "pinned": true,
+    "title": "Asamblea Ordinaria General",
+    "description": "Convocatoria formal para la próxima Asamblea Ordinaria donde se discutirán presupuestos, estado de áreas comunes y elección de comité de vigilancia. **Es vital su participación** para alcanzar el quórum reglamentario.",
+    "attachment": "Convocatoria_Asamblea_2026.pdf",
+    "attachmentType": "pdf",
+    "date": "2026-04-12",
+    "startDate": "2026-04-20",
+    "endDate": "2027-12-31",
+    "startTime": "18:00",
+    "endTime": "20:00",
+    "tracking": [
+      {
+        "type": "view",
+        "apartment": "B0101",
+        "resident": "Zsolt Miller",
+        "timestamp": "2026-04-17T10:00:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0102",
+        "resident": "Zyanya Rodriguez",
+        "timestamp": "2026-04-17T10:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0102",
+        "resident": "Zyanya Rodriguez",
+        "timestamp": "2026-04-17T10:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0103",
+        "resident": "Maria Thompson",
+        "timestamp": "2026-04-17T10:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0103",
+        "resident": "Maria Thompson",
+        "timestamp": "2026-04-17T10:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0201",
+        "resident": "Elizabeth Garcia",
+        "timestamp": "2026-04-17T10:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0201",
+        "resident": "Elizabeth Garcia",
+        "timestamp": "2026-04-17T10:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0201",
+        "resident": "Manuel Smith",
+        "timestamp": "2026-04-17T11:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0201",
+        "resident": "Manuel Smith",
+        "timestamp": "2026-04-17T11:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0202",
+        "resident": "Mario Jones",
+        "timestamp": "2026-04-17T11:15:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0203",
+        "resident": "Karen Morales",
+        "timestamp": "2026-04-17T11:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0203",
+        "resident": "Karen Morales",
+        "timestamp": "2026-04-17T11:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0204",
+        "resident": "Marco Williams",
+        "timestamp": "2026-04-17T11:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0204",
+        "resident": "Marco Williams",
+        "timestamp": "2026-04-17T11:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0301",
+        "resident": "Samantha Herrera",
+        "timestamp": "2026-04-17T12:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0301",
+        "resident": "Samantha Herrera",
+        "timestamp": "2026-04-17T12:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0302",
+        "resident": "Julio Anderson",
+        "timestamp": "2026-04-17T12:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0302",
+        "resident": "Julio Anderson",
+        "timestamp": "2026-04-17T12:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0303",
+        "resident": "Dorothy Lopez",
+        "timestamp": "2026-04-17T12:30:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0304",
+        "resident": "Antonio Taylor",
+        "timestamp": "2026-04-17T12:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0304",
+        "resident": "Antonio Taylor",
+        "timestamp": "2026-04-17T12:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0401",
+        "resident": "Florian Martinez",
+        "timestamp": "2026-04-17T13:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0401",
+        "resident": "Florian Martinez",
+        "timestamp": "2026-04-17T13:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0402",
+        "resident": "Efraín Brown",
+        "timestamp": "2026-04-17T13:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0402",
+        "resident": "Efraín Brown",
+        "timestamp": "2026-04-17T13:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0403",
+        "resident": "Santiago Wilson",
+        "timestamp": "2026-04-17T13:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0403",
+        "resident": "Santiago Wilson",
+        "timestamp": "2026-04-17T13:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0404",
+        "resident": "Bertha Sanchez",
+        "timestamp": "2026-04-17T13:45:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0501",
+        "resident": "Michal Davies",
+        "timestamp": "2026-04-17T14:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0501",
+        "resident": "Michal Davies",
+        "timestamp": "2026-04-17T14:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0502",
+        "resident": "Jorge Evans",
+        "timestamp": "2026-04-17T14:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0502",
+        "resident": "Jorge Evans",
+        "timestamp": "2026-04-17T14:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0503",
+        "resident": "Fernanda Clark",
+        "timestamp": "2026-04-17T14:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0503",
+        "resident": "Fernanda Clark",
+        "timestamp": "2026-04-17T14:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0504",
+        "resident": "Alejandro Ramirez",
+        "timestamp": "2026-04-17T14:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0504",
+        "resident": "Alejandro Ramirez",
+        "timestamp": "2026-04-17T14:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0601",
+        "resident": "Carmen White",
+        "timestamp": "2026-04-17T15:00:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0602",
+        "resident": "Martha Roberts",
+        "timestamp": "2026-04-17T15:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0602",
+        "resident": "Martha Roberts",
+        "timestamp": "2026-04-17T15:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0603",
+        "resident": "Juan Campbell",
+        "timestamp": "2026-04-17T15:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0603",
+        "resident": "Juan Campbell",
+        "timestamp": "2026-04-17T15:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0604",
+        "resident": "Zsolt Hernandez",
+        "timestamp": "2026-04-17T15:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0604",
+        "resident": "Zsolt Hernandez",
+        "timestamp": "2026-04-17T15:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0701",
+        "resident": "Zyanya Wright",
+        "timestamp": "2026-04-17T16:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0701",
+        "resident": "Zyanya Wright",
+        "timestamp": "2026-04-17T16:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0702",
+        "resident": "Elizabeth Mitchell",
+        "timestamp": "2026-04-17T16:15:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0703",
+        "resident": "Maria Hernandez",
+        "timestamp": "2026-04-17T16:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0703",
+        "resident": "Maria Hernandez",
+        "timestamp": "2026-04-17T16:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "B0704",
+        "resident": "Karen Lopez",
+        "timestamp": "2026-04-17T16:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "B0704",
+        "resident": "Karen Lopez",
+        "timestamp": "2026-04-17T16:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0101",
+        "resident": "George Smith",
+        "timestamp": "2026-04-17T17:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0101",
+        "resident": "George Smith",
+        "timestamp": "2026-04-17T17:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0102",
+        "resident": "Alice Johnson",
+        "timestamp": "2026-04-17T17:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0102",
+        "resident": "Alice Johnson",
+        "timestamp": "2026-04-17T17:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0103",
+        "resident": "Bob Brown",
+        "timestamp": "2026-04-17T17:30:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0104",
+        "resident": "Charlie Davis",
+        "timestamp": "2026-04-17T17:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0104",
+        "resident": "Charlie Davis",
+        "timestamp": "2026-04-17T17:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0202",
+        "resident": "Eve Miller",
+        "timestamp": "2026-04-17T18:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0202",
+        "resident": "Eve Miller",
+        "timestamp": "2026-04-17T18:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0203",
+        "resident": "Frank Wilson",
+        "timestamp": "2026-04-17T18:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0203",
+        "resident": "Frank Wilson",
+        "timestamp": "2026-04-17T18:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0204",
+        "resident": "Grace Moore",
+        "timestamp": "2026-04-17T18:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0204",
+        "resident": "Grace Moore",
+        "timestamp": "2026-04-17T18:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0301",
+        "resident": "Henry Taylor",
+        "timestamp": "2026-04-17T18:45:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0302",
+        "resident": "Ivy Anderson",
+        "timestamp": "2026-04-17T19:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0302",
+        "resident": "Ivy Anderson",
+        "timestamp": "2026-04-17T19:05:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0303",
+        "resident": "Jack Thomas",
+        "timestamp": "2026-04-17T19:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0303",
+        "resident": "Jack Thomas",
+        "timestamp": "2026-04-17T19:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0304",
+        "resident": "Kelly Jackson",
+        "timestamp": "2026-04-17T19:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0304",
+        "resident": "Kelly Jackson",
+        "timestamp": "2026-04-17T19:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0401",
+        "resident": "Leo White",
+        "timestamp": "2026-04-17T19:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0401",
+        "resident": "Leo White",
+        "timestamp": "2026-04-17T19:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0402",
+        "resident": "Mia Harris",
+        "timestamp": "2026-04-17T20:00:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0501",
+        "resident": "Noah Martin",
+        "timestamp": "2026-04-17T20:15:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0501",
+        "resident": "Noah Martin",
+        "timestamp": "2026-04-17T20:20:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0502",
+        "resident": "Olivia Garcia",
+        "timestamp": "2026-04-17T20:30:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0502",
+        "resident": "Olivia Garcia",
+        "timestamp": "2026-04-17T20:35:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0601",
+        "resident": "Paul Martinez",
+        "timestamp": "2026-04-17T20:45:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0601",
+        "resident": "Paul Martinez",
+        "timestamp": "2026-04-17T20:50:00Z"
+      },
+      {
+        "type": "view",
+        "apartment": "A0602",
+        "resident": "Quinn Robinson",
+        "timestamp": "2026-04-17T21:00:00Z"
+      },
+      {
+        "type": "confirm",
+        "apartment": "A0602",
+        "resident": "Quinn Robinson",
+        "timestamp": "2026-04-17T21:05:00Z"
+      }
     ]
   },
-  { id: 'av-4', category: 'general', title: 'Corte de Agua - Torre B', attachment: 'corte-agua.pdf', date: '2025-04-01' },
-  { id: 'av-5', category: 'general', title: 'Nueva Normativa Basura', attachment: 'normativa-basura.pdf', date: '2025-03-28' },
+  {
+    "id": "av-4",
+    "category": "general",
+    "title": "Fumigación de Áreas Comunes",
+    "description": "Se llevará a cabo la fumigación bimestral preventiva en jardines, pasillos y estacionamiento. Se recomienda mantener ventanas cerradas durante el proceso.",
+    "attachment": "Cronograma_Fumigacion.pdf",
+    "attachmentType": "pdf",
+    "date": "2026-04-18",
+    "startDate": "2026-05-10",
+    "endDate": "2026-05-15"
+  },
+  {
+    "id": "av-5",
+    "category": "general",
+    "title": "Reglamento de Estacionamiento",
+    "description": "Recordamos a todos los residentes el uso correcto de los cajones asignados y la prohibición de estacionarse en áreas de maniobra o visitas sin registro previo.",
+    "attachment": "Mapa_Estacionamiento.png",
+    "attachmentType": "image",
+    "attachmentData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+    "date": "2026-04-19"
+  }
 ]
 
 export const seedPagos: Pago[] = [
