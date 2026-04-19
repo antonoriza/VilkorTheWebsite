@@ -368,22 +368,7 @@ export default function Avisos() {
                   statusBadge = <span className="text-[9px] bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded font-bold uppercase border border-slate-200">Venc.</span>
               }
 
-              // Pick a notification icon based on title keywords
-              const iconHints: [RegExp, string][] = [
-                [/agua|plomer/i, 'water_drop'],
-                [/elevador|ascensor/i, 'elevator'],
-                [/basura|residuo|normativa/i, 'delete'],
-                [/paquete|entrega/i, 'package_2'],
-                [/administr/i, 'manage_accounts'],
-                [/manten|reparaci/i, 'build'],
-                [/visita|acceso|seguridad/i, 'security'],
-              ]
-              const matched = iconHints.find(([rx]) => rx.test(aviso.title))
-              const iconName = aviso.attachmentType === 'pdf'
-                ? 'picture_as_pdf'
-                : aviso.attachmentType === 'image'
-                  ? 'image'
-                  : matched?.[1] ?? 'notifications'
+              const iconName = 'notifications'
 
               return (
                 <div
