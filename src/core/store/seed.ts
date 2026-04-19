@@ -397,11 +397,11 @@ export const seedBuildingConfig: BuildingConfig = {
     'Multa': ['Ruido excesivo', 'Uso indebido de cajón', 'Mascota sin registro', 'Basura fuera de horario'],
   },
   categoriasEgreso: ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros'],
-  monthlyFee: 1700,
+  monthlyFee: 1800,
   recurringEgresos: [
-    { id: 're-1', concepto: 'Salario Guardia — Carlos Mendoza',  categoria: 'nomina',         amount: 8000,  description: 'Pago mensual guardia de seguridad.' },
-    { id: 're-2', concepto: 'Salario Jardinero — Juan Pérez',    categoria: 'nomina',         amount: 4500,  description: 'Pago mensual jardinero.' },
-    { id: 're-3', concepto: 'Salario Limpieza — María López',   categoria: 'nomina',         amount: 6000,  description: 'Pago mensual personal de limpieza.' },
+    { id: 're-1', concepto: 'Nomina — Ricardo Hernandez',  categoria: 'nomina',         amount: 13000,  description: 'Pago mensual guardia de seguridad.' },
+    { id: 're-2', concepto: 'Nomina — Enrique Martinez',   categoria: 'nomina',         amount: 11000,  description: 'Pago mensual jardinero.' },
+    { id: 're-3', concepto: 'Nomina — Valentina Sanchez',  categoria: 'nomina',         amount: 10000,  description: 'Pago mensual personal de limpieza.' },
     { id: 're-4', concepto: 'Recibo de Agua',                    categoria: 'servicios',      amount: 3200,  description: 'Servicio de agua potable.' },
     { id: 're-5', concepto: 'Recibo de Luz',                     categoria: 'servicios',      amount: 5800,  description: 'Servicio de energía eléctrica áreas comunes.' },
     { id: 're-6', concepto: 'Honorarios Administración',         categoria: 'administracion', amount: 15000, description: 'Cuota mensual de la empresa administradora.' },
@@ -1244,9 +1244,12 @@ export const seedResidents: Resident[] = [
 ]
 
 export const seedStaff: StaffMember[] = [
-  { id: 'staff-1', name: 'Carlos Mendoza', role: 'Guardia', shiftStart: '07:00', shiftEnd: '19:00', workDays: ['L', 'M', 'Mi', 'J', 'V', 'S'], photo: '' },
-  { id: 'staff-2', name: 'Juan Pérez', role: 'Jardinero', shiftStart: '08:00', shiftEnd: '17:00', workDays: ['L', 'Mi', 'V'], photo: '' },
-  { id: 'staff-3', name: 'María López', role: 'Limpieza', shiftStart: '06:00', shiftEnd: '14:00', workDays: ['L', 'M', 'Mi', 'J', 'V'], photo: '' },
+  { id: 'staff-1', name: 'Samantha Guzman', role: 'Administradora General', shiftStart: '08:00', shiftEnd: '17:00', workDays: ['L', 'M', 'Mi', 'J', 'V', 'S'], photo: '' },
+  { id: 'staff-2', name: 'Ricardo Hernandez', role: 'Guardia', shiftStart: '08:00', shiftEnd: '08:00', workDays: ['L', 'Mi', 'V', 'D'], photo: '' },
+  { id: 'staff-3', name: 'Angel García', role: 'Guardia', shiftStart: '08:00', shiftEnd: '08:00', workDays: ['M', 'J', 'S'], photo: '' },
+  { id: 'staff-4', name: 'Enrique Martinez', role: 'Jardinero', shiftStart: '08:00', shiftEnd: '17:00', workDays: ['L', 'M', 'Mi', 'J', 'V'], photo: '' },
+  { id: 'staff-5', name: 'Valentina Sanchez', role: 'Limpieza', shiftStart: '08:00', shiftEnd: '17:00', workDays: ['L', 'M', 'Mi', 'J', 'V'], photo: '' },
+  { id: 'staff-6', name: 'Carla Lopez', role: 'Limpieza', shiftStart: '08:00', shiftEnd: '17:00', workDays: ['L', 'M', 'Mi', 'J', 'V'], photo: '' },
 ]
 
 export const seedAvisos: Aviso[] = [
@@ -1284,7 +1287,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1295,7 +1298,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1306,7 +1309,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1317,7 +1320,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1328,7 +1331,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1339,7 +1342,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1350,7 +1353,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1361,7 +1364,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1372,7 +1375,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1383,7 +1386,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1394,7 +1397,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1405,7 +1408,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1415,7 +1418,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1425,7 +1428,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1435,7 +1438,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1445,7 +1448,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1456,7 +1459,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1467,7 +1470,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1478,7 +1481,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1489,7 +1492,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1500,7 +1503,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1511,7 +1514,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1522,7 +1525,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1533,7 +1536,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1544,7 +1547,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1555,7 +1558,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1566,7 +1569,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1577,7 +1580,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1588,7 +1591,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1599,7 +1602,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1610,7 +1613,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1621,7 +1624,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1632,7 +1635,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1643,7 +1646,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1654,7 +1657,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1665,7 +1668,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1676,7 +1679,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1687,7 +1690,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1698,7 +1701,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1709,7 +1712,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1720,7 +1723,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1731,7 +1734,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1742,7 +1745,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1753,7 +1756,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1764,7 +1767,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1775,7 +1778,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1786,7 +1789,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1797,7 +1800,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1808,7 +1811,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1819,7 +1822,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1830,7 +1833,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1841,7 +1844,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1852,7 +1855,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1863,7 +1866,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1874,7 +1877,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1885,7 +1888,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1896,7 +1899,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1907,7 +1910,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1918,7 +1921,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1929,7 +1932,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1940,7 +1943,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1951,7 +1954,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -1962,7 +1965,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -1973,7 +1976,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -1984,7 +1987,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -1995,7 +1998,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2006,7 +2009,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2017,7 +2020,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2028,7 +2031,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2039,7 +2042,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2050,7 +2053,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2061,7 +2064,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2072,7 +2075,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2083,7 +2086,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2094,7 +2097,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2105,7 +2108,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2116,7 +2119,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2127,7 +2130,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2138,7 +2141,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2149,7 +2152,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2160,7 +2163,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2171,7 +2174,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2182,7 +2185,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2193,7 +2196,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2204,7 +2207,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2215,7 +2218,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2226,7 +2229,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2237,7 +2240,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2248,7 +2251,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2259,7 +2262,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2270,7 +2273,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2281,7 +2284,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2292,7 +2295,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2303,7 +2306,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2314,7 +2317,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2325,7 +2328,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2336,7 +2339,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2347,7 +2350,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2358,7 +2361,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2369,7 +2372,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2380,7 +2383,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2391,7 +2394,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2402,7 +2405,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2413,7 +2416,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2424,7 +2427,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2435,7 +2438,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2446,7 +2449,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2457,7 +2460,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2468,7 +2471,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2479,7 +2482,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2490,7 +2493,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2501,7 +2504,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2512,7 +2515,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2523,7 +2526,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2534,7 +2537,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2545,7 +2548,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2556,7 +2559,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2567,7 +2570,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2578,7 +2581,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2589,7 +2592,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2600,7 +2603,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2611,7 +2614,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2622,7 +2625,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2633,7 +2636,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2644,7 +2647,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2655,7 +2658,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2666,7 +2669,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2677,7 +2680,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2688,7 +2691,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2699,7 +2702,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2710,7 +2713,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2721,7 +2724,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2732,7 +2735,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2743,7 +2746,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2754,7 +2757,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2765,7 +2768,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2776,7 +2779,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2787,7 +2790,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2798,7 +2801,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2809,7 +2812,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2820,7 +2823,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2831,7 +2834,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2842,7 +2845,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2853,7 +2856,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2864,7 +2867,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2875,7 +2878,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2886,7 +2889,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2897,7 +2900,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2908,7 +2911,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2919,7 +2922,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2930,7 +2933,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2941,7 +2944,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2952,7 +2955,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -2963,7 +2966,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -2974,7 +2977,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -2985,7 +2988,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -2996,7 +2999,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3007,7 +3010,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3018,7 +3021,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3029,7 +3032,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3040,7 +3043,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3051,7 +3054,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3062,7 +3065,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3073,7 +3076,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3084,7 +3087,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3095,7 +3098,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3106,7 +3109,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3117,7 +3120,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3128,7 +3131,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3139,7 +3142,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3150,7 +3153,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3161,7 +3164,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3172,7 +3175,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3183,7 +3186,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3194,7 +3197,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3205,7 +3208,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3216,7 +3219,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3227,7 +3230,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3238,7 +3241,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3249,7 +3252,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3260,7 +3263,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3271,7 +3274,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3282,7 +3285,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3293,7 +3296,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3304,7 +3307,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3315,7 +3318,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3326,7 +3329,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3337,7 +3340,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3348,7 +3351,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3359,7 +3362,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3370,7 +3373,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3381,7 +3384,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3392,7 +3395,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3403,7 +3406,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3414,7 +3417,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3425,7 +3428,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3436,7 +3439,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3447,7 +3450,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3458,7 +3461,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3469,7 +3472,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3480,7 +3483,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3491,7 +3494,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3502,7 +3505,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3513,7 +3516,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3524,7 +3527,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3535,7 +3538,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3546,7 +3549,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3557,7 +3560,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3568,7 +3571,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3579,7 +3582,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3590,7 +3593,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3601,7 +3604,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3612,7 +3615,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3623,7 +3626,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3634,7 +3637,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3645,7 +3648,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3656,7 +3659,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3667,7 +3670,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3678,7 +3681,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3689,7 +3692,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3700,7 +3703,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3711,7 +3714,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3722,7 +3725,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3733,7 +3736,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3744,7 +3747,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3755,7 +3758,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3766,7 +3769,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3777,7 +3780,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3788,7 +3791,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3799,7 +3802,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3810,7 +3813,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3821,7 +3824,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3832,7 +3835,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3843,7 +3846,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pendiente",
     "paymentDate": null
   },
@@ -3854,7 +3857,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pendiente",
     "paymentDate": null
   },
@@ -3865,7 +3868,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pendiente",
     "paymentDate": null
   },
@@ -3876,7 +3879,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3887,7 +3890,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3898,7 +3901,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3909,7 +3912,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3920,7 +3923,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3931,7 +3934,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3942,7 +3945,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3953,7 +3956,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -3964,7 +3967,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -3975,7 +3978,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -3986,7 +3989,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -3997,7 +4000,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4008,7 +4011,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4019,7 +4022,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4030,7 +4033,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4041,7 +4044,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4052,7 +4055,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4063,7 +4066,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4074,7 +4077,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4085,7 +4088,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4096,7 +4099,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4107,7 +4110,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4118,7 +4121,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4129,7 +4132,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4140,7 +4143,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4151,7 +4154,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4162,7 +4165,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4173,7 +4176,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4184,7 +4187,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4195,7 +4198,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4206,7 +4209,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4217,7 +4220,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4228,7 +4231,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4239,7 +4242,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4250,7 +4253,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4261,7 +4264,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4272,7 +4275,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4283,7 +4286,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4294,7 +4297,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4305,7 +4308,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4316,7 +4319,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4327,7 +4330,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4338,7 +4341,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4349,7 +4352,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4360,7 +4363,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4371,7 +4374,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4382,7 +4385,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4393,7 +4396,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4404,7 +4407,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4415,7 +4418,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4426,7 +4429,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4437,7 +4440,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4448,7 +4451,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4459,7 +4462,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4470,7 +4473,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4481,7 +4484,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4492,7 +4495,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4503,7 +4506,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4514,7 +4517,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4525,7 +4528,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4536,7 +4539,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4547,7 +4550,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4558,7 +4561,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4569,7 +4572,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4580,7 +4583,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4591,7 +4594,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4602,7 +4605,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4613,7 +4616,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4624,7 +4627,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4635,7 +4638,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4646,7 +4649,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4657,7 +4660,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4668,7 +4671,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4679,7 +4682,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4690,7 +4693,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4701,7 +4704,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4712,7 +4715,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4723,7 +4726,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4734,7 +4737,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4745,7 +4748,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4756,7 +4759,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4767,7 +4770,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4778,7 +4781,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4789,7 +4792,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4800,7 +4803,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4811,7 +4814,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4822,7 +4825,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4833,7 +4836,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4844,7 +4847,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4855,7 +4858,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4866,7 +4869,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4877,7 +4880,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4888,7 +4891,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4899,7 +4902,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4910,7 +4913,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4921,7 +4924,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4932,7 +4935,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4943,7 +4946,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4954,7 +4957,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -4965,7 +4968,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -4976,7 +4979,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -4987,7 +4990,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -4998,7 +5001,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5009,7 +5012,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5020,7 +5023,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5031,7 +5034,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5042,7 +5045,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5053,7 +5056,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5064,7 +5067,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5075,7 +5078,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5086,7 +5089,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5097,7 +5100,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5108,7 +5111,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5119,7 +5122,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5130,7 +5133,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5141,7 +5144,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5152,7 +5155,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5163,7 +5166,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5174,7 +5177,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5185,7 +5188,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5196,7 +5199,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5207,7 +5210,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5218,7 +5221,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5229,7 +5232,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5240,7 +5243,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5251,7 +5254,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5262,7 +5265,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5273,7 +5276,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5284,7 +5287,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5295,7 +5298,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5306,7 +5309,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5317,7 +5320,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5328,7 +5331,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5339,7 +5342,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5350,7 +5353,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5361,7 +5364,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5372,7 +5375,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5383,7 +5386,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5394,7 +5397,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5405,7 +5408,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5416,7 +5419,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5427,7 +5430,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5438,7 +5441,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5449,7 +5452,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5460,7 +5463,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5471,7 +5474,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5482,7 +5485,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5493,7 +5496,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5504,7 +5507,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5515,7 +5518,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5526,7 +5529,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5537,7 +5540,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5548,7 +5551,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5559,7 +5562,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5570,7 +5573,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5581,7 +5584,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5592,7 +5595,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5603,7 +5606,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5614,7 +5617,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5625,7 +5628,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5636,7 +5639,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5647,7 +5650,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5658,7 +5661,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5669,7 +5672,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5680,7 +5683,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5691,7 +5694,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5702,7 +5705,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5713,7 +5716,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5724,7 +5727,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5735,7 +5738,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5746,7 +5749,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5757,7 +5760,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5768,7 +5771,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5779,7 +5782,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5790,7 +5793,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5801,7 +5804,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5812,7 +5815,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5823,7 +5826,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5834,7 +5837,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5845,7 +5848,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5856,7 +5859,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5867,7 +5870,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5878,7 +5881,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5889,7 +5892,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5900,7 +5903,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5911,7 +5914,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5922,7 +5925,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5933,7 +5936,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5944,7 +5947,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5955,7 +5958,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -5966,7 +5969,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -5977,7 +5980,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -5988,7 +5991,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -5999,7 +6002,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6010,7 +6013,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6021,7 +6024,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6032,7 +6035,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6043,7 +6046,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6054,7 +6057,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6065,7 +6068,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6076,7 +6079,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6087,7 +6090,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6098,7 +6101,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6109,7 +6112,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6120,7 +6123,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6131,7 +6134,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6142,7 +6145,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6153,7 +6156,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6164,7 +6167,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6175,7 +6178,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6186,7 +6189,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6197,7 +6200,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6208,7 +6211,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6219,7 +6222,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6230,7 +6233,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6241,7 +6244,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6252,7 +6255,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6263,7 +6266,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6274,7 +6277,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6285,7 +6288,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6296,7 +6299,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6307,7 +6310,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6318,7 +6321,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6329,7 +6332,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6340,7 +6343,7 @@ export const seedPagos: Pago[] = [
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
   },
@@ -6351,7 +6354,7 @@ export const seedPagos: Pago[] = [
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
   },
@@ -6362,7 +6365,7 @@ export const seedPagos: Pago[] = [
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
   },
@@ -6373,7 +6376,7 @@ export const seedPagos: Pago[] = [
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
-    "amount": 1700,
+    "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
   },
@@ -6412,6 +6415,8 @@ export const seedTicketCounter = 2943
  *   - #2943: Resuelto (completed with resolution note)
  */
 export const seedTickets: Ticket[] = []
+
+export const seedNotificaciones: Notificacion[] = []
 
 export const seedAdeudos: Adeudo[] = [
   {
@@ -6456,19 +6461,40 @@ export const seedAdeudos: Adeudo[] = [
 ]
 
 export const seedEgresos: Egreso[] = [
-  // ── March 2026 (all paid — past month) ──
-  { id: 'eg-m3-1', categoria: 'nomina',         concepto: 'Salario Guardia — Carlos Mendoza',  description: 'Pago mensual guardia de seguridad.',          amount: 8000,  monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
-  { id: 'eg-m3-2', categoria: 'nomina',         concepto: 'Salario Jardinero — Juan Pérez',    description: 'Pago mensual jardinero.',                     amount: 4500,  monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
-  { id: 'eg-m3-3', categoria: 'nomina',         concepto: 'Salario Limpieza — María López',   description: 'Pago mensual personal de limpieza.',          amount: 6000,  monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
-  { id: 'eg-m3-4', categoria: 'servicios',      concepto: 'Recibo de Agua',                    description: 'Servicio de agua potable.',                   amount: 3200,  monthKey: '2026-03', date: '2026-03-20', registeredBy: 'Administrador General', status: 'Pagado' },
-  { id: 'eg-m3-5', categoria: 'servicios',      concepto: 'Recibo de Luz',                     description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800,  monthKey: '2026-03', date: '2026-03-22', registeredBy: 'Administrador General', status: 'Pagado' },
-  { id: 'eg-m3-6', categoria: 'administracion', concepto: 'Honorarios Administración',         description: 'Cuota mensual de la empresa administradora.', amount: 15000, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Administrador General', status: 'Pagado' },
-  { id: 'eg-m3-7', categoria: 'mantenimiento',  concepto: 'Reparación elevador Torre A',        description: 'Servicio correctivo por fallo en sensor de piso 3.', amount: 12000, monthKey: '2026-03', date: '2026-03-10', registeredBy: 'Administrador General', status: 'Pagado' },
-  // ── April 2026 (mix of paid and pending — current month) ──
-  { id: 'eg-m4-1', categoria: 'nomina',         concepto: 'Salario Guardia — Carlos Mendoza',  description: 'Pago mensual guardia de seguridad.',          amount: 8000,  monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Administrador General', status: 'Pagado' },
-  { id: 'eg-m4-2', categoria: 'nomina',         concepto: 'Salario Jardinero — Juan Pérez',    description: 'Pago mensual jardinero.',                     amount: 4500,  monthKey: '2026-04', date: '2026-04-15', registeredBy: 'Administrador General', status: 'Pendiente' },
-  { id: 'eg-m4-3', categoria: 'nomina',         concepto: 'Salario Limpieza — María López',   description: 'Pago mensual personal de limpieza.',          amount: 6000,  monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Administrador General', status: 'Pendiente' },
-  { id: 'eg-m4-4', categoria: 'servicios',      concepto: 'Recibo de Agua',                    description: 'Servicio de agua potable.',                   amount: 3200,  monthKey: '2026-04', date: '2026-04-15', registeredBy: 'Administrador General', status: 'Pendiente' },
-  { id: 'eg-m4-5', categoria: 'servicios',      concepto: 'Recibo de Luz',                     description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800,  monthKey: '2026-04', date: '2026-04-15', registeredBy: 'Administrador General', status: 'Pendiente' },
-  { id: 'eg-m4-6', categoria: 'administracion', concepto: 'Honorarios Administración',         description: 'Cuota mensual de la empresa administradora.', amount: 15000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Administrador General', status: 'Pagado' },
+  { id: 'eg-2026-01-staff-1', categoria: 'administracion', concepto: 'Honorarios — Samantha Guzman', description: 'Honorarios Administradora General correspondientes a enero.', amount: 19500, monthKey: '2026-01', date: '2026-01-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-staff-2', categoria: 'nomina', concepto: 'Nomina — Ricardo Hernandez', description: 'Sueldo Guardia correspondiente a enero.', amount: 13000, monthKey: '2026-01', date: '2026-01-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-staff-3', categoria: 'nomina', concepto: 'Nomina — Angel García', description: 'Sueldo Guardia correspondiente a enero.', amount: 13000, monthKey: '2026-01', date: '2026-01-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-staff-4', categoria: 'nomina', concepto: 'Nomina — Enrique Martinez', description: 'Sueldo Jardinero correspondiente a enero.', amount: 11000, monthKey: '2026-01', date: '2026-01-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-staff-5', categoria: 'nomina', concepto: 'Nomina — Valentina Sanchez', description: 'Sueldo Limpieza correspondiente a enero.', amount: 10000, monthKey: '2026-01', date: '2026-01-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-staff-6', categoria: 'nomina', concepto: 'Nomina — Carla Lopez', description: 'Sueldo Limpieza correspondiente a enero.', amount: 10000, monthKey: '2026-01', date: '2026-01-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-recibo-de-agua', categoria: 'servicios', concepto: 'Recibo de Agua', description: 'Servicio de agua potable.', amount: 3200, monthKey: '2026-01', date: '2026-01-20', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-recibo-de-luz', categoria: 'servicios', concepto: 'Recibo de Luz', description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800, monthKey: '2026-01', date: '2026-01-22', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-01-mantenimiento-elevadores', categoria: 'mantenimiento', concepto: 'Mantenimiento Elevadores', description: 'Póliza mensual mantenimiento preventivo.', amount: 4500, monthKey: '2026-01', date: '2026-01-5', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-staff-1', categoria: 'administracion', concepto: 'Honorarios — Samantha Guzman', description: 'Honorarios Administradora General correspondientes a febrero.', amount: 19500, monthKey: '2026-02', date: '2026-02-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-staff-2', categoria: 'nomina', concepto: 'Nomina — Ricardo Hernandez', description: 'Sueldo Guardia correspondiente a febrero.', amount: 13000, monthKey: '2026-02', date: '2026-02-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-staff-3', categoria: 'nomina', concepto: 'Nomina — Angel García', description: 'Sueldo Guardia correspondiente a febrero.', amount: 13000, monthKey: '2026-02', date: '2026-02-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-staff-4', categoria: 'nomina', concepto: 'Nomina — Enrique Martinez', description: 'Sueldo Jardinero correspondiente a febrero.', amount: 11000, monthKey: '2026-02', date: '2026-02-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-staff-5', categoria: 'nomina', concepto: 'Nomina — Valentina Sanchez', description: 'Sueldo Limpieza correspondiente a febrero.', amount: 10000, monthKey: '2026-02', date: '2026-02-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-staff-6', categoria: 'nomina', concepto: 'Nomina — Carla Lopez', description: 'Sueldo Limpieza correspondiente a febrero.', amount: 10000, monthKey: '2026-02', date: '2026-02-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-recibo-de-agua', categoria: 'servicios', concepto: 'Recibo de Agua', description: 'Servicio de agua potable.', amount: 3200, monthKey: '2026-02', date: '2026-02-20', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-recibo-de-luz', categoria: 'servicios', concepto: 'Recibo de Luz', description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800, monthKey: '2026-02', date: '2026-02-22', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-02-mantenimiento-elevadores', categoria: 'mantenimiento', concepto: 'Mantenimiento Elevadores', description: 'Póliza mensual mantenimiento preventivo.', amount: 4500, monthKey: '2026-02', date: '2026-02-5', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-staff-1', categoria: 'administracion', concepto: 'Honorarios — Samantha Guzman', description: 'Honorarios Administradora General correspondientes a marzo.', amount: 19500, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-staff-2', categoria: 'nomina', concepto: 'Nomina — Ricardo Hernandez', description: 'Sueldo Guardia correspondiente a marzo.', amount: 13000, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-staff-3', categoria: 'nomina', concepto: 'Nomina — Angel García', description: 'Sueldo Guardia correspondiente a marzo.', amount: 13000, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-staff-4', categoria: 'nomina', concepto: 'Nomina — Enrique Martinez', description: 'Sueldo Jardinero correspondiente a marzo.', amount: 11000, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-staff-5', categoria: 'nomina', concepto: 'Nomina — Valentina Sanchez', description: 'Sueldo Limpieza correspondiente a marzo.', amount: 10000, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-staff-6', categoria: 'nomina', concepto: 'Nomina — Carla Lopez', description: 'Sueldo Limpieza correspondiente a marzo.', amount: 10000, monthKey: '2026-03', date: '2026-03-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-recibo-de-agua', categoria: 'servicios', concepto: 'Recibo de Agua', description: 'Servicio de agua potable.', amount: 3200, monthKey: '2026-03', date: '2026-03-20', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-recibo-de-luz', categoria: 'servicios', concepto: 'Recibo de Luz', description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800, monthKey: '2026-03', date: '2026-03-22', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-03-mantenimiento-elevadores', categoria: 'mantenimiento', concepto: 'Mantenimiento Elevadores', description: 'Póliza mensual mantenimiento preventivo.', amount: 4500, monthKey: '2026-03', date: '2026-03-5', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-04-staff-1', categoria: 'administracion', concepto: 'Honorarios — Samantha Guzman', description: 'Honorarios Administradora General correspondientes a abril.', amount: 19500, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-04-staff-2', categoria: 'nomina', concepto: 'Nomina — Ricardo Hernandez', description: 'Sueldo Guardia correspondiente a abril.', amount: 13000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-04-staff-3', categoria: 'nomina', concepto: 'Nomina — Angel García', description: 'Sueldo Guardia correspondiente a abril.', amount: 13000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-04-staff-4', categoria: 'nomina', concepto: 'Nomina — Enrique Martinez', description: 'Sueldo Jardinero correspondiente a abril.', amount: 11000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
+  { id: 'eg-2026-04-staff-5', categoria: 'nomina', concepto: 'Nomina — Valentina Sanchez', description: 'Sueldo Limpieza correspondiente a abril.', amount: 10000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
+  { id: 'eg-2026-04-staff-6', categoria: 'nomina', concepto: 'Nomina — Carla Lopez', description: 'Sueldo Limpieza correspondiente a abril.', amount: 10000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
+  { id: 'eg-2026-04-recibo-de-agua', categoria: 'servicios', concepto: 'Recibo de Agua', description: 'Servicio de agua potable.', amount: 3200, monthKey: '2026-04', date: '2026-04-20', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
+  { id: 'eg-2026-04-recibo-de-luz', categoria: 'servicios', concepto: 'Recibo de Luz', description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800, monthKey: '2026-04', date: '2026-04-22', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
+  { id: 'eg-2026-04-mantenimiento-elevadores', categoria: 'mantenimiento', concepto: 'Mantenimiento Elevadores', description: 'Póliza mensual mantenimiento preventivo.', amount: 4500, monthKey: '2026-04', date: '2026-04-5', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
 ]
