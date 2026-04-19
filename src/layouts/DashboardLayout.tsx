@@ -37,11 +37,6 @@ export default function DashboardLayout() {
   const [showNotif, setShowNotif] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
-  // Redirect unauthenticated users to login
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
-  }
-
   const bc = state.buildingConfig
   const hasAmenities = state.amenities.length > 0
   const homePath = role === 'admin' ? '/admin' : '/dashboard'
@@ -54,6 +49,11 @@ export default function DashboardLayout() {
       return true
     }),
   [role, hasAmenities])
+
+  // Redirect unauthenticated users to login (moved after hooks)
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
 
   // Filter notifications for the current user
   const myNotifs = state.notificaciones.filter(n => 

@@ -212,7 +212,12 @@ export default function PagosPage() {
   const filteredPagos = useMemo(() => {
     let data = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === myApartment)
     if (!isAdmin || lFilterMonth) data = data.filter(p => (p.monthKey || '') === lFilterMonth)
-    if (lFilterTower)    data = data.filter(p => p.apartment.startsWith(lFilterTower))
+    if (lFilterTower) {
+      data = data.filter(p => {
+        const res = state.residents.find(r => r.apartment === p.apartment)
+        return res?.tower === lFilterTower
+      })
+    }
     if (lFilterUnit)     data = data.filter(p => p.apartment === lFilterUnit)
     if (lFilterStatus)   data = data.filter(p => p.status === lFilterStatus)
     if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mensualidad') === lFilterConcepto)

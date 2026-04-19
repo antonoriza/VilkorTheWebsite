@@ -134,7 +134,7 @@ export default function LoginPage() {
               </div>
               <div className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl">
                  <span className="text-[11px] font-bold text-slate-500">Resident Login</span>
-                 <span className="text-[11px] font-black text-slate-900">sofia@property.com</span>
+                  <span className="text-[11px] font-black text-slate-900">miller.zsolt.b0101@gmail.com</span>
               </div>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-14 pr-4 py-4.5 bg-slate-50 border-2 border-transparent rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:bg-white focus:border-slate-900 transition-all font-semibold"
-                  placeholder="name@property.com"
+                  placeholder="miller.zsolt.b0101@gmail.com"
                 />
               </div>
             </div>
