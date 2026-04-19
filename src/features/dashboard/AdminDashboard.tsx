@@ -77,9 +77,9 @@ export default function AdminDashboard() {
   const paidPagos = state.pagos.filter(p => p.status === 'Pagado').length
   const recaudacionPct = totalPagos > 0 ? Math.round((paidPagos / totalPagos) * 100) : 0
   const pendingPaquetes = state.paquetes.filter(p => p.status === 'Pendiente').length
-  const totalResidents = state.residents?.length || 12
   const totalUnits = bc.totalUnits || 126
-  const occupancyPct = Math.round((totalResidents / totalUnits) * 100)
+  const occupiedUnits = new Set(state.residents.map(r => r.apartment)).size
+  const occupancyPct = Math.round((occupiedUnits / totalUnits) * 100)
   // Composite health score: 50% payment, 30% occupancy, 20% package delivery
   const healthPct = Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
 
@@ -337,7 +337,7 @@ export default function AdminDashboard() {
               <div className="flex items-baseline space-x-2">
                 <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{occupancyPct}%</span>
               </div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">{totalResidents} de {totalUnits} residencias</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">{occupiedUnits} de {totalUnits} unidades ocupadas</p>
             </div>
           </Link>
         </div>
