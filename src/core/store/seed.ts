@@ -420,816 +420,828 @@ export const seedResidents: Resident[] = [
     "name": "Zsolt Miller",
     "apartment": "B0101",
     "tower": "DANUBIO",
-    "email": "miller.zsolt.b0101@gmail.com"
+    "email": "B0101@gmail.com"
   },
   {
     "id": "res-B0102",
     "name": "Zyanya Rodriguez",
     "apartment": "B0102",
     "tower": "DANUBIO",
-    "email": "rodriguez.zyanya.b0102@gmail.com"
+    "email": "B0102@gmail.com"
   },
   {
     "id": "res-B0103",
     "name": "Maria Thompson",
     "apartment": "B0103",
     "tower": "DANUBIO",
-    "email": "thompson.maria.b0103@gmail.com"
+    "email": "B0103@gmail.com"
   },
   {
     "id": "res-B0104",
     "name": "Elizabeth Garcia",
-    "apartment": "B0104",
-    "tower": "DANUBIO",
-    "email": "garcia.elizabeth.b0104@gmail.com"
+    "apartment": "A0201",
+    "tower": "RIN",
+    "email": "A0201.2@gmail.com"
   },
   {
     "id": "res-B0201",
     "name": "Manuel Smith",
     "apartment": "B0201",
     "tower": "DANUBIO",
-    "email": "smith.manuel.b0201@gmail.com"
+    "email": "B0201@gmail.com"
   },
   {
     "id": "res-B0202",
     "name": "Mario Jones",
     "apartment": "B0202",
     "tower": "DANUBIO",
-    "email": "jones.mario.b0202@gmail.com"
+    "email": "B0202@gmail.com"
   },
   {
     "id": "res-B0203",
     "name": "Karen Morales",
     "apartment": "B0203",
     "tower": "DANUBIO",
-    "email": "morales.karen.b0203@gmail.com"
+    "email": "B0203@gmail.com"
   },
   {
     "id": "res-B0204",
     "name": "Marco Williams",
     "apartment": "B0204",
     "tower": "DANUBIO",
-    "email": "williams.marco.b0204@gmail.com"
+    "email": "B0204@gmail.com"
   },
   {
     "id": "res-B0301",
     "name": "Samantha Herrera",
     "apartment": "B0301",
     "tower": "DANUBIO",
-    "email": "herrera.samantha.b0301@gmail.com"
+    "email": "B0301@gmail.com"
   },
   {
     "id": "res-B0302",
     "name": "Julio Anderson",
     "apartment": "B0302",
     "tower": "DANUBIO",
-    "email": "anderson.julio.b0302@gmail.com"
+    "email": "B0302@gmail.com"
   },
   {
     "id": "res-B0303",
     "name": "Dorothy Lopez",
     "apartment": "B0303",
     "tower": "DANUBIO",
-    "email": "lopez.dorothy.b0303@gmail.com"
+    "email": "B0303@gmail.com"
   },
   {
     "id": "res-B0304",
     "name": "Antonio Taylor",
     "apartment": "B0304",
     "tower": "DANUBIO",
-    "email": "taylor.antonio.b0304@gmail.com"
+    "email": "B0304@gmail.com"
   },
   {
     "id": "res-B0401",
     "name": "Florian Martinez",
     "apartment": "B0401",
     "tower": "DANUBIO",
-    "email": "martinez.florian.b0401@gmail.com"
+    "email": "B0401@gmail.com"
   },
   {
     "id": "res-B0402",
     "name": "Efraín Brown",
     "apartment": "B0402",
     "tower": "DANUBIO",
-    "email": "brown.efrain.b0402@gmail.com"
+    "email": "B0402@gmail.com"
   },
   {
     "id": "res-B0403",
     "name": "Santiago Wilson",
     "apartment": "B0403",
     "tower": "DANUBIO",
-    "email": "wilson.santiago.b0403@gmail.com"
+    "email": "B0403@gmail.com"
   },
   {
     "id": "res-B0404",
     "name": "Bertha Sanchez",
     "apartment": "B0404",
     "tower": "DANUBIO",
-    "email": "sanchez.bertha.b0404@gmail.com"
+    "email": "B0404@gmail.com"
   },
   {
     "id": "res-B0501",
     "name": "Michal Davies",
     "apartment": "B0501",
     "tower": "DANUBIO",
-    "email": "davies.michal.b0501@gmail.com"
+    "email": "B0501@gmail.com"
   },
   {
     "id": "res-B0502",
     "name": "Jorge Evans",
     "apartment": "B0502",
     "tower": "DANUBIO",
-    "email": "evans.jorge.b0502@gmail.com"
+    "email": "B0502@gmail.com"
   },
   {
     "id": "res-B0503",
     "name": "Fernanda Clark",
     "apartment": "B0503",
     "tower": "DANUBIO",
-    "email": "clark.fernanda.b0503@gmail.com"
+    "email": "B0503@gmail.com"
   },
   {
     "id": "res-B0504",
     "name": "Alejandro Ramirez",
     "apartment": "B0504",
     "tower": "DANUBIO",
-    "email": "ramirez.alejandro.b0504@gmail.com"
+    "email": "B0504@gmail.com"
   },
   {
     "id": "res-B0601",
     "name": "Carmen White",
     "apartment": "B0601",
     "tower": "DANUBIO",
-    "email": "white.carmen.b0601@gmail.com"
+    "email": "B0601@gmail.com"
   },
   {
     "id": "res-B0602",
     "name": "Martha Roberts",
     "apartment": "B0602",
     "tower": "DANUBIO",
-    "email": "roberts.martha.b0602@gmail.com"
+    "email": "B0602@gmail.com"
   },
   {
     "id": "res-B0603",
     "name": "Juan Campbell",
     "apartment": "B0603",
     "tower": "DANUBIO",
-    "email": "campbell.juan.b0603@gmail.com"
+    "email": "B0603@gmail.com"
   },
   {
     "id": "res-B0604",
     "name": "Zsolt Hernandez",
     "apartment": "B0604",
     "tower": "DANUBIO",
-    "email": "hernandez.zsolt.b0604@gmail.com"
+    "email": "B0604@gmail.com"
   },
   {
     "id": "res-B0701",
     "name": "Zyanya Wright",
     "apartment": "B0701",
     "tower": "DANUBIO",
-    "email": "wright.zyanya.b0701@gmail.com"
+    "email": "B0701@gmail.com"
   },
   {
     "id": "res-B0702",
     "name": "Elizabeth Mitchell",
     "apartment": "B0702",
     "tower": "DANUBIO",
-    "email": "mitchell.elizabeth.b0702@gmail.com"
+    "email": "B0702@gmail.com"
   },
   {
     "id": "res-B0703",
     "name": "Maria Flores",
     "apartment": "B0703",
     "tower": "DANUBIO",
-    "email": "flores.maria.b0703@gmail.com"
+    "email": "B0703@gmail.com"
   },
   {
     "id": "res-B0704",
     "name": "Samantha Young",
     "apartment": "B0704",
     "tower": "DANUBIO",
-    "email": "young.samantha.b0704@gmail.com"
+    "email": "B0704@gmail.com"
   },
   {
     "id": "res-B0801",
     "name": "Manuel Ortiz",
     "apartment": "B0801",
     "tower": "DANUBIO",
-    "email": "ortiz.manuel.b0801@gmail.com"
+    "email": "B0801@gmail.com"
   },
   {
     "id": "res-B0802",
     "name": "Mario Collins",
     "apartment": "B0802",
     "tower": "DANUBIO",
-    "email": "collins.mario.b0802@gmail.com"
+    "email": "B0802@gmail.com"
   },
   {
     "id": "res-B0803",
     "name": "Karen King",
     "apartment": "B0803",
     "tower": "DANUBIO",
-    "email": "king.karen.b0803@gmail.com"
+    "email": "B0803@gmail.com"
   },
   {
     "id": "res-B0804",
     "name": "Marco Ruiz",
     "apartment": "B0804",
     "tower": "DANUBIO",
-    "email": "ruiz.marco.b0804@gmail.com"
+    "email": "B0804@gmail.com"
   },
   {
     "id": "res-B0901",
     "name": "Julio Harrison",
     "apartment": "B0901",
     "tower": "DANUBIO",
-    "email": "harrison.julio.b0901@gmail.com"
+    "email": "B0901@gmail.com"
   },
   {
     "id": "res-B0902",
     "name": "Dorothy Morgan",
     "apartment": "B0902",
     "tower": "DANUBIO",
-    "email": "morgan.dorothy.b0902@gmail.com"
+    "email": "B0902@gmail.com"
   },
   {
     "id": "res-B0903",
     "name": "Antonio Castro",
     "apartment": "B0903",
     "tower": "DANUBIO",
-    "email": "castro.antonio.b0903@gmail.com"
+    "email": "B0903@gmail.com"
   },
   {
     "id": "res-B0904",
     "name": "Florian Lee",
     "apartment": "B0904",
     "tower": "DANUBIO",
-    "email": "lee.florian.b0904@gmail.com"
+    "email": "B0904@gmail.com"
   },
   {
     "id": "res-B1001",
     "name": "Efraín Walker",
     "apartment": "B1001",
     "tower": "DANUBIO",
-    "email": "walker.efrain.b1001@gmail.com"
+    "email": "B1001@gmail.com"
   },
   {
     "id": "res-B1002",
     "name": "Santiago Mendez",
     "apartment": "B1002",
     "tower": "DANUBIO",
-    "email": "mendez.santiago.b1002@gmail.com"
+    "email": "B1002@gmail.com"
   },
   {
     "id": "res-B1003",
     "name": "Bertha Scott",
     "apartment": "B1003",
     "tower": "DANUBIO",
-    "email": "scott.bertha.b1003@gmail.com"
+    "email": "B1003@gmail.com"
   },
   {
     "id": "res-B1004",
     "name": "Michal Green",
     "apartment": "B1004",
     "tower": "DANUBIO",
-    "email": "green.michal.b1004@gmail.com"
+    "email": "B1004@gmail.com"
   },
   {
     "id": "res-B1101",
     "name": "Jorge Hill",
     "apartment": "B1101",
     "tower": "DANUBIO",
-    "email": "hill.jorge.b1101@gmail.com"
+    "email": "B1101@gmail.com"
   },
   {
     "id": "res-B1102",
     "name": "Fernanda Baker",
     "apartment": "B1102",
     "tower": "DANUBIO",
-    "email": "baker.fernanda.b1102@gmail.com"
+    "email": "B1102@gmail.com"
   },
   {
     "id": "res-B1103",
     "name": "Alejandro Adams",
     "apartment": "B1103",
     "tower": "DANUBIO",
-    "email": "adams.alejandro.b1103@gmail.com"
+    "email": "B1103@gmail.com"
   },
   {
     "id": "res-B1104",
     "name": "Carmen Nelson",
     "apartment": "B1104",
     "tower": "DANUBIO",
-    "email": "nelson.carmen.b1104@gmail.com"
+    "email": "B1104@gmail.com"
   },
   {
     "id": "res-B1201",
     "name": "Martha Gonzalez",
     "apartment": "B1201",
     "tower": "DANUBIO",
-    "email": "gonzalez.martha.b1201@gmail.com"
+    "email": "B1201@gmail.com"
   },
   {
     "id": "res-B1202",
     "name": "Juan Carter",
     "apartment": "B1202",
     "tower": "DANUBIO",
-    "email": "carter.juan.b1202@gmail.com"
+    "email": "B1202@gmail.com"
   },
   {
     "id": "res-B1203",
     "name": "Zsolt Mitchell",
     "apartment": "B1203",
     "tower": "DANUBIO",
-    "email": "mitchell.zsolt.b1203@gmail.com"
+    "email": "B1203@gmail.com"
   },
   {
     "id": "res-B1204",
     "name": "Zyanya Perez",
     "apartment": "B1204",
     "tower": "DANUBIO",
-    "email": "perez.zyanya.b1204@gmail.com"
+    "email": "B1204@gmail.com"
   },
   {
     "id": "res-B1301",
     "name": "Elizabeth Parker",
     "apartment": "B1301",
     "tower": "DANUBIO",
-    "email": "parker.elizabeth.b1301@gmail.com"
+    "email": "B1301@gmail.com"
   },
   {
     "id": "res-B1302",
     "name": "Maria Edwards",
     "apartment": "B1302",
     "tower": "DANUBIO",
-    "email": "edwards.maria.b1302@gmail.com"
+    "email": "B1302@gmail.com"
   },
   {
     "id": "res-B1303",
     "name": "Samantha Collins",
     "apartment": "B1303",
     "tower": "DANUBIO",
-    "email": "collins.samantha.b1303@gmail.com"
+    "email": "B1303@gmail.com"
   },
   {
     "id": "res-B1304",
     "name": "Manuel Stewart",
     "apartment": "B1304",
     "tower": "DANUBIO",
-    "email": "stewart.manuel.b1304@gmail.com"
+    "email": "B1304@gmail.com"
   },
   {
     "id": "res-B1401",
     "name": "Mario Morris",
     "apartment": "B1401",
     "tower": "DANUBIO",
-    "email": "morris.mario.b1401@gmail.com"
+    "email": "B1401@gmail.com"
   },
   {
     "id": "res-B1402",
     "name": "Karen Murphy",
     "apartment": "B1402",
     "tower": "DANUBIO",
-    "email": "murphy.karen.b1402@gmail.com"
+    "email": "B1402@gmail.com"
   },
   {
     "id": "res-B1403",
     "name": "Marco Rivera",
     "apartment": "B1403",
     "tower": "DANUBIO",
-    "email": "rivera.marco.b1403@gmail.com"
+    "email": "B1403@gmail.com"
   },
   {
     "id": "res-B1404",
     "name": "Julio Cook",
     "apartment": "B1404",
     "tower": "DANUBIO",
-    "email": "cook.julio.b1404@gmail.com"
+    "email": "B1404@gmail.com"
   },
   {
     "id": "res-B1501",
     "name": "Dorothy Bell",
     "apartment": "B1501",
     "tower": "DANUBIO",
-    "email": "bell.dorothy.b1501@gmail.com"
+    "email": "B1501@gmail.com"
   },
   {
     "id": "res-B1502",
     "name": "Antonio Ward",
     "apartment": "B1502",
     "tower": "DANUBIO",
-    "email": "ward.antonio.b1502@gmail.com"
+    "email": "B1502@gmail.com"
   },
   {
     "id": "res-A0101",
     "name": "Florian Richardson",
     "apartment": "A0101",
     "tower": "RIN",
-    "email": "richardson.florian.a0101@gmail.com"
+    "email": "A0101@gmail.com"
   },
   {
     "id": "res-A0102",
     "name": "Efraín Watson",
     "apartment": "A0102",
     "tower": "RIN",
-    "email": "watson.efrain.a0102@gmail.com"
+    "email": "A0102@gmail.com"
   },
   {
     "id": "res-A0103",
     "name": "Santiago Brooks",
     "apartment": "A0103",
     "tower": "RIN",
-    "email": "brooks.santiago.a0103@gmail.com"
+    "email": "A0103@gmail.com"
   },
   {
     "id": "res-A0104",
     "name": "Bertha Wood",
     "apartment": "A0104",
     "tower": "RIN",
-    "email": "wood.bertha.a0104@gmail.com"
+    "email": "A0104@gmail.com"
   },
   {
     "id": "res-A0201",
     "name": "Michal Kelly",
     "apartment": "A0201",
     "tower": "RIN",
-    "email": "kelly.michal.a0201@gmail.com"
+    "email": "A0201.1@gmail.com"
   },
   {
     "id": "res-A0202",
     "name": "Jorge Sanders",
     "apartment": "A0202",
     "tower": "RIN",
-    "email": "sanders.jorge.a0202@gmail.com"
+    "email": "A0202@gmail.com"
   },
   {
     "id": "res-A0203",
     "name": "Fernanda Bennett",
     "apartment": "A0203",
     "tower": "RIN",
-    "email": "bennett.fernanda.a0203@gmail.com"
+    "email": "A0203@gmail.com"
   },
   {
     "id": "res-A0204",
     "name": "Alejandro Ross",
     "apartment": "A0204",
     "tower": "RIN",
-    "email": "ross.alejandro.a0204@gmail.com"
+    "email": "A0204@gmail.com"
   },
   {
     "id": "res-A0301",
     "name": "Carmen Jenkins",
     "apartment": "A0301",
     "tower": "RIN",
-    "email": "jenkins.carmen.a0301@gmail.com"
+    "email": "A0301@gmail.com"
   },
   {
     "id": "res-A0302",
     "name": "Martha Perry",
     "apartment": "A0302",
     "tower": "RIN",
-    "email": "perry.martha.a0302@gmail.com"
+    "email": "A0302@gmail.com"
   },
   {
     "id": "res-A0303",
     "name": "Juan Powell",
     "apartment": "A0303",
     "tower": "RIN",
-    "email": "powell.juan.a0303@gmail.com"
+    "email": "A0303@gmail.com"
   },
   {
     "id": "res-A0304",
     "name": "Zsolt Sullivan",
     "apartment": "A0304",
     "tower": "RIN",
-    "email": "sullivan.zsolt.a0304@gmail.com"
+    "email": "A0304@gmail.com"
   },
   {
     "id": "res-A0401",
     "name": "Zyanya Russell",
     "apartment": "A0401",
     "tower": "RIN",
-    "email": "russell.zyanya.a0401@gmail.com"
+    "email": "A0401@gmail.com"
   },
   {
     "id": "res-A0402",
     "name": "Elizabeth Foster",
     "apartment": "A0402",
     "tower": "RIN",
-    "email": "foster.elizabeth.a0402@gmail.com"
+    "email": "A0402@gmail.com"
   },
   {
     "id": "res-A0403",
     "name": "Maria Butler",
     "apartment": "A0403",
     "tower": "RIN",
-    "email": "butler.maria.a0403@gmail.com"
+    "email": "A0403@gmail.com"
   },
   {
     "id": "res-A0404",
     "name": "Samantha Simmons",
     "apartment": "A0404",
     "tower": "RIN",
-    "email": "simmons.samantha.a0404@gmail.com"
+    "email": "A0404@gmail.com"
   },
   {
     "id": "res-A0501",
     "name": "Manuel Bryant",
     "apartment": "A0501",
     "tower": "RIN",
-    "email": "bryant.manuel.a0501@gmail.com"
+    "email": "A0501@gmail.com"
   },
   {
     "id": "res-A0502",
     "name": "Mario Alexander",
     "apartment": "A0502",
     "tower": "RIN",
-    "email": "alexander.mario.a0502@gmail.com"
+    "email": "A0502@gmail.com"
   },
   {
     "id": "res-A0503",
     "name": "Karen Griffin",
     "apartment": "A0503",
     "tower": "RIN",
-    "email": "griffin.karen.a0503@gmail.com"
+    "email": "A0503@gmail.com"
   },
   {
     "id": "res-A0504",
     "name": "Marco Diaz",
     "apartment": "A0504",
     "tower": "RIN",
-    "email": "diaz.marco.a0504@gmail.com"
+    "email": "A0504@gmail.com"
   },
   {
     "id": "res-A0601",
     "name": "Julio Hayes",
     "apartment": "A0601",
     "tower": "RIN",
-    "email": "hayes.julio.a0601@gmail.com"
+    "email": "A0601@gmail.com"
   },
   {
     "id": "res-A0602",
     "name": "Dorothy Myers",
     "apartment": "A0602",
     "tower": "RIN",
-    "email": "myers.dorothy.a0602@gmail.com"
+    "email": "A0602@gmail.com"
   },
   {
     "id": "res-A0603",
     "name": "Antonio Ford",
     "apartment": "A0603",
     "tower": "RIN",
-    "email": "ford.antonio.a0603@gmail.com"
+    "email": "A0603@gmail.com"
   },
   {
     "id": "res-A0604",
     "name": "Florian Hamilton",
     "apartment": "A0604",
     "tower": "RIN",
-    "email": "hamilton.florian.a0604@gmail.com"
+    "email": "A0604@gmail.com"
   },
   {
     "id": "res-A0701",
     "name": "Efraín Graham",
     "apartment": "A0701",
     "tower": "RIN",
-    "email": "graham.efrain.a0701@gmail.com"
+    "email": "A0701@gmail.com"
   },
   {
     "id": "res-A0702",
     "name": "Santiago Fisher",
     "apartment": "A0702",
     "tower": "RIN",
-    "email": "fisher.santiago.a0702@gmail.com"
+    "email": "A0702@gmail.com"
   },
   {
     "id": "res-A0703",
     "name": "Bertha Wallace",
     "apartment": "A0703",
     "tower": "RIN",
-    "email": "wallace.bertha.a0703@gmail.com"
+    "email": "A0703@gmail.com"
   },
   {
     "id": "res-A0704",
     "name": "Michal West",
     "apartment": "A0704",
     "tower": "RIN",
-    "email": "west.michal.a0704@gmail.com"
+    "email": "A0704@gmail.com"
   },
   {
     "id": "res-A0801",
     "name": "Jorge Jordan",
     "apartment": "A0801",
     "tower": "RIN",
-    "email": "jordan.jorge.a0801@gmail.com"
+    "email": "A0801@gmail.com"
   },
   {
     "id": "res-A0802",
     "name": "Fernanda Owens",
     "apartment": "A0802",
     "tower": "RIN",
-    "email": "owens.fernanda.a0802@gmail.com"
+    "email": "A0802@gmail.com"
   },
   {
     "id": "res-A0803",
     "name": "Alejandro Reynolds",
     "apartment": "A0803",
     "tower": "RIN",
-    "email": "reynolds.alejandro.a0803@gmail.com"
+    "email": "A0803@gmail.com"
   },
   {
     "id": "res-A0804",
     "name": "Carmen Vargas",
     "apartment": "A0804",
     "tower": "RIN",
-    "email": "vargas.carmen.a0804@gmail.com"
+    "email": "A0804@gmail.com"
   },
   {
     "id": "res-A0901",
     "name": "Martha Ellis",
     "apartment": "A0901",
     "tower": "RIN",
-    "email": "ellis.martha.a0901@gmail.com"
+    "email": "A0901@gmail.com"
   },
   {
     "id": "res-A0902",
     "name": "Juan Romero",
     "apartment": "A0902",
     "tower": "RIN",
-    "email": "romero.juan.a0902@gmail.com"
+    "email": "A0902@gmail.com"
   },
   {
     "id": "res-A0903",
     "name": "Zsolt Stephens",
     "apartment": "A0903",
     "tower": "RIN",
-    "email": "stephens.zsolt.a0903@gmail.com"
+    "email": "A0903@gmail.com"
   },
   {
     "id": "res-A0904",
     "name": "Zyanya Porter",
     "apartment": "A0904",
     "tower": "RIN",
-    "email": "porter.zyanya.a0904@gmail.com"
+    "email": "A0904@gmail.com"
   },
   {
     "id": "res-A1001",
     "name": "Elizabeth Hunter",
     "apartment": "A1001",
     "tower": "RIN",
-    "email": "hunter.elizabeth.a1001@gmail.com"
+    "email": "A1001@gmail.com"
   },
   {
     "id": "res-A1002",
     "name": "Maria Robertson",
     "apartment": "A1002",
     "tower": "RIN",
-    "email": "robertson.maria.a1002@gmail.com"
+    "email": "A1002@gmail.com"
   },
   {
     "id": "res-A1003",
     "name": "Samantha Shaw",
     "apartment": "A1003",
     "tower": "RIN",
-    "email": "shaw.samantha.a1003@gmail.com"
+    "email": "A1003@gmail.com"
   },
   {
     "id": "res-A1004",
     "name": "Manuel Hunt",
     "apartment": "A1004",
     "tower": "RIN",
-    "email": "hunt.manuel.a1004@gmail.com"
+    "email": "A1004@gmail.com"
   },
   {
     "id": "res-A1101",
     "name": "Mario Black",
     "apartment": "A1101",
     "tower": "RIN",
-    "email": "black.mario.a1101@gmail.com"
+    "email": "A1101@gmail.com"
   },
   {
     "id": "res-A1102",
     "name": "Karen Holmes",
     "apartment": "A1102",
     "tower": "RIN",
-    "email": "holmes.karen.a1102@gmail.com"
+    "email": "A1102@gmail.com"
   },
   {
     "id": "res-A1103",
     "name": "Marco Palmer",
     "apartment": "A1103",
     "tower": "RIN",
-    "email": "palmer.marco.a1103@gmail.com"
+    "email": "A1103@gmail.com"
   },
   {
     "id": "res-A1104",
     "name": "Julio Wagner",
     "apartment": "A1104",
     "tower": "RIN",
-    "email": "wagner.julio.a1104@gmail.com"
+    "email": "A1104@gmail.com"
   },
   {
     "id": "res-A1201",
     "name": "Dorothy Mendoza",
     "apartment": "A1201",
     "tower": "RIN",
-    "email": "mendoza.dorothy.a1201@gmail.com"
+    "email": "A1201@gmail.com"
   },
   {
     "id": "res-A1202",
     "name": "Antonio Patterson",
     "apartment": "A1202",
     "tower": "RIN",
-    "email": "patterson.antonio.a1202@gmail.com"
+    "email": "A1202@gmail.com"
   },
   {
     "id": "res-A1203",
     "name": "Florian Jacobs",
     "apartment": "A1203",
     "tower": "RIN",
-    "email": "jacobs.florian.a1203@gmail.com"
+    "email": "A1203@gmail.com"
   },
   {
     "id": "res-A1204",
     "name": "Efraín James",
     "apartment": "A1204",
     "tower": "RIN",
-    "email": "james.efrain.a1204@gmail.com"
+    "email": "A1204@gmail.com"
   },
   {
     "id": "res-A1301",
     "name": "Santiago Cruz",
     "apartment": "A1301",
     "tower": "RIN",
-    "email": "cruz.santiago.a1301@gmail.com"
+    "email": "A1301@gmail.com"
   },
   {
     "id": "res-A1302",
     "name": "Bertha Gordon",
     "apartment": "A1302",
     "tower": "RIN",
-    "email": "gordon.bertha.a1302@gmail.com"
+    "email": "A1302@gmail.com"
   },
   {
     "id": "res-A1303",
     "name": "Michal Harrison",
     "apartment": "A1303",
     "tower": "RIN",
-    "email": "harrison.michal.a1303@gmail.com"
+    "email": "A1303@gmail.com"
   },
   {
     "id": "res-A1304",
     "name": "Jorge Reyes",
     "apartment": "A1304",
     "tower": "RIN",
-    "email": "reyes.jorge.a1304@gmail.com"
+    "email": "A1304@gmail.com"
   },
   {
     "id": "res-A1401",
     "name": "Fernanda Hughes",
     "apartment": "A1401",
     "tower": "RIN",
-    "email": "hughes.fernanda.a1401@gmail.com"
+    "email": "A1401@gmail.com"
   },
   {
     "id": "res-A1402",
     "name": "Alejandro Price",
     "apartment": "A1402",
     "tower": "RIN",
-    "email": "price.alejandro.a1402@gmail.com"
+    "email": "A1402@gmail.com"
   },
   {
     "id": "res-A1403",
     "name": "Carmen Myers",
     "apartment": "A1403",
     "tower": "RIN",
-    "email": "myers.carmen.a1403@gmail.com"
+    "email": "A1403@gmail.com"
   },
   {
     "id": "res-A1404",
     "name": "Martha Long",
     "apartment": "A1404",
     "tower": "RIN",
-    "email": "long.martha.a1404@gmail.com"
+    "email": "A1404@gmail.com"
   },
   {
     "id": "res-A1501",
     "name": "Juan Jimenez",
     "apartment": "A1501",
     "tower": "RIN",
-    "email": "jimenez.juan.a1501@gmail.com"
+    "email": "A1501@gmail.com"
   },
   {
     "id": "res-A1502",
     "name": "Zsolt Foster",
     "apartment": "A1502",
     "tower": "RIN",
-    "email": "foster.zsolt.a1502@gmail.com"
+    "email": "A1502@gmail.com"
+  },
+  {
+    "id": "res-A0201-3",
+    "name": "Rose Howard",
+    "apartment": "A0201",
+    "tower": "RIN",
+    "email": "A0201.3@gmail.com"
+  },
+  {
+    "id": "res-B0104-New",
+    "name": "James Wilson",
+    "apartment": "B0104",
+    "tower": "DANUBIO",
+    "email": "B0104@gmail.com"
   }
 ]
-
-export const seedNotificaciones: Notificacion[] = []
 
 export const seedStaff: StaffMember[] = [
   { id: 'staff-1', name: 'Carlos Mendoza', role: 'Guardia', shiftStart: '07:00', shiftEnd: '19:00', workDays: ['L', 'M', 'Mi', 'J', 'V', 'S'], photo: '' },
@@ -1399,8 +1411,7 @@ export const seedPagos: Pago[] = [
   },
   {
     "id": "pg-B0104-2026-01",
-    "apartment": "B0104",
-    "resident": "Elizabeth Garcia",
+    "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "enero de 2026",
     "monthKey": "2026-01",
     "concepto": "Mensualidad",
@@ -1410,8 +1421,7 @@ export const seedPagos: Pago[] = [
   },
   {
     "id": "pg-B0104-2026-02",
-    "apartment": "B0104",
-    "resident": "Elizabeth Garcia",
+    "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
     "concepto": "Mensualidad",
@@ -1421,8 +1431,7 @@ export const seedPagos: Pago[] = [
   },
   {
     "id": "pg-B0104-2026-03",
-    "apartment": "B0104",
-    "resident": "Elizabeth Garcia",
+    "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
     "concepto": "Mensualidad",
@@ -1432,8 +1441,7 @@ export const seedPagos: Pago[] = [
   },
   {
     "id": "pg-B0104-2026-04",
-    "apartment": "B0104",
-    "resident": "Elizabeth Garcia",
+    "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "abril de 2026",
     "monthKey": "2026-04",
     "concepto": "Mensualidad",
