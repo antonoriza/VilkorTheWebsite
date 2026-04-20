@@ -719,147 +719,121 @@ export default function PagosPage() {
       {(activeTab === 'ledger' || !isAdmin) && (
         <>
 
-          {/* ── KPI strip (admin) — clickable status filter ── */}
+          {/* ── Status Strip (Architectural Minimalist) — Integrated metrics ── */}
           {isAdmin && ledgerSubTab === 'ingresos' && (
-            <div className="space-y-4 max-w-5xl">
-            <div className={`grid gap-4 items-stretch ${lFilterMonth ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 lg:max-w-3xl'}`}>
-              {[
-                { label: 'Pagados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', iconBg: 'bg-emerald-50', filterKey: '' as string, showInGlobal: false },
-                { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'bg-rose-500', iconColor: 'text-rose-600', iconBg: 'bg-rose-50', filterKey: 'Vencido', showInGlobal: true },
-                { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', iconBg: 'bg-amber-50', filterKey: 'Pendiente', showInGlobal: true },
-              ].filter(k => !!lFilterMonth || k.showInGlobal).map(k => {
-                const isClickable = !!k.filterKey && !showFilters
-                const isActive = isClickable && lFilterStatus === k.filterKey
-                
-                let progress = 0
-                if (k.label === 'Pagados') {
-                  progress = ledgerKpis.expectedMantenimientoTotal > 0 
-                    ? (ledgerKpis.paidMantenimientoTotal / ledgerKpis.expectedMantenimientoTotal) * 100 
-                    : 0
-                } else {
-                  progress = ledgerKpis.totalPortfolioAmount > 0 
-                    ? (k.amount / ledgerKpis.totalPortfolioAmount) * 100 
-                    : 0
-                }
+            <div className={`mt-2 mb-6 border border-slate-100 rounded-2xl bg-white/50 backdrop-blur-sm shadow-sm overflow-hidden`}>
+              <div className="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+                {[
+                  { label: 'Recaudación Mantenimiento', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: '' as string, showInGlobal: false },
+                  { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'bg-rose-500', iconColor: 'text-rose-600', filterKey: 'Vencido', showInGlobal: true },
+                  { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', filterKey: 'Pendiente', showInGlobal: true },
+                ].filter(k => !!lFilterMonth || k.showInGlobal).map(k => {
+                  const isClickable = !!k.filterKey && !showFilters
+                  const isActive = isClickable && lFilterStatus === k.filterKey
+                  
+                  let progress = 0
+                  if (k.label === 'Recaudación Mantenimiento') {
+                    progress = ledgerKpis.expectedMantenimientoTotal > 0 
+                      ? (ledgerKpis.paidMantenimientoTotal / ledgerKpis.expectedMantenimientoTotal) * 100 
+                      : 0
+                  } else {
+                    progress = ledgerKpis.totalPortfolioAmount > 0 
+                      ? (k.amount / ledgerKpis.totalPortfolioAmount) * 100 
+                      : 0
+                  }
 
-                const isDebt = k.filterKey === 'Vencido'
-                const isZeroDebt = isDebt && k.amount === 0
+                  const isZeroDebt = k.filterKey === 'Vencido' && k.amount === 0
 
-                return (
-                  <button
-                    key={k.label}
-                    type="button"
-                    onClick={() => {
-                      if (!isClickable) return
-                      if (lFilterStatus === k.filterKey) {
-                        setLFilterStatus('')
-                        setLFilterMonth('')
-                      } else {
-                        setLFilterStatus(k.filterKey)
-                        setLFilterMonth('')
-                      }
-                    }}
-                    className={[
-                      'group relative flex flex-col justify-between bg-white p-3.5 rounded-[12px] transition-all duration-300 text-left outline-none transform overflow-hidden',
-                      isClickable ? 'cursor-pointer hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300' : 'cursor-default',
-                      isActive ? 'border-2 border-slate-900 shadow-lg scale-[1.02] z-20 bg-white' : 'border border-slate-200 shadow-sm z-10 hover:bg-slate-50/50',
-                    ].join(' ')}
-                    style={{ minHeight: '120px', maxWidth: lFilterMonth ? 'none' : '320px' }}
-                  >
-                    {/* Subtle aesthetic background flare */}
-                    <div className={`absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl opacity-10 transition-opacity group-hover:opacity-20 ${k.color}`} />
-
-                    <div className="w-full relative z-10">
-                      {/* Cabecera */}
-                      <div className="flex items-center justify-between mb-2.5 w-full">
-                        <div className={`w-7 h-7 rounded-[8px] flex items-center justify-center transition-all ${isActive ? 'bg-slate-900 text-white shadow-md' : `${k.iconBg} ${k.iconColor}`}`}>
-                          <span className="material-symbols-outlined text-[14px]">
-                            {isZeroDebt ? 'auto_awesome' : k.icon}
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center gap-1.5 leading-none">
-                          {isDebt && isActive && k.amount > 0 && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                if (isNotifying) return
-                                setIsNotifying(true)
-                                setTimeout(() => setIsNotifying(false), 2000)
-                              }}
-                              className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest transition-all shadow-sm ${
-                                isNotifying 
-                                  ? 'bg-emerald-500 text-white' 
-                                  : 'bg-slate-900 text-white hover:bg-slate-800'
-                              }`}
-                            >
-                              <span className="material-symbols-outlined text-[10px]">
-                                {isNotifying ? 'done' : 'notifications_active'}
-                              </span>
-                            </button>
-                          )}
-
-                          {isActive && (
-                            <div className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full flex items-center">
-                              <span className="material-symbols-outlined text-[9px] font-bold">filter_alt</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Data */}
-                      <div className="space-y-0.5 w-full">
-                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.1em] transition-colors group-hover:text-slate-500">
-                          {isZeroDebt ? 'Historial Limpio' : k.label}
-                        </p>
-                        <p className={`text-[18px] font-headline font-black tracking-tight tabular-nums leading-none ${isActive ? 'text-slate-900' : 'text-slate-800'}`}>
-                          {isZeroDebt ? 'Sin Deuda' : `$${k.amount.toLocaleString('es-MX')}`}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="w-full mt-3 relative z-10">
-                      {/* Progreso */}
-                      {!isZeroDebt && (
-                        <>
-                          <div className="w-full h-[3px] bg-slate-100 rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full transition-all duration-1000 ease-out ${k.color} rounded-full`}
-                              style={{ width: `${Math.max(progress, 1)}%` }}
-                            />
-                          </div>
-                          <div className="mt-2 flex items-baseline justify-between">
-                            <span className="text-[8px] font-bold text-slate-300 uppercase tracking-wider group-hover:text-slate-400">
-                              {k.value} regs.
-                            </span>
-                            <span className="text-[9px] font-black text-slate-800 tracking-tighter">
-                              {progress.toFixed(1)}%
-                            </span>
-                          </div>
-                        </>
+                  return (
+                    <button
+                      key={k.label}
+                      type="button"
+                      onClick={() => {
+                        if (!isClickable) return
+                        if (lFilterStatus === k.filterKey) {
+                          setLFilterStatus('')
+                          setLFilterMonth('')
+                        } else {
+                          setLFilterStatus(k.filterKey)
+                          setLFilterMonth('')
+                        }
+                      }}
+                      className={`relative flex-1 flex flex-col justify-center p-4 transition-all duration-300 group outline-none ${
+                        isClickable ? 'cursor-pointer hover:bg-slate-50/80' : 'cursor-default'
+                      } ${isActive ? 'bg-slate-50/50 pt-3.5' : ''}`}
+                    >
+                      {/* Active indicator line */}
+                      {isActive && (
+                        <div className="absolute top-0 left-0 w-full h-[3px] bg-slate-900 animate-in slide-in-from-top-full duration-300" />
                       )}
-                    </div>
-                  </button>
-                )
-              })}
+
+                      <div className="flex items-baseline justify-between mb-1.5">
+                        <span className={`text-[9px] font-black uppercase tracking-[0.15em] transition-colors ${isActive ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-500'}`}>
+                          {isZeroDebt ? 'Historial Limpio' : k.label}
+                        </span>
+                        {isActive && (
+                          <span className="material-symbols-outlined text-[12px] text-slate-400">filter_alt</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-baseline gap-2">
+                        <span className={`text-2xl font-headline font-black tracking-tight tabular-nums transition-colors ${isActive ? 'text-slate-900' : 'text-slate-800'}`}>
+                          {isZeroDebt ? 'Sin Deuda' : `$${k.amount.toLocaleString('es-MX')}`}
+                        </span>
+                        {!isZeroDebt && (
+                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest tabular-nums">
+                            {k.value} regs.
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Integrated Progress Line (Mantenimiento only) */}
+                      {k.label === 'Recaudación Mantenimiento' && (
+                        <div className="absolute bottom-0 left-0 w-full h-[3px] bg-slate-100 overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-1000 ease-out ${k.color} rounded-full`}
+                            style={{ width: `${Math.max(progress, 1)}%` }}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Secondary status info (percentage) */}
+                      {!isZeroDebt && k.label !== 'Recaudación Mantenimiento' && (
+                         <span className={`text-[9px] font-black mt-1 tabular-nums ${isActive ? 'text-slate-600' : 'text-slate-400'}`}>
+                           {progress.toFixed(1)}% del total
+                         </span>
+                      )}
+                      {k.label === 'Recaudación Mantenimiento' && (
+                         <span className={`text-[9px] font-black mt-1 tabular-nums ${progress >= 100 ? 'text-emerald-600' : 'text-slate-400'}`}>
+                           {progress.toFixed(1)}% recolectado
+                         </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
-              {/* Scope legend */}
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[12px]">info</span>
-                {showFilters
-                  ? (() => {
-                      const parts: string[] = []
-                      if (lFilterMonth) parts.push(monthKeyToLabel(lFilterMonth))
-                      else parts.push('Todos los meses')
-                      if (lFilterTower) parts.push(`Torre ${lFilterTower}`)
-                      if (lFilterUnit) parts.push(`Unidad ${lFilterUnit}`)
-                      if (lFilterConcepto) parts.push(lFilterConcepto)
-                      return `Mostrando: ${parts.join(' \u00b7 ')}`
-                    })()
-                  : 'Acumulado hist\u00f3rico'
-                }
-              </p>
-            </div>
+          )}
+
+          {/* ── Scope legend — Context for the current view ── */}
+          {isAdmin && ledgerSubTab === 'ingresos' && (
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-4 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[12px]">info</span>
+              {showFilters
+                ? (() => {
+                    const parts: string[] = []
+                    if (lFilterMonth) parts.push(monthKeyToLabel(lFilterMonth))
+                    else parts.push('Todos los meses')
+                    if (lFilterTower) parts.push(`Torre ${lFilterTower}`)
+                    if (lFilterUnit) parts.push(`Unidad ${lFilterUnit}`)
+                    if (lFilterConcepto) parts.push(lFilterConcepto)
+                    return `Mostrando: ${parts.join(' \u00b7 ')}`
+                  })()
+                : lFilterMonth 
+                  ? monthKeyToLabel(lFilterMonth)
+                  : 'Acumulado histórico'
+              }
+            </p>
           )}
 
           {isAdmin && ledgerSubTab === 'egresos' && (
