@@ -5,10 +5,8 @@ import ConfirmDialog from '../../core/components/ConfirmDialog'
 import { EgresoCategoria } from '../../core/store/seed'
 
 // Sections
-import GeneralSettings from './sections/GeneralSettings'
 import ArchitectureSettings from './sections/ArchitectureSettings'
 import FinanceSettings from './sections/FinanceSettings'
-import AmenitySettings from './sections/AmenitySettings'
 import ModuleSettings from './sections/ModuleSettings'
 import SystemSettings from './sections/SystemSettings'
 
@@ -23,7 +21,7 @@ export default function AdminConfiguracion() {
   const { state, dispatch } = useStore()
   const bc = state.buildingConfig
   const [searchParams] = useSearchParams()
-  const activeTab = searchParams.get('tab') || 'general'
+  const activeTab = searchParams.get('tab') || 'perfil'
   const [saved, setSaved] = useState(false)
   
   // Local states for forms
@@ -84,51 +82,54 @@ export default function AdminConfiguracion() {
     setConfirmTarget(null)
   }
 
-  const inputClass = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm transition-all"
-  const labelClass = "block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2"
+  const inputClass = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm transition-all shadow-inner"
+  const labelClass = "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2"
+
+  /** Dynamic Title Helper */
+  const getTabBadge = () => {
+    if (['perfil', 'inventario'].includes(activeTab)) return 'Entidad e Infraestructura'
+    if (['finanzas', 'espacios', 'comunicacion', 'servicios'].includes(activeTab)) return 'Gobernanza Operativa'
+    if (['permisos', 'integraciones'].includes(activeTab)) return 'Seguridad y Acceso'
+    return 'Gestión de Datos'
+  }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-        <div>
-          <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight capitalize">
-            {activeTab === 'general' ? 'Ajustes Generales' : 
-             activeTab === 'architecture' ? 'Edificio y Estructura' :
-             activeTab === 'finance' ? 'Gestión Financiera' :
-             activeTab === 'amenities' ? 'Espacios Comunes' :
-             activeTab === 'modules' ? 'Extensiones y Módulos' : 'Sistema y Datos'}
+    <div className="max-w-5xl mx-auto">
+      {/* Header with Pillar Badge */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-headline font-black text-slate-900 tracking-tight capitalize">
+            {activeTab === 'perfil' ? 'Perfil del Inmueble' : 
+             activeTab === 'finanzas' ? 'Estrategia Financiera' :
+             activeTab === 'espacios' ? 'Amenidades' :
+             activeTab === 'comunicacion' ? 'Protocolos de Comunicación' : 
+             activeTab === 'servicios' ? 'Flujos de Servicio' :
+             activeTab === 'permisos' ? 'Directorio y Permisos' :
+             activeTab === 'integraciones' ? 'Ecosistema de Integraciones' :
+             activeTab === 'auditoria' ? 'Auditoría y Trazabilidad' : 'Resiliencia del Sistema'}
           </h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">Configura los parámetros de {activeTab} para tu comunidad.</p>
         </div>
-        <button onClick={handleSave}
-          className={`flex items-center space-x-2 px-6 py-3 font-bold rounded-xl transition-all shadow-lg text-[11px] tracking-widest uppercase ${
-            saved ? 'bg-emerald-600 text-white shadow-emerald-100' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200'
-          }`}
-        >
-          <span className="material-symbols-outlined text-lg">{saved ? 'check_circle' : 'save_as'}</span>
-          <span>{saved ? 'Guardado' : 'Guardar Todo'}</span>
-        </button>
       </div>
 
-      {/* Content Area - Full width now that sidebar is in layout */}
-      <div className="pb-20">
-        {activeTab === 'general' && (
-          <GeneralSettings bc={bc} update={update} labelClass={labelClass} inputClass={inputClass} />
-        )}
-        {activeTab === 'architecture' && (
+      {/* Content Area */}
+      <div className="pb-32 animate-in fade-in slide-in-from-bottom-6 duration-700">
+        {activeTab === 'perfil' && (
           <ArchitectureSettings 
             bc={bc} 
             residents={state.residents} 
-            newTower={newTower} 
-            setNewTower={setNewTower}
-            handleAddTower={handleAddTower}
-            handleDeleteTower={(t) => setConfirmTarget({ action: 'deleteTower', tower: t, residentCount: state.residents.filter(r => r.tower === t).length })}
+            amenities={state.amenities}
+            newAmenity={newAmenity}
+            setNewAmenity={setNewAmenity}
+            handleAddAmenity={handleAddAmenity}
+            handleDeleteAmenity={(id, name) => setConfirmTarget({ action: 'deleteAmenity', id, name })}
+            update={update}
+            handleSave={handleSave}
+            saved={saved}
             labelClass={labelClass} 
             inputClass={inputClass} 
           />
         )}
-        {activeTab === 'finance' && (
+        {activeTab === 'finanzas' && (
           <FinanceSettings 
             bc={bc}
             dispatch={dispatch}
@@ -144,21 +145,21 @@ export default function AdminConfiguracion() {
             inputClass={inputClass}
           />
         )}
-        {activeTab === 'amenities' && (
-          <AmenitySettings 
-            amenities={state.amenities}
-            newAmenity={newAmenity}
-            setNewAmenity={setNewAmenity}
-            handleAddAmenity={handleAddAmenity}
-            handleDeleteAmenity={(id, name) => setConfirmTarget({ action: 'deleteAmenity', id, name })}
-            labelClass={labelClass}
-            inputClass={inputClass}
-          />
-        )}
-        {activeTab === 'modules' && (
+        {(activeTab === 'comunicacion' || activeTab === 'servicios') && (
           <ModuleSettings />
         )}
-        {activeTab === 'system' && (
+        {(activeTab === 'permisos' || activeTab === 'integraciones' || activeTab === 'auditoria') && (
+          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 text-center space-y-4">
+             <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto text-slate-300">
+               <span className="material-symbols-outlined text-4xl">construction</span>
+             </div>
+             <h3 className="text-xl font-headline font-black text-slate-900 uppercase tracking-widest">Módulo en Desarrollo</h3>
+             <p className="text-sm text-slate-500 font-medium max-w-sm mx-auto">
+               Estamos trabajando en la infraestructura de este componente para el siguiente release de Canton Alfa.
+             </p>
+          </div>
+        )}
+        {activeTab === 'resiliencia' && (
           <SystemSettings handleReset={() => setConfirmTarget({ action: 'reset' })} />
         )}
       </div>

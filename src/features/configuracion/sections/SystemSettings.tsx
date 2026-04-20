@@ -8,7 +8,7 @@ export default function SystemSettings({ handleReset }: Props) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <section className="bg-white border border-rose-200 rounded-3xl p-8 shadow-sm space-y-6">
-        <div className="flex items-center space-x-3 border-b border-rose-100 pb-4">
+        <div className="flex items-center space-x-3">
           <span className="material-symbols-outlined text-rose-600 text-xl">warning</span>
           <h3 className="text-[11px] font-bold text-rose-600 uppercase tracking-widest font-headline">Zona de Peligro</h3>
         </div>

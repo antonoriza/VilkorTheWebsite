@@ -10,7 +10,7 @@
  */
 
 /** Current version of the application state. Increment this to trigger migrations. */
-export const CURRENT_STATE_VERSION = 4
+export const CURRENT_STATE_VERSION = 6
 
 // ─── Notification ────────────────────────────────────────────────────
 
@@ -225,6 +225,67 @@ export interface RecurringEgreso {
 }
 
 /** Global building settings managed by the admin */
+
+/** Property classification for future scalability */
+export type PropertyCategory = 'residencial' | 'industrial' | 'comercial' | 'hotel'
+
+/** Topographical grouping logic */
+export type GroupingMode = 'vertical' | 'horizontal'
+
+/** Spatial zoning points (Digital Twin infrastructure) */
+export interface ZoningPoint {
+  id: string
+  name: string
+  type: 'lobby' | 'elevator' | 'gate' | 'other'
+  linkedContainer: string // e.g., "Torre B"
+}
+
+/** The "DNA" of a residential unit */
+export interface UnitDna {
+  privateArea: number
+  totalArea: number
+  ownershipCoefficient: number // Indiviso (0.0 to 1.0)
+  usageType: 'propietario' | 'renta_largo' | 'renta_corto' | 'desocupado'
+}
+
+/** Topology hierarchies (Digital Twin structure generator) */
+export interface TopologyContainer {
+  id: string
+  name: string
+  unitsCount: number
+}
+
+export interface TopologyParams {
+  containers: TopologyContainer[]
+  unitNomenclature: string // Pattern, e.g., "101", "A-1"
+}
+
+/** Objects linked to a primary unit */
+export interface LinkedObject {
+  id: string
+  type: 'estacionamiento' | 'bodega' | 'tag'
+  location: string // e.g. "Sótano 1, E-45"
+  hasEVCharger?: boolean
+  meta?: string
+}
+
+/** Utility points for consumption mapping */
+export interface UtilityPoint {
+  id: string
+  meterId: string
+  type: 'agua' | 'gas' | 'electricidad'
+  isIndividual: boolean
+}
+
+/** Critical infrastructure for preventive maintenance */
+export interface CriticalEquipment {
+  id: string
+  name: string
+  type: 'solar' | 'ac' | 'boiler' | 'pump'
+  lastMaintenance?: string
+  nextMaintenance?: string
+}
+
 /** Rule-based maturity settings for financial charges */
 export interface FinancialMaturityRules {
   /** When maintenance becomes a debt:
@@ -247,12 +308,20 @@ export interface FinancialMaturityRules {
 }
 
 export interface BuildingConfig {
+  /** Property classification (Digital Twin category) */
+  propertyCategory: PropertyCategory
   /** Property type: "towers" for high-rise, "houses" for low-rise */
   type: 'towers' | 'houses'
+  /** Hierarchy logic: Vertical (Torres/Pisos) vs Horizontal (Manzanas/Privadas) */
+  groupingMode: GroupingMode
   /** List of tower/section identifiers (e.g. ["A", "B"]) */
   towers: string[]
   buildingName: string
   buildingAddress: string
+  zipCode?: string
+  city?: string
+  state?: string
+  country?: string
   managementCompany: string
   /** Total number of residential units */
   totalUnits: number
@@ -271,6 +340,14 @@ export interface BuildingConfig {
   recurringEgresos: RecurringEgreso[]
   /** Rules for debt maturity */
   maturityRules: FinancialMaturityRules
+  /** Digital Twin: Spatial zoning mapping */
+  zoning: ZoningPoint[]
+  /** Digital Twin: Topology hierarchies */
+  topology: TopologyParams
+  /** Digital Twin: Default unit DNA settings */
+  defaultUnitDna: UnitDna
+  /** Digital Twin: Global equipment inventory */
+  equipment: CriticalEquipment[]
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
@@ -414,10 +491,16 @@ export interface Egreso {
 // ═══════════════════════════════════════════════════════════════════════
 
 export const seedBuildingConfig: BuildingConfig = {
+  propertyCategory: 'residencial',
   type: 'towers',
+  groupingMode: 'vertical',
   towers: ['RIN', 'DANUBIO'],
   buildingName: 'Lote Alemania',
-  buildingAddress: 'Cosmopol HU Lifestyle, CDMX',
+  buildingAddress: 'Cosmopol HU Lifestyle, Coacalco',
+  zipCode: '55712',
+  city: 'Coacalco de Berriozábal',
+  state: 'Estado de México',
+  country: 'México',
   managementCompany: 'Canton Alfa Inc.',
   totalUnits: 116,
   adminName: 'Administrador General',
@@ -444,7 +527,29 @@ export const seedBuildingConfig: BuildingConfig = {
     mantenimiento: 'next_month_01',
     amenidad: 'day_of_event',
     multaOtros: 'immediate'
-  }
+  },
+  zoning: [
+    { id: 'zn-1', name: 'Lobby Principal', type: 'lobby', linkedContainer: 'RIN' },
+    { id: 'zn-2', name: 'Elevadores Torre A', type: 'elevator', linkedContainer: 'RIN' },
+    { id: 'zn-3', name: 'Acceso Vehicular Norte', type: 'gate', linkedContainer: 'DANUBIO' }
+  ],
+  topology: {
+    containers: [
+      { id: 'top-1', name: 'RIN', unitsCount: 58 },
+      { id: 'top-2', name: 'DANUBIO', unitsCount: 58 }
+    ],
+    unitNomenclature: 'X000'
+  },
+  defaultUnitDna: {
+    privateArea: 65,
+    totalArea: 72,
+    ownershipCoefficient: 0.0086, // Approx 1/116
+    usageType: 'propietario'
+  },
+  equipment: [
+    { id: 'eq-1', name: 'Paneles Solares Roof Garden', type: 'solar', nextMaintenance: '2026-06-15' },
+    { id: 'eq-2', name: 'Bomba de Agua Principal', type: 'pump', nextMaintenance: '2026-05-10' }
+  ]
 }
 
 export const seedAmenities: Amenity[] = [

@@ -270,6 +270,17 @@ function loadInitialState(): StoreState {
           parsed.egresos = [...seedEgresos]
         }
 
+        // 5. MIGRATION V4 -> V5: Digital Twin initialization
+        if (version < 5) {
+          if (parsed.buildingConfig) {
+            if (!parsed.buildingConfig.propertyCategory) parsed.buildingConfig.propertyCategory = seedBuildingConfig.propertyCategory
+            if (!parsed.buildingConfig.groupingMode) parsed.buildingConfig.groupingMode = seedBuildingConfig.groupingMode
+            if (!parsed.buildingConfig.zoning) parsed.buildingConfig.zoning = seedBuildingConfig.zoning
+            if (!parsed.buildingConfig.defaultUnitDna) parsed.buildingConfig.defaultUnitDna = seedBuildingConfig.defaultUnitDna
+            if (!parsed.buildingConfig.equipment) parsed.buildingConfig.equipment = seedBuildingConfig.equipment
+          }
+        }
+
         parsed.version = CURRENT_STATE_VERSION
       }
 

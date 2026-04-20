@@ -39,7 +39,7 @@ export default function FinanceSettings({
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Conceptos de Pago */}
       <section className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
-        <div className="flex items-center space-x-3 border-b border-slate-100 pb-4">
+        <div className="flex items-center space-x-3">
           <span className="material-symbols-outlined text-primary text-xl">receipt_long</span>
           <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Conceptos de Pago</h3>
         </div>
@@ -128,7 +128,7 @@ export default function FinanceSettings({
 
       {/* Reglas de Vencimiento */}
       <section className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
-        <div className="flex items-center space-x-3 border-b border-slate-100 pb-4">
+        <div className="flex items-center space-x-3">
           <span className="material-symbols-outlined text-primary text-xl">gavel</span>
           <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Reglas de Vencimiento</h3>
         </div>
@@ -196,7 +196,7 @@ export default function FinanceSettings({
 
       {/* Egresos Recurrentes */}
       <section className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
-        <div className="flex items-center space-x-3 border-b border-slate-100 pb-4">
+        <div className="flex items-center space-x-3">
           <span className="material-symbols-outlined text-primary text-xl">autorenew</span>
           <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Egresos Recurrentes</h3>
         </div>
