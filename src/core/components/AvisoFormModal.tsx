@@ -256,7 +256,12 @@ export default function AvisoFormModal({ open, onClose, onSave, editingAviso, ha
             onClick={() => {
               const next = !showSchedule
               setShowSchedule(next)
-              if (!next) { setStartDate(''); setEndDate('') }
+              if (!next) { 
+                setStartDate('')
+                setEndDate('') 
+              } else {
+                if (!startDate) setStartDate(todayISO)
+              }
             }}
             className="flex items-center gap-3 cursor-pointer group w-full text-left"
           >
@@ -277,7 +282,7 @@ export default function AvisoFormModal({ open, onClose, onSave, editingAviso, ha
               <input
                 type="date"
                 value={startDate}
-                min={category === 'asamblea' ? todayISO : undefined}
+                min={todayISO}
                 onChange={(e) => setStartDate(e.target.value)}
                 className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
               />

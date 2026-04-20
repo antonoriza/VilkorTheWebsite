@@ -143,7 +143,6 @@ export default function PagosPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Run once on mount
 
-  // ── Ledger filters ──
   const [lFilterMonth, setLFilterMonth]   = useState(TODAY_KEY)
   const [lFilterTower, setLFilterTower]   = useState('')
   const [lFilterUnit, setLFilterUnit]     = useState('')
@@ -153,6 +152,7 @@ export default function PagosPage() {
   const [lSortDir, setLSortDir]           = useState<SortDir>('asc')
   const [ledgerSubTab, setLedgerSubTab]   = useState<'ingresos' | 'egresos'>('ingresos')
   const [unitDetailView, setUnitDetailView] = useState<'pagos' | 'adeudos' | 'balance' | null>(null)
+  const [showFilters, setShowFilters]     = useState(false)
 
   // ── Unified modal ──
   const [showModal, setShowModal]             = useState(false)
@@ -253,10 +253,12 @@ export default function PagosPage() {
     return [...data].sort((a, b) => b.date.localeCompare(a.date))
   }, [state.egresos, lFilterMonth])
 
-  const ledgerKpis = useMemo(() => {
-    const paid = filteredPagos.filter(p => p.status === 'Pagado')
-    const pending = filteredPagos.filter(p => p.status === 'Pendiente')
-    const porValidar = filteredPagos.filter(p => p.status === 'Por validar')
+  /** Global KPIs — computed from ALL pagos, independent of dropdown filters */
+  const globalKpis = useMemo(() => {
+    const allPagos = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === myApartment)
+    const paid = allPagos.filter(p => p.status === 'Pagado')
+    const pending = allPagos.filter(p => p.status === 'Pendiente')
+    const porValidar = allPagos.filter(p => p.status === 'Por validar')
     return {
       paidTotal: paid.reduce((s, p) => s + p.amount, 0),
       pendingTotal: pending.reduce((s, p) => s + p.amount, 0),
@@ -265,7 +267,35 @@ export default function PagosPage() {
       pendingCount: pending.length,
       porValidarCount: porValidar.length,
     }
-  }, [filteredPagos])
+  }, [state.pagos, isAdmin, myApartment])
+
+  /** Contextual KPIs — filtered by dropdowns (month/tower/unit/concepto), NOT by status */
+  const contextualKpis = useMemo(() => {
+    let data = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === myApartment)
+    if (lFilterMonth) data = data.filter(p => (p.monthKey || '') === lFilterMonth)
+    if (lFilterTower) {
+      data = data.filter(p => {
+        const res = state.residents.find(r => r.apartment === p.apartment)
+        return res?.tower === lFilterTower
+      })
+    }
+    if (lFilterUnit) data = data.filter(p => p.apartment === lFilterUnit)
+    if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mensualidad') === lFilterConcepto)
+    const paid = data.filter(p => p.status === 'Pagado')
+    const pending = data.filter(p => p.status === 'Pendiente')
+    const porValidar = data.filter(p => p.status === 'Por validar')
+    return {
+      paidTotal: paid.reduce((s, p) => s + p.amount, 0),
+      pendingTotal: pending.reduce((s, p) => s + p.amount, 0),
+      porValidarTotal: porValidar.reduce((s, p) => s + p.amount, 0),
+      paidCount: paid.length,
+      pendingCount: pending.length,
+      porValidarCount: porValidar.length,
+    }
+  }, [state.pagos, state.residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto])
+
+  /** Active KPIs — contextual when filters panel is open, global otherwise */
+  const ledgerKpis = showFilters ? contextualKpis : globalKpis
 
   const egresoKpis = useMemo(() => {
     const paid = ledgerEgresos.filter(e => e.status === 'Pagado')
@@ -648,78 +678,74 @@ export default function PagosPage() {
       {(activeTab === 'ledger' || !isAdmin) && (
         <>
 
-          {/* ── Admin filters ── */}
-          {isAdmin && (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div className="col-span-2 md:col-span-1">
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
-                <div className="flex items-center gap-2">
-                  <input type="month" value={lFilterMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
-                    onChange={e => setLFilterMonth(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-                  {lFilterMonth && lFilterMonth !== TODAY_KEY && (
-                    <button onClick={() => setLFilterMonth(TODAY_KEY)} className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-all shrink-0" title="Mes actual">
-                      <span className="material-symbols-outlined text-[14px]">close</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
-                <select value={lFilterTower} onChange={e => { setLFilterTower(e.target.value); setLFilterUnit('') }}
-                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  <option value="">Todas</option>
-                  {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Unidad</label>
-                <select value={lFilterUnit} onChange={e => { setLFilterUnit(e.target.value); setUnitDetailView(null); }}
-                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  <option value="">Todas</option>
-                  {lFilteredUnits.map(u => <option key={u} value={u}>{u}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Concepto</label>
-                <select value={lFilterConcepto} onChange={e => setLFilterConcepto(e.target.value)}
-                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  <option value="">Todos</option>
-                  {conceptoOptions.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
-                <select value={lFilterStatus} onChange={e => setLFilterStatus(e.target.value)}
-                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  <option value="">Todos</option>
-                  <option value="Pagado">Pagado</option>
-                  <option value="Pendiente">Pendiente</option>
-                </select>
-              </div>
+          {/* ── KPI strip (admin) — clickable status filter ── */}
+          {isAdmin && ledgerSubTab === 'ingresos' && (
+            <div className="space-y-2">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Cobrados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', activeColor: 'ring-2 ring-emerald-500 shadow-md', filterKey: '' as string },
+                { label: 'Por validar', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'pending_actions', color: 'text-blue-700 bg-blue-50 border-blue-200', activeColor: 'ring-2 ring-blue-500 shadow-md', filterKey: 'Por validar' },
+                { label: 'Pendientes', value: ledgerKpis.pendingCount, amount: ledgerKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200', activeColor: 'ring-2 ring-amber-500 shadow-md', filterKey: 'Pendiente' },
+              ].map(k => {
+                const isClickable = !!k.filterKey && !showFilters
+                const isActive = isClickable && lFilterStatus === k.filterKey
+                return (
+                  <button
+                    key={k.label}
+                    type="button"
+                    onClick={() => {
+                      if (!isClickable) return
+                      if (lFilterStatus === k.filterKey) {
+                        // Deselect: restore month filter and clear status
+                        setLFilterStatus('')
+                        setLFilterMonth(TODAY_KEY)
+                      } else {
+                        // Select: clear month filter to show all-time, set status
+                        setLFilterStatus(k.filterKey)
+                        setLFilterMonth('')
+                      }
+                    }}
+                    className={[
+                      'flex items-center gap-3 p-4 rounded-2xl border transition-all text-left w-full',
+                      isClickable ? 'cursor-pointer hover:shadow-md hover:-translate-y-px' : 'cursor-default',
+                      k.color,
+                      isActive ? `${k.activeColor} -translate-y-px` : '',
+                    ].join(' ')}
+                    title={isClickable ? (isActive ? `Mostrando: ${k.label} — clic para ver todos` : `Filtrar: ${k.label}`) : undefined}
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm transition-colors ${isActive ? 'bg-white' : 'bg-white/70'}`}>
+                      <span className="material-symbols-outlined text-lg">{k.icon}</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
+                      <p className="text-xs font-bold opacity-70 mt-0.5">{k.label} · {k.value}</p>
+                    </div>
+                    {isActive && (
+                      <span className="material-symbols-outlined text-[16px] opacity-50">filter_alt</span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+              {/* Scope legend */}
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[12px]">info</span>
+                {showFilters
+                  ? (() => {
+                      const parts: string[] = []
+                      if (lFilterMonth) parts.push(monthKeyToLabel(lFilterMonth))
+                      else parts.push('Todos los meses')
+                      if (lFilterTower) parts.push(`Torre ${lFilterTower}`)
+                      if (lFilterUnit) parts.push(`Unidad ${lFilterUnit}`)
+                      if (lFilterConcepto) parts.push(lFilterConcepto)
+                      return `Mostrando: ${parts.join(' \u00b7 ')}`
+                    })()
+                  : 'Acumulado hist\u00f3rico'
+                }
+              </p>
             </div>
           )}
 
-          {/* ── KPI strip (admin) ── */}
-          {isAdmin && ledgerSubTab === 'ingresos' && (
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Cobrados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
-                { label: 'Por validar', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'pending_actions', color: 'text-blue-700 bg-blue-50 border-blue-200' },
-                { label: 'Pendientes', value: ledgerKpis.pendingCount, amount: ledgerKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200' },
-              ].map(k => (
-                <div key={k.label} className={`flex items-center gap-3 p-4 rounded-2xl border ${k.color}`}>
-                  <div className="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center shadow-sm">
-                    <span className="material-symbols-outlined text-lg">{k.icon}</span>
-                  </div>
-                  <div>
-                    <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
-                    <p className="text-xs font-bold opacity-70 mt-0.5">{k.label} · {k.value}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
           {isAdmin && ledgerSubTab === 'egresos' && (
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -739,6 +765,119 @@ export default function PagosPage() {
               ))}
             </div>
           )}
+
+          {/* ── Collapsible filter bar (admin) ── */}
+          {isAdmin && (() => {
+            const activeFilters: { key: string; label: string; onClear: () => void }[] = []
+            if (lFilterMonth && lFilterMonth !== TODAY_KEY) activeFilters.push({ key: 'month', label: `Mes: ${monthKeyToLabel(lFilterMonth)}`, onClear: () => setLFilterMonth(TODAY_KEY) })
+            if (!lFilterMonth) activeFilters.push({ key: 'month-all', label: 'Mes: Todos', onClear: () => setLFilterMonth(TODAY_KEY) })
+            if (lFilterTower) activeFilters.push({ key: 'tower', label: `Torre: ${lFilterTower}`, onClear: () => { setLFilterTower(''); setLFilterUnit('') } })
+            if (lFilterUnit) activeFilters.push({ key: 'unit', label: `Unidad: ${lFilterUnit}`, onClear: () => { setLFilterUnit(''); setUnitDetailView(null) } })
+            if (lFilterConcepto) activeFilters.push({ key: 'concepto', label: `Concepto: ${lFilterConcepto}`, onClear: () => setLFilterConcepto('') })
+            if (lFilterStatus) activeFilters.push({ key: 'status', label: `Estado: ${lFilterStatus}`, onClear: () => { setLFilterStatus(''); setLFilterMonth(TODAY_KEY) } })
+            const filterCount = activeFilters.length
+            const clearAll = () => {
+              setLFilterMonth(TODAY_KEY); setLFilterTower(''); setLFilterUnit('')
+              setLFilterConcepto(''); setLFilterStatus(''); setUnitDetailView(null)
+            }
+            return (
+              <div className="space-y-3">
+                {/* Toggle + chips row */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setShowFilters(prev => !prev)}
+                    className={[
+                      'flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all',
+                      showFilters
+                        ? 'bg-slate-900 text-white border-slate-900'
+                        : filterCount > 0
+                          ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                          : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700',
+                    ].join(' ')}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">tune</span>
+                    <span>Filtros</span>
+                    {filterCount > 0 && (
+                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
+                        showFilters ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
+                      }`}>{filterCount}</span>
+                    )}
+                  </button>
+
+                  {/* Active filter chips */}
+                  {filterCount > 0 && activeFilters.map(f => (
+                    <button
+                      key={f.key}
+                      type="button"
+                      onClick={f.onClear}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-[11px] font-bold tracking-wide hover:bg-rose-50 hover:text-rose-600 transition-all group"
+                      title={`Quitar filtro: ${f.label}`}
+                    >
+                      <span>{f.label}</span>
+                      <span className="material-symbols-outlined text-[12px] opacity-40 group-hover:opacity-100 transition-opacity">close</span>
+                    </button>
+                  ))}
+
+                  {filterCount > 1 && (
+                    <button
+                      type="button"
+                      onClick={clearAll}
+                      className="text-[10px] font-bold text-slate-400 hover:text-rose-500 underline underline-offset-2 transition-colors uppercase tracking-widest"
+                    >Limpiar todo</button>
+                  )}
+                </div>
+
+                {/* Collapsible dropdown grid */}
+                {showFilters && (
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl animate-[fadeIn_0.15s_ease-out]">
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
+                      <div className="flex items-center gap-2">
+                        <input type="month" value={lFilterMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
+                          onChange={e => setLFilterMonth(e.target.value)}
+                          className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
+                      <select value={lFilterTower} onChange={e => { setLFilterTower(e.target.value); setLFilterUnit('') }}
+                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                        <option value="">Todas</option>
+                        {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Unidad</label>
+                      <select value={lFilterUnit} onChange={e => { setLFilterUnit(e.target.value); setUnitDetailView(null); }}
+                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                        <option value="">Todas</option>
+                        {lFilteredUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Concepto</label>
+                      <select value={lFilterConcepto} onChange={e => setLFilterConcepto(e.target.value)}
+                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                        <option value="">Todos</option>
+                        {conceptoOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
+                      <select value={lFilterStatus} onChange={e => setLFilterStatus(e.target.value)}
+                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                        <option value="">Todos</option>
+                        <option value="Pagado">Pagado</option>
+                        <option value="Por validar">Por validar</option>
+                        <option value="Pendiente">Pendiente</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
 
           {/* ── Unit balance panel ── */}
           {isAdmin && lFilterUnit && (() => {
