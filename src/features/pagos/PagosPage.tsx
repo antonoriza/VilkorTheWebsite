@@ -727,7 +727,13 @@ export default function PagosPage() {
                   { label: 'Recaudación Mantenimiento', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: '' as string, showInGlobal: false },
                   { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'bg-rose-500', iconColor: 'text-rose-600', filterKey: 'Vencido', showInGlobal: true },
                   { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', filterKey: 'Pendiente', showInGlobal: true },
-                ].filter(k => !!lFilterMonth || k.showInGlobal).map(k => {
+                ].filter(k => {
+                  if (k.label === 'Próximos Cargos') {
+                    // Solo mostramos próximamente en la vista global o si el mes es actual/futuro
+                    return !lFilterMonth || lFilterMonth >= TODAY_KEY;
+                  }
+                  return !!lFilterMonth || k.showInGlobal;
+                }).map(k => {
                   const isClickable = !!k.filterKey && !showFilters
                   const isActive = isClickable && lFilterStatus === k.filterKey
                   
