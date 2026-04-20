@@ -15,7 +15,7 @@
  */
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useAuth } from '../../core/auth/AuthContext'
-import { useStore } from '../../core/store/store'
+import { useStore, isEffectiveDebt } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
@@ -53,6 +53,7 @@ const TODAY_KEY = (() => {
   const n = new Date()
   return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`
 })()
+const TODAY_ISO = new Date().toISOString().split('T')[0]
 
 // ── Adeudo type labels ──
 
@@ -101,6 +102,11 @@ export default function PagosPage() {
   const [ledgerSubTab, setLedgerSubTab]   = useState<'ingresos' | 'egresos'>('ingresos')
   const [unitDetailView, setUnitDetailView] = useState<'pagos' | 'adeudos' | 'balance' | null>(null)
   const [showFilters, setShowFilters]     = useState(false)
+
+  // ── Auto-process maturity on mount ──
+  useEffect(() => {
+    dispatch({ type: 'PROCESS_MATURITY', payload: { nowIso: TODAY_ISO } })
+  }, [dispatch])
 
   // ── Derived filter logic ──
   const activeFilters = useMemo(() => {
@@ -258,17 +264,24 @@ export default function PagosPage() {
   const globalKpis = useMemo(() => {
     const allPagos = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === myApartment)
     const paid = allPagos.filter(p => p.status === 'Pagado')
-    const pending = allPagos.filter(p => p.status === 'Pendiente')
+    const overdue = allPagos.filter(p => p.status === 'Vencido' || isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules))
+    const upcoming = allPagos.filter(p => p.status === 'Pendiente' && !isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules))
     const porValidar = allPagos.filter(p => p.status === 'Por validar')
+    
+    const myAdeudos = state.adeudos.filter(a => a.status === 'Activo' && (isAdmin || a.apartment === myApartment))
+    const adeudosTotal = myAdeudos.reduce((s, a) => s + a.amount, 0)
+
     return {
       paidTotal: paid.reduce((s, p) => s + p.amount, 0),
-      pendingTotal: pending.reduce((s, p) => s + p.amount, 0),
+      overdueTotal: overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal,
+      upcomingTotal: upcoming.reduce((s, p) => s + p.amount, 0),
       porValidarTotal: porValidar.reduce((s, p) => s + p.amount, 0),
       paidCount: paid.length,
-      pendingCount: pending.length,
+      overdueCount: overdue.length + myAdeudos.length,
+      upcomingCount: upcoming.length,
       porValidarCount: porValidar.length,
     }
-  }, [state.pagos, isAdmin, myApartment])
+  }, [state.pagos, state.adeudos, isAdmin, myApartment])
 
   /** Contextual KPIs — filtered by dropdowns (month/tower/unit/concepto), NOT by status */
   const contextualKpis = useMemo(() => {
@@ -282,18 +295,31 @@ export default function PagosPage() {
     }
     if (lFilterUnit) data = data.filter(p => p.apartment === lFilterUnit)
     if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mantenimiento') === lFilterConcepto)
+
     const paid = data.filter(p => p.status === 'Pagado')
-    const pending = data.filter(p => p.status === 'Pendiente')
+    const overdue = data.filter(p => p.status === 'Vencido' || isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules))
+    const upcoming = data.filter(p => p.status === 'Pendiente' && !isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules))
     const porValidar = data.filter(p => p.status === 'Por validar')
+
+    // Contextual adeudos are tricky (linked by property logic, not monthKey)
+    // We only show them if no month filter is active or if week/day logic matches
+    const showAdeudos = !lFilterMonth || lFilterMonth === TODAY_KEY
+    const myAdeudos = showAdeudos 
+      ? state.adeudos.filter(a => a.status === 'Activo' && (isAdmin || a.apartment === myApartment))
+      : []
+    const adeudosTotal = myAdeudos.reduce((s, a) => s + a.amount, 0)
+
     return {
       paidTotal: paid.reduce((s, p) => s + p.amount, 0),
-      pendingTotal: pending.reduce((s, p) => s + p.amount, 0),
+      overdueTotal: overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal,
+      upcomingTotal: upcoming.reduce((s, p) => s + p.amount, 0),
       porValidarTotal: porValidar.reduce((s, p) => s + p.amount, 0),
       paidCount: paid.length,
-      pendingCount: pending.length,
+      overdueCount: overdue.length + myAdeudos.length,
+      upcomingCount: upcoming.length,
       porValidarCount: porValidar.length,
     }
-  }, [state.pagos, state.residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto])
+  }, [state.pagos, state.adeudos, state.residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto])
 
   /** Active KPIs — contextual when filters panel is open, global otherwise */
   const ledgerKpis = showFilters ? contextualKpis : globalKpis
@@ -693,7 +719,8 @@ export default function PagosPage() {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: 'Pagados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', activeColor: 'ring-2 ring-emerald-500 shadow-md', filterKey: '' as string },
-                { label: 'Adeudos', value: ledgerKpis.pendingCount, amount: ledgerKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200', activeColor: 'ring-2 ring-amber-500 shadow-md', filterKey: 'Pendiente' },
+                { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'text-rose-700 bg-rose-50 border-rose-200', activeColor: 'ring-2 ring-rose-500 shadow-md', filterKey: 'Vencido' },
+                { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200', activeColor: 'ring-2 ring-amber-500 shadow-md', filterKey: 'Pendiente' },
                 { label: 'En Revisión', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'pending_actions', color: 'text-blue-700 bg-blue-50 border-blue-200', activeColor: 'ring-2 ring-blue-500 shadow-md', filterKey: 'Por validar' },
               ].map(k => {
                 const isClickable = !!k.filterKey && !showFilters
@@ -726,9 +753,9 @@ export default function PagosPage() {
                       <span className="material-symbols-outlined text-lg">{k.icon}</span>
                     </div>
                     <div className="flex-1">
-                      <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
-                      <p className="text-xs font-bold opacity-70 mt-0.5">{k.label} · {k.value}</p>
-                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-40 mt-1">Total en este período</p>
+                      <p className="text-lg font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')}</p>
+                      <p className="text-[10px] font-bold opacity-70 mt-1">{k.label}</p>
+                      <p className="text-[9px] font-black uppercase tracking-tighter opacity-40 mt-1">{k.value} registros</p>
                     </div>
                     {isActive && (
                       <span className="material-symbols-outlined text-[16px] opacity-50">filter_alt</span>
@@ -780,11 +807,13 @@ export default function PagosPage() {
           {/* ── Unit balance panel ── */}
           {isAdmin && lFilterUnit && (() => {
             const res = state.residents.find(r => r.apartment === lFilterUnit)
-            const uPagos   = state.pagos.filter(p => p.apartment === lFilterUnit && p.status === 'Pendiente')
-            const uAdeudos = state.adeudos.filter(a => a.apartment === lFilterUnit && a.status === 'Activo' && a.amount > 0 && !a.id.startsWith('ad-auto-'))
-            const pp = uPagos.reduce((s, p) => s + p.amount, 0)
-            const aa = uAdeudos.reduce((s, a) => s + a.amount, 0)
-            const total = pp + aa
+            const uUpcoming = state.pagos.filter(p => p.apartment === lFilterUnit && p.status === 'Pendiente' && !isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules))
+            const uOverdue  = state.pagos.filter(p => p.apartment === lFilterUnit && (p.status === 'Vencido' || isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules)))
+            const uAdeudos  = state.adeudos.filter(a => a.apartment === lFilterUnit && a.status === 'Activo' && a.amount > 0 && !a.id.startsWith('ad-auto-'))
+            
+            const pp = uUpcoming.reduce((s, p) => s + p.amount, 0)
+            const aa = uOverdue.reduce((s, p) => s + p.amount, 0) + uAdeudos.reduce((s, a) => s + a.amount, 0)
+            const total = aa // In this view, "Total Balance" usually means total debt
             const toggleDetail = (view: 'pagos' | 'adeudos' | 'balance') => setUnitDetailView(prev => prev === view ? null : view)
             return (
               <div className="space-y-0">
@@ -796,17 +825,17 @@ export default function PagosPage() {
                   <div className="flex gap-5 flex-wrap">
                     <button onClick={() => toggleDetail('pagos')} className={`text-center outline-none ring-0 transition-all cursor-pointer px-3 py-1.5 rounded-xl ${unitDetailView === 'pagos' ? 'bg-white/10 scale-105' : 'hover:bg-white/5'}`}>
                       <p className="text-xl font-headline font-black tabular-nums">${pp.toLocaleString('es-MX')}</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Pagos Pend.</p>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Próximos</p>
                     </button>
                     <div className="w-px bg-slate-700" />
                     <button onClick={() => toggleDetail('adeudos')} className={`text-center outline-none ring-0 transition-all cursor-pointer px-3 py-1.5 rounded-xl ${unitDetailView === 'adeudos' ? 'bg-white/10 scale-105' : 'hover:bg-white/5'}`}>
                       <p className="text-xl font-headline font-black tabular-nums text-amber-400">${aa.toLocaleString('es-MX')}</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Adeudos</p>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Deuda Efectiva</p>
                     </button>
                     <div className="w-px bg-slate-700" />
                     <button onClick={() => toggleDetail('balance')} className={`text-center outline-none ring-0 transition-all cursor-pointer px-3 py-1.5 rounded-xl ${unitDetailView === 'balance' ? 'bg-white/10 scale-105' : 'hover:bg-white/5'}`}>
-                      <p className={`text-2xl font-headline font-black tabular-nums ${total > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>${total.toLocaleString('es-MX')}</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Balance</p>
+                      <p className={`text-2xl font-headline font-black tabular-nums ${aa > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>${aa.toLocaleString('es-MX')}</p>
+                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Total Vencido</p>
                     </button>
                   </div>
                   {aa > 0 && (
@@ -903,25 +932,21 @@ export default function PagosPage() {
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total pagado</p>
                     </div>
                   </div>
-                  <div className={`border rounded-2xl p-5 flex items-center gap-4 ${pending.length > 0 ? 'bg-rose-50 border-rose-200' : porValidar.length > 0 ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'}`}>
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${pending.length > 0 ? 'bg-rose-600' : porValidar.length > 0 ? 'bg-blue-600' : 'bg-emerald-600'}`}>
-                      <span className="material-symbols-outlined text-white text-xl">{pending.length > 0 ? 'warning' : porValidar.length > 0 ? 'pending_actions' : 'verified'}</span>
-                    </div>
-                    <div>
-                      <p className={`text-2xl font-headline font-black ${pending.length > 0 ? 'text-rose-700' : porValidar.length > 0 ? 'text-blue-700' : 'text-emerald-700'}`}>
-                        {pending.length > 0
-                          ? `$${pending.reduce((s, p) => s + p.amount, 0).toLocaleString('es-MX')}`
-                          : porValidar.length > 0
-                            ? `$${porValidar.reduce((s, p) => s + p.amount, 0).toLocaleString('es-MX')}`
-                            : 'Al corriente'}
-                      </p>
-                      <p className={`text-[10px] font-bold uppercase tracking-widest ${pending.length > 0 ? 'text-rose-500' : porValidar.length > 0 ? 'text-blue-500' : 'text-emerald-600'}`}>
-                        {pending.length > 0
-                          ? `${pending.length} cargo(s) pendiente(s)`
-                          : porValidar.length > 0
-                            ? `${porValidar.length} pago(s) en revisión`
-                            : 'Sin cargos pendientes'}
-                      </p>
+                  <div className={`border rounded-2xl p-5 flex flex-col items-center justify-center gap-3 ${ledgerKpis.overdueTotal > 0 ? 'bg-rose-50 border-rose-200' : ledgerKpis.upcomingTotal > 0 ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                    <div className="flex items-center gap-6 w-full">
+                      <div className="flex-1 text-center">
+                        <p className={`text-2xl font-headline font-black ${ledgerKpis.overdueTotal > 0 ? 'text-rose-700' : 'text-slate-900'}`}>
+                          ${ledgerKpis.overdueTotal.toLocaleString('es-MX')}
+                        </p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Deuda Efectiva</p>
+                      </div>
+                      <div className="w-px h-8 bg-slate-200" />
+                      <div className="flex-1 text-center">
+                        <p className="text-2xl font-headline font-black text-slate-900">
+                          ${ledgerKpis.upcomingTotal.toLocaleString('es-MX')}
+                        </p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Próximos Cargos</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1115,7 +1140,21 @@ export default function PagosPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-sm font-medium text-slate-700 capitalize">{pago.month}</td>
+                      <td className="px-5 py-4">
+                        <p className="text-sm font-medium text-slate-700 capitalize">{pago.month}</p>
+                        {pago.status === 'Pendiente' && !isEffectiveDebt(pago, TODAY_ISO, state.buildingConfig.maturityRules) && (() => {
+                          const base = (pago.concepto || '').split(':')[0].trim()
+                          if (base === 'Mantenimiento' && pago.monthKey) {
+                            const [y, m] = pago.monthKey.split('-').map(Number)
+                            const next = new Date(y, m, 1)
+                            return <p className="text-[9px] font-bold text-amber-600 uppercase tracking-tighter mt-1">Vence el 01 {MONTH_NAMES_ES[next.getMonth()]}</p>
+                          }
+                          if (base === 'Reserva Amenidad' && pago.monthKey) {
+                            return <p className="text-[9px] font-bold text-amber-600 uppercase tracking-tighter mt-1">Mora activa el {pago.monthKey.split('-').reverse().join('/')}</p>
+                          }
+                          return null
+                        })()}
+                      </td>
                       <td className="px-5 py-4 text-sm font-black text-slate-900 text-right tabular-nums">${pago.amount.toLocaleString('es-MX')}</td>
                       <td className="px-5 py-4">
                         {pago.receiptData ? (

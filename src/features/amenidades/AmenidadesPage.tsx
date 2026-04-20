@@ -18,6 +18,18 @@ import ConfirmDialog from '../../core/components/ConfirmDialog'
 /** Pre-defined time slots for reservations */
 const TIME_SLOTS = ['10:00 – 14:00', '14:00 – 18:00', '18:00 – 22:00']
 
+// ─── Helpers ─────────────────────────────────────────────────────────
+
+const MONTH_NAMES_ES = [
+  'enero','febrero','marzo','abril','mayo','junio',
+  'julio','agosto','septiembre','octubre','noviembre','diciembre',
+]
+
+function dateToMonthLabel(dateStr: string): string {
+  const [y, m] = dateStr.split('-')
+  return `${MONTH_NAMES_ES[parseInt(m, 10) - 1] || ''} de ${y}`
+}
+
 export default function AmenidadesPage() {
   const { role, apartment, user } = useAuth()
   const { state, dispatch } = useStore()
@@ -93,17 +105,19 @@ export default function AmenidadesPage() {
       },
     })
     
-    // Notify admin of new reservation
+    // 3. Create linked financial charge (Pago)
     dispatch({
-      type: 'ADD_NOTIFICACION',
+      type: 'ADD_PAGO',
       payload: {
-        id: `notif-${Date.now()}`,
-        userId: 'admin',
-        title: 'Nueva Reservación',
-        message: `${user} (${apartment}) reservó ${selectedGrill} el ${formDate}.`,
-        date: new Date().toLocaleDateString(),
-        read: false,
-        actionLink: '/amenidades',
+        id: `pg-res-${resId}`,
+        apartment,
+        resident: user,
+        month: dateToMonthLabel(formDate),
+        monthKey: formDate, // Use YYYY-MM-DD for high-resolution maturity check
+        concepto: `Reserva Amenidad: ${selectedGrill} (${formTimeSlot})`,
+        amount: 500, // Standard fee for amenities
+        status: 'Pendiente',
+        paymentDate: null,
       }
     })
 

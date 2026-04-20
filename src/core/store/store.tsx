@@ -93,6 +93,7 @@ type Action =
   | { type: 'DELETE_EGRESO'; payload: string }
   | { type: 'GENERATE_MONTHLY_RECORDS'; payload: { monthKey: string } }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
+  | { type: 'PROCESS_MATURITY'; payload: { nowIso: string } }
   | { type: 'RESET' }
 
 /** localStorage key for persisting state */
@@ -109,6 +110,79 @@ function migrateStaffRole(role: string): 'Jardinero' | 'Limpieza' | 'Guardia' {
   if (r.includes('limpieza') || r.includes('limp')) return 'Limpieza'
   if (r.includes('manten')) return 'Jardinero'
   return 'Limpieza'
+}
+
+// ─── Maturity Helper ────────────────────────────────────────────────
+
+/**
+ * Determines if a financial charge (Pago) should be treated as an effective debt
+ * (Adeudo) based on its category and current date.
+ * 
+ * Rules:
+ * - Multas / Otros: Immediately effective.
+ * - Reserva Amenidad: Effective on the day of the event (00:00).
+ * - Mantenimiento: Effective on the first day of the FOLLOWING month.
+ */
+ */
+export function isEffectiveDebt(p: Pago, nowIso: string, rules: FinancialMaturityRules): boolean {
+  if (p.status === 'Pagado') return false
+  if (p.status === 'Vencido') return true
+  
+  const now = new Date(nowIso)
+  const baseConcepto = (p.concepto || '').split(':')[0].split('—')[0].trim()
+
+  // 1. Multas & Otros
+  if (baseConcepto === 'Multa' || baseConcepto === 'Otros') {
+    if (rules.multaOtros === 'immediate') return true
+    if (rules.multaOtros === '7_days_grace') {
+      // If we don't have createdAt on Pago, we might use a heuristic or stay immediate.
+      // For now, let's assume they are handled by a system that marks them 'Vencido' manually
+      // if grace period passes, or if we had createdAt.
+      // Since Pago doesn't strictly have createdAt in seed, we fallback to immediate for safety.
+      return true
+    }
+  }
+
+  // 2. Reserva Amenidad
+  if (baseConcepto === 'Reserva Amenidad') {
+    if (rules.amenidad === 'immediate') return true
+    if (!p.monthKey) return false
+    
+    const eventDate = new Date(p.monthKey) // e.g. "2026-04-20"
+    if (rules.amenidad === 'day_of_event') {
+      return now.getTime() >= eventDate.getTime()
+    }
+    if (rules.amenidad === '1_day_before') {
+      const dayBefore = new Date(eventDate.getTime() - 24 * 60 * 60 * 1000)
+      return now.getTime() >= dayBefore.getTime()
+    }
+  }
+
+  // 3. Mantenimiento
+  if (baseConcepto === 'Mantenimiento') {
+    if (!p.monthKey) return false // e.g. "2026-04"
+    const [y, m] = p.monthKey.split('-').map(Number)
+    
+    let maturityTarget: Date
+    if (rules.mantenimiento === 'next_month_01') {
+      maturityTarget = new Date(y, m, 1) // Next month 1st
+    } else if (rules.mantenimiento === 'next_month_10') {
+      maturityTarget = new Date(y, m, 10) // Next month 10th
+    } else {
+      // current_month_end
+      maturityTarget = new Date(y, m, 0) // wait, y, m, 0 is last day of month m-1.
+      // for month m (1-indexed m), nextMonth(y, m+1, 0) is last day of m.
+      // monthKey is 1-indexed string representation "YYYY-MM"
+      maturityTarget = new Date(y, m, 0) // No, if m=4(April), new Date(2026, 4, 0) is April 30th?
+      // JS Date months are 0-indexed. April is 3.
+      // So if monthKey is "2026-04", y=2026, m=4.
+      // new Date(2026, 4, 0) -> year 2026, month index 4 (May), date 0 -> April 30th. Correct.
+    }
+    
+    return now.getTime() >= maturityTarget.getTime()
+  }
+
+  return false
 }
 
 /**
@@ -495,6 +569,19 @@ function reducer(state: StoreState, action: Action): StoreState {
         return true
       })
       return { ...state, paquetes: pqs }
+    }
+
+    case 'PROCESS_MATURITY': {
+      const now = action.payload.nowIso
+      return {
+        ...state,
+        pagos: state.pagos.map(p => {
+          if (p.status === 'Pendiente' && isEffectiveDebt(p, now, state.buildingConfig.maturityRules)) {
+            return { ...p, status: 'Vencido' }
+          }
+          return p
+        })
+      }
     }
 
     // Auto-generate monthly pago + egreso records

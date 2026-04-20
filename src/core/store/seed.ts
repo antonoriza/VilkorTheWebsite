@@ -89,7 +89,7 @@ export interface Pago {
   concepto: string
   /** Amount in MXN */
   amount: number
-  status: 'Pagado' | 'Pendiente' | 'Por validar'
+  status: 'Pagado' | 'Pendiente' | 'Por validar' | 'Vencido'
   /** ISO date of payment, null if unpaid */
   paymentDate: string | null
   /** If this pago was auto-generated from an Adeudo, stores the source adeudo id */
@@ -225,6 +225,27 @@ export interface RecurringEgreso {
 }
 
 /** Global building settings managed by the admin */
+/** Rule-based maturity settings for financial charges */
+export interface FinancialMaturityRules {
+  /** When maintenance becomes a debt:
+   * - next_month_01: 1st day of next month
+   * - next_month_10: 10th day of next month
+   * - current_month_end: Last day of service month
+   */
+  mantenimiento: 'next_month_01' | 'next_month_10' | 'current_month_end'
+  /** When amenities become a debt:
+   * - day_of_event: 00:00 of the reserved day
+   * - 1_day_before: 24h before event
+   * - immediate: On reservation string
+   */
+  amenidad: 'day_of_event' | '1_day_before' | 'immediate'
+  /** When fines/others become a debt:
+   * - immediate: On registration
+   * - 7_days_grace: 7 days after registry
+   */
+  multaOtros: 'immediate' | '7_days_grace'
+}
+
 export interface BuildingConfig {
   /** Property type: "towers" for high-rise, "houses" for low-rise */
   type: 'towers' | 'houses'
@@ -248,6 +269,8 @@ export interface BuildingConfig {
   monthlyFee: number
   /** Recurring monthly expenses auto-generated each month */
   recurringEgresos: RecurringEgreso[]
+  /** Rules for debt maturity */
+  maturityRules: FinancialMaturityRules
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
@@ -411,6 +434,11 @@ export const seedBuildingConfig: BuildingConfig = {
     { id: 're-5', concepto: 'Recibo de Luz',                     categoria: 'servicios',      amount: 5800,  description: 'Servicio de energía eléctrica áreas comunes.' },
     { id: 're-6', concepto: 'Honorarios Administración',         categoria: 'administracion', amount: 15000, description: 'Cuota mensual de la empresa administradora.' },
   ],
+  maturityRules: {
+    mantenimiento: 'next_month_01',
+    amenidad: 'day_of_event',
+    multaOtros: 'immediate'
+  }
 }
 
 export const seedAmenities: Amenity[] = [

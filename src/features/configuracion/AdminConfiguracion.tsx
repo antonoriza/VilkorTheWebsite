@@ -413,6 +413,88 @@ export default function AdminConfiguracion() {
         </div>
       </section>
 
+      {/* Reglas de Vencimiento */}
+      <section className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
+        <div className="flex items-center space-x-3 border-b border-slate-100 pb-4">
+          <span className="material-symbols-outlined text-primary text-xl">gavel</span>
+          <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Reglas de Vencimiento</h3>
+        </div>
+        <p className="text-[11px] text-slate-500 font-medium">
+          Define cuándo un cargo se convierte en "Deuda Efectiva". Los cargos en periodo de gracia aparecerán como "Próximos".
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <label className={labelClass}>Vencimiento de Mantenimiento</label>
+              <select 
+                value={bc.maturityRules.mantenimiento} 
+                onChange={e => {
+                  dispatch({ 
+                    type: 'UPDATE_BUILDING_CONFIG', 
+                    payload: { 
+                      maturityRules: { ...bc.maturityRules, mantenimiento: e.target.value as any } 
+                    } 
+                  })
+                }}
+                className={inputClass}
+              >
+                <option value="next_month_01">Día 01 del mes siguiente</option>
+                <option value="next_month_10">Día 10 del mes siguiente (Gracia)</option>
+                <option value="current_month_end">Último día del mes en curso</option>
+              </select>
+              <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                Determina cuándo la cuota mensual pasa de "Próximo" a "Vencido".
+              </p>
+            </div>
+
+            <div>
+              <label className={labelClass}>Vencimiento de Amenidades</label>
+              <select 
+                value={bc.maturityRules.amenidad} 
+                onChange={e => {
+                  dispatch({ 
+                    type: 'UPDATE_BUILDING_CONFIG', 
+                    payload: { 
+                      maturityRules: { ...bc.maturityRules, amenidad: e.target.value as any } 
+                    } 
+                  })
+                }}
+                className={inputClass}
+              >
+                <option value="day_of_event">Día del evento (00:00h)</option>
+                <option value="1_day_before">24h antes del evento</option>
+                <option value="immediate">Inmediato al reservar</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className={labelClass}>Multas y Otros Cargos</label>
+              <select 
+                value={bc.maturityRules.multaOtros} 
+                onChange={e => {
+                  dispatch({ 
+                    type: 'UPDATE_BUILDING_CONFIG', 
+                    payload: { 
+                      maturityRules: { ...bc.maturityRules, multaOtros: e.target.value as any } 
+                    } 
+                  })
+                }}
+                className={inputClass}
+              >
+                <option value="immediate">Inmediato al registro</option>
+                <option value="7_days_grace">7 días de gracia</option>
+              </select>
+              <p className="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                Regla para cargos administrativos y penalizaciones.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Egresos Recurrentes */}
       <section className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-6">
         <div className="flex items-center space-x-3 border-b border-slate-100 pb-4">
