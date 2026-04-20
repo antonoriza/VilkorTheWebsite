@@ -737,6 +737,20 @@ export default function PagosPage() {
           {/* ── Status Strip (Architectural Minimalist) — Integrated metrics ── */}
           {isAdmin && ledgerSubTab === 'ingresos' && (
             <div className={`mt-2 mb-6 border border-slate-100 rounded-2xl bg-white/50 backdrop-blur-sm shadow-sm overflow-hidden`}>
+              {/* ── Contextual Eyebrow ── */}
+              <div className="px-4 py-2 bg-slate-50/50 border-b border-slate-50 flex items-center justify-between">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[12px] opacity-70">calendar_today</span>
+                  {lFilterMonth ? monthKeyToLabel(lFilterMonth) : 'Acumulado Histórico'}
+                </span>
+                
+                {showFilters && (
+                  <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">
+                    Vista Filtrada
+                  </span>
+                )}
+              </div>
+
               <div className="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
                 {[
                   { label: 'Recaudación Mantenimiento', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: '' as string, showInGlobal: false },
