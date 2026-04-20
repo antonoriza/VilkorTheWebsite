@@ -683,9 +683,9 @@ export default function PagosPage() {
             <div className="space-y-2">
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: 'Cobrados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', activeColor: 'ring-2 ring-emerald-500 shadow-md', filterKey: '' as string },
-                { label: 'Por validar', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'pending_actions', color: 'text-blue-700 bg-blue-50 border-blue-200', activeColor: 'ring-2 ring-blue-500 shadow-md', filterKey: 'Por validar' },
-                { label: 'Pendientes', value: ledgerKpis.pendingCount, amount: ledgerKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200', activeColor: 'ring-2 ring-amber-500 shadow-md', filterKey: 'Pendiente' },
+                { label: 'Pagados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', activeColor: 'ring-2 ring-emerald-500 shadow-md', filterKey: '' as string },
+                { label: 'Adeudos', value: ledgerKpis.pendingCount, amount: ledgerKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200', activeColor: 'ring-2 ring-amber-500 shadow-md', filterKey: 'Pendiente' },
+                { label: 'En Revisión', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'pending_actions', color: 'text-blue-700 bg-blue-50 border-blue-200', activeColor: 'ring-2 ring-blue-500 shadow-md', filterKey: 'Por validar' },
               ].map(k => {
                 const isClickable = !!k.filterKey && !showFilters
                 const isActive = isClickable && lFilterStatus === k.filterKey
@@ -774,7 +774,10 @@ export default function PagosPage() {
             if (lFilterTower) activeFilters.push({ key: 'tower', label: `Torre: ${lFilterTower}`, onClear: () => { setLFilterTower(''); setLFilterUnit('') } })
             if (lFilterUnit) activeFilters.push({ key: 'unit', label: `Unidad: ${lFilterUnit}`, onClear: () => { setLFilterUnit(''); setUnitDetailView(null) } })
             if (lFilterConcepto) activeFilters.push({ key: 'concepto', label: `Concepto: ${lFilterConcepto}`, onClear: () => setLFilterConcepto('') })
-            if (lFilterStatus) activeFilters.push({ key: 'status', label: `Estado: ${lFilterStatus}`, onClear: () => { setLFilterStatus(''); setLFilterMonth(TODAY_KEY) } })
+            if (lFilterStatus) {
+              const statusLabel = lFilterStatus === 'Pendiente' ? 'Adeudos' : lFilterStatus === 'Por validar' ? 'En Revisión' : lFilterStatus
+              activeFilters.push({ key: 'status', label: `Estado: ${statusLabel}`, onClear: () => { setLFilterStatus(''); setLFilterMonth(TODAY_KEY) } })
+            }
             const filterCount = activeFilters.length
             const clearAll = () => {
               setLFilterMonth(TODAY_KEY); setLFilterTower(''); setLFilterUnit('')
