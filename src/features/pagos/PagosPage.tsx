@@ -871,9 +871,9 @@ export default function PagosPage() {
                       <select value={lFilterStatus} onChange={e => setLFilterStatus(e.target.value)}
                         className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
                         <option value="">Todos</option>
-                        <option value="Pagado">Pagado</option>
-                        <option value="Por validar">Por validar</option>
-                        <option value="Pendiente">Pendiente</option>
+                        <option value="Pagado">Pagados</option>
+                        <option value="Por validar">En Revisión</option>
+                        <option value="Pendiente">Adeudos</option>
                       </select>
                     </div>
                   </div>
