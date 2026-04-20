@@ -1081,7 +1081,7 @@ export default function PagosPage() {
                     >
                       <span className="material-symbols-outlined text-[16px]">add</span>
                       <span className="hidden sm:inline">
-                        Nuevo Cargo
+                        {ledgerSubTab === 'ingresos' ? 'Nuevo Ingreso' : 'Nuevo Egreso'}
                       </span>
                     </button>
 
@@ -1106,9 +1106,7 @@ export default function PagosPage() {
                       ].join(' ')}
                     >
                       <span className="material-symbols-outlined text-[16px]">tune</span>
-                      <span className="hidden sm:inline">
-                        {ledgerSubTab === 'ingresos' ? 'Ingresos' : 'Egresos'}
-                      </span>
+                        Filtros
                       {activeFilters.length > 0 && (
                         <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
                           showFilters ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
