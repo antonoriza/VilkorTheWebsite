@@ -665,7 +665,6 @@ export default function PagosPage() {
       {/* ═══ Header ═══ */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Módulo Financiero</p>
           <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
             Finanzas
           </h1>

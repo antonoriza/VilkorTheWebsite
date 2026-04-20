@@ -123,7 +123,6 @@ function migrateStaffRole(role: string): 'Jardinero' | 'Limpieza' | 'Guardia' {
  * - Reserva Amenidad: Effective on the day of the event (00:00).
  * - Mantenimiento: Effective on the first day of the FOLLOWING month.
  */
- */
 export function isEffectiveDebt(p: Pago, nowIso: string, rules: FinancialMaturityRules): boolean {
   if (p.status === 'Pagado') return false
   if (p.status === 'Vencido') return true
@@ -245,6 +244,13 @@ function loadInitialState(): StoreState {
             }
             return p
           })
+        }
+
+        // 3. MIGRATION V2 -> V3: Add maturity rules if missing
+        if (version < 3) {
+          if (parsed.buildingConfig && !parsed.buildingConfig.maturityRules) {
+            parsed.buildingConfig.maturityRules = seedBuildingConfig.maturityRules
+          }
         }
 
         parsed.version = CURRENT_STATE_VERSION
