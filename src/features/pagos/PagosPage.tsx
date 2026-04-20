@@ -111,20 +111,19 @@ export default function PagosPage() {
   // ── Derived filter logic ──
   const activeFilters = useMemo(() => {
     const filters: { key: string; label: string; onClear: () => void }[] = []
-    if (lFilterMonth && lFilterMonth !== TODAY_KEY) filters.push({ key: 'month', label: `Mes: ${monthKeyToLabel(lFilterMonth)}`, onClear: () => setLFilterMonth(TODAY_KEY) })
-    if (!lFilterMonth) filters.push({ key: 'month-all', label: 'Mes: Todos', onClear: () => setLFilterMonth(TODAY_KEY) })
+    if (lFilterMonth) filters.push({ key: 'month', label: `Mes: ${monthKeyToLabel(lFilterMonth)}`, onClear: () => setLFilterMonth('') })
     if (lFilterTower) filters.push({ key: 'tower', label: `Torre: ${lFilterTower}`, onClear: () => { setLFilterTower(''); setLFilterUnit('') } })
     if (lFilterUnit) filters.push({ key: 'unit', label: `Unidad: ${lFilterUnit}`, onClear: () => { setLFilterUnit(''); setUnitDetailView(null) } })
     if (lFilterConcepto) filters.push({ key: 'concepto', label: `Concepto: ${lFilterConcepto}`, onClear: () => setLFilterConcepto('') })
     if (lFilterStatus) {
       const statusLabel = lFilterStatus === 'Pendiente' ? 'Adeudos' : lFilterStatus === 'Por validar' ? 'En Revisión' : lFilterStatus
-      filters.push({ key: 'status', label: `Estado: ${statusLabel}`, onClear: () => { setLFilterStatus(''); setLFilterMonth(TODAY_KEY) } })
+      filters.push({ key: 'status', label: `Estado: ${statusLabel}`, onClear: () => { setLFilterStatus(''); setLFilterMonth('') } })
     }
     return filters
   }, [lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, lFilterStatus])
 
   const clearAllFilters = useCallback(() => {
-    setLFilterMonth(TODAY_KEY)
+    setLFilterMonth('')
     setLFilterTower('')
     setLFilterUnit('')
     setLFilterConcepto('')
@@ -722,8 +721,8 @@ export default function PagosPage() {
 
           {/* ── KPI strip (admin) — clickable status filter ── */}
           {isAdmin && ledgerSubTab === 'ingresos' && (
-            <div className="space-y-2">
-            <div className={`grid gap-3 items-stretch ${lFilterMonth ? 'grid-cols-3' : 'grid-cols-2'}`}>
+            <div className="space-y-4 max-w-5xl">
+            <div className={`grid gap-4 items-stretch ${lFilterMonth ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 lg:max-w-3xl'}`}>
               {[
                 { label: 'Pagados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', iconBg: 'bg-emerald-50', filterKey: '' as string, showInGlobal: false },
                 { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'bg-rose-500', iconColor: 'text-rose-600', iconBg: 'bg-rose-50', filterKey: 'Vencido', showInGlobal: true },
@@ -754,28 +753,32 @@ export default function PagosPage() {
                       if (!isClickable) return
                       if (lFilterStatus === k.filterKey) {
                         setLFilterStatus('')
-                        setLFilterMonth(TODAY_KEY)
+                        setLFilterMonth('')
                       } else {
                         setLFilterStatus(k.filterKey)
                         setLFilterMonth('')
                       }
                     }}
                     className={[
-                      'group flex flex-col justify-between bg-white p-4 rounded-[16px] transition-all duration-300 text-left w-full outline-none transform h-full',
-                      isClickable ? 'cursor-pointer hover:shadow-xl hover:-translate-y-1 hover:border-slate-300' : 'cursor-default',
-                      isActive ? 'border-2 border-slate-900 shadow-xl scale-[1.03] z-20 bg-white' : 'border border-slate-200 shadow-sm z-10',
+                      'group relative flex flex-col justify-between bg-white p-3.5 rounded-[12px] transition-all duration-300 text-left outline-none transform overflow-hidden',
+                      isClickable ? 'cursor-pointer hover:shadow-lg hover:-translate-y-0.5 hover:border-slate-300' : 'cursor-default',
+                      isActive ? 'border-2 border-slate-900 shadow-lg scale-[1.02] z-20 bg-white' : 'border border-slate-200 shadow-sm z-10 hover:bg-slate-50/50',
                     ].join(' ')}
+                    style={{ minHeight: '120px', maxWidth: lFilterMonth ? 'none' : '320px' }}
                   >
-                    <div className="w-full">
+                    {/* Subtle aesthetic background flare */}
+                    <div className={`absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl opacity-10 transition-opacity group-hover:opacity-20 ${k.color}`} />
+
+                    <div className="w-full relative z-10">
                       {/* Cabecera */}
-                      <div className="flex items-start justify-between mb-3 w-full">
-                        <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center transition-all ${isActive ? 'bg-slate-900 text-white shadow-md' : `${k.iconBg} ${k.iconColor}`}`}>
-                          <span className="material-symbols-outlined text-[16px]">
+                      <div className="flex items-center justify-between mb-2.5 w-full">
+                        <div className={`w-7 h-7 rounded-[8px] flex items-center justify-center transition-all ${isActive ? 'bg-slate-900 text-white shadow-md' : `${k.iconBg} ${k.iconColor}`}`}>
+                          <span className="material-symbols-outlined text-[14px]">
                             {isZeroDebt ? 'auto_awesome' : k.icon}
                           </span>
                         </div>
                         
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 leading-none">
                           {isDebt && isActive && k.amount > 0 && (
                             <button
                               onClick={(e) => {
@@ -784,21 +787,21 @@ export default function PagosPage() {
                                 setIsNotifying(true)
                                 setTimeout(() => setIsNotifying(false), 2000)
                               }}
-                              className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest transition-all shadow-sm ${
+                              className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest transition-all shadow-sm ${
                                 isNotifying 
                                   ? 'bg-emerald-500 text-white' 
                                   : 'bg-slate-900 text-white hover:bg-slate-800'
                               }`}
                             >
-                              <span className="material-symbols-outlined text-[12px]">
+                              <span className="material-symbols-outlined text-[10px]">
                                 {isNotifying ? 'done' : 'notifications_active'}
                               </span>
                             </button>
                           )}
 
                           {isActive && (
-                            <div className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[10px] font-bold">filter_alt</span>
+                            <div className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full flex items-center">
+                              <span className="material-symbols-outlined text-[9px] font-bold">filter_alt</span>
                             </div>
                           )}
                         </div>
@@ -806,37 +809,35 @@ export default function PagosPage() {
 
                       {/* Data */}
                       <div className="space-y-0.5 w-full">
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.1em] transition-colors group-hover:text-slate-500">
                           {isZeroDebt ? 'Historial Limpio' : k.label}
                         </p>
-                        <p className={`text-[20px] font-headline font-black tracking-tight tabular-nums leading-none ${isActive ? 'text-slate-900' : 'text-slate-800'}`}>
+                        <p className={`text-[18px] font-headline font-black tracking-tight tabular-nums leading-none ${isActive ? 'text-slate-900' : 'text-slate-800'}`}>
                           {isZeroDebt ? 'Sin Deuda' : `$${k.amount.toLocaleString('es-MX')}`}
                         </p>
                       </div>
                     </div>
 
-                    <div className="w-full mt-4">
+                    <div className="w-full mt-3 relative z-10">
                       {/* Progreso */}
                       {!isZeroDebt && (
                         <>
-                          <div className="w-full h-[4px] bg-slate-100 rounded-full overflow-hidden">
+                          <div className="w-full h-[3px] bg-slate-100 rounded-full overflow-hidden">
                             <div 
-                              className={`h-full transition-all duration-1000 ease-out ${k.color}`}
+                              className={`h-full transition-all duration-1000 ease-out ${k.color} rounded-full`}
                               style={{ width: `${Math.max(progress, 1)}%` }}
                             />
                           </div>
-                          <div className="mt-2.5 flex items-center justify-between">
-                            <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">
-                              {k.value} registros
+                          <div className="mt-2 flex items-baseline justify-between">
+                            <span className="text-[8px] font-bold text-slate-300 uppercase tracking-wider group-hover:text-slate-400">
+                              {k.value} regs.
                             </span>
-                            <span className="text-[10px] font-black text-slate-800">
+                            <span className="text-[9px] font-black text-slate-800 tracking-tighter">
                               {progress.toFixed(1)}%
                             </span>
                           </div>
                         </>
                       )}
-
-
                     </div>
                   </button>
                 )
