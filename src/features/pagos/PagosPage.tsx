@@ -29,6 +29,7 @@ const MONTH_NAMES_ES = [
   'enero','febrero','marzo','abril','mayo','junio',
   'julio','agosto','septiembre','octubre','noviembre','diciembre',
 ]
+const MONTH_ABBR_ES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 
 function monthKeyToLabel(key: string): string {
   const [year, month] = key.split('-')
@@ -102,6 +103,8 @@ export default function PagosPage() {
   const [ledgerSubTab, setLedgerSubTab]   = useState<'ingresos' | 'egresos'>('ingresos')
   const [unitDetailView, setUnitDetailView] = useState<'pagos' | 'adeudos' | 'balance' | null>(null)
   const [showFilters, setShowFilters]     = useState(false)
+  const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false)
+  const [pickerYear, setPickerYear] = useState(new Date().getFullYear())
 
   // ── Auto-process maturity on mount ──
   useEffect(() => {
@@ -121,6 +124,18 @@ export default function PagosPage() {
     }
     return filters
   }, [lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, lFilterStatus])
+
+  // ── Month Picker Groups ──
+  const monthsByYear = useMemo(() => {
+    const map: Record<number, string[]> = {}
+    MONTH_RANGE.forEach(m => {
+      const y = parseInt(m.split('-')[0], 10)
+      if (!map[y]) map[y] = []
+      map[y].push(m)
+    })
+    return map
+  }, [])
+  const pickerYears = useMemo(() => Object.keys(monthsByYear).map(Number).sort((a,b) => b-a), [monthsByYear])
 
   const clearAllFilters = useCallback(() => {
     setLFilterMonth('')
@@ -1130,15 +1145,88 @@ export default function PagosPage() {
               {/* Collapsible Dropdown Grid */}
               {isAdmin && showFilters && (
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl animate-[fadeIn_0.15s_ease-out]">
-                  <div>
+                  <div className="relative">
                     <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
-                    <select value={lFilterMonth} onChange={e => setLFilterMonth(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                      <option value="">Histórico (Todos)</option>
-                      {MONTH_RANGE.map(m => (
-                        <option key={m} value={m}>{monthKeyToLabel(m)}</option>
-                      ))}
-                    </select>
+                    <button
+                      type="button"
+                      onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm text-left flex items-center justify-between group hover:border-slate-300 transition-all"
+                    >
+                      <span>{lFilterMonth ? monthKeyToLabel(lFilterMonth) : 'Histórico (Todos)'}</span>
+                      <span className={`material-symbols-outlined text-[16px] text-slate-400 transition-transform ${isMonthPickerOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                    </button>
+
+                    {isMonthPickerOpen && (
+                      <>
+                        {/* Backdrop to close */}
+                        <div className="fixed inset-0 z-40" onClick={() => setIsMonthPickerOpen(false)} />
+                        
+                        {/* Popover */}
+                        <div className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-md border border-slate-100 rounded-2xl shadow-2xl z-50 p-4 animate-[fadeIn_0.1s_ease-out] origin-top-left">
+                          {/* Year Switcher */}
+                          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
+                            <p className="text-sm font-black text-slate-900 tracking-tight">{pickerYear}</p>
+                            <div className="flex items-center gap-1">
+                              {pickerYears.map(y => (
+                                <button
+                                  key={y}
+                                  onClick={() => setPickerYear(y)}
+                                  className={`px-2 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                                    pickerYear === y ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-600'
+                                  }`}
+                                >{y}</button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Month Grid */}
+                          <div className="grid grid-cols-3 gap-1.5">
+                            {Array.from({ length: 12 }).map((_, i) => {
+                              const monthNum = i + 1
+                              const monthKey = `${pickerYear}-${String(monthNum).padStart(2, '0')}`
+                              const exists = MONTH_RANGE.includes(monthKey)
+                              const isActive = lFilterMonth === monthKey
+                              
+                              return (
+                                <button
+                                  key={i}
+                                  disabled={!exists}
+                                  onClick={() => {
+                                    setLFilterMonth(monthKey)
+                                    setIsMonthPickerOpen(false)
+                                  }}
+                                  className={`
+                                    py-2.5 rounded-xl text-[11px] font-bold transition-all
+                                    ${isActive 
+                                      ? 'bg-slate-900 text-white shadow-lg' 
+                                      : exists 
+                                        ? 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' 
+                                        : 'text-slate-200 cursor-not-allowed'}
+                                  `}
+                                >
+                                  {MONTH_ABBR_ES[i]}
+                                </button>
+                              )
+                            })}
+                          </div>
+
+                          {/* Quick Actions */}
+                          <div className="mt-4 pt-3 border-t border-slate-50">
+                            <button
+                              onClick={() => {
+                                setLFilterMonth('')
+                                setIsMonthPickerOpen(false)
+                              }}
+                              className={`w-full py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${
+                                !lFilterMonth ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'text-slate-400 hover:text-slate-600'
+                              }`}
+                            >
+                              Acumulado Histórico
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
