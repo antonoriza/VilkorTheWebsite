@@ -154,6 +154,30 @@ export default function PagosPage() {
   const [unitDetailView, setUnitDetailView] = useState<'pagos' | 'adeudos' | 'balance' | null>(null)
   const [showFilters, setShowFilters]     = useState(false)
 
+  // ── Derived filter logic ──
+  const activeFilters = useMemo(() => {
+    const filters: { key: string; label: string; onClear: () => void }[] = []
+    if (lFilterMonth && lFilterMonth !== TODAY_KEY) filters.push({ key: 'month', label: `Mes: ${monthKeyToLabel(lFilterMonth)}`, onClear: () => setLFilterMonth(TODAY_KEY) })
+    if (!lFilterMonth) filters.push({ key: 'month-all', label: 'Mes: Todos', onClear: () => setLFilterMonth(TODAY_KEY) })
+    if (lFilterTower) filters.push({ key: 'tower', label: `Torre: ${lFilterTower}`, onClear: () => { setLFilterTower(''); setLFilterUnit('') } })
+    if (lFilterUnit) filters.push({ key: 'unit', label: `Unidad: ${lFilterUnit}`, onClear: () => { setLFilterUnit(''); setUnitDetailView(null) } })
+    if (lFilterConcepto) filters.push({ key: 'concepto', label: `Concepto: ${lFilterConcepto}`, onClear: () => setLFilterConcepto('') })
+    if (lFilterStatus) {
+      const statusLabel = lFilterStatus === 'Pendiente' ? 'Adeudos' : lFilterStatus === 'Por validar' ? 'En Revisión' : lFilterStatus
+      filters.push({ key: 'status', label: `Estado: ${statusLabel}`, onClear: () => { setLFilterStatus(''); setLFilterMonth(TODAY_KEY) } })
+    }
+    return filters
+  }, [lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, lFilterStatus])
+
+  const clearAllFilters = useCallback(() => {
+    setLFilterMonth(TODAY_KEY)
+    setLFilterTower('')
+    setLFilterUnit('')
+    setLFilterConcepto('')
+    setLFilterStatus('')
+    setUnitDetailView(null)
+  }, [])
+
   // ── Unified modal ──
   const [showModal, setShowModal]             = useState(false)
   const [chargeType, setChargeType]           = useState<ChargeType>('ingreso')
@@ -202,8 +226,15 @@ export default function PagosPage() {
     return [...u].sort()
   }, [state.residents, state.pagos, state.adeudos])
 
-  const lFilteredUnits = useMemo(() => lFilterTower ? allUnits.filter(u => u.startsWith(lFilterTower)) : allUnits, [allUnits, lFilterTower])
-  const modalUnits     = useMemo(() => mTower ? allUnits.filter(u => u.startsWith(mTower)) : allUnits, [allUnits, mTower])
+  const lFilteredUnits = useMemo(() => {
+    if (!lFilterTower) return allUnits
+    return allUnits.filter(u => state.residents.some(r => r.apartment === u && r.tower === lFilterTower))
+  }, [allUnits, lFilterTower, state.residents])
+
+  const modalUnits = useMemo(() => {
+    if (!mTower) return allUnits
+    return allUnits.filter(u => state.residents.some(r => r.apartment === u && r.tower === mTower))
+  }, [allUnits, mTower, state.residents])
 
   // ═════════════════════════════════════════════════════════════════════
   // LEDGER tab data
@@ -766,121 +797,6 @@ export default function PagosPage() {
             </div>
           )}
 
-          {/* ── Collapsible filter bar (admin) ── */}
-          {isAdmin && (() => {
-            const activeFilters: { key: string; label: string; onClear: () => void }[] = []
-            if (lFilterMonth && lFilterMonth !== TODAY_KEY) activeFilters.push({ key: 'month', label: `Mes: ${monthKeyToLabel(lFilterMonth)}`, onClear: () => setLFilterMonth(TODAY_KEY) })
-            if (!lFilterMonth) activeFilters.push({ key: 'month-all', label: 'Mes: Todos', onClear: () => setLFilterMonth(TODAY_KEY) })
-            if (lFilterTower) activeFilters.push({ key: 'tower', label: `Torre: ${lFilterTower}`, onClear: () => { setLFilterTower(''); setLFilterUnit('') } })
-            if (lFilterUnit) activeFilters.push({ key: 'unit', label: `Unidad: ${lFilterUnit}`, onClear: () => { setLFilterUnit(''); setUnitDetailView(null) } })
-            if (lFilterConcepto) activeFilters.push({ key: 'concepto', label: `Concepto: ${lFilterConcepto}`, onClear: () => setLFilterConcepto('') })
-            if (lFilterStatus) {
-              const statusLabel = lFilterStatus === 'Pendiente' ? 'Adeudos' : lFilterStatus === 'Por validar' ? 'En Revisión' : lFilterStatus
-              activeFilters.push({ key: 'status', label: `Estado: ${statusLabel}`, onClear: () => { setLFilterStatus(''); setLFilterMonth(TODAY_KEY) } })
-            }
-            const filterCount = activeFilters.length
-            const clearAll = () => {
-              setLFilterMonth(TODAY_KEY); setLFilterTower(''); setLFilterUnit('')
-              setLFilterConcepto(''); setLFilterStatus(''); setUnitDetailView(null)
-            }
-            return (
-              <div className="space-y-3">
-                {/* Toggle + chips row */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => setShowFilters(prev => !prev)}
-                    className={[
-                      'flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all',
-                      showFilters
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : filterCount > 0
-                          ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
-                          : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700',
-                    ].join(' ')}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">tune</span>
-                    <span>Filtros</span>
-                    {filterCount > 0 && (
-                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
-                        showFilters ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
-                      }`}>{filterCount}</span>
-                    )}
-                  </button>
-
-                  {/* Active filter chips */}
-                  {filterCount > 0 && activeFilters.map(f => (
-                    <button
-                      key={f.key}
-                      type="button"
-                      onClick={f.onClear}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-[11px] font-bold tracking-wide hover:bg-rose-50 hover:text-rose-600 transition-all group"
-                      title={`Quitar filtro: ${f.label}`}
-                    >
-                      <span>{f.label}</span>
-                      <span className="material-symbols-outlined text-[12px] opacity-40 group-hover:opacity-100 transition-opacity">close</span>
-                    </button>
-                  ))}
-
-                  {filterCount > 1 && (
-                    <button
-                      type="button"
-                      onClick={clearAll}
-                      className="text-[10px] font-bold text-slate-400 hover:text-rose-500 underline underline-offset-2 transition-colors uppercase tracking-widest"
-                    >Limpiar todo</button>
-                  )}
-                </div>
-
-                {/* Collapsible dropdown grid */}
-                {showFilters && (
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl animate-[fadeIn_0.15s_ease-out]">
-                    <div>
-                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
-                      <div className="flex items-center gap-2">
-                        <input type="month" value={lFilterMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
-                          onChange={e => setLFilterMonth(e.target.value)}
-                          className="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
-                      <select value={lFilterTower} onChange={e => { setLFilterTower(e.target.value); setLFilterUnit('') }}
-                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                        <option value="">Todas</option>
-                        {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Unidad</label>
-                      <select value={lFilterUnit} onChange={e => { setLFilterUnit(e.target.value); setUnitDetailView(null); }}
-                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                        <option value="">Todas</option>
-                        {lFilteredUnits.map(u => <option key={u} value={u}>{u}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Concepto</label>
-                      <select value={lFilterConcepto} onChange={e => setLFilterConcepto(e.target.value)}
-                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                        <option value="">Todos</option>
-                        {conceptoOptions.map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
-                      <select value={lFilterStatus} onChange={e => setLFilterStatus(e.target.value)}
-                        className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                        <option value="">Todos</option>
-                        <option value="Pagado">Pagados</option>
-                        <option value="Por validar">En Revisión</option>
-                        <option value="Pendiente">Adeudos</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          })()}
 
           {/* ── Unit balance panel ── */}
           {isAdmin && lFilterUnit && (() => {
@@ -1051,36 +967,132 @@ export default function PagosPage() {
             )
           })()}
 
-          {/* ── Ingresos / Egresos tabbed grid ── */}
           <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <div>
-                {isAdmin ? (
-                  <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
-                    {([
-                      { key: 'ingresos' as const, label: 'Ingresos', icon: 'trending_up', count: filteredPagos.length },
-                      { key: 'egresos' as const, label: 'Egresos', icon: 'trending_down', count: ledgerEgresos.length },
-                    ]).map(t => (
-                      <button key={t.key} onClick={() => setLedgerSubTab(t.key)}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-md font-bold text-[10px] uppercase tracking-widest transition-all ${
-                          ledgerSubTab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
-                        }`}>
-                        <span className="material-symbols-outlined text-[14px]">{t.icon}</span>
-                        {t.label}
-                        <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[9px] tabular-nums ${
-                          ledgerSubTab === t.key ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-500'
-                        }`}>{t.count}</span>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <h2 className="text-base font-headline font-extrabold text-slate-900">Mis Pagos</h2>
+            <div className="px-6 py-4 border-b border-slate-100 bg-white sticky top-0 z-10">
+              <div className="flex items-center justify-between">
+                <div>
+                  {isAdmin ? (
+                    <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+                      {([
+                        { key: 'ingresos' as const, label: 'Ingresos', icon: 'trending_up', count: filteredPagos.length },
+                        { key: 'egresos' as const, label: 'Egresos', icon: 'trending_down', count: ledgerEgresos.length },
+                      ]).map(t => (
+                        <button key={t.key} onClick={() => setLedgerSubTab(t.key)}
+                          className={`flex items-center gap-1.5 px-4 py-2 rounded-md font-bold text-[10px] uppercase tracking-widest transition-all ${
+                            ledgerSubTab === t.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                          }`}>
+                          <span className="material-symbols-outlined text-[14px]">{t.icon}</span>
+                          {t.label}
+                          <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[9px] tabular-nums ${
+                            ledgerSubTab === t.key ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-500'
+                          }`}>{t.count}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <h2 className="text-base font-headline font-extrabold text-slate-900">Mis Pagos</h2>
+                  )}
+                  <p className="text-[11px] text-slate-400 font-medium mt-1">
+                    {ledgerSubTab === 'ingresos' ? `${filteredPagos.length} registro${filteredPagos.length !== 1 ? 's' : ''}` : `${ledgerEgresos.length} registro${ledgerEgresos.length !== 1 ? 's' : ''}`}
+                    {lFilterMonth ? ` · ${monthKeyToLabel(lFilterMonth)}` : ''}
+                  </p>
+                </div>
+
+                {/* Filtros Toggle (Admin) */}
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setShowFilters(prev => !prev)}
+                    className={[
+                      'flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all',
+                      showFilters
+                        ? 'bg-slate-900 text-white border-slate-900'
+                        : activeFilters.length > 0
+                          ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                          : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700',
+                    ].join(' ')}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">tune</span>
+                    <span className="hidden sm:inline">Filtros</span>
+                    {activeFilters.length > 0 && (
+                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
+                        showFilters ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
+                      }`}>{activeFilters.length}</span>
+                    )}
+                  </button>
                 )}
-                <p className="text-[11px] text-slate-400 font-medium mt-1">
-                  {ledgerSubTab === 'ingresos' ? `${filteredPagos.length} registro${filteredPagos.length !== 1 ? 's' : ''}` : `${ledgerEgresos.length} registro${ledgerEgresos.length !== 1 ? 's' : ''}`}
-                  {lFilterMonth ? ` · ${monthKeyToLabel(lFilterMonth)}` : ''}
-                </p>
               </div>
+
+              {/* Active Filter Chips Tray */}
+              {isAdmin && activeFilters.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap mt-4 pt-3 border-t border-slate-50">
+                  {activeFilters.map(f => (
+                    <button
+                      key={f.key}
+                      type="button"
+                      onClick={f.onClear}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-bold tracking-wide hover:bg-rose-50 hover:text-rose-600 transition-all group"
+                      title={`Quitar filtro: ${f.label}`}
+                    >
+                      <span>{f.label}</span>
+                      <span className="material-symbols-outlined text-[11px] opacity-40 group-hover:opacity-100 transition-opacity">close</span>
+                    </button>
+                  ))}
+                  {activeFilters.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={clearAllFilters}
+                      className="text-[10px] font-bold text-slate-400 hover:text-rose-500 underline underline-offset-2 transition-colors uppercase tracking-widest ml-1"
+                    >Limpiar todo</button>
+                  )}
+                </div>
+              )}
+
+              {/* Collapsible Dropdown Grid */}
+              {isAdmin && showFilters && (
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl animate-[fadeIn_0.15s_ease-out]">
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
+                    <input type="month" value={lFilterMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
+                      onChange={e => setLFilterMonth(e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
+                    <select value={lFilterTower} onChange={e => { setLFilterTower(e.target.value); setLFilterUnit('') }}
+                      className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                      <option value="">Todas</option>
+                      {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Unidad</label>
+                    <select value={lFilterUnit} onChange={e => { setLFilterUnit(e.target.value); setUnitDetailView(null); }}
+                      className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                      <option value="">Todas</option>
+                      {lFilteredUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Concepto</label>
+                    <select value={lFilterConcepto} onChange={e => setLFilterConcepto(e.target.value)}
+                      className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                      <option value="">Todos</option>
+                      {conceptoOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
+                    <select value={lFilterStatus} onChange={e => setLFilterStatus(e.target.value)}
+                      className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                      <option value="">Todos</option>
+                      <option value="Pendiente">Adeudos</option>
+                      <option value="Por validar">En Revisión</option>
+                      <option value="Pagado">Pagados</option>
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* ── INGRESOS TABLE ── */}
@@ -1457,7 +1469,7 @@ export default function PagosPage() {
                 <select value={mConcepto || 'Mensualidad'}
                   onChange={e => { setMConcepto(e.target.value); setMSubConcepto(''); if (e.target.value !== 'Mensualidad') { setMMulti(false) } }}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-                  {bc.conceptosPago.map(c => <option key={c} value={c}>{c}</option>)}
+                  {[...bc.conceptosPago].sort().map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               {/* Sub-Concepto (shown when concept has sub-items) */}
@@ -1468,7 +1480,7 @@ export default function PagosPage() {
                   <div className="space-y-2">
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Detalle</label>
                     <div className="space-y-1.5">
-                      {subs.map(sub => (
+                      {[...subs].sort().map(sub => (
                         <label key={sub} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition-all ${
                           mSubConcepto === sub ? 'border-slate-900 bg-slate-900/5' : 'border-slate-100 hover:border-slate-200'
                         }`}>
