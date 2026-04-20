@@ -663,18 +663,15 @@ export default function PagosPage() {
     <div className="space-y-6">
 
       {/* ═══ Header ═══ */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
         <div>
           <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
             Finanzas
           </h1>
         </div>
-        {/* Buttons moved to individual tabs */}
-      </div>
 
-      {/* ═══ Tab bar (admin only) ═══ */}
-      {isAdmin && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Tab bar (admin only) integrated in header */}
+        {isAdmin && (
           <div className="flex items-center gap-1 bg-slate-100 rounded-2xl p-1 w-fit">
             {([
               { key: 'ledger' as ActiveTab, label: 'Estado de Cuenta', icon: 'receipt_long' },
@@ -683,19 +680,19 @@ export default function PagosPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${
                   activeTab === tab.key
                     ? 'bg-white text-slate-900 shadow-sm'
                     : 'text-slate-400 hover:text-slate-700'
                 }`}
               >
-                <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
+                <span className="material-symbols-outlined text-[14px]">{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* TAB 1: ESTADO DE CUENTA (Ledger)                              */}
