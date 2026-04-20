@@ -1641,21 +1641,7 @@ export default function PagosPage() {
       <Modal open={showModal} onClose={resetAndCloseModal} title={chargeType === 'ingreso' ? 'Nuevo Cargo' : 'Nuevo Gasto'}>
         <div className="space-y-5">
 
-          {/* ── Tab selector ── */}
-          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            {CHARGE_TYPES.map(ct => (
-              <button key={ct.key} onClick={() => setChargeType(ct.key)}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all ${
-                  chargeType === ct.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
-                }`}>
-                <span className="material-symbols-outlined text-[16px]">{ct.icon}</span>
-                {ct.label}
-              </button>
-            ))}
-          </div>
-          <p className="text-[10px] text-slate-400 font-medium ml-1 -mt-3">
-            {CHARGE_TYPES.find(c => c.key === chargeType)?.desc}
-          </p>
+          {/* Tab selector removed - now contextual to the active dashboard tab */}
 
           {/* ═══ INGRESO FORM ═══ */}
           {chargeType === 'ingreso' && (
