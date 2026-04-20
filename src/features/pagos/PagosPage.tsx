@@ -1084,34 +1084,46 @@ export default function PagosPage() {
                       </span>
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (showFilters) {
-                          clearAllFilters()
-                        } else {
-                          // Al activar filtros, por defecto mostramos el mes actual
-                          setLFilterMonth(TODAY_KEY)
-                        }
-                        setShowFilters(!showFilters)
-                      }}
-                      className={[
-                        'flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all',
-                        showFilters
-                          ? 'bg-slate-900 text-white border-slate-900'
-                          : activeFilters.length > 0
-                            ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
-                            : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700',
-                      ].join(' ')}
-                    >
-                      <span className="material-symbols-outlined text-[16px]">tune</span>
-                      <span className="hidden sm:inline">Filtros</span>
-                      {activeFilters.length > 0 && (
-                        <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
-                          showFilters ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
-                        }`}>{activeFilters.length}</span>
-                      )}
-                    </button>
+                    <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-sm transition-all">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (showFilters) {
+                            clearAllFilters()
+                            setShowFilters(false)
+                          }
+                        }}
+                        className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                          !showFilters 
+                            ? 'bg-white text-slate-900 shadow-sm scale-[1.02]' 
+                            : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                      >
+                        Acumulado
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!showFilters) {
+                            setLFilterMonth(TODAY_KEY)
+                            setShowFilters(true)
+                          }
+                        }}
+                        className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                          showFilters 
+                            ? 'bg-white text-slate-900 shadow-sm scale-[1.02]' 
+                            : activeFilters.length > 0
+                              ? 'text-slate-700 hover:text-slate-900'
+                              : 'text-slate-400 hover:text-slate-600'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">tune</span>
+                        Filtros
+                        {activeFilters.length > 0 && (
+                          <span className="w-4 h-4 rounded-full bg-slate-900 text-white flex items-center justify-center text-[8px] font-black">{activeFilters.length}</span>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
