@@ -738,9 +738,9 @@ export default function PagosPage() {
           {isAdmin && ledgerSubTab === 'ingresos' && (
             <div className={`mt-2 mb-6 border border-slate-100 rounded-2xl bg-white/50 backdrop-blur-sm shadow-sm overflow-hidden`}>
               {/* ── Contextual Eyebrow ── */}
-              <div className="px-4 py-2 bg-slate-50/50 border-b border-slate-50 flex items-center justify-between">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[12px] opacity-70">calendar_today</span>
+              <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[12px] opacity-100 text-slate-400">calendar_today</span>
                   {lFilterMonth ? monthKeyToLabel(lFilterMonth) : 'Acumulado Histórico'}
                 </span>
                 
@@ -850,26 +850,6 @@ export default function PagosPage() {
             </div>
           )}
 
-          {/* ── Scope legend — Context for the current view ── */}
-          {isAdmin && ledgerSubTab === 'ingresos' && (
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-4 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[12px]">info</span>
-              {showFilters
-                ? (() => {
-                    const parts: string[] = []
-                    if (lFilterMonth) parts.push(monthKeyToLabel(lFilterMonth))
-                    else parts.push('Acumulado Histórico')
-                    if (lFilterTower) parts.push(`Torre ${lFilterTower}`)
-                    if (lFilterUnit) parts.push(`Unidad ${lFilterUnit}`)
-                    if (lFilterConcepto) parts.push(lFilterConcepto)
-                    return `Mostrando: ${parts.join(' \u00b7 ')}`
-                  })()
-                : lFilterMonth 
-                  ? monthKeyToLabel(lFilterMonth)
-                  : 'Acumulado Histórico'
-              }
-            </p>
-          )}
 
           {isAdmin && ledgerSubTab === 'egresos' && (
             <div className="grid grid-cols-3 gap-3">
