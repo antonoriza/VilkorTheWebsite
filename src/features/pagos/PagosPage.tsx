@@ -6,8 +6,8 @@
  *   2. "Expediente"        — compliance/enforcement (all Adeudo records).
  *
  * Unified registration modal with 5 charge types:
- *   - Mensualidad / Extraordinario → creates Pago only.
- *   - Multa / Adeudo              → creates BOTH Pago + Adeudo (linked) in one click.
+ *   - Mantenimiento / Rentas      → creates Pago only.
+ *   - Multa / Otros              → creates BOTH Pago + Adeudo (linked) in one click.
  *   - Llamado de Atención         → creates Adeudo only (non-financial).
  *
  * Admin sees both tabs + KPIs + unit balance panel.
@@ -84,64 +84,12 @@ export default function PagosPage() {
   // ── Tab ──
   const [activeTab, setActiveTab] = useState<ActiveTab>('ledger')
 
-  // ── Auto-delinquency: check once on mount ──
+  // ── State Sanitizer: Purge redundant auto-summary records on mount ──
   useEffect(() => {
     if (!isAdmin) return
-    const now = new Date()
-    const curKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-    // Collect past-due Pendiente pagos per unit
-    const pastDueByUnit = new Map<string, { total: number; concepts: string[] }>()
-    state.pagos.forEach(p => {
-      if (p.status !== 'Pendiente') return
-      const mk = p.monthKey || ''
-      const concepto = p.concepto || 'Mensualidad'
-      let isPastDue = false
-      if (concepto === 'Mensualidad') {
-        // Past due if monthKey < current month
-        isPastDue = mk < curKey
-      } else {
-        // Past due if > 30 days since start of that month
-        const [y, m] = mk.split('-').map(Number)
-        const monthEnd = new Date(y, m, 0) // last day of that month
-        isPastDue = (now.getTime() - monthEnd.getTime()) > 30 * 86_400_000
-      }
-      if (isPastDue) {
-        const entry = pastDueByUnit.get(p.apartment) || { total: 0, concepts: [] }
-        entry.total += p.amount
-        if (!entry.concepts.includes(concepto)) entry.concepts.push(concepto)
-        pastDueByUnit.set(p.apartment, entry)
-      }
-    })
-    // For each unit with past-due, ensure one auto-adeudo exists
-    pastDueByUnit.forEach((info, apt) => {
-      if (info.total <= 0) return
-      const existing = state.adeudos.find(a => a.apartment === apt && a.type === 'adeudo' && a.status === 'Activo' && a.concepto.startsWith('Adeudo acumulado'))
-      if (existing) {
-        // Update if amount changed
-        if (existing.amount !== info.total) {
-          dispatch({ type: 'UPDATE_ADEUDO', payload: { ...existing, amount: info.total, concepto: `Adeudo acumulado (${info.concepts.join(', ')})` } })
-        }
-      } else {
-        // Create new auto-adeudo
-        dispatch({
-          type: 'ADD_ADEUDO',
-          payload: {
-            id: `ad-auto-${apt}-${Date.now()}`,
-            apartment: apt,
-            type: 'adeudo',
-            concepto: `Adeudo acumulado (${info.concepts.join(', ')})`,
-            description: `Generado automáticamente. Cargos vencidos sin pago registrado.`,
-            amount: info.total,
-            status: 'Activo',
-            createdAt: new Date().toISOString(),
-            resolvedAt: null,
-            resolvedBy: null,
-          },
-        })
-      }
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Run once on mount
+    const autoAdeudos = state.adeudos.filter(a => a.id.startsWith('ad-auto-'))
+    autoAdeudos.forEach(a => dispatch({ type: 'DELETE_ADEUDO', payload: a.id }))
+  }, [isAdmin, state.adeudos.length, dispatch]) // Runs if length changes, ensuring all are purged
 
   const [lFilterMonth, setLFilterMonth]   = useState(TODAY_KEY)
   const [lFilterTower, setLFilterTower]   = useState('')
@@ -186,6 +134,7 @@ export default function PagosPage() {
   const [mAmount, setMAmount]                 = useState('500')
   const [mConcepto, setMConcepto]             = useState('')
   const [mSubConcepto, setMSubConcepto]       = useState('')
+  const [mMotivo, setMMotivo]                 = useState('')
   const [mMulti, setMMulti]                   = useState(false)
   const [mMonths, setMMonths]                 = useState<string[]>([TODAY_KEY])
   const [mSingleMonth, setMSingleMonth]       = useState(TODAY_KEY)
@@ -236,12 +185,33 @@ export default function PagosPage() {
     return allUnits.filter(u => state.residents.some(r => r.apartment === u && r.tower === mTower))
   }, [allUnits, mTower, state.residents])
 
+  const unifiedPagos = useMemo(() => {
+    const basePagos = state.pagos.map(p => ({ ...p, _isAdeudo: false }))
+    // Map only manual/actual Adeudos (Multas, etc.) to the ledger.
+    // Exclude any ad-auto- that might survive the sanitizer for 1 render.
+    const activeAdeudos = state.adeudos
+      .filter(a => a.status === 'Activo' && a.amount > 0 && !a.id.startsWith('ad-auto-'))
+      .map(a => ({
+        id: a.id,
+        apartment: a.apartment,
+        resident: state.residents.find(r => r.apartment === a.apartment)?.name || a.apartment,
+        month: monthKeyToLabel(a.createdAt.slice(0, 7)),
+        monthKey: a.createdAt.slice(0, 7),
+        concepto: a.concepto,
+        amount: a.amount,
+        status: 'Pendiente' as const,
+        paymentDate: null,
+        _isAdeudo: true
+      }))
+    return [...basePagos, ...activeAdeudos]
+  }, [state.pagos, state.adeudos, state.residents])
+
   // ═════════════════════════════════════════════════════════════════════
   // LEDGER tab data
   // ═════════════════════════════════════════════════════════════════════
 
   const filteredPagos = useMemo(() => {
-    let data = isAdmin ? state.pagos : state.pagos.filter(p => p.apartment === myApartment)
+    let data = isAdmin ? unifiedPagos : unifiedPagos.filter(p => p.apartment === myApartment)
     if (!isAdmin || lFilterMonth) data = data.filter(p => (p.monthKey || '') === lFilterMonth)
     if (lFilterTower) {
       data = data.filter(p => {
@@ -251,7 +221,7 @@ export default function PagosPage() {
     }
     if (lFilterUnit)     data = data.filter(p => p.apartment === lFilterUnit)
     if (lFilterStatus)   data = data.filter(p => p.status === lFilterStatus)
-    if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mensualidad') === lFilterConcepto)
+    if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mantenimiento') === lFilterConcepto)
     return [...data].sort((a, b) => {
       let va: string | number, vb: string | number
       switch (lSortKey) {
@@ -267,14 +237,14 @@ export default function PagosPage() {
       if (va > vb) return lSortDir === 'asc' ? 1 : -1
       return 0
     })
-  }, [state.pagos, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lFilterConcepto, lSortKey, lSortDir])
+  }, [unifiedPagos, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lFilterConcepto, lSortKey, lSortDir, state.residents])
 
   // Unique concepto values for filter dropdown
   const conceptoOptions = useMemo(() => {
     const set = new Set<string>()
-    state.pagos.forEach(p => set.add(p.concepto || 'Mensualidad'))
-    return [...set].sort()
-  }, [state.pagos])
+    unifiedPagos.forEach(p => set.add(p.concepto || 'Mantenimiento'))
+    return [...set].sort((a, b) => a.localeCompare(b, 'es'))
+  }, [unifiedPagos])
 
   // Egresos filtered by the same month as the ledger (for KPI card + egresos grid)
   const ledgerEgresos = useMemo(() => {
@@ -311,7 +281,7 @@ export default function PagosPage() {
       })
     }
     if (lFilterUnit) data = data.filter(p => p.apartment === lFilterUnit)
-    if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mensualidad') === lFilterConcepto)
+    if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mantenimiento') === lFilterConcepto)
     const paid = data.filter(p => p.status === 'Pagado')
     const pending = data.filter(p => p.status === 'Pendiente')
     const porValidar = data.filter(p => p.status === 'Por validar')
@@ -367,7 +337,7 @@ export default function PagosPage() {
     const paidPagos = state.pagos.filter(p => p.status === 'Pagado' && monthSet.has(p.monthKey || ''))
     const incomeMap = new Map<string, number>()
     paidPagos.forEach(p => {
-      const key = p.concepto || 'Mensualidad'
+      const key = p.concepto || 'Mantenimiento'
       incomeMap.set(key, (incomeMap.get(key) || 0) + p.amount)
     })
     const ingresos: IncomeRow[] = [...incomeMap.entries()]
@@ -565,7 +535,7 @@ export default function PagosPage() {
 
   // Reset & close helper
   const resetAndCloseModal = () => {
-    setMTower(''); setMUnit(''); setMAmount('500'); setMConcepto(''); setMSubConcepto('')
+    setMTower(''); setMUnit(''); setMAmount('500'); setMConcepto(''); setMSubConcepto(''); setMMotivo('')
     setMMulti(false); setMMonths([TODAY_KEY]); setMSingleMonth(TODAY_KEY)
     setMReceiptData(''); setMReceiptType(undefined); setMReceiptName(''); setMReceiptError('')
     setEgCategoria('mantenimiento'); setEgConcepto(''); setEgDescription(''); setEgAmount(''); setEgDate(new Date().toISOString().split('T')[0])
@@ -581,14 +551,20 @@ export default function PagosPage() {
     if (!mUnit) return
     const resident = state.residents.find(r => r.apartment === mUnit)
     const resName = resident?.name || mUnit
-    const baseConcepto = mConcepto || 'Mensualidad'
-    const concepto = mSubConcepto ? `${baseConcepto} — ${mSubConcepto}` : baseConcepto
-    const isMensualidad = baseConcepto === 'Mensualidad'
+    const baseConcepto = mConcepto || 'Mantenimiento'
+    let concepto = mSubConcepto ? `${baseConcepto} — ${mSubConcepto}` : baseConcepto
+    
+    // Option A: Concepto: Motivo
+    if ((baseConcepto === 'Multa' || baseConcepto === 'Otros') && mMotivo.trim()) {
+      concepto = `${baseConcepto}: ${mMotivo.trim()}`
+    }
+
+    const isMantenimiento = baseConcepto === 'Mantenimiento'
     const todayIso = new Date().toISOString().split('T')[0]
     const todayMk = todayIso.slice(0, 7)
 
-    if (isMensualidad && mMulti && mMonths.length > 0) {
-      // ── Multi-month Mensualidad (advance payments) ──
+    if (isMantenimiento && mMulti && mMonths.length > 0) {
+      // ── Multi-month Mantenimiento (advance payments) ──
       // Sort months chronologically
       const sorted = [...mMonths].sort()
       const firstMonth = sorted[0] // the "actual" payment month
@@ -639,12 +615,14 @@ export default function PagosPage() {
 
   const toggleFormMonth = (mk: string) => setMMonths(prev => prev.includes(mk) ? prev.filter(m => m !== mk) : [...prev, mk])
 
-  const isMensualidadSelected = (mConcepto || 'Mensualidad') === 'Mensualidad'
+  const isMantenimientoSelected = (mConcepto || 'Mantenimiento') === 'Mantenimiento'
+  const isReasonRequired = (mConcepto === 'Multa' || mConcepto === 'Otros')
 
   const formValid = (() => {
     if (chargeType === 'ingreso') {
       if (!mUnit || Number(mAmount) <= 0 || mReceiptError) return false
-      if (isMensualidadSelected && mMulti) return mMonths.length > 0
+      if (isReasonRequired && !mMotivo.trim()) return false
+      if (isMantenimientoSelected && mMulti) return mMonths.length > 0
       return !!mSingleMonth
     }
     if (chargeType === 'egreso') return !!egConcepto.trim() && Number(egAmount) > 0
@@ -750,6 +728,7 @@ export default function PagosPage() {
                     <div className="flex-1">
                       <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
                       <p className="text-xs font-bold opacity-70 mt-0.5">{k.label} · {k.value}</p>
+                      <p className="text-[8px] font-black uppercase tracking-tighter opacity-40 mt-1">Total en este período</p>
                     </div>
                     {isActive && (
                       <span className="material-symbols-outlined text-[16px] opacity-50">filter_alt</span>
@@ -802,7 +781,7 @@ export default function PagosPage() {
           {isAdmin && lFilterUnit && (() => {
             const res = state.residents.find(r => r.apartment === lFilterUnit)
             const uPagos   = state.pagos.filter(p => p.apartment === lFilterUnit && p.status === 'Pendiente')
-            const uAdeudos = state.adeudos.filter(a => a.apartment === lFilterUnit && a.status === 'Activo' && a.amount > 0)
+            const uAdeudos = state.adeudos.filter(a => a.apartment === lFilterUnit && a.status === 'Activo' && a.amount > 0 && !a.id.startsWith('ad-auto-'))
             const pp = uPagos.reduce((s, p) => s + p.amount, 0)
             const aa = uAdeudos.reduce((s, a) => s + a.amount, 0)
             const total = pp + aa
@@ -811,7 +790,7 @@ export default function PagosPage() {
               <div className="space-y-0">
                 <div className="bg-slate-900 text-white rounded-t-2xl p-5 flex flex-col md:flex-row md:items-center gap-4" style={unitDetailView ? {} : { borderRadius: '1rem' }}>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Resumen de unidad</p>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Resumen Histórico de Unidad</p>
                     <p className="text-lg font-headline font-black mt-0.5">{lFilterUnit}{res ? ` — ${res.name}` : ''}</p>
                   </div>
                   <div className="flex gap-5 flex-wrap">
@@ -1124,13 +1103,12 @@ export default function PagosPage() {
                         <div className="flex flex-col gap-0.5">
                           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest self-start ${
                             pago.adeudoId ? 'bg-rose-50 text-rose-700'
-                            : pago.concepto === 'Extraordinario' ? 'bg-amber-50 text-amber-700'
-                            : pago.concepto === 'Multa' ? 'bg-rose-50 text-rose-700'
-                            : pago.concepto === 'Adeudo' ? 'bg-orange-50 text-orange-700'
+                            : (pago.concepto === 'Multa' || pago.concepto === 'Otros') ? 'bg-rose-50 text-rose-700'
+                            : pago.concepto === 'Reserva Amenidad' ? 'bg-indigo-50 text-indigo-700'
                             : 'bg-slate-100 text-slate-600'
                           }`}>
                             {pago.adeudoId && <span className="material-symbols-outlined text-[11px]">gavel</span>}
-                            {pago.concepto || 'Mensualidad'}
+                            {pago.concepto || 'Mantenimiento'}
                           </span>
                           {pago.notes && (
                             <span className="text-[9px] text-amber-600 font-semibold ml-0.5 italic">{pago.notes}</span>
@@ -1466,15 +1444,29 @@ export default function PagosPage() {
               {/* Concepto */}
               <div className="space-y-2">
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Concepto *</label>
-                <select value={mConcepto || 'Mensualidad'}
-                  onChange={e => { setMConcepto(e.target.value); setMSubConcepto(''); if (e.target.value !== 'Mensualidad') { setMMulti(false) } }}
+                <select value={mConcepto || 'Mantenimiento'}
+                  onChange={e => { setMConcepto(e.target.value); setMSubConcepto(''); if (e.target.value !== 'Mantenimiento') { setMMulti(false) } }}
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
                   {[...bc.conceptosPago].sort().map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
+              {/* Custom Reason field for Multa/Otros */}
+              {isReasonRequired && (
+                <div className="space-y-2 animate-[fadeIn_0.2s_ease-out]">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Motivo / Descripción *</label>
+                  <textarea value={mMotivo} onChange={e => setMMotivo(e.target.value)}
+                    rows={2} maxLength={100} placeholder="Ej: Ruido excesivo, Arreglo de pintura…"
+                    className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm resize-none" />
+                  <div className="flex justify-end">
+                    <span className={`text-[9px] font-bold ${mMotivo.length >= 90 ? 'text-rose-500' : 'text-slate-400'}`}>
+                      {mMotivo.length} / 100
+                    </span>
+                  </div>
+                </div>
+              )}
               {/* Sub-Concepto (shown when concept has sub-items) */}
               {(() => {
-                const subs = bc.subConceptos?.[(mConcepto || 'Mensualidad')]
+                const subs = bc.subConceptos?.[(mConcepto || 'Mantenimiento')]
                 if (!subs || subs.length === 0) return null
                 return (
                   <div className="space-y-2">
@@ -1499,13 +1491,13 @@ export default function PagosPage() {
                   </div>
                 )
               })()}
-              {/* Month — with multi-month toggle ONLY for Mensualidad */}
+              {/* Month — with multi-month toggle ONLY for Mantenimiento */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                    {isMensualidadSelected && mMulti ? 'Mes(es) *' : 'Mes *'}
+                    {isMantenimientoSelected && mMulti ? 'Mes(es) *' : 'Mes *'}
                   </label>
-                  {isMensualidadSelected && (
+                  {isMantenimientoSelected && (
                     <button type="button" onClick={() => setMMulti(p => !p)}
                       className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900">
                       <div className={`relative w-8 h-4 rounded-full transition-colors ${mMulti ? 'bg-slate-900' : 'bg-slate-200'}`}>
@@ -1515,7 +1507,7 @@ export default function PagosPage() {
                     </button>
                   )}
                 </div>
-                {isMensualidadSelected && mMulti ? (
+                {isMantenimientoSelected && mMulti ? (
                   <>
                     <div className="max-h-40 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-50">
                       {MONTH_RANGE.slice().reverse().map(mk => (
@@ -1547,7 +1539,7 @@ export default function PagosPage() {
                   <input type="number" value={mAmount} onChange={e => setMAmount(e.target.value)}
                     className="block w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-black text-sm tabular-nums" />
                 </div>
-                {isMensualidadSelected && mMulti && mMonths.length > 1 && (
+                {isMantenimientoSelected && mMulti && mMonths.length > 1 && (
                   <p className="text-[10px] text-slate-400 font-medium ml-1">
                     Total: <span className="font-black text-slate-900">${((Number(mAmount) || 0) * mMonths.length).toLocaleString('es-MX')} MXN</span> ({mMonths.length} × ${(Number(mAmount) || 0).toLocaleString('es-MX')})
                   </p>
@@ -1626,7 +1618,7 @@ export default function PagosPage() {
               !formValid ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.99]'
             }`}>
             {chargeType === 'ingreso'
-              ? (isMensualidadSelected && mMulti && mMonths.length > 1 ? `Registrar ${mMonths.length} pagos` : 'Registrar Ingreso')
+              ? (isMantenimientoSelected && mMulti && mMonths.length > 1 ? `Registrar ${mMonths.length} pagos` : 'Registrar Ingreso')
               : 'Registrar Egreso'}
           </button>
         </div>

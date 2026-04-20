@@ -301,7 +301,7 @@ export default function AdminConfiguracion() {
           <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Conceptos de Pago</h3>
         </div>
         <p className="text-[11px] text-slate-500 font-medium">
-          Define los conceptos disponibles al registrar pagos, multas o adeudos. "Mensualidad" es obligatorio y no puede eliminarse.
+          Define los conceptos disponibles al registrar pagos, multas o adeudos. "Mantenimiento" es obligatorio y no puede eliminarse.
         </p>
         <div className="space-y-2">
           {bc.conceptosPago.map(c => {
@@ -314,14 +314,14 @@ export default function AdminConfiguracion() {
                     className="flex items-center gap-2 flex-1 text-left">
                     <span className="material-symbols-outlined text-[14px] text-slate-400 transition-transform" style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>chevron_right</span>
                     <span className="text-sm font-bold text-slate-900">{c}</span>
-                    {c === 'Mensualidad' && (
+                    {c === 'Mantenimiento' && (
                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-md">Obligatorio</span>
                     )}
                     {subs.length > 0 && (
                       <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md tabular-nums">{subs.length}</span>
                     )}
                   </button>
-                  {c !== 'Mensualidad' && (
+                  {c !== 'Mantenimiento' && (
                     <button
                       onClick={() => {
                         const updated = bc.conceptosPago.filter(x => x !== c)

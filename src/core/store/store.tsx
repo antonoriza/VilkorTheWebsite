@@ -17,7 +17,7 @@ import { createContext, useContext, useReducer, useEffect, type ReactNode } from
 import {
   seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
   seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
-  seedTickets, seedTicketCounter, seedAdeudos, seedEgresos,
+  seedTickets, seedTicketCounter, seedAdeudos, seedEgresos, CURRENT_STATE_VERSION,
   type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
   type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
   type Ticket, type TicketActivity, type Adeudo, type Egreso, type RecurringEgreso
@@ -45,6 +45,8 @@ export interface StoreState {
   adeudos: Adeudo[]
   /** Operational expenses for the building */
   egresos: Egreso[]
+  /** Data model version to handle migrations */
+  version: number
 }
 
 // ─── Action Types ────────────────────────────────────────────────────
@@ -110,6 +112,30 @@ function migrateStaffRole(role: string): 'Jardinero' | 'Limpieza' | 'Guardia' {
 }
 
 /**
+ * Returns a fresh copy of the application state from seed data.
+ * Used for initial loads when storage is empty and for system resets.
+ */
+function getSeedState(): StoreState {
+  return {
+    notificaciones: [...seedNotificaciones],
+    avisos: [...seedAvisos],
+    pagos: [...seedPagos],
+    paquetes: [...seedPaquetes],
+    reservaciones: [...seedReservaciones],
+    votaciones: [...seedVotaciones],
+    residents: [...seedResidents],
+    staff: [...seedStaff],
+    amenities: [...seedAmenities],
+    buildingConfig: { ...seedBuildingConfig },
+    tickets: [...seedTickets],
+    ticketCounter: seedTicketCounter,
+    adeudos: [...seedAdeudos],
+    egresos: [...seedEgresos],
+    version: CURRENT_STATE_VERSION,
+  }
+}
+
+/**
  * Loads the initial state from localStorage, applying migrations
  * for schema changes from previous versions. Falls back to seed
  * data if no stored state exists or if parsing fails.
@@ -118,7 +144,37 @@ function loadInitialState(): StoreState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
-      const parsed = JSON.parse(raw)
+      const parsed = JSON.parse(raw) as StoreState
+      const version = parsed.version || 1
+      // ── MIGRATION V1 -> V2 ──
+      // Fixes Mensualidad -> Mantenimiento and removes legacy concept leaks
+      if (version < CURRENT_STATE_VERSION) {
+        // 1. Force cleanup of conceptosPago
+        if (parsed.buildingConfig) {
+          const FORBIDDEN = ['Mensualidad', 'Extraordinario', 'Mascota sin registro']
+          parsed.buildingConfig.conceptosPago = (parsed.buildingConfig.conceptosPago || [])
+            .filter((c: string) => !FORBIDDEN.includes(c))
+          
+          if (!parsed.buildingConfig.conceptosPago.includes('Mantenimiento')) {
+            parsed.buildingConfig.conceptosPago.unshift('Mantenimiento')
+          }
+          
+          // Sync sub-concepts with current authorized set
+          parsed.buildingConfig.subConceptos = seedBuildingConfig.subConceptos
+        }
+
+        // 2. Rename legacy concepts in pagos history
+        if (parsed.pagos) {
+          parsed.pagos = parsed.pagos.map((p: any) => {
+            if (p.concepto === 'Mensualidad' || p.concepto === 'Extraordinario') {
+                return { ...p, concepto: 'Mantenimiento' }
+            }
+            return p
+          })
+        }
+
+        parsed.version = CURRENT_STATE_VERSION
+      }
 
       // Ensure all slices exist (handles upgrades from older schemas)
       if (!parsed.notificaciones) parsed.notificaciones = []
@@ -194,22 +250,20 @@ function loadInitialState(): StoreState {
             p.monthKey = m ? `${m[2]}-${MONTH_ES[m[1]] || '00'}` : ''
           }
           // Backfill concepto
-          if (!p.concepto) p.concepto = 'Mensualidad'
+          if (!p.concepto || p.concepto === 'Mensualidad') p.concepto = 'Mantenimiento'
           // Backfill adeudoId (new field)
           if (!('adeudoId' in p)) p.adeudoId = undefined
           return p
         })
       }
 
-      // Migrate buildingConfig: ensure conceptosPago exists + purge disciplinary concepts
+      // Migrate buildingConfig: ensure conceptosPago exists
       if (!parsed.buildingConfig.conceptosPago) {
-        parsed.buildingConfig.conceptosPago = ['Mensualidad', 'Extraordinario']
+        parsed.buildingConfig.conceptosPago = ['Mantenimiento', 'Multa', 'Otros', 'Reserva Amenidad']
       } else {
-        const DISCIPLINARY = ['Multa', 'Penalización', 'Penalizacion']
-        parsed.buildingConfig.conceptosPago = parsed.buildingConfig.conceptosPago
-          .filter((c: string) => !DISCIPLINARY.includes(c))
-        if (!parsed.buildingConfig.conceptosPago.includes('Mensualidad')) {
-          parsed.buildingConfig.conceptosPago.unshift('Mensualidad')
+        // Stop purging 'Multa' and stop forcing legacy 'Mensualidad'
+        if (!parsed.buildingConfig.conceptosPago.includes('Mantenimiento')) {
+          parsed.buildingConfig.conceptosPago.unshift('Mantenimiento')
         }
       }
 
@@ -254,22 +308,7 @@ function loadInitialState(): StoreState {
   } catch { /* fall through to seed data on any error */ }
 
   // No stored state found — return fresh seed data
-  return {
-    notificaciones: seedNotificaciones,
-    avisos: seedAvisos,
-    pagos: seedPagos,
-    paquetes: seedPaquetes,
-    reservaciones: seedReservaciones,
-    votaciones: seedVotaciones,
-    residents: seedResidents,
-    staff: seedStaff,
-    amenities: seedAmenities,
-    buildingConfig: seedBuildingConfig,
-    tickets: seedTickets,
-    ticketCounter: seedTicketCounter,
-    adeudos: seedAdeudos,
-    egresos: seedEgresos,
-  }
+  return getSeedState()
 }
 
 // ─── Reducer ─────────────────────────────────────────────────────────
@@ -469,11 +508,11 @@ function reducer(state: StoreState, action: Action): StoreState {
       const monthLabel = `${MONTH_NAMES_ES[parseInt(monthStr, 10) - 1]} de ${yearStr}`
       const fee = state.buildingConfig.monthlyFee || 1700
 
-      // 1. Generate one Mensualidad pago per resident for this month (if missing)
+      // 1. Generate one Mantenimiento pago per resident for this month (if missing)
       const newPagos: Pago[] = []
       state.residents.forEach(res => {
         const exists = state.pagos.some(
-          p => p.apartment === res.apartment && (p.monthKey || '') === mk && (p.concepto || 'Mensualidad') === 'Mensualidad'
+          p => p.apartment === res.apartment && (p.monthKey || '') === mk && (p.concepto || 'Mantenimiento') === 'Mantenimiento'
         )
         if (!exists) {
           newPagos.push({
@@ -482,7 +521,7 @@ function reducer(state: StoreState, action: Action): StoreState {
             resident: res.name,
             month: monthLabel,
             monthKey: mk,
-            concepto: 'Mensualidad',
+            concepto: 'Mantenimiento',
             amount: fee,
             status: 'Pendiente',
             paymentDate: null,
@@ -524,22 +563,7 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'RESET':
       localStorage.removeItem(STORAGE_KEY)
       localStorage.removeItem('cantonalfa_settings')
-      return {
-        notificaciones: seedNotificaciones,
-        avisos: seedAvisos,
-        pagos: seedPagos,
-        paquetes: seedPaquetes,
-        reservaciones: seedReservaciones,
-        votaciones: seedVotaciones,
-        residents: seedResidents,
-        staff: seedStaff,
-        amenities: seedAmenities,
-        buildingConfig: seedBuildingConfig,
-        tickets: seedTickets,
-        ticketCounter: seedTicketCounter,
-        adeudos: seedAdeudos,
-        egresos: seedEgresos,
-      }
+      return getSeedState()
 
     default:
       return state

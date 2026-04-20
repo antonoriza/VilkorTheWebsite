@@ -9,6 +9,9 @@
  * button in the admin Configuration page.
  */
 
+/** Current version of the application state. Increment this to trigger migrations. */
+export const CURRENT_STATE_VERSION = 2
+
 // ─── Notification ────────────────────────────────────────────────────
 
 /** A notification sent to a specific user (admin or resident) */
@@ -82,7 +85,7 @@ export interface Pago {
   month: string
   /** ISO YYYY-MM used for reliable ordering and filtering */
   monthKey: string
-  /** Billing concept — admin-defined, non-disciplinary (e.g. "Mensualidad", "Extraordinario") */
+  /** Billing concept — admin-defined, non-disciplinary (e.g. "Mantenimiento", "Otros") */
   concepto: string
   /** Amount in MXN */
   amount: number
@@ -235,9 +238,9 @@ export interface BuildingConfig {
   adminName: string
   adminEmail: string
   adminPhone: string
-  /** Admin-managed list of payment concepts (e.g. Mensualidad, Extraordinario) */
+  /** Admin-managed list of payment concepts (e.g. Mantenimiento, Otros) */
   conceptosPago: string[]
-  /** Admin-managed sub-items per concept (e.g. Extraordinario → ['Cuota pintura', 'Reparación elevador']) */
+  /** Admin-managed sub-items per concept (e.g. Otros → ['Cuota pintura', 'Reparación elevador']) */
   subConceptos?: Record<string, string[]>
   /** Admin-managed list of expense categories */
   categoriasEgreso?: EgresoCategoria[]
@@ -317,7 +320,7 @@ export interface Adeudo {
   apartment: string
   /** Classification */
   type: AdeudoType
-  /** Free-text description of the reason (e.g. "Mensualidad atrasada Mar-2025", "Daños en elevador") */
+  /** Free-text description of the reason (e.g. "Mantenimiento atrasada Mar-2025", "Daños en elevador") */
   concepto: string
   /** Admin notes / detailed reason for this record */
   description: string
@@ -391,10 +394,12 @@ export const seedBuildingConfig: BuildingConfig = {
   adminName: 'Administrador General',
   adminEmail: 'admin@property.com',
   adminPhone: '+52 55 1234 5678',
-  conceptosPago: ['Mensualidad', 'Extraordinario', 'Multa', 'Adeudo', 'Reserva Amenidad'],
+  conceptosPago: ['Mantenimiento', 'Multa', 'Otros', 'Reserva Amenidad'],
   subConceptos: {
-    'Extraordinario': ['Cuota pintura fachada', 'Reparación elevador', 'Impermeabilización'],
-    'Multa': ['Ruido excesivo', 'Uso indebido de cajón', 'Mascota sin registro', 'Basura fuera de horario'],
+    'Otros': [],
+    'Multa': [],
+    'Mantenimiento': [],
+    'Reserva Amenidad': [],
   },
   categoriasEgreso: ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros'],
   monthlyFee: 1800,
@@ -1808,7 +1813,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Miller",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -1819,7 +1824,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Miller",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -1830,7 +1835,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Miller",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -1841,7 +1846,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Miller",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -1852,7 +1857,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Rodriguez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -1863,7 +1868,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Rodriguez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -1874,7 +1879,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Rodriguez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -1885,7 +1890,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Rodriguez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -1896,7 +1901,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Thompson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -1907,7 +1912,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Thompson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -1918,7 +1923,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Thompson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -1929,7 +1934,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Thompson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -1939,7 +1944,7 @@ export const seedPagos: Pago[] = [
     "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -1949,7 +1954,7 @@ export const seedPagos: Pago[] = [
     "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -1959,7 +1964,7 @@ export const seedPagos: Pago[] = [
     "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -1969,7 +1974,7 @@ export const seedPagos: Pago[] = [
     "apartment": "A0201", "resident": "Elizabeth Garcia",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -1980,7 +1985,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Smith",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -1991,7 +1996,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Smith",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2002,7 +2007,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Smith",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2013,7 +2018,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Smith",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2024,7 +2029,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Jones",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2035,7 +2040,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Jones",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2046,7 +2051,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Jones",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2057,7 +2062,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Jones",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2068,7 +2073,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Morales",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2079,7 +2084,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Morales",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2090,7 +2095,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Morales",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2101,7 +2106,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Morales",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2112,7 +2117,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Williams",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2123,7 +2128,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Williams",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2134,7 +2139,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Williams",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2145,7 +2150,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Williams",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2156,7 +2161,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Herrera",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2167,7 +2172,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Herrera",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2178,7 +2183,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Herrera",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2189,7 +2194,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Herrera",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2200,7 +2205,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Anderson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2211,7 +2216,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Anderson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2222,7 +2227,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Anderson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2233,7 +2238,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Anderson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2244,7 +2249,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Lopez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2255,7 +2260,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Lopez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2266,7 +2271,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Lopez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2277,7 +2282,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Lopez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2288,7 +2293,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Taylor",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2299,7 +2304,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Taylor",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2310,7 +2315,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Taylor",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2321,7 +2326,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Taylor",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2332,7 +2337,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Martinez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2343,7 +2348,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Martinez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2354,7 +2359,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Martinez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2365,7 +2370,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Martinez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2376,7 +2381,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Brown",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2387,7 +2392,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Brown",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2398,7 +2403,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Brown",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2409,7 +2414,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Brown",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2420,7 +2425,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Wilson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2431,7 +2436,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Wilson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2442,7 +2447,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Wilson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2453,7 +2458,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Wilson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2464,7 +2469,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Sanchez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2475,7 +2480,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Sanchez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2486,7 +2491,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Sanchez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2497,7 +2502,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Sanchez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2508,7 +2513,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Davies",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2519,7 +2524,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Davies",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2530,7 +2535,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Davies",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2541,7 +2546,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Davies",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2552,7 +2557,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Evans",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2563,7 +2568,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Evans",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2574,7 +2579,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Evans",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2585,7 +2590,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Evans",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2596,7 +2601,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Clark",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2607,7 +2612,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Clark",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2618,7 +2623,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Clark",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2629,7 +2634,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Clark",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2640,7 +2645,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ramirez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2651,7 +2656,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ramirez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2662,7 +2667,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ramirez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2673,7 +2678,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ramirez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2684,7 +2689,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen White",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2695,7 +2700,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen White",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2706,7 +2711,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen White",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2717,7 +2722,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen White",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2728,7 +2733,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Roberts",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2739,7 +2744,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Roberts",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2750,7 +2755,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Roberts",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2761,7 +2766,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Roberts",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2772,7 +2777,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Campbell",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2783,7 +2788,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Campbell",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2794,7 +2799,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Campbell",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2805,7 +2810,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Campbell",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2816,7 +2821,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Hernandez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2827,7 +2832,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Hernandez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2838,7 +2843,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Hernandez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2849,7 +2854,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Hernandez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2860,7 +2865,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Wright",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2871,7 +2876,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Wright",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2882,7 +2887,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Wright",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2893,7 +2898,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Wright",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2904,7 +2909,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Mitchell",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2915,7 +2920,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Mitchell",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2926,7 +2931,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Mitchell",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2937,7 +2942,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Mitchell",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2948,7 +2953,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Flores",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -2959,7 +2964,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Flores",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -2970,7 +2975,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Flores",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -2981,7 +2986,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Flores",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -2992,7 +2997,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Young",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3003,7 +3008,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Young",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3014,7 +3019,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Young",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3025,7 +3030,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Young",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3036,7 +3041,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Ortiz",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3047,7 +3052,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Ortiz",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3058,7 +3063,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Ortiz",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3069,7 +3074,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Ortiz",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3080,7 +3085,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Collins",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3091,7 +3096,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Collins",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3102,7 +3107,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Collins",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3113,7 +3118,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Collins",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3124,7 +3129,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen King",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3135,7 +3140,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen King",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3146,7 +3151,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen King",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3157,7 +3162,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen King",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3168,7 +3173,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Ruiz",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3179,7 +3184,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Ruiz",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3190,7 +3195,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Ruiz",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3201,7 +3206,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Ruiz",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3212,7 +3217,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Harrison",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3223,7 +3228,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Harrison",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3234,7 +3239,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Harrison",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3245,7 +3250,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Harrison",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3256,7 +3261,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Morgan",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3267,7 +3272,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Morgan",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3278,7 +3283,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Morgan",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3289,7 +3294,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Morgan",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3300,7 +3305,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Castro",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3311,7 +3316,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Castro",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3322,7 +3327,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Castro",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3333,7 +3338,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Castro",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3344,7 +3349,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Lee",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3355,7 +3360,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Lee",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3366,7 +3371,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Lee",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3377,7 +3382,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Lee",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3388,7 +3393,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Walker",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3399,7 +3404,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Walker",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3410,7 +3415,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Walker",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3421,7 +3426,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Walker",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3432,7 +3437,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Mendez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3443,7 +3448,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Mendez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3454,7 +3459,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Mendez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3465,7 +3470,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Mendez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3476,7 +3481,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Scott",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3487,7 +3492,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Scott",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3498,7 +3503,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Scott",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3509,7 +3514,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Scott",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3520,7 +3525,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Green",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3531,7 +3536,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Green",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3542,7 +3547,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Green",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3553,7 +3558,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Green",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3564,7 +3569,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Hill",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3575,7 +3580,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Hill",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3586,7 +3591,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Hill",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3597,7 +3602,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Hill",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3608,7 +3613,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Baker",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3619,7 +3624,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Baker",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3630,7 +3635,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Baker",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3641,7 +3646,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Baker",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3652,7 +3657,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Adams",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3663,7 +3668,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Adams",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3674,7 +3679,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Adams",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3685,7 +3690,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Adams",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3696,7 +3701,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Nelson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3707,7 +3712,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Nelson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3718,7 +3723,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Nelson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3729,7 +3734,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Nelson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3740,7 +3745,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Gonzalez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3751,7 +3756,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Gonzalez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3762,7 +3767,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Gonzalez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3773,7 +3778,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Gonzalez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3784,7 +3789,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Carter",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3795,7 +3800,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Carter",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3806,7 +3811,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Carter",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3817,7 +3822,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Carter",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3828,7 +3833,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Mitchell",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3839,7 +3844,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Mitchell",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3850,7 +3855,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Mitchell",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3861,7 +3866,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Mitchell",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3872,7 +3877,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Perez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3883,7 +3888,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Perez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3894,7 +3899,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Perez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3905,7 +3910,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Perez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3916,7 +3921,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Parker",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3927,7 +3932,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Parker",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3938,7 +3943,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Parker",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3949,7 +3954,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Parker",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -3960,7 +3965,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Edwards",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -3971,7 +3976,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Edwards",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -3982,7 +3987,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Edwards",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -3993,7 +3998,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Edwards",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4004,7 +4009,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Collins",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4015,7 +4020,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Collins",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4026,7 +4031,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Collins",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4037,7 +4042,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Collins",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4048,7 +4053,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Stewart",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4059,7 +4064,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Stewart",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4070,7 +4075,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Stewart",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4081,7 +4086,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Stewart",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4092,7 +4097,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Morris",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4103,7 +4108,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Morris",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4114,7 +4119,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Morris",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4125,7 +4130,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Morris",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4136,7 +4141,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Murphy",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4147,7 +4152,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Murphy",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4158,7 +4163,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Murphy",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4169,7 +4174,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Murphy",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4180,7 +4185,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Rivera",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4191,7 +4196,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Rivera",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4202,7 +4207,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Rivera",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4213,7 +4218,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Rivera",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4224,7 +4229,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Cook",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4235,7 +4240,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Cook",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4246,7 +4251,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Cook",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4257,7 +4262,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Cook",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4268,7 +4273,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Bell",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4279,7 +4284,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Bell",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4290,7 +4295,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Bell",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4301,7 +4306,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Bell",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4312,7 +4317,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ward",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4323,7 +4328,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ward",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4334,7 +4339,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ward",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4345,7 +4350,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ward",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4356,7 +4361,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Richardson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4367,7 +4372,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Richardson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pendiente",
     "paymentDate": null
@@ -4378,7 +4383,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Richardson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pendiente",
     "paymentDate": null
@@ -4389,7 +4394,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Richardson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pendiente",
     "paymentDate": null
@@ -4400,7 +4405,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Watson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4411,7 +4416,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Watson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4422,7 +4427,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Watson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4433,7 +4438,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Watson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4444,7 +4449,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Brooks",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4455,7 +4460,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Brooks",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4466,7 +4471,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Brooks",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4477,7 +4482,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Brooks",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4488,7 +4493,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wood",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4499,7 +4504,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wood",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4510,7 +4515,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wood",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4521,7 +4526,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wood",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4532,7 +4537,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Kelly",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4543,7 +4548,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Kelly",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4554,7 +4559,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Kelly",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4565,7 +4570,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Kelly",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4576,7 +4581,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Sanders",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4587,7 +4592,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Sanders",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4598,7 +4603,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Sanders",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4609,7 +4614,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Sanders",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4620,7 +4625,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Bennett",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4631,7 +4636,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Bennett",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4642,7 +4647,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Bennett",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4653,7 +4658,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Bennett",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4664,7 +4669,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ross",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4675,7 +4680,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ross",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4686,7 +4691,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ross",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4697,7 +4702,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Ross",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4708,7 +4713,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Jenkins",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4719,7 +4724,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Jenkins",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4730,7 +4735,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Jenkins",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4741,7 +4746,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Jenkins",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4752,7 +4757,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Perry",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4763,7 +4768,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Perry",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4774,7 +4779,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Perry",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4785,7 +4790,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Perry",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4796,7 +4801,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Powell",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4807,7 +4812,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Powell",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4818,7 +4823,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Powell",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4829,7 +4834,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Powell",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4840,7 +4845,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Sullivan",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4851,7 +4856,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Sullivan",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4862,7 +4867,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Sullivan",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4873,7 +4878,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Sullivan",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4884,7 +4889,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Russell",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4895,7 +4900,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Russell",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4906,7 +4911,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Russell",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4917,7 +4922,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Russell",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4928,7 +4933,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Foster",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4939,7 +4944,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Foster",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4950,7 +4955,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Foster",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -4961,7 +4966,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Foster",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -4972,7 +4977,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Butler",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -4983,7 +4988,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Butler",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -4994,7 +4999,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Butler",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5005,7 +5010,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Butler",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5016,7 +5021,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Simmons",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5027,7 +5032,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Simmons",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5038,7 +5043,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Simmons",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5049,7 +5054,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Simmons",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5060,7 +5065,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Bryant",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5071,7 +5076,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Bryant",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5082,7 +5087,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Bryant",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5093,7 +5098,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Bryant",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5104,7 +5109,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Alexander",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5115,7 +5120,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Alexander",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5126,7 +5131,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Alexander",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5137,7 +5142,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Alexander",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5148,7 +5153,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Griffin",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5159,7 +5164,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Griffin",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5170,7 +5175,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Griffin",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5181,7 +5186,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Griffin",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5192,7 +5197,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Diaz",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5203,7 +5208,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Diaz",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5214,7 +5219,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Diaz",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5225,7 +5230,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Diaz",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5236,7 +5241,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Hayes",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5247,7 +5252,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Hayes",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5258,7 +5263,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Hayes",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5269,7 +5274,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Hayes",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5280,7 +5285,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Myers",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5291,7 +5296,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Myers",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5302,7 +5307,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Myers",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5313,7 +5318,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Myers",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5324,7 +5329,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ford",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5335,7 +5340,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ford",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5346,7 +5351,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ford",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5357,7 +5362,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Ford",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5368,7 +5373,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Hamilton",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5379,7 +5384,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Hamilton",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5390,7 +5395,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Hamilton",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5401,7 +5406,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Hamilton",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5412,7 +5417,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Graham",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5423,7 +5428,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Graham",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5434,7 +5439,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Graham",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5445,7 +5450,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn Graham",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5456,7 +5461,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Fisher",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5467,7 +5472,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Fisher",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5478,7 +5483,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Fisher",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5489,7 +5494,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Fisher",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5500,7 +5505,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wallace",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5511,7 +5516,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wallace",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5522,7 +5527,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wallace",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5533,7 +5538,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Wallace",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5544,7 +5549,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal West",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5555,7 +5560,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal West",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5566,7 +5571,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal West",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5577,7 +5582,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal West",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5588,7 +5593,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Jordan",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5599,7 +5604,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Jordan",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5610,7 +5615,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Jordan",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5621,7 +5626,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Jordan",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5632,7 +5637,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Owens",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5643,7 +5648,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Owens",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5654,7 +5659,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Owens",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5665,7 +5670,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Owens",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5676,7 +5681,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Reynolds",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5687,7 +5692,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Reynolds",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5698,7 +5703,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Reynolds",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5709,7 +5714,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Reynolds",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5720,7 +5725,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Vargas",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5731,7 +5736,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Vargas",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5742,7 +5747,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Vargas",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5753,7 +5758,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Vargas",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5764,7 +5769,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Ellis",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5775,7 +5780,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Ellis",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5786,7 +5791,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Ellis",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5797,7 +5802,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Ellis",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5808,7 +5813,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Romero",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5819,7 +5824,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Romero",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5830,7 +5835,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Romero",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5841,7 +5846,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Romero",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5852,7 +5857,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Stephens",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5863,7 +5868,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Stephens",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5874,7 +5879,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Stephens",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5885,7 +5890,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Stephens",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5896,7 +5901,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Porter",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5907,7 +5912,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Porter",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5918,7 +5923,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Porter",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5929,7 +5934,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zyanya Porter",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5940,7 +5945,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Hunter",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5951,7 +5956,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Hunter",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -5962,7 +5967,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Hunter",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -5973,7 +5978,7 @@ export const seedPagos: Pago[] = [
     "resident": "Elizabeth Hunter",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -5984,7 +5989,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Robertson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -5995,7 +6000,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Robertson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6006,7 +6011,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Robertson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6017,7 +6022,7 @@ export const seedPagos: Pago[] = [
     "resident": "Maria Robertson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6028,7 +6033,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Shaw",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6039,7 +6044,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Shaw",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6050,7 +6055,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Shaw",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6061,7 +6066,7 @@ export const seedPagos: Pago[] = [
     "resident": "Samantha Shaw",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6072,7 +6077,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Hunt",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6083,7 +6088,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Hunt",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6094,7 +6099,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Hunt",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6105,7 +6110,7 @@ export const seedPagos: Pago[] = [
     "resident": "Manuel Hunt",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6116,7 +6121,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Black",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6127,7 +6132,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Black",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6138,7 +6143,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Black",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6149,7 +6154,7 @@ export const seedPagos: Pago[] = [
     "resident": "Mario Black",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6160,7 +6165,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Holmes",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6171,7 +6176,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Holmes",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6182,7 +6187,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Holmes",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6193,7 +6198,7 @@ export const seedPagos: Pago[] = [
     "resident": "Karen Holmes",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6204,7 +6209,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Palmer",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6215,7 +6220,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Palmer",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6226,7 +6231,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Palmer",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6237,7 +6242,7 @@ export const seedPagos: Pago[] = [
     "resident": "Marco Palmer",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6248,7 +6253,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Wagner",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6259,7 +6264,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Wagner",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6270,7 +6275,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Wagner",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6281,7 +6286,7 @@ export const seedPagos: Pago[] = [
     "resident": "Julio Wagner",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6292,7 +6297,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Mendoza",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6303,7 +6308,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Mendoza",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6314,7 +6319,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Mendoza",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6325,7 +6330,7 @@ export const seedPagos: Pago[] = [
     "resident": "Dorothy Mendoza",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6336,7 +6341,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Patterson",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6347,7 +6352,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Patterson",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6358,7 +6363,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Patterson",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6369,7 +6374,7 @@ export const seedPagos: Pago[] = [
     "resident": "Antonio Patterson",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6380,7 +6385,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Jacobs",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6391,7 +6396,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Jacobs",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6402,7 +6407,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Jacobs",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6413,7 +6418,7 @@ export const seedPagos: Pago[] = [
     "resident": "Florian Jacobs",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6424,7 +6429,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn James",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6435,7 +6440,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn James",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6446,7 +6451,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn James",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6457,7 +6462,7 @@ export const seedPagos: Pago[] = [
     "resident": "Efra\u00edn James",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6468,7 +6473,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Cruz",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6479,7 +6484,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Cruz",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6490,7 +6495,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Cruz",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6501,7 +6506,7 @@ export const seedPagos: Pago[] = [
     "resident": "Santiago Cruz",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6512,7 +6517,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Gordon",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6523,7 +6528,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Gordon",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6534,7 +6539,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Gordon",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6545,7 +6550,7 @@ export const seedPagos: Pago[] = [
     "resident": "Bertha Gordon",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6556,7 +6561,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Harrison",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6567,7 +6572,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Harrison",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6578,7 +6583,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Harrison",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6589,7 +6594,7 @@ export const seedPagos: Pago[] = [
     "resident": "Michal Harrison",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6600,7 +6605,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Reyes",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6611,7 +6616,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Reyes",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6622,7 +6627,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Reyes",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6633,7 +6638,7 @@ export const seedPagos: Pago[] = [
     "resident": "Jorge Reyes",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6644,7 +6649,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Hughes",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6655,7 +6660,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Hughes",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6666,7 +6671,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Hughes",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6677,7 +6682,7 @@ export const seedPagos: Pago[] = [
     "resident": "Fernanda Hughes",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6688,7 +6693,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Price",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6699,7 +6704,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Price",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6710,7 +6715,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Price",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6721,7 +6726,7 @@ export const seedPagos: Pago[] = [
     "resident": "Alejandro Price",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6732,7 +6737,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Myers",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6743,7 +6748,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Myers",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6754,7 +6759,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Myers",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6765,7 +6770,7 @@ export const seedPagos: Pago[] = [
     "resident": "Carmen Myers",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6776,7 +6781,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Long",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6787,7 +6792,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Long",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6798,7 +6803,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Long",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6809,7 +6814,7 @@ export const seedPagos: Pago[] = [
     "resident": "Martha Long",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6820,7 +6825,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Jimenez",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6831,7 +6836,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Jimenez",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6842,7 +6847,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Jimenez",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6853,7 +6858,7 @@ export const seedPagos: Pago[] = [
     "resident": "Juan Jimenez",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6864,7 +6869,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Foster",
     "month": "enero de 2026",
     "monthKey": "2026-01",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-01-05"
@@ -6875,7 +6880,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Foster",
     "month": "febrero de 2026",
     "monthKey": "2026-02",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-02-05"
@@ -6886,7 +6891,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Foster",
     "month": "marzo de 2026",
     "monthKey": "2026-03",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-03-05"
@@ -6897,7 +6902,7 @@ export const seedPagos: Pago[] = [
     "resident": "Zsolt Foster",
     "month": "abril de 2026",
     "monthKey": "2026-04",
-    "concepto": "Mensualidad",
+    "concepto": "Mantenimiento",
     "amount": 1800,
     "status": "Pagado",
     "paymentDate": "2026-04-05"
@@ -6958,7 +6963,7 @@ export const seedAdeudos: Adeudo[] = [
     id: 'ad-b0101-2',
     apartment: 'B0101',
     type: 'llamado_atencion',
-    concepto: 'Llamado de atención',
+    concepto: 'Multa',
     description: 'Ruido excesivo reportado por vecinos.',
     amount: 0,
     status: 'Activo',
@@ -6971,8 +6976,8 @@ export const seedAdeudos: Adeudo[] = [
     id: 'ad-b0101-3',
     apartment: 'B0101',
     type: 'multa',
-    description: 'Exceso de mascotas en lugares no permitidos.',
-    concepto: 'Mascota sin registro',
+    description: 'Exceso de mascotas en lugares no permitidos (Mascota sin registro).',
+    concepto: 'Multa',
     amount: 300,
     status: 'Activo',
     createdAt: '2026-04-15T11:00:00.000Z',
