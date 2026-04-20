@@ -844,7 +844,7 @@ export default function PagosPage() {
                 ? (() => {
                     const parts: string[] = []
                     if (lFilterMonth) parts.push(monthKeyToLabel(lFilterMonth))
-                    else parts.push('Todos los meses')
+                    else parts.push('Acumulado Histórico')
                     if (lFilterTower) parts.push(`Torre ${lFilterTower}`)
                     if (lFilterUnit) parts.push(`Unidad ${lFilterUnit}`)
                     if (lFilterConcepto) parts.push(lFilterConcepto)
@@ -852,7 +852,7 @@ export default function PagosPage() {
                   })()
                 : lFilterMonth 
                   ? monthKeyToLabel(lFilterMonth)
-                  : 'Acumulado histórico'
+                  : 'Acumulado Histórico'
               }
             </p>
           )}
@@ -1093,7 +1093,12 @@ export default function PagosPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        if (showFilters) clearAllFilters()
+                        if (showFilters) {
+                          clearAllFilters()
+                        } else {
+                          // Al activar filtros, por defecto mostramos el mes actual
+                          setLFilterMonth(TODAY_KEY)
+                        }
                         setShowFilters(!showFilters)
                       }}
                       className={[
