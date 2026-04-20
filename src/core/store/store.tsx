@@ -128,60 +128,70 @@ export function isEffectiveDebt(p: Pago, nowIso: string, rules: FinancialMaturit
   if (p.status === 'Vencido') return true
   
   const now = new Date(nowIso)
-  const baseConcepto = (p.concepto || '').split(':')[0].split('—')[0].trim()
+  // Split by ':' or '—' and trim to get the core category
+  const baseConcepto = (p.concepto || '').split(/[:—]/)[0].trim()
 
-  // 1. Multas & Otros
-  if (baseConcepto === 'Multa' || baseConcepto === 'Otros') {
-    if (rules.multaOtros === 'immediate') return true
-    if (rules.multaOtros === '7_days_grace') {
-      // If we don't have createdAt on Pago, we might use a heuristic or stay immediate.
-      // For now, let's assume they are handled by a system that marks them 'Vencido' manually
-      // if grace period passes, or if we had createdAt.
-      // Since Pago doesn't strictly have createdAt in seed, we fallback to immediate for safety.
-      return true
-    }
-  }
-
-  // 2. Reserva Amenidad
-  if (baseConcepto === 'Reserva Amenidad') {
-    if (rules.amenidad === 'immediate') return true
-    if (!p.monthKey) return false
-    
-    const eventDate = new Date(p.monthKey) // e.g. "2026-04-20"
-    if (rules.amenidad === 'day_of_event') {
-      return now.getTime() >= eventDate.getTime()
-    }
-    if (rules.amenidad === '1_day_before') {
-      const dayBefore = new Date(eventDate.getTime() - 24 * 60 * 60 * 1000)
-      return now.getTime() >= dayBefore.getTime()
-    }
-  }
-
-  // 3. Mantenimiento
+  // 1. Mantenimiento
   if (baseConcepto === 'Mantenimiento') {
-    if (!p.monthKey) return false // e.g. "2026-04"
+    if (!p.monthKey) return true
     const [y, m] = p.monthKey.split('-').map(Number)
     
     let maturityTarget: Date
-    if (rules.mantenimiento === 'next_month_01') {
-      maturityTarget = new Date(y, m, 1) // Next month 1st
-    } else if (rules.mantenimiento === 'next_month_10') {
-      maturityTarget = new Date(y, m, 10) // Next month 10th
+    if (rules.mantenimiento === 'next_month_10') {
+      maturityTarget = new Date(y, m, 10) // Month 'm' is already index for next month in JS (0-indexed)
+    } else if (rules.mantenimiento === 'next_month_01') {
+      maturityTarget = new Date(y, m, 1)
+    } else if (rules.mantenimiento === 'current_month_end') {
+      // Last day of current month
+      maturityTarget = new Date(y, m, 0)
     } else {
-      // current_month_end
-      maturityTarget = new Date(y, m, 0) // wait, y, m, 0 is last day of month m-1.
-      // for month m (1-indexed m), nextMonth(y, m+1, 0) is last day of m.
-      // monthKey is 1-indexed string representation "YYYY-MM"
-      maturityTarget = new Date(y, m, 0) // No, if m=4(April), new Date(2026, 4, 0) is April 30th?
-      // JS Date months are 0-indexed. April is 3.
-      // So if monthKey is "2026-04", y=2026, m=4.
-      // new Date(2026, 4, 0) -> year 2026, month index 4 (May), date 0 -> April 30th. Correct.
+      return true // Unknown rule
     }
     
     return now.getTime() >= maturityTarget.getTime()
   }
 
-  return false
+  // 2. Reserva Amenidad
+  if (baseConcepto === 'Reserva Amenidad') {
+    if (rules.amenidad === 'immediate') return true
+    if (!p.monthKey) return true
+    
+    // If we have YYYY-MM-DD
+    const parts = p.monthKey.split('-').map(Number)
+    let eventDate: Date
+    
+    if (parts.length === 3) {
+      // YYYY-MM-DD
+      const [y, m, d] = parts
+      eventDate = new Date(y, m - 1, d)
+    } else if (parts.length === 2) {
+      // YYYY-MM (Fallback to end of month for grace)
+      const [y, m] = parts
+      eventDate = new Date(y, m, 0) // Last day of that month
+    } else {
+      return true
+    }
+    
+    if (rules.amenidad === '1_day_before') {
+      eventDate.setDate(eventDate.getDate() - 1)
+    }
+    
+    return now.getTime() >= eventDate.getTime()
+  }
+
+  // 3. Multas & Otros
+  if (baseConcepto === 'Multa' || baseConcepto === 'Otros') {
+    if (rules.multaOtros === '7_days_grace') {
+      // If we don't have createdAt, we assume it belongs to the current month's start
+      const [y, m] = (p.monthKey || nowIso.slice(0, 7)).split('-').map(Number)
+      const graceEnd = new Date(y, m - 1, 7) // 7th day of the month
+      return now.getTime() >= graceEnd.getTime()
+    }
+    return true // immediate or unknown rule
+  }
+
+  // 4. Default Catch-all: No rule = Immediate Debt
+  return true
 }
 
 /**
@@ -251,6 +261,13 @@ function loadInitialState(): StoreState {
           if (parsed.buildingConfig && !parsed.buildingConfig.maturityRules) {
             parsed.buildingConfig.maturityRules = seedBuildingConfig.maturityRules
           }
+        }
+
+        // 4. MIGRATION V3 -> V4: Wipe financial data to clear duplicates
+        if (version < 4) {
+          parsed.pagos = [...seedPagos]
+          parsed.adeudos = [...seedAdeudos]
+          parsed.egresos = [...seedEgresos]
         }
 
         parsed.version = CURRENT_STATE_VERSION

@@ -92,7 +92,7 @@ export default function PagosPage() {
     autoAdeudos.forEach(a => dispatch({ type: 'DELETE_ADEUDO', payload: a.id }))
   }, [isAdmin, state.adeudos.length, dispatch]) // Runs if length changes, ensuring all are purged
 
-  const [lFilterMonth, setLFilterMonth]   = useState(TODAY_KEY)
+  const [lFilterMonth, setLFilterMonth]   = useState('') // Default to Historic (All months)
   const [lFilterTower, setLFilterTower]   = useState('')
   const [lFilterUnit, setLFilterUnit]     = useState('')
   const [lFilterStatus, setLFilterStatus] = useState('')
@@ -163,10 +163,11 @@ export default function PagosPage() {
 
   // ── Egreso fields (inside unified modal) ──
   const [egCategoria, setEgCategoria] = useState<EgresoCategoria>('mantenimiento')
-  const [egConcepto, setEgConcepto] = useState('')
+  const [egDate, setEgDate] = useState(TODAY_ISO.split('T')[0])
   const [egDescription, setEgDescription] = useState('')
+
+  const [isNotifying, setIsNotifying] = useState(false)
   const [egAmount, setEgAmount] = useState('')
-  const [egDate, setEgDate] = useState(new Date().toISOString().split('T')[0])
 
   // ── Egreso delete confirm ──
   const [deleteEgresoId, setDeleteEgresoId] = useState<string | null>(null)
@@ -271,6 +272,12 @@ export default function PagosPage() {
     const myAdeudos = state.adeudos.filter(a => a.status === 'Activo' && (isAdmin || a.apartment === myApartment))
     const adeudosTotal = myAdeudos.reduce((s, a) => s + a.amount, 0)
 
+    // Base collection metrics for progress bar
+    const isMaintenance = (p: Pago) => (p.concepto || '').split(/[:—]/)[0].trim() === 'Mantenimiento'
+    const maintenancePagos = allPagos.filter(isMaintenance)
+    const expectedMantenimientoTotal = maintenancePagos.reduce((s, p) => s + p.amount, 0)
+    const paidMantenimientoTotal = maintenancePagos.filter(p => p.status === 'Pagado').reduce((s, p) => s + p.amount, 0)
+
     return {
       paidTotal: paid.reduce((s, p) => s + p.amount, 0),
       overdueTotal: overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal,
@@ -280,8 +287,11 @@ export default function PagosPage() {
       overdueCount: overdue.length + myAdeudos.length,
       upcomingCount: upcoming.length,
       porValidarCount: porValidar.length,
+      totalPortfolioAmount: paid.reduce((s, p) => s + p.amount, 0) + overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal + upcoming.reduce((s, p) => s + p.amount, 0) + porValidar.reduce((s, p) => s + p.amount, 0),
+      expectedMantenimientoTotal,
+      paidMantenimientoTotal
     }
-  }, [state.pagos, state.adeudos, isAdmin, myApartment])
+  }, [state.pagos, state.adeudos, isAdmin, myApartment, state.buildingConfig.maturityRules])
 
   /** Contextual KPIs — filtered by dropdowns (month/tower/unit/concepto), NOT by status */
   const contextualKpis = useMemo(() => {
@@ -309,6 +319,12 @@ export default function PagosPage() {
       : []
     const adeudosTotal = myAdeudos.reduce((s, a) => s + a.amount, 0)
 
+    // Base collection metrics for progress bar
+    const isMaintenance = (p: Pago) => (p.concepto || '').split(/[:—]/)[0].trim() === 'Mantenimiento'
+    const maintenancePagos = data.filter(isMaintenance)
+    const expectedMantenimientoTotal = maintenancePagos.reduce((s, p) => s + p.amount, 0)
+    const paidMantenimientoTotal = maintenancePagos.filter(p => p.status === 'Pagado').reduce((s, p) => s + p.amount, 0)
+
     return {
       paidTotal: paid.reduce((s, p) => s + p.amount, 0),
       overdueTotal: overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal,
@@ -318,8 +334,11 @@ export default function PagosPage() {
       overdueCount: overdue.length + myAdeudos.length,
       upcomingCount: upcoming.length,
       porValidarCount: porValidar.length,
+      totalPortfolioAmount: paid.reduce((s, p) => s + p.amount, 0) + overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal + upcoming.reduce((s, p) => s + p.amount, 0) + porValidar.reduce((s, p) => s + p.amount, 0),
+      expectedMantenimientoTotal,
+      paidMantenimientoTotal
     }
-  }, [state.pagos, state.adeudos, state.residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto])
+  }, [state.pagos, state.adeudos, state.residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, state.buildingConfig.maturityRules])
 
   /** Active KPIs — contextual when filters panel is open, global otherwise */
   const ledgerKpis = showFilters ? contextualKpis : globalKpis
@@ -704,15 +723,29 @@ export default function PagosPage() {
           {/* ── KPI strip (admin) — clickable status filter ── */}
           {isAdmin && ledgerSubTab === 'ingresos' && (
             <div className="space-y-2">
-            <div className="grid grid-cols-3 gap-3">
+            <div className={`grid gap-3 items-stretch ${lFilterMonth ? 'grid-cols-3' : 'grid-cols-2'}`}>
               {[
-                { label: 'Pagados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', activeColor: 'ring-2 ring-emerald-500 shadow-md', filterKey: '' as string },
-                { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'text-rose-700 bg-rose-50 border-rose-200', activeColor: 'ring-2 ring-rose-500 shadow-md', filterKey: 'Vencido' },
-                { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200', activeColor: 'ring-2 ring-amber-500 shadow-md', filterKey: 'Pendiente' },
-                { label: 'En Revisión', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'pending_actions', color: 'text-blue-700 bg-blue-50 border-blue-200', activeColor: 'ring-2 ring-blue-500 shadow-md', filterKey: 'Por validar' },
-              ].map(k => {
+                { label: 'Pagados', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', iconBg: 'bg-emerald-50', filterKey: '' as string, showInGlobal: false },
+                { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'bg-rose-500', iconColor: 'text-rose-600', iconBg: 'bg-rose-50', filterKey: 'Vencido', showInGlobal: true },
+                { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', iconBg: 'bg-amber-50', filterKey: 'Pendiente', showInGlobal: true },
+              ].filter(k => !!lFilterMonth || k.showInGlobal).map(k => {
                 const isClickable = !!k.filterKey && !showFilters
                 const isActive = isClickable && lFilterStatus === k.filterKey
+                
+                let progress = 0
+                if (k.label === 'Pagados') {
+                  progress = ledgerKpis.expectedMantenimientoTotal > 0 
+                    ? (ledgerKpis.paidMantenimientoTotal / ledgerKpis.expectedMantenimientoTotal) * 100 
+                    : 0
+                } else {
+                  progress = ledgerKpis.totalPortfolioAmount > 0 
+                    ? (k.amount / ledgerKpis.totalPortfolioAmount) * 100 
+                    : 0
+                }
+
+                const isDebt = k.filterKey === 'Vencido'
+                const isZeroDebt = isDebt && k.amount === 0
+
                 return (
                   <button
                     key={k.label}
@@ -720,34 +753,91 @@ export default function PagosPage() {
                     onClick={() => {
                       if (!isClickable) return
                       if (lFilterStatus === k.filterKey) {
-                        // Deselect: restore month filter and clear status
                         setLFilterStatus('')
                         setLFilterMonth(TODAY_KEY)
                       } else {
-                        // Select: clear month filter to show all-time, set status
                         setLFilterStatus(k.filterKey)
                         setLFilterMonth('')
                       }
                     }}
                     className={[
-                      'flex items-center gap-3 p-4 rounded-2xl border transition-all text-left w-full',
-                      isClickable ? 'cursor-pointer hover:shadow-md hover:-translate-y-px' : 'cursor-default',
-                      k.color,
-                      isActive ? `${k.activeColor} -translate-y-px` : '',
+                      'group flex flex-col justify-between bg-white p-4 rounded-[16px] transition-all duration-300 text-left w-full outline-none transform h-full',
+                      isClickable ? 'cursor-pointer hover:shadow-xl hover:-translate-y-1 hover:border-slate-300' : 'cursor-default',
+                      isActive ? 'border-2 border-slate-900 shadow-xl scale-[1.03] z-20 bg-white' : 'border border-slate-200 shadow-sm z-10',
                     ].join(' ')}
-                    title={isClickable ? (isActive ? `Mostrando: ${k.label} — clic para ver todos` : `Filtrar: ${k.label}`) : undefined}
                   >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm transition-colors ${isActive ? 'bg-white' : 'bg-white/70'}`}>
-                      <span className="material-symbols-outlined text-lg">{k.icon}</span>
+                    <div className="w-full">
+                      {/* Cabecera */}
+                      <div className="flex items-start justify-between mb-3 w-full">
+                        <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center transition-all ${isActive ? 'bg-slate-900 text-white shadow-md' : `${k.iconBg} ${k.iconColor}`}`}>
+                          <span className="material-symbols-outlined text-[16px]">
+                            {isZeroDebt ? 'auto_awesome' : k.icon}
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-1.5">
+                          {isDebt && isActive && k.amount > 0 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (isNotifying) return
+                                setIsNotifying(true)
+                                setTimeout(() => setIsNotifying(false), 2000)
+                              }}
+                              className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest transition-all shadow-sm ${
+                                isNotifying 
+                                  ? 'bg-emerald-500 text-white' 
+                                  : 'bg-slate-900 text-white hover:bg-slate-800'
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-[12px]">
+                                {isNotifying ? 'done' : 'notifications_active'}
+                              </span>
+                            </button>
+                          )}
+
+                          {isActive && (
+                            <div className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[10px] font-bold">filter_alt</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Data */}
+                      <div className="space-y-0.5 w-full">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                          {isZeroDebt ? 'Historial Limpio' : k.label}
+                        </p>
+                        <p className={`text-[20px] font-headline font-black tracking-tight tabular-nums leading-none ${isActive ? 'text-slate-900' : 'text-slate-800'}`}>
+                          {isZeroDebt ? 'Sin Deuda' : `$${k.amount.toLocaleString('es-MX')}`}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-lg font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')}</p>
-                      <p className="text-[10px] font-bold opacity-70 mt-1">{k.label}</p>
-                      <p className="text-[9px] font-black uppercase tracking-tighter opacity-40 mt-1">{k.value} registros</p>
+
+                    <div className="w-full mt-4">
+                      {/* Progreso */}
+                      {!isZeroDebt && (
+                        <>
+                          <div className="w-full h-[4px] bg-slate-100 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full transition-all duration-1000 ease-out ${k.color}`}
+                              style={{ width: `${Math.max(progress, 1)}%` }}
+                            />
+                          </div>
+                          <div className="mt-2.5 flex items-center justify-between">
+                            <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">
+                              {k.value} registros
+                            </span>
+                            <span className="text-[10px] font-black text-slate-800">
+                              {progress.toFixed(1)}%
+                            </span>
+                          </div>
+                        </>
+                      )}
+
+
                     </div>
-                    {isActive && (
-                      <span className="material-symbols-outlined text-[16px] opacity-50">filter_alt</span>
-                    )}
                   </button>
                 )
               })}
@@ -1058,9 +1148,13 @@ export default function PagosPage() {
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl animate-[fadeIn_0.15s_ease-out]">
                   <div>
                     <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
-                    <input type="month" value={lFilterMonth} min={MONTH_RANGE[0]} max={MONTH_RANGE[MONTH_RANGE.length - 1]}
-                      onChange={e => setLFilterMonth(e.target.value)}
-                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm" />
+                    <select value={lFilterMonth} onChange={e => setLFilterMonth(e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                      <option value="">Histórico (Todos)</option>
+                      {MONTH_RANGE.map(m => (
+                        <option key={m} value={m}>{monthKeyToLabel(m)}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
@@ -1127,12 +1221,12 @@ export default function PagosPage() {
                       )}
                       <td className="px-5 py-4">
                         <div className="flex flex-col gap-0.5">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest self-start ${
-                            pago.adeudoId ? 'bg-rose-50 text-rose-700'
-                            : (pago.concepto === 'Multa' || pago.concepto === 'Otros') ? 'bg-rose-50 text-rose-700'
-                            : pago.concepto === 'Reserva Amenidad' ? 'bg-indigo-50 text-indigo-700'
-                            : 'bg-slate-100 text-slate-600'
-                          }`}>
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest self-start ${(() => {
+                            const base = (pago.concepto || '').split(/[:—]/)[0].trim()
+                            if (pago.adeudoId || base === 'Multa' || base === 'Otros') return 'bg-rose-50 text-rose-700'
+                            if (base === 'Reserva Amenidad') return 'bg-indigo-50 text-indigo-700'
+                            return 'bg-slate-100 text-slate-600'
+                          })()}`}>
                             {pago.adeudoId && <span className="material-symbols-outlined text-[11px]">gavel</span>}
                             {pago.concepto || 'Mantenimiento'}
                           </span>
@@ -1144,15 +1238,42 @@ export default function PagosPage() {
                       <td className="px-5 py-4">
                         <p className="text-sm font-medium text-slate-700 capitalize">{pago.month}</p>
                         {pago.status === 'Pendiente' && !isEffectiveDebt(pago, TODAY_ISO, state.buildingConfig.maturityRules) && (() => {
-                          const base = (pago.concepto || '').split(':')[0].trim()
+                          const base = (pago.concepto || '').split(/[:—]/)[0].trim()
+                          const rules = state.buildingConfig.maturityRules
+                          
+                          let venceDate: Date | null = null
+
                           if (base === 'Mantenimiento' && pago.monthKey) {
                             const [y, m] = pago.monthKey.split('-').map(Number)
-                            const next = new Date(y, m, 1)
-                            return <p className="text-[9px] font-bold text-amber-600 uppercase tracking-tighter mt-1">Vence el 01 {MONTH_NAMES_ES[next.getMonth()]}</p>
+                            const day = (rules.mantenimiento === 'next_month_10') ? 10 : 1
+                            venceDate = new Date(y, m, day)
                           }
+                          
                           if (base === 'Reserva Amenidad' && pago.monthKey) {
-                            return <p className="text-[9px] font-bold text-amber-600 uppercase tracking-tighter mt-1">Mora activa el {pago.monthKey.split('-').reverse().join('/')}</p>
+                            const parts = pago.monthKey.split('-').map(Number)
+                            if (parts.length === 3) {
+                              venceDate = new Date(parts[0], parts[1] - 1, parts[2])
+                            } else if (parts.length === 2) {
+                              venceDate = new Date(parts[0], parts[1], 0)
+                            }
+                            if (venceDate && rules.amenidad === '1_day_before') {
+                              venceDate.setDate(venceDate.getDate() - 1)
+                            }
                           }
+                          
+                          if ((base === 'Multa' || base === 'Otros') && rules.multaOtros === '7_days_grace') {
+                            const [y, m] = (pago.monthKey || TODAY_ISO.slice(0, 7)).split('-').map(Number)
+                            venceDate = new Date(y, m - 1, 7)
+                          }
+
+                          if (venceDate) {
+                            return (
+                              <p className="text-[9px] font-bold text-amber-600 uppercase tracking-tighter mt-1">
+                                Vence el {venceDate.getDate().toString().padStart(2, '0')} de {MONTH_NAMES_ES[venceDate.getMonth()]}
+                              </p>
+                            )
+                          }
+                          
                           return null
                         })()}
                       </td>

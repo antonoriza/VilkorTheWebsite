@@ -10,7 +10,7 @@
  */
 
 /** Current version of the application state. Increment this to trigger migrations. */
-export const CURRENT_STATE_VERSION = 3
+export const CURRENT_STATE_VERSION = 4
 
 // ─── Notification ────────────────────────────────────────────────────
 
