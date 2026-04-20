@@ -401,6 +401,12 @@ export interface Egreso {
   registeredBy: string
   /** Payment status — Pendiente until admin confirms disbursement */
   status: 'Pendiente' | 'Pagado'
+  /** Base64 data URL of the uploaded receipt (image or PDF) */
+  receiptData?: string
+  /** MIME category for rendering the receipt */
+  receiptType?: 'image' | 'pdf'
+  /** Original filename of the receipt */
+  receiptName?: string
 }
 
 // ═══════════════════════════════════════════════════════════════════════

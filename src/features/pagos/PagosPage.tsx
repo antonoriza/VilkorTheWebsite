@@ -13,7 +13,7 @@
  * Admin sees both tabs + KPIs + unit balance panel.
  * Resident sees ledger tab only + adeudo summary card.
  */
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, Fragment } from 'react'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore, isEffectiveDebt } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
@@ -553,6 +553,9 @@ export default function PagosPage() {
         date: egDate,
         registeredBy: bc.adminName,
         status: 'Pagado',
+        receiptData: mReceiptData || undefined,
+        receiptType: mReceiptType || undefined,
+        receiptName: mReceiptName || undefined
       },
     })
     resetAndCloseModal()
@@ -852,23 +855,148 @@ export default function PagosPage() {
           )}
 
 
+          {/* ── Spend Mix Data ── */}
+          {isAdmin && ledgerSubTab === 'egresos' && (() => {
+            const totals: Record<string, number> = {}
+            ledgerEgresos.forEach(e => {
+              totals[e.categoria] = (totals[e.categoria] || 0) + e.amount
+            })
+            const total = egresoKpis.total || 1
+            const segments = (Object.keys(EGRESO_CATEGORIA_LABELS) as EgresoCategoria[]).map(cat => ({
+              cat,
+              label: EGRESO_CATEGORIA_LABELS[cat],
+              amount: totals[cat] || 0,
+              pct: ((totals[cat] || 0) / total) * 100,
+              color: {
+                nomina: 'bg-sky-500',
+                mantenimiento: 'bg-emerald-500',
+                servicios: 'bg-amber-500',
+                equipo: 'bg-purple-500',
+                seguros: 'bg-indigo-500',
+                administracion: 'bg-slate-500',
+                otros: 'bg-rose-500'
+              }[cat]
+            })).filter(s => s.amount > 0).sort((a,b) => b.amount - a.amount)
+            
+            return (
+              <div key="spend-mix" className="hidden" id="spend-mix-data" data-segments={JSON.stringify(segments)} />
+            )
+          })()}
+
+          {/* ── Status Strip (Egresos) — Integrated metrics ── */}
           {isAdmin && ledgerSubTab === 'egresos' && (
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Pagados', value: egresoKpis.paidCount, amount: egresoKpis.paidTotal, icon: 'check_circle', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
-                { label: 'Pendientes', value: egresoKpis.pendingCount, amount: egresoKpis.pendingTotal, icon: 'schedule', color: 'text-amber-700 bg-amber-50 border-amber-200' },
-                { label: 'Total egresos', value: ledgerEgresos.length, amount: egresoKpis.total, icon: 'trending_down', color: 'text-rose-600 bg-rose-50 border-rose-200' },
-              ].map(k => (
-                <div key={k.label} className={`flex items-center gap-3 p-4 rounded-2xl border ${k.color}`}>
-                  <div className="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center shadow-sm">
-                    <span className="material-symbols-outlined text-lg">{k.icon}</span>
-                  </div>
-                  <div>
-                    <p className="text-xl font-headline font-black leading-none">${k.amount.toLocaleString('es-MX')} MXN</p>
-                    <p className="text-xs font-bold opacity-70 mt-0.5">{k.label} · {k.value}</p>
-                  </div>
-                </div>
-              ))}
+            <div className={`mt-2 mb-6 border border-slate-100 rounded-2xl bg-white/50 backdrop-blur-sm shadow-sm overflow-hidden`}>
+              {/* ── Contextual Eyebrow ── */}
+              <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[12px] opacity-100 text-slate-400">calendar_today</span>
+                  {lFilterMonth ? monthKeyToLabel(lFilterMonth) : 'Acumulado Histórico'}
+                </span>
+                
+                {showFilters && (
+                  <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">
+                    Vista Filtrada
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+                {[
+                  { label: 'Egresos Pagados', value: egresoKpis.paidCount, amount: egresoKpis.paidTotal, icon: 'check_circle', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: 'Pagado' },
+                  { label: 'Facturas Pendientes', value: egresoKpis.pendingCount, amount: egresoKpis.pendingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', filterKey: 'Pendiente' },
+                  { label: 'Flujo Total', value: ledgerEgresos.length, amount: egresoKpis.total, icon: 'trending_down', color: 'bg-rose-500', iconColor: 'text-rose-600', filterKey: '' },
+                ].map(k => {
+                  const isActive = false // Not implemented filtering for Egresos yet to keep it simple
+                  const progress = egresoKpis.total > 0 ? (egresoKpis.paidTotal / egresoKpis.total) * 100 : 0
+
+                  return (
+                    <div
+                      key={k.label}
+                      className="relative flex-1 flex flex-col justify-center p-4 transition-all duration-300 group outline-none"
+                    >
+                      <div className="flex items-baseline justify-between mb-1.5">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] group-hover:text-slate-500 transition-colors">
+                          {k.label}
+                        </span>
+                        <span className={`material-symbols-outlined text-[14px] ${k.iconColor} opacity-50 group-hover:opacity-100 transition-opacity`}>{k.icon}</span>
+                      </div>
+
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-headline font-black tracking-tight tabular-nums text-slate-800">
+                          ${k.amount.toLocaleString('es-MX')}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest tabular-nums font-sans">
+                          {k.value} regs.
+                        </span>
+                      </div>
+
+                      {/* Integrated Progress Line (Shared across the strip) */}
+                      {k.label === 'Egresos Pagados' && (
+                        <div className="absolute bottom-0 left-0 w-full h-[3px] bg-slate-100 overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-1000 ease-out bg-emerald-500 rounded-full`}
+                            style={{ width: `${Math.max(progress, 1)}%` }}
+                          />
+                        </div>
+                      )}
+
+                      {k.label === 'Flujo Total' && (
+                        <div className="absolute bottom-0 left-0 w-full h-[3px] bg-slate-100 flex overflow-hidden">
+                          {(() => {
+                            const totals: Record<string, number> = {}
+                            ledgerEgresos.forEach(e => { totals[e.categoria] = (totals[e.categoria] || 0) + e.amount })
+                            const total = egresoKpis.total || 1
+                            return (Object.keys(EGRESO_CATEGORIA_LABELS) as EgresoCategoria[]).map(cat => {
+                              const pct = ((totals[cat] || 0) / total) * 100
+                              if (pct === 0) return null
+                              const color = {
+                                nomina: 'bg-sky-500', mantenimiento: 'bg-emerald-500', servicios: 'bg-amber-500',
+                                equipo: 'bg-purple-500', seguros: 'bg-indigo-500', administracion: 'bg-slate-500', otros: 'bg-rose-500'
+                              }[cat]
+                              return <div key={cat} className={`h-full ${color}`} style={{ width: `${pct}%` }} title={`${EGRESO_CATEGORIA_LABELS[cat]}: ${pct.toFixed(1)}%`} />
+                            })
+                          })()}
+                        </div>
+                      )}
+
+                      {k.label === 'Egresos Pagados' && (
+                         <span className={`text-[9px] font-black mt-1 tabular-nums text-slate-400`}>
+                           {progress.toFixed(1)}% liquidado
+                         </span>
+                      )}
+                      
+                      {k.label === 'Flujo Total' && (
+                         <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1">
+                           {(() => {
+                             const totals: Record<string, number> = {}
+                             ledgerEgresos.forEach(e => { totals[e.categoria] = (totals[e.categoria] || 0) + e.amount })
+                             const total = egresoKpis.total || 1
+                             return (Object.keys(EGRESO_CATEGORIA_LABELS) as EgresoCategoria[]).map(cat => {
+                               const pct = ((totals[cat] || 0) / total) * 100
+                               if (pct < 5) return null // Hide tiny ones in the legend to keep it clean
+                               return (
+                                 <span key={cat} className="flex items-center gap-1 text-[8px] font-black uppercase tracking-tighter text-slate-400">
+                                   <div className={`w-1 h-1 rounded-full ${{
+                                     nomina: 'bg-sky-500', mantenimiento: 'bg-emerald-500', servicios: 'bg-amber-500',
+                                     equipo: 'bg-purple-500', seguros: 'bg-indigo-500', administracion: 'bg-slate-500', otros: 'bg-rose-500'
+                                   }[cat]}`} />
+                                   {EGRESO_CATEGORIA_LABELS[cat].split(' ')[0]}
+                                 </span>
+                               )
+                             })
+                           })()}
+                         </div>
+                      )}
+
+                      {k.label === 'Facturas Pendientes' && (
+                         <span className={`text-[9px] font-black mt-1 tabular-nums text-slate-300 uppercase tracking-widest`}>
+                           {ledgerSubTab}
+                         </span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           )}
 
@@ -1440,38 +1568,73 @@ export default function PagosPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {ledgerEgresos.map(eg => (
-                    <tr key={eg.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
-                      <td className="px-5 py-4 text-xs font-semibold text-slate-500 tabular-nums whitespace-nowrap">{eg.date}</td>
-                      <td className="px-5 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600">
-                          {EGRESO_CATEGORIA_LABELS[eg.categoria]}
-                        </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-slate-900">{eg.concepto}</p>
-                        {eg.description && <p className="text-xs text-slate-400 font-medium mt-0.5">{eg.description}</p>}
-                      </td>
-                      <td className="px-5 py-4 text-sm font-black text-rose-600 text-right tabular-nums">-${eg.amount.toLocaleString('es-MX')}</td>
-                      <td className="px-5 py-4 text-center"><StatusBadge status={eg.status} /></td>
-                      <td className="px-5 py-4 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button onClick={() => handleToggleEgresoStatus(eg.id)}
-                            className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-xl border transition-all ${
-                              eg.status === 'Pendiente'
-                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-                                : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-                            }`}>
-                            {eg.status === 'Pendiente' ? 'Marcar Pagado' : 'Revertir'}
-                          </button>
-                          <button onClick={() => setDeleteEgresoId(eg.id)}
-                            className="text-slate-200 hover:text-rose-500 transition-colors p-1" title="Eliminar">
-                            <span className="material-symbols-outlined text-[18px]">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {(() => {
+                    let lastMonth = ''
+                    return ledgerEgresos.map(eg => {
+                      const currentMonth = eg.monthKey
+                      const isNewMonth = currentMonth !== lastMonth
+                      lastMonth = currentMonth
+
+                      return (
+                        <Fragment key={eg.id}>
+                          {isNewMonth && (
+                            <tr className="bg-slate-50/50">
+                              <td colSpan={6} className="px-5 py-2.5 border-y border-slate-100/50">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                    {monthKeyToLabel(currentMonth)}
+                                  </span>
+                                  <div className="h-px flex-1 bg-slate-100" />
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                          <tr className="border-t border-slate-50 hover:bg-slate-50/80 transition-all group">
+                            <td className="px-5 py-4 text-xs font-semibold text-slate-500 tabular-nums whitespace-nowrap">{eg.date}</td>
+                            <td className="px-5 py-4">
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest bg-slate-100 text-slate-500`}>
+                                {EGRESO_CATEGORIA_LABELS[eg.categoria].split(' ')[0]}
+                              </span>
+                            </td>
+                            <td className="px-5 py-4">
+                              <div className="flex flex-col">
+                                <span className="text-sm font-semibold text-slate-900 group-hover:text-black transition-colors">{eg.concepto}</span>
+                                {eg.description && <span className="text-[11px] text-slate-400 font-medium mt-0.5 line-clamp-1">{eg.description}</span>}
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 text-sm font-black text-rose-600 text-right tabular-nums">-${eg.amount.toLocaleString('es-MX')}</td>
+                            <td className="px-5 py-4 text-center">
+                              <div className="flex justify-center">
+                                <StatusBadge status={eg.status} />
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 text-center">
+                              <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                <button onClick={() => handleToggleEgresoStatus(eg.id)}
+                                  className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border-2 transition-all ${
+                                    eg.status === 'Pendiente'
+                                      ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
+                                      : 'bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-100'
+                                  }`}>
+                                  {eg.status === 'Pendiente' ? 'Pagar' : 'Revertir'}
+                                </button>
+                                {eg.receiptData && (
+                                  <button onClick={() => setPreviewPago(eg as any)}
+                                    className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all" title="Ver Comprobante">
+                                    <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+                                  </button>
+                                )}
+                                <button onClick={() => setDeleteEgresoId(eg.id)}
+                                  className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all" title="Eliminar">
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        </Fragment>
+                      )
+                    })
+                  })()}
                   {ledgerEgresos.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-6 py-12 text-center">
@@ -1827,6 +1990,22 @@ export default function PagosPage() {
                 <textarea value={egDescription} onChange={e => setEgDescription(e.target.value)}
                   rows={2} maxLength={500} placeholder="Detalle adicional…"
                   className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm resize-none" />
+              </div>
+
+              {/* Receipt for Egreso */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                  Comprobante / Factura <span className="text-slate-300">(PDF/JPG/PNG)</span>
+                </label>
+                <input type="file" accept=".pdf, image/jpeg, image/png" onChange={handleReceiptUpload}
+                  className="block w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-slate-800" />
+                {mReceiptError && <p className="text-xs text-rose-600 font-bold ml-1">{mReceiptError}</p>}
+                {mReceiptName && !mReceiptError && (
+                  <div className="flex items-center gap-2 ml-1">
+                    <span className="material-symbols-outlined text-emerald-500 text-[14px]">check_circle</span>
+                    <span className="text-xs text-emerald-600 font-bold">{mReceiptName}</span>
+                  </div>
+                )}
               </div>
             </>
           )}
