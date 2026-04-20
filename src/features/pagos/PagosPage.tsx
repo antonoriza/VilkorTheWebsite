@@ -65,8 +65,8 @@ const ADEUDO_TYPE_LABELS: Record<AdeudoType, string> = {
 // ── Charge type for unified modal ──
 type ChargeType = 'ingreso' | 'egreso'
 const CHARGE_TYPES: { key: ChargeType; label: string; icon: string; desc: string }[] = [
-  { key: 'ingreso', label: 'Ingreso',  icon: 'savings',       desc: 'Registrar un pago o cargo a una unidad' },
-  { key: 'egreso',  label: 'Egreso',   icon: 'trending_down', desc: 'Registrar un gasto operativo del edificio' },
+  { key: 'ingreso', label: 'Ingreso', icon: 'savings',       desc: 'Registrar un pago o cobro a una unidad (Cargo)' },
+  { key: 'egreso',  label: 'Gasto',   icon: 'trending_down', desc: 'Registrar una salida de dinero o gasto operativo' },
 ]
 
 // Sort types
@@ -694,14 +694,6 @@ export default function PagosPage() {
               </button>
             ))}
           </div>
-
-          {activeTab === 'ledger' && (
-            <button onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[11px] tracking-widest uppercase shrink-0">
-              <span className="material-symbols-outlined text-[18px]">add</span>
-              Nuevo Cargo
-            </button>
-          )}
         </div>
       )}
 
@@ -997,32 +989,45 @@ export default function PagosPage() {
                   )}
                   <p className="text-[11px] text-slate-400 font-medium mt-1">
                     {ledgerSubTab === 'ingresos' ? `${filteredPagos.length} registro${filteredPagos.length !== 1 ? 's' : ''}` : `${ledgerEgresos.length} registro${ledgerEgresos.length !== 1 ? 's' : ''}`}
-                    {lFilterMonth ? ` · ${monthKeyToLabel(lFilterMonth)}` : ''}
                   </p>
                 </div>
 
-                {/* Filtros Toggle (Admin) */}
                 {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={() => setShowFilters(prev => !prev)}
-                    className={[
-                      'flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all',
-                      showFilters
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : activeFilters.length > 0
-                          ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
-                          : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700',
-                    ].join(' ')}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">tune</span>
-                    <span className="hidden sm:inline">Filtros</span>
-                    {activeFilters.length > 0 && (
-                      <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
-                        showFilters ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
-                      }`}>{activeFilters.length}</span>
-                    )}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setShowModal(true)
+                        setChargeType(ledgerSubTab === 'ingresos' ? 'ingreso' : 'egreso')
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[10px] tracking-widest uppercase"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">add</span>
+                      <span className="hidden sm:inline">
+                        {ledgerSubTab === 'ingresos' ? 'Nuevo Cargo' : 'Nuevo Gasto'}
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowFilters(prev => !prev)}
+                      className={[
+                        'flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all',
+                        showFilters
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : activeFilters.length > 0
+                            ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
+                            : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700',
+                      ].join(' ')}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">tune</span>
+                      <span className="hidden sm:inline">Filtros</span>
+                      {activeFilters.length > 0 && (
+                        <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
+                          showFilters ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'
+                        }`}>{activeFilters.length}</span>
+                      )}
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -1441,7 +1446,7 @@ export default function PagosPage() {
       {/* UNIFIED REGISTRATION MODAL                                    */}
       {/* ═══════════════════════════════════════════════════════════════ */}
 
-      <Modal open={showModal} onClose={resetAndCloseModal} title="Nuevo Cargo">
+      <Modal open={showModal} onClose={resetAndCloseModal} title={chargeType === 'ingreso' ? 'Nuevo Cargo' : 'Nuevo Gasto'}>
         <div className="space-y-5">
 
           {/* ── Tab selector ── */}
