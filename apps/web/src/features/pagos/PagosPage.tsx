@@ -147,7 +147,7 @@ export default function PagosPage() {
   const [chargeType, setChargeType]           = useState<ChargeType>('ingreso')
   const [mTower, setMTower]                   = useState('')
   const [mUnit, setMUnit]                     = useState('')
-  const [mAmount, setMAmount]                 = useState('500')
+  const [mAmount, setMAmount]                 = useState('')
   const [mConcepto, setMConcepto]             = useState('')
   const [mSubConcepto, setMSubConcepto]       = useState('')
   const [mMotivo, setMMotivo]                 = useState('')
@@ -620,7 +620,7 @@ export default function PagosPage() {
 
   // Reset & close helper
   const resetAndCloseModal = () => {
-    setMTower(''); setMUnit(''); setMAmount('500'); setMConcepto(''); setMSubConcepto(''); setMMotivo('')
+    setMTower(''); setMUnit(''); setMAmount(String(bc.monthlyFee || '')); setMConcepto(''); setMSubConcepto(''); setMMotivo('')
     setMMulti(false); setMMonths([TODAY_KEY]); setMSingleMonth(TODAY_KEY)
     setMReceiptData(''); setMReceiptType(undefined); setMReceiptName(''); setMReceiptError('')
     setEgCategoria('mantenimiento'); setEgConcepto(''); setEgDescription(''); setEgAmount(''); setEgDate(new Date().toISOString().split('T')[0])
@@ -664,7 +664,7 @@ export default function PagosPage() {
             month: monthKeyToLabel(mk),
             monthKey: mk,
             concepto,
-            amount: Number(mAmount) || 1700,
+            amount: Number(mAmount) || bc.monthlyFee,
             status: 'Pagado',
             paymentDate: todayIso,
             receiptData: mReceiptData || undefined,
@@ -685,7 +685,7 @@ export default function PagosPage() {
           month: monthKeyToLabel(mSingleMonth),
           monthKey: mSingleMonth,
           concepto,
-          amount: Number(mAmount) || 1700,
+          amount: Number(mAmount) || bc.monthlyFee,
           status: 'Pagado',
           paymentDate: todayIso,
           receiptData: mReceiptData || undefined,
@@ -2139,7 +2139,7 @@ export default function PagosPage() {
                 {/* Method Pills */}
                 <div className="flex gap-2 justify-center">
                   {b.acceptsTransfer && <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">SPEI</span>}
-                  {b.acceptsCash && <span className="bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Efectivo Caseta</span>}
+                  {b.acceptsCash && <span className="bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Efectivo</span>}
                   {b.acceptsOxxo && <span className="bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">OXXO Pay</span>}
                 </div>
 

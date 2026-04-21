@@ -115,7 +115,7 @@ export interface Paquete {
   /** ISO date when it was handed to the resident */
   deliveredDate?: string | null
   status: 'Entregado' | 'Pendiente'
-  /** Physical location (e.g. "Caseta", "Lobby") */
+  /** Physical storage location within the building */
   location: string
 }
 

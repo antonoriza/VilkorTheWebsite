@@ -23,7 +23,7 @@ export default function PaqueteriaPage() {
   const [showModal, setShowModal] = useState(false)
   const [formRecipient, setFormRecipient] = useState('')
   const [formApartment, setFormApartment] = useState('')
-  const [formLocation, setFormLocation] = useState('Caseta')
+  const [formLocation, setFormLocation] = useState('')
 
   const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
 
@@ -41,6 +41,13 @@ export default function PaqueteriaPage() {
     }
     return data
   }, [state.paquetes, isAdmin, apartment, search])
+
+  /** Derive unique location options from existing package data */
+  const knownLocations = useMemo(() => {
+    const locs = new Set<string>()
+    state.paquetes.forEach(p => { if (p.location && p.location !== 'N/A') locs.add(p.location) })
+    return [...locs].sort()
+  }, [state.paquetes])
 
   /** 
    * Admin-only: Clears all packages marked as 'Entregado' (Delivered) 
@@ -65,7 +72,7 @@ export default function PaqueteriaPage() {
     })
     setFormRecipient('')
     setFormApartment('')
-    setFormLocation('Caseta')
+    setFormLocation('')
     setShowModal(false)
   }
 
@@ -229,15 +236,17 @@ export default function PaqueteriaPage() {
           </div>
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Ubicación de Almacenamiento</label>
-            <select
+            <input
+              type="text"
+              list="pkg-location-options"
               value={formLocation}
               onChange={(e) => setFormLocation(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
-            >
-              <option value="Caseta">Caseta de Vigilancia</option>
-              <option value="Lobby">Lobby Principal</option>
-              <option value="Administración">Oficina Administración</option>
-            </select>
+              placeholder="Ubicación donde se almacena el paquete"
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+            />
+            <datalist id="pkg-location-options">
+              {knownLocations.map(loc => <option key={loc} value={loc} />)}
+            </datalist>
           </div>
           <button
             onClick={handleAdd}

@@ -504,11 +504,12 @@ function reducer(state: StoreState, action: Action): StoreState {
       ]
       const [yearStr, monthStr] = mk.split('-')
       const monthLabel = `${MONTH_NAMES_ES[parseInt(monthStr, 10) - 1]} de ${yearStr}`
-      const fee = state.buildingConfig.monthlyFee || 1700
+      const fee = state.buildingConfig.monthlyFee
 
       // 1. Generate one Mantenimiento pago per resident for this month (if missing)
+      //    Skip if monthlyFee is not configured — admin must set it first
       const newPagos: Pago[] = []
-      state.residents.forEach(res => {
+      if (fee > 0) state.residents.forEach(res => {
         const exists = state.pagos.some(
           p => p.apartment === res.apartment && (p.monthKey || '') === mk && (p.concepto || 'Mantenimiento') === 'Mantenimiento'
         )

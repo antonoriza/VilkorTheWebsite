@@ -277,7 +277,7 @@ export default function ResidentDashboard() {
                   <span className="material-symbols-outlined">inventory_2</span>
                 </div>
               </div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Paquetes en Lobby</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Paquetes Pendientes</p>
               <div className="flex items-baseline space-x-2">
                 <span className="text-slate-900 font-headline font-black text-4xl tracking-tighter">
                   {String(pendingPaquetes).padStart(2, '0')}

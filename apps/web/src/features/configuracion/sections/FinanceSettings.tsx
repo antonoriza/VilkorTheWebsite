@@ -53,7 +53,7 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
 // ─── Tab: Cuotas y Reglas ────────────────────────────────────────────────────
 
 function CuotasTab({ bc, dispatch, handleSave, saved }: Props) {
-  const totalUnits = bc.totalUnits || 116
+  const totalUnits = bc.totalUnits
   const projected = totalUnits * bc.monthlyFee
   const surcharge = bc.surcharge || { enabled: false, type: 'percent', amount: 5, graceDays: 10, frequency: 'monthly' }
 
@@ -440,7 +440,7 @@ function RecurrentesTab({ bc, dispatch, handleSave, saved, labelClass, inputClas
 
 const PAYMENT_METHODS = [
   { key: 'acceptsTransfer', label: 'Transferencia / SPEI', icon: 'account_balance', color: 'bg-blue-50 text-blue-600' },
-  { key: 'acceptsCash',     label: 'Efectivo en Caseta',  icon: 'payments',         color: 'bg-emerald-50 text-emerald-600' },
+  { key: 'acceptsCash',     label: 'Efectivo',            icon: 'payments',         color: 'bg-emerald-50 text-emerald-600' },
   { key: 'acceptsOxxo',     label: 'OXXO Pay',            icon: 'store',            color: 'bg-red-50 text-red-600' },
 ]
 
@@ -564,7 +564,7 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
           value={banking.notes || ''}
           onChange={e => update({ notes: e.target.value })}
           rows={3}
-          placeholder="Ej: Indicar número de departamento en concepto del pago. No se aceptan pagos en efectivo fuera de caseta."
+          placeholder="Instrucciones especiales para residentes al momento de pagar…"
           className={`${inputClass} resize-none`}
         />
       </div>

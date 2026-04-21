@@ -78,11 +78,18 @@ export default function AdminDashboard() {
   const paidPagos = state.pagos.filter(p => p.status === 'Pagado').length
   const recaudacionPct = totalPagos > 0 ? Math.round((paidPagos / totalPagos) * 100) : 0
   const pendingPaquetes = state.paquetes.filter(p => p.status === 'Pendiente').length
-  const totalUnits = bc.totalUnits || 126
+  const totalUnits = bc.totalUnits
   const occupiedUnits = new Set(state.residents.map(r => r.apartment)).size
-  const occupancyPct = Math.round((occupiedUnits / totalUnits) * 100)
+  const occupancyPct = totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0
   // Composite health score: 50% payment, 30% occupancy, 20% package delivery
   const healthPct = Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
+
+  // Open ticket count — derived from real ticket state
+  const openTicketsCount = state.tickets.filter(t => t.status !== 'Cerrado' && t.status !== 'Resuelto').length
+  const totalTickets = state.tickets.length
+  const ticketResolutionPct = totalTickets > 0
+    ? Math.round(state.tickets.filter(t => t.status === 'Cerrado' || t.status === 'Resuelto').length / totalTickets * 100)
+    : 0
 
   // Most recent announcements for the sidebar
   const recentNotices = useMemo(() => {
@@ -320,12 +327,12 @@ export default function AdminDashboard() {
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tickets Abiertos</p>
               <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{approvals.length + 2}</span>
+                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{openTicketsCount}</span>
                 <span className="text-xs font-bold text-slate-400">Pendientes</span>
               </div>
             </div>
             <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: '40%' }}></div>
+              <div className="h-full bg-amber-500 rounded-full transition-all duration-700" style={{ width: `${ticketResolutionPct}%` }}></div>
             </div>
           </Link>
 
@@ -434,9 +441,64 @@ export default function AdminDashboard() {
             </div>
             <div className="space-y-4">
               {(() => {
-                // Using an empty array to render the "Todo en orden" state
-                const currentAlerts: any[] = [] 
-                
+                // Derive alerts from real system state
+                const currentAlerts: { title: string; body: string; icon: string; severity: 'critical' | 'warning'; link: string }[] = []
+
+                // Overdue payments
+                const overdueCount = state.pagos.filter(p => p.status === 'Vencido').length
+                if (overdueCount > 0) {
+                  currentAlerts.push({
+                    title: `${overdueCount} pago${overdueCount > 1 ? 's' : ''} vencido${overdueCount > 1 ? 's' : ''}`,
+                    body: 'Existen cargos vencidos pendientes de gestión.',
+                    icon: 'payments', severity: overdueCount > 5 ? 'critical' : 'warning', link: '/pagos',
+                  })
+                }
+
+                // Pending approval payments
+                const porValidarCount = state.pagos.filter(p => p.status === 'Por validar').length
+                if (porValidarCount > 0) {
+                  currentAlerts.push({
+                    title: `${porValidarCount} comprobante${porValidarCount > 1 ? 's' : ''} por validar`,
+                    body: 'Residentes han subido comprobantes esperando revisión.',
+                    icon: 'fact_check', severity: 'warning', link: '/pagos',
+                  })
+                }
+
+                // Stale open tickets (open > 72h)
+                const staleThreshold = Date.now() - 72 * 60 * 60 * 1000
+                const staleTickets = state.tickets.filter(t =>
+                  t.status !== 'Cerrado' && t.status !== 'Resuelto' && new Date(t.createdAt).getTime() < staleThreshold
+                ).length
+                if (staleTickets > 0) {
+                  currentAlerts.push({
+                    title: `${staleTickets} ticket${staleTickets > 1 ? 's' : ''} sin resolver (+72h)`,
+                    body: 'Tickets de servicio abiertos requieren atención.',
+                    icon: 'schedule', severity: staleTickets > 3 ? 'critical' : 'warning', link: '/tickets',
+                  })
+                }
+
+                // Undelivered packages > 3 days
+                const pkgThreshold = Date.now() - 3 * 24 * 60 * 60 * 1000
+                const stalePkgs = state.paquetes.filter(p =>
+                  p.status === 'Pendiente' && new Date(p.receivedDate).getTime() < pkgThreshold
+                ).length
+                if (stalePkgs > 0) {
+                  currentAlerts.push({
+                    title: `${stalePkgs} paquete${stalePkgs > 1 ? 's' : ''} sin entregar (+3 días)`,
+                    body: 'Paquetes en espera requieren notificación a residentes.',
+                    icon: 'package_2', severity: 'warning', link: '/paqueteria',
+                  })
+                }
+
+                // Building not configured
+                if (!bc.buildingName || bc.totalUnits === 0) {
+                  currentAlerts.push({
+                    title: 'Configuración pendiente',
+                    body: 'Configura nombre, torres y unidades del edificio para habilitar todas las funciones.',
+                    icon: 'settings', severity: 'warning', link: '/configuracion',
+                  })
+                }
+
                 if (currentAlerts.length === 0) {
                   return (
                     <div className="p-8 text-center text-emerald-600 font-medium bg-emerald-50/50 border border-emerald-100/50 rounded-2xl animate-in fade-in">
@@ -447,7 +509,7 @@ export default function AdminDashboard() {
                 }
 
                 return currentAlerts.map((alert) => (
-                  <div key={alert.title} className={`p-6 border rounded-3xl shadow-sm flex items-center space-x-5 group transition-all ${
+                  <Link to={alert.link} key={alert.title} className={`p-6 border rounded-3xl shadow-sm flex items-center space-x-5 group transition-all ${
                     alert.severity === 'critical' ? 'bg-rose-50 border-rose-100' : 'bg-amber-50 border-amber-100'
                   }`}>
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
@@ -459,10 +521,10 @@ export default function AdminDashboard() {
                       <h4 className="text-[15px] font-bold text-slate-900">{alert.title}</h4>
                       <p className="text-sm text-slate-600 font-medium mt-1">{alert.body}</p>
                     </div>
-                    <button className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100">
-                      <span className="material-symbols-outlined">trending_flat</span>
-                    </button>
-                  </div>
+                    <span className="material-symbols-outlined w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100">
+                      trending_flat
+                    </span>
+                  </Link>
                 ))
               })()}
             </div>
