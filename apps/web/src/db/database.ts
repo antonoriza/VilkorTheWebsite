@@ -179,3 +179,25 @@ export function exportDatabase(): Uint8Array | null {
   if (!dbInstance) return null
   return new Uint8Array(dbInstance.export())
 }
+
+// ─── Browser Debugging Helper ────────────────────────────────────────
+
+if (typeof window !== 'undefined') {
+  ;(window as any).downloadDB = () => {
+    const data = exportDatabase()
+    if (!data) {
+      console.error('[DB] Database not initialized')
+      return
+    }
+    const blob = new Blob([data], { type: 'application/x-sqlite3' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'cantonalfa.sqlite'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    console.log('[DB] Database exported as cantonalfa.sqlite')
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["bun"],
+    "paths": {
+      "@propertypulse/shared": ["../../packages/shared/src/index.ts"],
+      "@propertypulse/shared/*": ["../../packages/shared/src/*"]
+    }
+  },
+  "include": ["src"]
+}

@@ -18,7 +18,9 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@propertypulse/shared": ["../../packages/shared/src/index.ts"],
+      "@propertypulse/shared/*": ["../../packages/shared/src/*"]
     }
   },
   "include": ["src"]
