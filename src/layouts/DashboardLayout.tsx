@@ -19,35 +19,15 @@ const baseNavItems = [
   { to: '/usuarios', icon: 'group', label: 'Usuarios', roles: ['admin'] },
 ]
 
-/** Hierarchical Settings Navigation Groups */
-const settingsGroups = [
-  {
-    title: 'Entidad e Infraestructura',
-    items: [
-      { id: 'perfil', label: 'Perfil del Inmueble', icon: 'branding_watermark', desc: 'Identidad legal y Digital Twin' },
-    ]
-  },
-  {
-    title: 'Gobernanza Operativa',
-    items: [
-      { id: 'finanzas', label: 'Contabilidad y Finanzas', icon: 'payments', desc: 'Reglas de cobro y recargos' },
-      { id: 'comunicacion', label: 'Avisos/Notificaciones', icon: 'campaign', desc: 'Avisos y votaciones' },
-      { id: 'servicios', label: 'Logística', icon: 'confirmation_number', desc: 'SLA y procesos' },
-    ]
-  },
-  {
-    title: 'Seguridad y Acceso',
-    items: [
-      { id: 'permisos', label: 'Directorio y Permisos', icon: 'shield_person', desc: 'Roles y niveles de acceso' },
-    ]
-  },
-  {
-    title: 'Gestión de Datos',
-    items: [
-      { id: 'auditoria', label: 'Auditoría y Trazabilidad', icon: 'history_edu', desc: 'Logs de actividad' },
-      { id: 'resiliencia', label: 'Resiliencia del Sistema', icon: 'data_usage', desc: 'Backups y reset' },
-    ]
-  }
+/** Flat Settings Navigation Items */
+const settingsItems = [
+  { id: 'perfil', label: 'Perfil del Inmueble', icon: 'branding_watermark', desc: 'Identidad legal y Digital Twin' },
+  { id: 'finanzas', label: 'Contabilidad y Finanzas', icon: 'payments', desc: 'Reglas de cobro y recargos' },
+  { id: 'comunicacion', label: 'Avisos/Notificaciones', icon: 'campaign', desc: 'Avisos y votaciones' },
+  { id: 'servicios', label: 'Logística e Inventario', icon: 'confirmation_number', desc: 'SLA y procesos' },
+  { id: 'permisos', label: 'Directorio y Permisos', icon: 'shield_person', desc: 'Roles y niveles de acceso' },
+  { id: 'auditoria', label: 'Auditoría y Trazabilidad', icon: 'history_edu', desc: 'Logs de actividad' },
+  { id: 'resiliencia', label: 'Resiliencia del Sistema', icon: 'data_usage', desc: 'Backups y reset' },
 ]
 
 export default function DashboardLayout() {
@@ -129,28 +109,26 @@ export default function DashboardLayout() {
             ))
           ) : (
             <div className="space-y-1">
-              {settingsGroups.flatMap((group) => (
-                group.items.map((item) => {
-                  const searchParams = new URLSearchParams(location.search)
-                  const activeTab = searchParams.get('tab') || 'perfil'
-                  const isActive = activeTab === item.id
+              {settingsItems.map((item) => {
+                const searchParams = new URLSearchParams(location.search)
+                const activeTab = searchParams.get('tab') || 'perfil'
+                const isActive = activeTab === item.id
 
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => navigate(`/configuracion?tab=${item.id}`)}
-                      className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all text-left group ${
-                        isActive 
-                          ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
-                          : 'text-slate-500 hover:bg-slate-100/50 hover:text-slate-800'
-                      }`}
-                    >
-                      <span className={`material-symbols-outlined mr-3 text-[20px] ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`}>{item.icon}</span>
-                      <p className={`text-[11px] font-bold uppercase tracking-widest leading-none ${isActive ? 'text-white' : 'text-slate-700'}`}>{item.label}</p>
-                    </button>
-                  )
-                })
-              ))}
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => navigate(`/configuracion?tab=${item.id}`)}
+                    className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all text-left group ${
+                      isActive 
+                        ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
+                        : 'text-slate-500 hover:bg-slate-100/50 hover:text-slate-800'
+                    }`}
+                  >
+                    <span className={`material-symbols-outlined mr-3 text-[20px] ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`}>{item.icon}</span>
+                    <p className={`text-[11px] font-bold uppercase tracking-widest leading-none ${isActive ? 'text-white' : 'text-slate-700'}`}>{item.label}</p>
+                  </button>
+                )
+              })}
             </div>
           )}
         </nav>

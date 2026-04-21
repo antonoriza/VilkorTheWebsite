@@ -86,7 +86,7 @@ export default function AdminConfiguracion() {
             {activeTab === 'perfil'      ? 'Perfil del Inmueble' :
              activeTab === 'finanzas'    ? 'Contabilidad y Finanzas' :
              activeTab === 'comunicacion'? 'Avisos/Notificaciones' :
-             activeTab === 'servicios'   ? 'Logística' :
+             activeTab === 'servicios'   ? 'Logística e Inventario' :
              activeTab === 'permisos'    ? 'Directorio y Permisos' :
              activeTab === 'auditoria'   ? 'Auditoría y Trazabilidad' : 'Resiliencia del Sistema'}
           </h1>
