@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BuildingConfig, EGRESO_CATEGORIA_LABELS, EgresoCategoria, SurchargeConfig, BankingConfig } from '../../../core/store/seed'
+import { BuildingConfig, EGRESO_CATEGORIA_LABELS, EgresoCategoria, SurchargeConfig, BankingConfig } from '../../../types'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 

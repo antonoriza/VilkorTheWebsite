@@ -14,7 +14,7 @@ import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
-import { seedResidents } from '../../core/store/seed'
+
 
 export default function PaqueteriaPage() {
   const { role, apartment } = useAuth()
@@ -208,13 +208,13 @@ export default function PaqueteriaPage() {
               value={formRecipient}
               onChange={(e) => {
                 setFormRecipient(e.target.value)
-                const r = seedResidents.find(r => r.name === e.target.value)
+                const r = state.residents.find(r => r.name === e.target.value)
                 if (r) setFormApartment(r.apartment)
               }}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
             >
               <option value="">Seleccionar residente...</option>
-              {seedResidents.map(r => <option key={r.name} value={r.name}>{r.name} — {r.apartment}</option>)}
+              {state.residents.map(r => <option key={r.name} value={r.name}>{r.name} — {r.apartment}</option>)}
             </select>
           </div>
           <div className="space-y-2">

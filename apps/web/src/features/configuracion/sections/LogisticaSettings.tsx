@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS, InventoryItem, InventoryCategory, Resident, StaffMember } from '../../../core/store/seed'
+import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS, InventoryItem, InventoryCategory, Resident, StaffMember } from '../../../types'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 

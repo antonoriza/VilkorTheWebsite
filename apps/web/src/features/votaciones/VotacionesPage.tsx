@@ -3,7 +3,7 @@ import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
-import { type Votacion } from '../../core/store/seed'
+import { type Votacion } from '../../types'
 
 export default function Votaciones() {
   const { role, user, apartment } = useAuth()

@@ -51,6 +51,40 @@ app.on(['POST', 'GET'], '/api/auth/**', (c) => {
   return auth.handler(c.req.raw)
 })
 
+// ─── Public Endpoint: App Mode (no auth required) ───────────────────
+
+app.get('/api/app-mode', (c) => c.json({
+  mode: process.env.APP_MODE || 'production',
+}))
+
+// ─── Authenticated (no tenant): User Info ────────────────────────────
+
+app.get('/api/me', async (c) => {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers })
+  if (!session) {
+    return c.json({ error: 'Unauthorized' }, 401)
+  }
+
+  // Look up user's tenant + role from master.db
+  const { rawMasterDb } = await import('./db/master')
+  const tenantRow = rawMasterDb
+    .query('SELECT tenant_id, role, apartment FROM user_tenants WHERE user_id = ? LIMIT 1')
+    .get(session.user.id) as { tenant_id: string; role: string; apartment: string | null } | null
+
+  return c.json({
+    user: {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email,
+    },
+    tenant: tenantRow ? {
+      id: tenantRow.tenant_id,
+      role: tenantRow.role,
+      apartment: tenantRow.apartment,
+    } : null,
+  })
+})
+
 // ─── Tenant-Scoped API Routes ───────────────────────────────────────
 
 const api = new Hono()

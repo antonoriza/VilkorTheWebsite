@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BuildingConfig, Amenity, CriticalEquipment } from '../../../core/store/seed'
+import { BuildingConfig, Amenity, CriticalEquipment } from '../../../types'
 
 const AMENITY_TEMPLATES = [
   { label: 'Asador', icon: 'outdoor_grill' },

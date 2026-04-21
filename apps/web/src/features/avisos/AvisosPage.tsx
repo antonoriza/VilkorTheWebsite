@@ -17,7 +17,7 @@ import { useStore } from '../../core/store/store'
 import Modal from '../../core/components/Modal'
 import AvisoFormModal from '../../core/components/AvisoFormModal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
-import { type Aviso } from '../../core/store/seed'
+import { type Aviso } from '../../types'
 
 export default function Avisos() {
   const { role, user, apartment } = useAuth()

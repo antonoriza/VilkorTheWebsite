@@ -9,7 +9,7 @@ import {
   type TicketStatus,
   type TicketPriority,
   type TicketCategory
-} from '../../core/store/seed'
+} from '../../types'
 
 const PRIORITY_COLORS = {
   Alta: 'text-rose-600 bg-rose-50 border-rose-200',

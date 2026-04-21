@@ -1,70 +1,77 @@
 /**
- * LoginPage — Authenticates residents and administrators.
- * 
- * Provides a credential-based entry point with role detection.
- * Admin: Redirects to /admin.
- * Resident: Redirects to /dashboard.
- * 
- * Features:
- * - LocalStorage state hydration via AuthContext.
- * - Resident verification against the store's resident list.
- * - Premium editorial-style UI using Slate/Indigo theme.
+ * LoginPage — Authenticates users via Better Auth API.
+ *
+ * Calls POST /api/auth/sign-in/email with real credentials.
+ * Shows demo credentials only when API reports APP_MODE=demo.
+ *
+ * Roles (from backend):
+ *   - super_admin / administracion / operador → /admin
+ *   - residente → /dashboard
  */
-import { useState } from 'react'
-import { useNavigate, Navigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../core/auth/AuthContext'
-import { useStore } from '../../core/store/store'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 export default function LoginPage() {
-  const navigate = useNavigate()
-  const { setAuth, isAuthenticated, role } = useAuth()
-  const { state } = useStore()
-  
+  const { login, isAuthenticated, role, isLoading: authLoading } = useAuth()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isDemoMode, setIsDemoMode] = useState(false)
+
+  // Fetch app mode to decide whether to show demo credentials
+  useEffect(() => {
+    fetch(`${API_URL}/api/app-mode`)
+      .then(r => r.json())
+      .then(d => setIsDemoMode(d.mode === 'demo'))
+      .catch(() => {}) // silently ignore if API is down
+  }, [])
 
   // Redirect if already logged in
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+        <div className="w-8 h-8 border-2 border-white/20 border-t-emerald-400 rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   if (isAuthenticated) {
     const home = (role === 'super_admin' || role === 'administracion' || role === 'operador') ? '/admin' : '/dashboard'
     return <Navigate to={home} replace />
   }
 
   /**
-   * Handles the login submission.
-   * Simulates a network request and performs role-based logic.
+   * Handles the login submission via Better Auth API.
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
-    // DEVELOPMENT BYPASS: Artificial delay removed for faster development iteration.
-    // Password is not verified; any value is accepted.
-    setIsLoading(false)
+    const result = await login(email, password)
 
-    const lowerEmail = email.toLowerCase()
-
-    if (lowerEmail.includes('admin') || lowerEmail === 'admin') {
-      // Simple admin pattern for demo
-      setAuth('Administrador', 'ADMIN', email, 'super_admin')
-      navigate('/admin')
+    if (result.ok) {
+      // Auth state updated — trigger re-render which will redirect via <Navigate>
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
     } else {
-      // Resident verification against store
-      const matchedResident = state.residents.find(r => 
-        r.email.toLowerCase() === lowerEmail || 
-        r.apartment.toLowerCase() === lowerEmail
-      )
-
-      if (matchedResident) {
-        setAuth(matchedResident.name, matchedResident.apartment, matchedResident.email, 'residente')
-        navigate('/dashboard')
-      } else {
-        setError('Credenciales inválidas. Intente con admin@property.com o un correo de residente.')
-      }
+      setError(result.error || 'Credenciales inválidas')
+      setIsLoading(false)
     }
+  }
+
+  /** Quick-fill a demo credential */
+  const fillCredentials = (e: string, p: string) => {
+    setEmail(e)
+    setPassword(p)
+    setError('')
   }
 
   return (
@@ -126,33 +133,47 @@ export default function LoginPage() {
             <p className="text-slate-500 font-medium text-lg">Experience the next generation of property management.</p>
           </div>
 
-          {/* Quick login hint for testing purposes */}
-          <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
-              <span className="material-symbols-outlined text-[14px] mr-2">lightbulb</span>
-              Demo Credentials
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="col-span-2 flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl">
-                 <div className="flex flex-col">
-                   <span className="text-[11px] font-bold text-slate-500">Admin Login</span>
-                   <span className="text-[11px] font-black text-slate-900">admin@property.com</span>
-                 </div>
-                 <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Pass: any</span>
-              </div>
-               <div className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl">
-                 <span className="text-[11px] font-bold text-slate-500">Zsolt</span>
-                 <span className="text-[11px] font-black text-slate-900">b0101@gmail.com</span>
-                 <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">Pass: any</span>
-              </div>
-              <div className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl">
-                 <span className="text-[11px] font-bold text-slate-500">Michal (A201)</span>
-                 <span className="text-[11px] font-black text-slate-900">a0201.1@gmail.com</span>
-                 <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">Pass: any</span>
+          {/* Demo credentials — only shown when APP_MODE=demo */}
+          {isDemoMode && (
+            <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
+                <span className="material-symbols-outlined text-[14px] mr-2">lightbulb</span>
+                Demo Credentials
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => fillCredentials('admin@property.com', 'admin123')}
+                  className="col-span-2 flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold text-slate-500">Admin</span>
+                    <span className="text-[11px] font-black text-slate-900">admin@property.com</span>
+                  </div>
+                  <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">admin123</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillCredentials('B0101@gmail.com', 'demo123')}
+                  className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
+                >
+                  <span className="text-[11px] font-bold text-slate-500">Residente B0101</span>
+                  <span className="text-[11px] font-black text-slate-900">B0101@gmail.com</span>
+                  <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">demo123</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fillCredentials('A0101@gmail.com', 'demo123')}
+                  className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
+                >
+                  <span className="text-[11px] font-bold text-slate-500">Residente A0101</span>
+                  <span className="text-[11px] font-black text-slate-900">A0101@gmail.com</span>
+                  <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">demo123</span>
+                </button>
               </div>
             </div>
-          </div>
+          )}
 
           {error && (
             <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center space-x-3 text-rose-700 animate-in shake-x duration-500">
@@ -177,7 +198,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-14 pr-4 py-4.5 bg-slate-50 border-2 border-transparent rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:bg-white focus:border-slate-900 transition-all font-semibold"
-                  placeholder="b0101@gmail.com or B0101"
+                  placeholder="your@email.com"
                 />
               </div>
             </div>
@@ -185,7 +206,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <label htmlFor="password" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                  Password (Any character accepted)
+                  Password
                 </label>
                 <a href="#" className="text-[10px] font-bold text-slate-400 uppercase hover:text-slate-900 transition-colors">Forgot?</a>
               </div>
@@ -200,7 +221,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full pl-14 pr-14 py-4.5 bg-slate-50 border-2 border-transparent rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:bg-white focus:border-slate-900 transition-all font-semibold"
-                  placeholder="Anything works"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"

@@ -19,7 +19,7 @@ import { useStore, isEffectiveDebt } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
-import { type Pago, type AdeudoType, type EgresoCategoria, EGRESO_CATEGORIA_LABELS } from '../../core/store/seed'
+import { type Pago, type AdeudoType, type EgresoCategoria, EGRESO_CATEGORIA_LABELS } from '../../types'
 import { pdf } from '@react-pdf/renderer'
 import FinancialReportPDF, { type ReportData, type IncomeRow, type ExpenseRow } from './FinancialReportPDF'
 

@@ -9,7 +9,7 @@
  *   saveAs(blob, 'reporte.pdf')
  */
 import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer'
-import { EGRESO_CATEGORIA_LABELS, type EgresoCategoria } from '../../core/store/seed'
+import { EGRESO_CATEGORIA_LABELS, type EgresoCategoria } from '../../types'
 
 // ─── Types ────────────────────────────────────────────────────────────
 

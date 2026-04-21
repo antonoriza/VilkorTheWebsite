@@ -14,7 +14,7 @@ import { useStore } from '../../core/store/store'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import AvisoFormModal from '../../core/components/AvisoFormModal'
-import type { Aviso, StaffRole } from '../../core/store/seed'
+import type { Aviso, StaffRole } from '../../types'
 
 const DAYS_OF_WEEK = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D']
 

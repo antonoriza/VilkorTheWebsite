@@ -15,7 +15,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import Modal from './Modal'
 import RichTextEditor from './RichTextEditor'
-import { type Aviso } from '../store/seed'
+import { type Aviso } from '../../types'
 
 interface AvisoFormModalProps {
   /** Controls modal visibility */

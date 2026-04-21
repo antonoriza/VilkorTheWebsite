@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Resident, StaffMember, BuildingConfig, UserGroup, Resource, PermissionAction } from '../../../core/store/seed'
+import { Resident, StaffMember, BuildingConfig, UserGroup, Resource, PermissionAction } from '../../../types'
 import { useStore } from '../../../core/store/store'
 import { useAuth } from '../../../core/auth/AuthContext'
 import Modal from '../../../core/components/Modal'

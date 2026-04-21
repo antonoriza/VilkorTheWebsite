@@ -1,36 +1,27 @@
 /**
  * Store — Centralized state management for CantonAlfa.
  *
- * Uses React's useReducer + Context to provide a single source of truth
- * for all operational data. Now backed by the PropertyPulse API server.
+ * Backed by the PropertyPulse API server. No browser persistence.
  *
  * Architecture:
- *   - loadInitialState() — Loads from API → localStorage fallback → seed data.
- *   - reducer() — Pure function handling all CRUD actions (optimistic updates).
- *   - StoreProvider — Loads from API on mount, syncs mutations to API.
+ *   - StoreProvider — Loads state from API after auth, dispatches optimistically.
+ *   - reducer() — Pure function handling all CRUD actions.
  *   - useStore() — Hook to access { state, dispatch }.
  */
-import { createContext, useContext, useReducer, useEffect, useRef, useCallback, type ReactNode } from 'react'
-import { loadState, saveState, resetDatabase } from '../../db/database'
+import { createContext, useContext, useReducer, useEffect, useCallback, useState, type ReactNode } from 'react'
 import {
   residentsApi, pagosApi, egresosApi, ticketsApi, avisosApi,
   paquetesApi, amenidadesApi, votacionesApi, inventoryApi,
-  configApi, ApiError,
+  configApi, ApiError, setTenantId,
 } from '../../lib/api'
-import {
-  seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
-  seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
-  seedTickets, seedTicketCounter, seedAdeudos, seedEgresos, seedInventory, CURRENT_STATE_VERSION,
-  type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
-  type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
-  type Ticket, type TicketActivity, type Adeudo, type Egreso, type RecurringEgreso,
-  type FinancialMaturityRules, type GroupingMode, type InventoryItem, type UserGroup, type Resource
-} from './seed'
+import { useAuth } from '../auth/AuthContext'
+import type {
+  Aviso, Pago, Paquete, Reservacion, Votacion,
+  Notificacion, Resident, StaffMember, Amenity, BuildingConfig,
+  Ticket, TicketActivity, Adeudo, Egreso, RecurringEgreso,
+  FinancialMaturityRules, GroupingMode, InventoryItem, UserGroup, Resource
+} from '../../types'
 
-// ─── State Shape ─────────────────────────────────────────────────────
-
-
-/** Complete application state stored in context */
 export interface StoreState {
   notificaciones: Notificacion[]
   avisos: Aviso[]
@@ -105,22 +96,32 @@ type Action =
   | { type: 'UPDATE_INVENTORY'; payload: InventoryItem }
   | { type: 'DELETE_INVENTORY'; payload: string }
   | { type: 'UPDATE_PERMISSIONS_MATRIX'; payload: { resource: string; action: string; groups: UserGroup[] } }
+  | { type: 'HYDRATE_FROM_API'; payload: StoreState }
   | { type: 'RESET'; payload?: { groupingMode: GroupingMode } }
 
-/** localStorage key for persisting state */
-const STORAGE_KEY = 'cantonalfa_store'
+// ─── Empty State (used before API data loads) ──────────────────────
 
-/**
- * Normalizes legacy staff role strings into the three allowed categories.
- * Handles various Spanish spelling variations from older data schemas.
- */
-function migrateStaffRole(role: string): 'Jardinero' | 'Limpieza' | 'Guardia' {
-  const r = role.toLowerCase()
-  if (r.includes('seguridad') || r.includes('guardia')) return 'Guardia'
-  if (r.includes('jardin')) return 'Jardinero'
-  if (r.includes('limpieza') || r.includes('limp')) return 'Limpieza'
-  if (r.includes('manten')) return 'Jardinero'
-  return 'Limpieza'
+const EMPTY_BUILDING_CONFIG: BuildingConfig = {
+  propertyCategory: 'residencial', type: 'towers', groupingMode: 'vertical',
+  towers: [], buildingName: '', buildingAddress: '', managementCompany: '',
+  totalUnits: 0, adminName: '', adminEmail: '', adminPhone: '',
+  conceptosPago: [], monthlyFee: 0, recurringEgresos: [],
+  maturityRules: { mantenimiento: 'next_month_01', amenidad: 'day_of_event', multaOtros: 'immediate' },
+  surcharge: { enabled: false, type: 'percent', amount: 0, graceDays: 0, frequency: 'monthly' },
+  banking: { clabe: '', bankName: '', accountHolder: '', acceptsTransfer: false, acceptsCash: false, acceptsOxxo: false, referenceFormat: 'apartment' },
+  zoning: [], topology: { containers: [], unitNomenclature: '' },
+  defaultUnitDna: { privateArea: 0, totalArea: 0, ownershipCoefficient: 0, usageType: 'propietario' },
+  equipment: [], vendors: [], permissionsMatrix: {},
+} as any
+
+function emptyState(): StoreState {
+  return {
+    notificaciones: [], avisos: [], pagos: [], paquetes: [],
+    reservaciones: [], votaciones: [], residents: [], staff: [],
+    amenities: [], buildingConfig: EMPTY_BUILDING_CONFIG,
+    tickets: [], ticketCounter: 0, adeudos: [], egresos: [],
+    inventory: [], version: 1,
+  }
 }
 
 // ─── Maturity Helper ────────────────────────────────────────────────
@@ -202,297 +203,10 @@ export function isEffectiveDebt(p: Pago, nowIso: string, rules: FinancialMaturit
   return now.getTime() >= targetDate.getTime()
 }
 
-/**
- * Returns a fresh copy of the application state from seed data.
- * Used for initial loads when storage is empty and for system resets.
- */
-function getSeedState(): StoreState {
-  return {
-    notificaciones: [...seedNotificaciones],
-    avisos: [...seedAvisos],
-    pagos: [...seedPagos],
-    paquetes: [...seedPaquetes],
-    reservaciones: [...seedReservaciones],
-    votaciones: [...seedVotaciones],
-    residents: [...seedResidents],
-    staff: [...seedStaff],
-    amenities: [...seedAmenities],
-    buildingConfig: { ...seedBuildingConfig },
-    tickets: [...seedTickets],
-    ticketCounter: seedTicketCounter,
-    adeudos: [...seedAdeudos],
-    egresos: [...seedEgresos],
-    inventory: [...seedInventory],
-    version: CURRENT_STATE_VERSION,
-  }
-}
-
-/**
- * Loads the initial state from SQLite, falling back to localStorage
- * (for migration from the old persistence layer), then to seed data.
- *
- * Migration path: SQLite → localStorage → seed data
- * Once loaded from localStorage, the state is saved to SQLite and
- * localStorage is cleared on next persist cycle.
- */
-function loadInitialState(): StoreState {
-  // 1. Try SQLite first (primary persistence layer)
-  try {
-    const sqlState = loadState<StoreState>()
-    if (sqlState) {
-      console.log('[Store] Loaded from SQLite')
-      return applyMigrations(sqlState)
-    }
-  } catch (err) {
-    console.warn('[Store] SQLite load failed, trying localStorage:', err)
-  }
-
-  // 2. Try localStorage (backward compatibility / migration)
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      console.log('[Store] Migrating from localStorage to SQLite')
-      const parsed = JSON.parse(raw) as StoreState
-      const version = parsed.version || 1
-      // ── MIGRATION V1 -> V2 ──
-      // Fixes Mensualidad -> Mantenimiento and removes legacy concept leaks
-      if (version < CURRENT_STATE_VERSION) {
-        // 1. Force cleanup of conceptosPago
-        if (parsed.buildingConfig) {
-          const FORBIDDEN = ['Mensualidad', 'Extraordinario', 'Mascota sin registro']
-          parsed.buildingConfig.conceptosPago = (parsed.buildingConfig.conceptosPago || [])
-            .filter((c: string) => !FORBIDDEN.includes(c))
-          
-          if (!parsed.buildingConfig.conceptosPago.includes('Mantenimiento')) {
-            parsed.buildingConfig.conceptosPago.unshift('Mantenimiento')
-          }
-          
-          // Sync sub-concepts with current authorized set
-          parsed.buildingConfig.subConceptos = seedBuildingConfig.subConceptos
-        }
-
-        // 2. Rename legacy concepts in pagos history
-        if (parsed.pagos) {
-          parsed.pagos = parsed.pagos.map((p: any) => {
-            if (p.concepto === 'Mensualidad' || p.concepto === 'Extraordinario') {
-                return { ...p, concepto: 'Mantenimiento' }
-            }
-            return p
-          })
-        }
-
-        // 3. MIGRATION V2 -> V3: Add maturity rules if missing
-        if (version < 3) {
-          if (parsed.buildingConfig && !parsed.buildingConfig.maturityRules) {
-            parsed.buildingConfig.maturityRules = seedBuildingConfig.maturityRules
-          }
-        }
-
-        // 4. MIGRATION V3 -> V4: Wipe financial data to clear duplicates
-        if (version < 4) {
-          parsed.pagos = [...seedPagos]
-          parsed.adeudos = [...seedAdeudos]
-          parsed.egresos = [...seedEgresos]
-        }
-
-        // 5. MIGRATION V4 -> V5: Digital Twin initialization
-        if (version < 5) {
-          if (parsed.buildingConfig) {
-            if (!parsed.buildingConfig.propertyCategory) parsed.buildingConfig.propertyCategory = seedBuildingConfig.propertyCategory
-            if (!parsed.buildingConfig.groupingMode) parsed.buildingConfig.groupingMode = seedBuildingConfig.groupingMode
-            if (!parsed.buildingConfig.zoning) parsed.buildingConfig.zoning = seedBuildingConfig.zoning
-            if (!parsed.buildingConfig.defaultUnitDna) parsed.buildingConfig.defaultUnitDna = seedBuildingConfig.defaultUnitDna
-            if (!parsed.buildingConfig.equipment) parsed.buildingConfig.equipment = seedBuildingConfig.equipment
-            if (!parsed.buildingConfig.vendors) parsed.buildingConfig.vendors = seedBuildingConfig.vendors
-            if (!parsed.buildingConfig.surcharge) parsed.buildingConfig.surcharge = seedBuildingConfig.surcharge
-            if (!parsed.buildingConfig.banking) parsed.buildingConfig.banking = seedBuildingConfig.banking
-          }
-        }
-        
-        // 6. MIGRATION V6 -> V7: Add inventory slice
-        if (version < 7) {
-            if (!parsed.inventory) parsed.inventory = seedInventory
-        }
-
-        parsed.version = CURRENT_STATE_VERSION
-      }
-
-      // Ensure all slices exist (handles upgrades from older schemas)
-      if (!parsed.notificaciones) parsed.notificaciones = []
-      if (!parsed.residents) parsed.residents = seedResidents
-      if (!parsed.staff) parsed.staff = seedStaff
-      if (!parsed.amenities) parsed.amenities = seedAmenities
-      if (!parsed.inventory) parsed.inventory = seedInventory
-
-      // Migrate from the old separate "cantonalfa_settings" localStorage key
-      if (!parsed.buildingConfig) {
-        let bc = { ...seedBuildingConfig }
-        try {
-          const oldSettings = localStorage.getItem('cantonalfa_settings')
-          if (oldSettings) {
-            const os = JSON.parse(oldSettings)
-            bc.adminName = os.adminName || bc.adminName
-            bc.adminEmail = os.adminEmail || bc.adminEmail
-            bc.adminPhone = os.adminPhone || bc.adminPhone
-            bc.buildingName = os.buildingName || bc.buildingName
-            bc.buildingAddress = os.buildingAddress || bc.buildingAddress
-            bc.managementCompany = os.managementCompany || bc.managementCompany
-            bc.totalUnits = os.totalUnits || bc.totalUnits
-            localStorage.removeItem('cantonalfa_settings')
-          }
-        } catch { /* ignore legacy parse errors */ }
-        parsed.buildingConfig = bc
-      }
-
-      // Migrate residents: infer tower from apartment prefix if missing
-      if (parsed.residents) {
-        parsed.residents = parsed.residents.map((r: any) => {
-          if (!r.tower) {
-            const match = r.apartment?.match(/^([A-Za-z]+)/)
-            return { ...r, tower: match ? match[1].toUpperCase() : 'A' }
-          }
-          return r
-        })
-      }
-
-      // Migrate staff: remove deprecated "location" field, normalize role
-      if (parsed.staff) {
-        parsed.staff = parsed.staff.map((s: any) => {
-          const { location: _loc, ...rest } = s
-          return { ...rest, role: migrateStaffRole(s.role || 'Limpieza') }
-        })
-      }
-
-      // Migrate voters: upgrade from old string-only format to object format
-      if (parsed.votaciones) {
-        parsed.votaciones = parsed.votaciones.map((v: any) => ({
-          ...v,
-          voters: (v.voters || []).map((vot: any) => {
-            if (typeof vot === 'string') return { name: vot, apartment: 'N/A', optionLabel: 'N/A', votedAt: '' }
-            if (!vot.optionLabel) return { ...vot, optionLabel: 'N/A', votedAt: vot.votedAt || '' }
-            return vot
-          })
-        }))
-      }
-
-      // Migrate: add tickets slice if missing (upgrade from pre-ticket schema)
-      if (!parsed.tickets) parsed.tickets = seedTickets
-      if (!parsed.ticketCounter && parsed.ticketCounter !== 0) parsed.ticketCounter = seedTicketCounter
-
-      // Migrate pagos: backfill monthKey for records that predate this field
-      const MONTH_ES: Record<string, string> = {
-        enero:'01', febrero:'02', marzo:'03', abril:'04', mayo:'05', junio:'06',
-        julio:'07', agosto:'08', septiembre:'09', octubre:'10', noviembre:'11', diciembre:'12'
-      }
-      if (parsed.pagos) {
-        parsed.pagos = parsed.pagos.map((p: any) => {
-          // Backfill monthKey
-          if (!p.monthKey) {
-            const m = (p.month || '').toLowerCase().match(/(\w+)\s+de\s+(\d{4})/)
-            p.monthKey = m ? `${m[2]}-${MONTH_ES[m[1]] || '00'}` : ''
-          }
-          // Backfill concepto
-          if (!p.concepto || p.concepto === 'Mensualidad') p.concepto = 'Mantenimiento'
-          // Backfill adeudoId (new field)
-          if (!('adeudoId' in p)) p.adeudoId = undefined
-          return p
-        })
-      }
-
-      // Migrate buildingConfig: ensure conceptosPago exists
-      if (!parsed.buildingConfig.conceptosPago) {
-        parsed.buildingConfig.conceptosPago = ['Mantenimiento', 'Multa', 'Otros', 'Reserva Amenidad']
-      } else {
-        // Stop purging 'Multa' and stop forcing legacy 'Mensualidad'
-        if (!parsed.buildingConfig.conceptosPago.includes('Mantenimiento')) {
-          parsed.buildingConfig.conceptosPago.unshift('Mantenimiento')
-        }
-      }
-
-      // Migrate: add adeudos slice if missing
-      if (!parsed.adeudos) {
-        parsed.adeudos = seedAdeudos
-      } else {
-        // Backfill pagoId (new field)
-        parsed.adeudos = parsed.adeudos.map((a: any) => {
-          if (!('pagoId' in a)) a.pagoId = undefined
-          return a
-        })
-      }
-
-      // Migrate: add egresos slice if missing
-      if (!parsed.egresos) parsed.egresos = seedEgresos
-
-      // Migrate buildingConfig: ensure categoriasEgreso exists
-      if (!parsed.buildingConfig.categoriasEgreso) {
-        parsed.buildingConfig.categoriasEgreso = ['nomina', 'mantenimiento', 'servicios', 'equipo', 'seguros', 'administracion', 'otros']
-      }
-
-      // Migrate buildingConfig: ensure monthlyFee and recurringEgresos exist
-      if (parsed.buildingConfig.monthlyFee == null) {
-        parsed.buildingConfig.monthlyFee = seedBuildingConfig.monthlyFee
-      }
-      if (!parsed.buildingConfig.recurringEgresos) {
-        parsed.buildingConfig.recurringEgresos = seedBuildingConfig.recurringEgresos
-      }
-
-      // Migrate egresos: backfill status field (default to 'Pagado' for existing records)
-      if (parsed.egresos) {
-        parsed.egresos = parsed.egresos.map((e: any) => {
-          if (!e.status) e.status = 'Pagado'
-          return e
-        })
-      }
-
-      // Migrate V8: add permissionsMatrix if missing
-      if (!parsed.buildingConfig.permissionsMatrix) {
-        parsed.buildingConfig.permissionsMatrix = seedBuildingConfig.permissionsMatrix
-      }
-
-      // Migrate V9: reset inventory with new linkage fields
-      if (version < 9) {
-        parsed.inventory = seedInventory
-      }
-
-      parsed.version = CURRENT_STATE_VERSION
-      return parsed
-
-    }
-  } catch { /* fall through to seed data on any error */ }
-
-  // 3. No stored state found — return fresh seed data
-  console.log('[Store] No saved state found, using seed data')
-  return getSeedState()
-}
-
-/**
- * Applies schema migrations to a previously-persisted state object.
- * This handles state loaded from SQLite (which was written by a prior version
- * of the store) and ensures all expected slices exist.
- */
-function applyMigrations(parsed: StoreState): StoreState {
-  // Ensure all slices exist
-  if (!parsed.notificaciones) parsed.notificaciones = []
-  if (!parsed.residents) parsed.residents = seedResidents
-  if (!parsed.staff) parsed.staff = seedStaff
-  if (!parsed.amenities) parsed.amenities = seedAmenities
-  if (!parsed.inventory) parsed.inventory = seedInventory
-  if (!parsed.tickets) parsed.tickets = seedTickets
-  if (!parsed.ticketCounter && parsed.ticketCounter !== 0) parsed.ticketCounter = seedTicketCounter
-  if (!parsed.adeudos) parsed.adeudos = seedAdeudos
-  if (!parsed.egresos) parsed.egresos = seedEgresos
-  if (!parsed.buildingConfig) parsed.buildingConfig = { ...seedBuildingConfig }
-  if (!parsed.buildingConfig.permissionsMatrix) {
-    parsed.buildingConfig.permissionsMatrix = seedBuildingConfig.permissionsMatrix
-  }
-  parsed.version = CURRENT_STATE_VERSION
-  return parsed
-}
 // ─── Permissions Helper ─────────────────────────────────────────────
 
 /**
  * Checks if a user group has permission to perform an action on a resource.
- * Derived from the ThingWorx-style permissions matrix in buildingConfig.
  */
 export function hasPermission(
   state: StoreState, 
@@ -502,17 +216,11 @@ export function hasPermission(
 ): boolean {
   const matrix = state.buildingConfig.permissionsMatrix
   if (!matrix) return false
-  
-  // Super Admin bypass: always has access (except for immutable exclusions handled at component level if needed)
   if (userGroup === 'super_admin') return true
-  
   const allowedGroups = matrix[resource]?.[action] || []
   return allowedGroups.includes(userGroup)
 }
 
-// ─── Reducer ─────────────────────────────────────────────────────────
-
-/** Pure reducer handling all state transitions */
 function reducer(state: StoreState, action: Action): StoreState {
   switch (action.type) {
     // Notifications
@@ -849,13 +557,13 @@ function reducer(state: StoreState, action: Action): StoreState {
       }
     }
 
-    // Full system reset to seed data
+    // Full system reset
     case 'RESET': {
       // Clear all persistence layers
-      localStorage.removeItem(STORAGE_KEY)
-      localStorage.removeItem('cantonalfa_settings')
-      resetDatabase().catch(err => console.error('[Store] Reset DB failed:', err))
-      const newState = getSeedState()
+      // cleared
+      // cleared
+      // no browser DB to reset
+      const newState = emptyState()
       if (action.payload?.groupingMode) {
         newState.buildingConfig.groupingMode = action.payload.groupingMode
         // When resetting mode, we should also ensure topology matches the new target mode
@@ -864,11 +572,14 @@ function reducer(state: StoreState, action: Action): StoreState {
       return newState
     }
 
+    // Hydrate from API data
+    case 'HYDRATE_FROM_API':
+      return { ...action.payload }
+
     default:
       return state
   }
 }
-
 // ─── API Mutation Sync ───────────────────────────────────────────────
 
 /**
@@ -938,7 +649,6 @@ async function loadStateFromAPI(): Promise<StoreState | null> {
       configApi.getStaff(),
     ])
 
-    // If ALL requests failed, API is down — return null to fallback
     const allFailed = results.every(r => r.status === 'rejected')
     if (allFailed) return null
 
@@ -948,22 +658,22 @@ async function loadStateFromAPI(): Promise<StoreState | null> {
     }
 
     return {
-      residents:      get(0, seedResidents),
-      pagos:          get(1, seedPagos),
-      egresos:        get(2, seedEgresos),
-      tickets:        get(3, seedTickets),
-      avisos:         get(4, seedAvisos),
-      paquetes:       get(5, seedPaquetes),
-      amenities:      get(6, seedAmenities),
-      reservaciones:  get(7, seedReservaciones),
-      votaciones:     get(8, seedVotaciones),
-      inventory:      get(9, seedInventory),
-      buildingConfig: get(10, seedBuildingConfig),
-      staff:          get(11, seedStaff),
-      notificaciones: seedNotificaciones,
-      ticketCounter:  seedTicketCounter,
-      adeudos:        seedAdeudos,
-      version:        CURRENT_STATE_VERSION,
+      residents:      get(0, []),
+      pagos:          get(1, []),
+      egresos:        get(2, []),
+      tickets:        get(3, []),
+      avisos:         get(4, []),
+      paquetes:       get(5, []),
+      amenities:      get(6, []),
+      reservaciones:  get(7, []),
+      votaciones:     get(8, []),
+      inventory:      get(9, []),
+      buildingConfig: get(10, EMPTY_BUILDING_CONFIG),
+      staff:          get(11, []),
+      notificaciones: [],
+      ticketCounter:  0,
+      adeudos:        [],
+      version:        1,
     }
   } catch {
     return null
@@ -978,59 +688,62 @@ const StoreContext = createContext<{
 } | null>(null)
 
 /**
- * StoreProvider — Wraps the app to provide centralized state.
- *
- * Load order: API → browser SQLite → localStorage → seed data.
- * Mutations are applied optimistically via reducer, then synced to the API.
+ * StoreProvider — Loads state from API after authentication.
+ * Shows loading spinner until data arrives from the backend.
  */
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, undefined, loadInitialState)
-  const isFirstRender = useRef(true)
+  const { isAuthenticated, tenantId, isLoading: authLoading } = useAuth()
+  const [state, dispatch] = useReducer(reducer, undefined, emptyState)
+  const [isLoaded, setIsLoaded] = useState(false)
 
-  // On mount: try to load state from the API and replace local state
+  // When authenticated, set tenant ID and load from API
   useEffect(() => {
+    if (!isAuthenticated || !tenantId) return
+
+    setTenantId(tenantId)
+
     loadStateFromAPI().then(apiState => {
       if (apiState) {
+        // Hydrate the reducer with API data by dispatching a full reset
+        dispatch({ type: 'HYDRATE_FROM_API', payload: apiState } as any)
         console.log('[Store] ✓ Loaded from API')
-        // Reset to seed data (clearing browser-local state),
-        // API data will be the source of truth on next full refresh
-        dispatch({ type: 'RESET' } as any)
       } else {
-        console.log('[Store] API unavailable — using local data')
+        console.warn('[Store] API returned no data')
       }
-    }).catch(() => {
-      console.log('[Store] API unavailable — using local data')
+      setIsLoaded(true)
+    }).catch(err => {
+      console.error('[Store] API load failed:', err)
+      setIsLoaded(true)
     })
-  }, [])
+  }, [isAuthenticated, tenantId])
 
-  // Run cleanup for expired packages on initial mount
+  // Run cleanup & generate monthly records after data loads
   useEffect(() => {
+    if (!isLoaded || state.residents.length === 0) return
     dispatch({ type: 'CLEANUP_EXPIRED', payload: { nowIso: new Date().toISOString() } })
     const now = new Date()
     const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
     dispatch({ type: 'GENERATE_MONTHLY_RECORDS', payload: { monthKey } })
-  }, [])
+  }, [isLoaded])
 
-  // Wrap dispatch to also sync to API
+  // Wrap dispatch to sync mutations to API
   const apiDispatch = useCallback((action: Action) => {
     dispatch(action)
-    // Sync to API in background (fire and forget)
     syncActionToAPI(action)
   }, [])
 
-  // Persist state to local SQLite as backup
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-    saveState(state).catch(err => {
-      console.error('[Store] Local save failed:', err)
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-      } catch { /* quota exceeded */ }
-    })
-  }, [state])
+  // Show nothing while auth is loading
+  if (authLoading) return null
+
+  // Show loading while fetching data (only when authenticated)
+  if (isAuthenticated && !isLoaded) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0f172a' }}>
+        <div style={{ width: 32, height: 32, border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#34d399', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    )
+  }
 
   return (
     <StoreContext.Provider value={{ state, dispatch: apiDispatch }}>
@@ -1041,8 +754,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
 /**
  * useStore — Hook to access the centralized store.
- * Returns { state, dispatch } for reading data and dispatching actions.
- * Throws if used outside of a StoreProvider.
  */
 export function useStore() {
   const ctx = useContext(StoreContext)
