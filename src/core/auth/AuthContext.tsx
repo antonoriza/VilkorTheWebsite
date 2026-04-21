@@ -14,8 +14,8 @@
  */
 import { createContext, useContext, useState, type ReactNode } from 'react'
 
-/** Supported user roles in the system */
-export type Role = 'resident' | 'admin'
+/** Supported user roles in the system — Aligned with Permission Groups */
+export type Role = 'residente' | 'operador' | 'administracion' | 'super_admin'
 
 /** Shape of the authentication state exposed via context */
 interface AuthState {
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState('')
   const [apartment, setApartment] = useState('')
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState<Role>('resident')
+  const [role, setRole] = useState<Role>('residente')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const setAuth = (u: string, a: string, e: string, r: Role) => {
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser('')
     setApartment('')
     setEmail('')
-    setRole('resident')
+    setRole('residente')
     setIsAuthenticated(false)
   }
 

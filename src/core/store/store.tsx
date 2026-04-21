@@ -17,14 +17,15 @@ import { createContext, useContext, useReducer, useEffect, type ReactNode } from
 import {
   seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
   seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
-  seedTickets, seedTicketCounter, seedAdeudos, seedEgresos, CURRENT_STATE_VERSION,
+  seedTickets, seedTicketCounter, seedAdeudos, seedEgresos, seedInventory, CURRENT_STATE_VERSION,
   type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
   type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
   type Ticket, type TicketActivity, type Adeudo, type Egreso, type RecurringEgreso,
-  type FinancialMaturityRules, type GroupingMode
+  type FinancialMaturityRules, type GroupingMode, type InventoryItem, type UserGroup, type Resource
 } from './seed'
 
 // ─── State Shape ─────────────────────────────────────────────────────
+
 
 /** Complete application state stored in context */
 export interface StoreState {
@@ -46,6 +47,8 @@ export interface StoreState {
   adeudos: Adeudo[]
   /** Operational expenses for the building */
   egresos: Egreso[]
+  /** Building inventory items */
+  inventory: InventoryItem[]
   /** Data model version to handle migrations */
   version: number
 }
@@ -95,6 +98,10 @@ type Action =
   | { type: 'GENERATE_MONTHLY_RECORDS'; payload: { monthKey: string } }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'PROCESS_MATURITY'; payload: { nowIso: string } }
+  | { type: 'ADD_INVENTORY'; payload: InventoryItem }
+  | { type: 'UPDATE_INVENTORY'; payload: InventoryItem }
+  | { type: 'DELETE_INVENTORY'; payload: string }
+  | { type: 'UPDATE_PERMISSIONS_MATRIX'; payload: { resource: string; action: string; groups: UserGroup[] } }
   | { type: 'RESET'; payload?: { groupingMode: GroupingMode } }
 
 /** localStorage key for persisting state */
@@ -212,6 +219,7 @@ function getSeedState(): StoreState {
     ticketCounter: seedTicketCounter,
     adeudos: [...seedAdeudos],
     egresos: [...seedEgresos],
+    inventory: [...seedInventory],
     version: CURRENT_STATE_VERSION,
   }
 }
@@ -281,6 +289,11 @@ function loadInitialState(): StoreState {
             if (!parsed.buildingConfig.banking) parsed.buildingConfig.banking = seedBuildingConfig.banking
           }
         }
+        
+        // 6. MIGRATION V6 -> V7: Add inventory slice
+        if (version < 7) {
+            if (!parsed.inventory) parsed.inventory = seedInventory
+        }
 
         parsed.version = CURRENT_STATE_VERSION
       }
@@ -290,6 +303,7 @@ function loadInitialState(): StoreState {
       if (!parsed.residents) parsed.residents = seedResidents
       if (!parsed.staff) parsed.staff = seedStaff
       if (!parsed.amenities) parsed.amenities = seedAmenities
+      if (!parsed.inventory) parsed.inventory = seedInventory
 
       // Migrate from the old separate "cantonalfa_settings" localStorage key
       if (!parsed.buildingConfig) {
@@ -411,6 +425,17 @@ function loadInitialState(): StoreState {
         })
       }
 
+      // Migrate V8: add permissionsMatrix if missing
+      if (!parsed.buildingConfig.permissionsMatrix) {
+        parsed.buildingConfig.permissionsMatrix = seedBuildingConfig.permissionsMatrix
+      }
+
+      // Migrate V9: reset inventory with new linkage fields
+      if (version < 9) {
+        parsed.inventory = seedInventory
+      }
+
+      parsed.version = CURRENT_STATE_VERSION
       return parsed
 
     }
@@ -418,6 +443,28 @@ function loadInitialState(): StoreState {
 
   // No stored state found — return fresh seed data
   return getSeedState()
+}
+
+// ─── Permissions Helper ─────────────────────────────────────────────
+
+/**
+ * Checks if a user group has permission to perform an action on a resource.
+ * Derived from the ThingWorx-style permissions matrix in buildingConfig.
+ */
+export function hasPermission(
+  state: StoreState, 
+  resource: Resource, 
+  action: string, 
+  userGroup: UserGroup
+): boolean {
+  const matrix = state.buildingConfig.permissionsMatrix
+  if (!matrix) return false
+  
+  // Super Admin bypass: always has access (except for immutable exclusions handled at component level if needed)
+  if (userGroup === 'super_admin') return true
+  
+  const allowedGroups = matrix[resource]?.[action] || []
+  return allowedGroups.includes(userGroup)
 }
 
 // ─── Reducer ─────────────────────────────────────────────────────────
@@ -588,6 +635,31 @@ function reducer(state: StoreState, action: Action): StoreState {
       return { ...state, egresos: state.egresos.map(e => e.id === action.payload.id ? action.payload : e) }
     case 'DELETE_EGRESO':
       return { ...state, egresos: state.egresos.filter(e => e.id !== action.payload) }
+    
+    // Inventory
+    case 'ADD_INVENTORY':
+      return { ...state, inventory: [action.payload, ...(state.inventory || [])] }
+    case 'UPDATE_INVENTORY':
+      return { ...state, inventory: (state.inventory || []).map(i => i.id === action.payload.id ? action.payload : i) }
+    case 'DELETE_INVENTORY':
+      return { ...state, inventory: (state.inventory || []).filter(i => i.id !== action.payload) }
+
+    case 'UPDATE_PERMISSIONS_MATRIX': {
+      const { resource, action: permAction, groups } = action.payload
+      return {
+        ...state,
+        buildingConfig: {
+          ...state.buildingConfig,
+          permissionsMatrix: {
+            ...state.buildingConfig.permissionsMatrix,
+            [resource]: {
+              ...(state.buildingConfig.permissionsMatrix[resource] || {}),
+              [permAction]: groups
+            }
+          }
+        }
+      }
+    }
 
     // Auto-cleanup of expired/delivered packages
     case 'CLEANUP_EXPIRED': {

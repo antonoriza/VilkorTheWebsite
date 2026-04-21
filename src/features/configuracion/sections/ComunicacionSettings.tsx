@@ -5,7 +5,7 @@ import { useState } from 'react'
 const TABS = [
   { id: 'canales',    label: 'Canales',    icon: 'cell_tower' },
   { id: 'plantillas', label: 'Plantillas', icon: 'article' },
-  { id: 'audiencias', label: 'Audiencias', icon: 'groups' },
+  { id: 'asambleas',  label: 'Asambleas',  icon: 'groups' },
   { id: 'historial',  label: 'Historial',  icon: 'history' },
 ]
 
@@ -183,7 +183,7 @@ export default function ComunicacionSettings({
 
       {activeTab === 'canales'    && <CanalesTab handleSave={handleSave} saved={saved} />}
       {activeTab === 'plantillas' && <PlantillasTab handleSave={handleSave} saved={saved} />}
-      {activeTab === 'audiencias' && <ComingSoon label="Audiencias" />}
+      {activeTab === 'asambleas'  && <ComingSoon label="Asambleas" />}
       {activeTab === 'historial'  && <ComingSoon label="Historial de Envíos" />}
     </div>
   )

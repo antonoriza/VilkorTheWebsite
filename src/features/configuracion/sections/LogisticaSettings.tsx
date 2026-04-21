@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS } from '../../../core/store/seed'
+import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS, InventoryItem, InventoryCategory, Resident, StaffMember } from '../../../core/store/seed'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -25,17 +25,7 @@ function SaveFooter({ handleSave, saved }: { handleSave: () => void; saved: bool
   )
 }
 
-function ComingSoon({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-      <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center">
-        <span className="material-symbols-outlined text-slate-300 text-3xl">construction</span>
-      </div>
-      <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">{label}</p>
-      <p className="text-[11px] text-slate-400 font-medium">Módulo en construcción para el próximo release.</p>
-    </div>
-  )
-}
+
 
 // ─── Tab: Paquetes ────────────────────────────────────────────────────────────
 
@@ -293,10 +283,279 @@ function DirectorioTab({
   )
 }
 
+// ─── Tab: Inventario ──────────────────────────────────────────────────────────
+
+const INVENTORY_CATEGORY_ICONS: Record<InventoryCategory, string> = {
+  Guardia: 'shield_person',
+  Jardinero: 'yard',
+  Limpieza: 'mop',
+  'Administradora General': 'manage_accounts',
+  Propiedad: 'corporate_fare',
+}
+
+const EMPTY_INVENTORY: Omit<InventoryItem, 'id' | 'lastUpdated'> = {
+  name: '', 
+  category: 'Propiedad', 
+  ownerId: 'building',
+  owner: 'Lote Alemania', 
+  currentUserId: null,
+  currentUser: '', 
+  notes: '',
+}
+
+function InventarioTab({
+  inventory, residents, staff, dispatch, handleSave, saved, labelClass, inputClass,
+}: {
+  inventory: InventoryItem[]
+  residents: Resident[]
+  staff: StaffMember[]
+  dispatch: React.Dispatch<any>
+  handleSave: () => void
+  saved: boolean
+  labelClass: string
+  inputClass: string
+}) {
+  const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [form, setForm] = useState<Omit<InventoryItem, 'id' | 'lastUpdated'>>(EMPTY_INVENTORY)
+
+  const handleAdd = () => {
+    if (!form.name.trim()) return
+    const now = new Date().toISOString()
+    
+    // Auto-fill names if only IDs were selected (for robustness)
+    let finalOwner = form.owner
+    let finalUser = form.currentUser
+
+    if (form.ownerId === 'building') finalOwner = 'Lote Alemania'
+    else {
+      const res = residents.find(r => r.id === form.ownerId)
+      if (res) finalOwner = res.name
+    }
+
+    if (form.currentUserId) {
+      const s = staff.find(st => st.id === form.currentUserId)
+      if (s) finalUser = s.name
+    }
+
+    const payload = {
+      ...form,
+      owner: finalOwner,
+      currentUser: finalUser || 'Sin asignar',
+      lastUpdated: now
+    }
+    
+    if (editingId) {
+      dispatch({ type: 'UPDATE_INVENTORY', payload: { id: editingId, ...payload } })
+    } else {
+      dispatch({ type: 'ADD_INVENTORY', payload: { id: `inv-${Date.now()}`, ...payload } })
+    }
+    
+    setForm(EMPTY_INVENTORY)
+    setEditingId(null)
+    setShowForm(false)
+  }
+
+  const handleDelete = (id: string) => {
+    dispatch({ type: 'DELETE_INVENTORY', payload: id })
+  }
+
+  const handleEdit = (item: InventoryItem) => {
+    setForm({
+      name: item.name,
+      category: item.category,
+      ownerId: item.ownerId,
+      owner: item.owner,
+      currentUserId: item.currentUserId,
+      currentUser: item.currentUser,
+      notes: item.notes || '',
+    })
+    setEditingId(item.id)
+    setShowForm(true)
+  }
+
+  return (
+    <div className="animate-in fade-in duration-500 space-y-6">
+      {/* Table header */}
+      <div className="hidden md:grid grid-cols-12 gap-4 px-2 mb-2">
+        <div className="col-span-4 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Artefacto / Equipo</div>
+        <div className="col-span-2 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Categoría</div>
+        <div className="col-span-2 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Dueño (Owner)</div>
+        <div className="col-span-3 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Quien lo usa</div>
+        <div className="col-span-1" />
+      </div>
+
+      {/* Rows */}
+      <div className="space-y-1">
+        {inventory.length === 0 && !showForm && (
+          <div className="py-12 bg-slate-50/50 border border-dashed border-slate-200 rounded-3xl text-center">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">No hay elementos en el inventario</p>
+          </div>
+        )}
+        {inventory.map((item) => (
+          <div key={item.id} className="group grid grid-cols-1 md:grid-cols-12 gap-4 items-center py-4 px-4 hover:bg-white hover:shadow-xl hover:shadow-slate-100 rounded-2xl transition-all border border-transparent hover:border-slate-100 bg-white shadow-sm shadow-slate-50 mb-1">
+            <div className="col-span-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[18px] text-slate-400">{INVENTORY_CATEGORY_ICONS[item.category]}</span>
+              </div>
+              <div>
+                <p className="text-[12px] font-black text-slate-900 uppercase tracking-tight leading-tight">{item.name}</p>
+                {item.notes && <p className="text-[9px] text-slate-400 font-medium line-clamp-1">{item.notes}</p>}
+              </div>
+            </div>
+            
+            <div className="col-span-2">
+               <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded tracking-widest uppercase">
+                  {item.category}
+               </span>
+            </div>
+
+            <div className="col-span-2">
+              <p className="text-[11px] font-bold text-slate-700">{item.owner}</p>
+              <p className="text-[8px] text-slate-400 font-mono">{item.ownerId}</p>
+            </div>
+
+            <div className="col-span-3">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
+                  <span className="material-symbols-outlined text-[14px]">person</span>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold text-slate-600 leading-tight">{item.currentUser}</p>
+                  {item.currentUserId && <p className="text-[8px] text-slate-400 font-mono tracking-tighter">{item.currentUserId}</p>}
+                </div>
+              </div>
+            </div>
+
+            <div className="col-span-1 flex justify-end gap-1">
+              <button onClick={() => handleEdit(item)} className="w-8 h-8 flex items-center justify-center text-slate-300 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-all">
+                <span className="material-symbols-outlined text-[18px]">edit</span>
+              </button>
+              <button 
+                onClick={() => handleDelete(item.id)} 
+                className="w-8 h-8 flex items-center justify-center text-slate-200 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+              >
+                <span className="material-symbols-outlined text-[18px]">delete</span>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Add/Edit form */}
+      {!showForm ? (
+        <button
+          onClick={() => setShowForm(true)}
+          className="flex items-center gap-2 px-5 py-4 border-2 border-dashed border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:border-slate-400 hover:text-slate-600 transition-all w-full justify-center bg-slate-50/50"
+        >
+          <span className="material-symbols-outlined text-[18px]">add_box</span>
+          Agregar Item a Inventario
+        </button>
+      ) : (
+        <div className="space-y-6 p-8 bg-white border border-slate-200 rounded-3xl animate-in fade-in slide-in-from-top-2 duration-300 shadow-2xl shadow-slate-200/50">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">
+               {editingId ? 'Editar Item de Inventario' : 'Nuevo Registro de Inventario'}
+            </h4>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY_INVENTORY) }} className="text-slate-400 hover:text-slate-900">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="md:col-span-2">
+              <label className={labelClass}>Nombre del Artefacto / Equipo *</label>
+              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ej: Camioneta de Mantenimiento, Aspiradora Industrial..." className={inputClass} />
+            </div>
+            
+            <div>
+              <label className={labelClass}>Categoría Responsable</label>
+              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as InventoryCategory })} className={inputClass}>
+                 <option value="Propiedad">Propiedad (General)</option>
+                 <option value="Guardia">Guardia / Seguridad</option>
+                 <option value="Jardinero">Jardinero / Áreas Verdes</option>
+                 <option value="Limpieza">Limpieza</option>
+                 <option value="Administradora General">Administración</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={labelClass}>Dueño (Owner) *</label>
+              <select 
+                value={form.ownerId} 
+                onChange={(e) => {
+                  const id = e.target.value
+                  const res = residents.find(r => r.id === id)
+                  setForm({ ...form, ownerId: id, owner: id === 'building' ? 'Lote Alemania' : (res?.name || '') })
+                }} 
+                className={inputClass}
+              >
+                <option value="building">Edificio (Lote Alemania)</option>
+                <optgroup label="Residentes">
+                  {residents.map(r => <option key={r.id} value={r.id}>{r.name} ({r.apartment})</option>)}
+                </optgroup>
+              </select>
+            </div>
+
+            <div>
+              <label className={labelClass}>Quien lo usa (User) *</label>
+              <select 
+                value={form.currentUserId || ''} 
+                onChange={(e) => {
+                  const id = e.target.value
+                  const s = staff.find(st => st.id === id)
+                  setForm({ ...form, currentUserId: id || null, currentUser: s?.name || 'Bodega Central' })
+                }} 
+                className={inputClass}
+              >
+                <option value="">Bodega Central / Sin asignar</option>
+                <optgroup label="Staff en Turno">
+                  {staff.map(s => <option key={s.id} value={s.id}>{s.name} — {s.role}</option>)}
+                </optgroup>
+              </select>
+            </div>
+
+            <div>
+              <label className={labelClass}>Notas o Ubicación</label>
+              <input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Ej: Pasillo C, requiere batería..." className={inputClass} />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button onClick={handleAdd} className="h-12 px-8 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+              {editingId ? 'Actualizar' : 'Registrar'}
+            </button>
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY_INVENTORY) }} className="h-12 px-6 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-100 transition-all">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="p-6 bg-slate-900 rounded-3xl flex items-start gap-5 shadow-xl shadow-slate-200">
+        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+           <span className="material-symbols-outlined text-white text-xl">inventory_2</span>
+        </div>
+        <div className="space-y-1">
+           <p className="text-[11px] text-white font-black uppercase tracking-widest">Control de Activos Fisicos</p>
+           <p className="text-[11px] text-white/60 font-medium leading-relaxed">
+             Este registro permite llevar el control de activos vinculados a roles de personal o a la propiedad. Útil para auditorías y traspaso de responsabilidades en cambios de turno.
+           </p>
+        </div>
+      </div>
+
+      <SaveFooter handleSave={handleSave} saved={saved} />
+    </div>
+  )
+}
+
 // ─── Main: LogisticaSettings ──────────────────────────────────────────────────
 
 export default function LogisticaSettings({
   bc,
+  inventory,
+  residents,
+  staff,
   dispatch,
   handleSave,
   saved,
@@ -304,6 +563,9 @@ export default function LogisticaSettings({
   inputClass,
 }: {
   bc: BuildingConfig
+  inventory: InventoryItem[]
+  residents: Resident[]
+  staff: StaffMember[]
   dispatch: React.Dispatch<any>
   handleSave: () => void
   saved: boolean
@@ -315,7 +577,7 @@ export default function LogisticaSettings({
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Tab Bar */}
-      <div className="flex gap-1 mb-10 border-b border-slate-100 pb-0 overflow-x-auto">
+      <div className="flex gap-1 mb-10 border-b border-slate-100 pb-0 overflow-x-auto overflow-y-hidden">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -343,7 +605,18 @@ export default function LogisticaSettings({
           inputClass={inputClass}
         />
       )}
-      {activeTab === 'inventario' && <ComingSoon label="Inventario de Suministros" />}
+      {activeTab === 'inventario' && (
+        <InventarioTab 
+          inventory={inventory} 
+          residents={residents} 
+          staff={staff}
+          dispatch={dispatch}
+          handleSave={handleSave}
+          saved={saved}
+          labelClass={labelClass}
+          inputClass={inputClass}
+        />
+      )}
     </div>
   )
 }

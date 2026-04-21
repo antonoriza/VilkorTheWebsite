@@ -7,12 +7,14 @@
  * BUG FIX: Replaced window.confirm() for resident deletion with
  * an in-app ConfirmDialog component.
  */
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 
 export default function UsuariosPage() {
+  const { role } = useAuth()
   const { state, dispatch } = useStore()
   const [showModal, setShowModal] = useState(false)
   const [formName, setFormName] = useState('')
@@ -27,13 +29,20 @@ export default function UsuariosPage() {
   const bc = state.buildingConfig
   const residents = state.residents || []
 
-  // Full-text search across name, apartment, email, and tower
-  const filtered = residents.filter(r =>
-    r.name.toLowerCase().includes(search.toLowerCase()) ||
-    r.apartment.toLowerCase().includes(search.toLowerCase()) ||
-    r.email.toLowerCase().includes(search.toLowerCase()) ||
-    r.tower?.toLowerCase().includes(search.toLowerCase())
-  )
+  // Full-text search + PRIVACY FILTER
+  const filtered = useMemo(() => {
+    let list = residents.filter(r =>
+      r.name.toLowerCase().includes(search.toLowerCase()) ||
+      r.apartment.toLowerCase().includes(search.toLowerCase()) ||
+      r.email.toLowerCase().includes(search.toLowerCase()) ||
+      r.tower?.toLowerCase().includes(search.toLowerCase())
+    )
+
+    // Security Filter: Operators cannot see resident list in detail
+    if (role === 'operador') return []
+
+    return list
+  }, [residents, search, role])
 
   /** Unique apartment list for the datalist autocomplete */
   const apartments = [...new Set(residents.map(r => r.apartment))].sort()

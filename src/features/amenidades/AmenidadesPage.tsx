@@ -45,7 +45,7 @@ export default function AmenidadesPage() {
   // Confirm dialog for cancellation
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null)
 
-  const isAdmin = role === 'admin'
+  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
   const amenities = state.amenities || []
 
   /** Default selection for the first available amenity */

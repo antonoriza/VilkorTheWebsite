@@ -10,7 +10,7 @@
  */
 
 /** Current version of the application state. Increment this to trigger migrations. */
-export const CURRENT_STATE_VERSION = 6
+export const CURRENT_STATE_VERSION = 9
 
 // ─── Notification ────────────────────────────────────────────────────
 
@@ -190,6 +190,9 @@ export interface Resident {
 /** Allowed staff role categories */
 export type StaffRole = 'Jardinero' | 'Limpieza' | 'Guardia' | 'Administradora General'
 
+/** Allowed inventory classification categories */
+export type InventoryCategory = StaffRole | 'Propiedad'
+
 /** A building staff member */
 export interface StaffMember {
   id: string
@@ -203,6 +206,25 @@ export interface StaffMember {
   photo?: string
   /** Active working days, e.g., ['L', 'M', 'Mi', 'J', 'V'] */
   workDays?: string[]
+}
+
+/** An item in the building's inventory */
+export interface InventoryItem {
+  id: string
+  name: string
+  category: InventoryCategory
+  /** ID of the owner (resident id or "building") */
+  ownerId: string
+  /** Human-readable owner name */
+  owner: string
+  /** ID of the person using it (staff id) */
+  currentUserId: string | null
+  /** Human-readable user name */
+  currentUser: string
+  /** Detailed notes */
+  notes?: string
+  /** ISO date of last modification */
+  lastUpdated: string
 }
 
 // ─── Amenity ─────────────────────────────────────────────────────────
@@ -332,6 +354,20 @@ export interface Vendor {
   notes?: string
 }
 
+// ─── Permissions Matrix (ThingWorx Style) ────────────────────────────
+
+/** Human-readable group identifiers */
+export type UserGroup = 'super_admin' | 'administracion' | 'operador' | 'residente'
+
+/** Functional system areas */
+export type Resource = 'finanzas' | 'logistica' | 'comunicacion' | 'gobernanza' | 'directorio' | 'configuracion'
+
+/** Specific interaction capability */
+export type PermissionAction = 'ver' | 'crear' | 'editar' | 'eliminar' | 'votar'
+
+/** A ThingWorx-style permission record: Map[Resource] -> Map[Action] -> UserGroups[] */
+export type PermissionMatrix = Record<string, Record<string, UserGroup[]>>
+
 /** Rule-based maturity settings for financial charges */
 export interface FinancialMaturityRules {
   /** When maintenance becomes a debt:
@@ -400,6 +436,8 @@ export interface BuildingConfig {
   equipment: CriticalEquipment[]
   /** Agentic vendor directory — resolver uses this to route incidents */
   vendors: Vendor[]
+  /** ThingWorx-style permissions matrix */
+  permissionsMatrix: PermissionMatrix
 }
 
 /** Moratory surcharge rule applied after grace period on unpaid debts */
@@ -660,7 +698,43 @@ export const seedBuildingConfig: BuildingConfig = {
     { id: 'v-3', service: 'Técnicos de Elevadores', name: 'Elevadores Thyssen KM', category: 'elevadores', phone: '55 5555 1111', email: 'soporte@thyssenkm.com', schedule: 'L-V 8:00-18:00', type: 'mantenimiento', notes: 'Contrato anual de mantenimiento preventivo. Emergencias ext. 2.' },
     { id: 'v-4', service: 'Electricidad General', name: 'Ingelectra', category: 'electricidad', phone: '55 4321 8765', schedule: 'L-V 9:00-17:00', type: 'mantenimiento' },
     { id: 'v-5', service: 'Seguridad Perimetral', name: 'Grupo Segura SA', category: 'seguridad', phone: '55 0000 9999', type: 'urgencias', notes: 'Panel de alarma conectado directoramente a su central de monitoreo.' },
-  ]
+  ],
+  permissionsMatrix: {
+    finanzas: {
+      ver: ['super_admin', 'administracion'],
+      crear: ['super_admin', 'administracion'],
+      editar: [], // Inmutable por seguridad
+      eliminar: [] // Inmutable por seguridad
+    },
+    logistica: {
+      ver: ['super_admin', 'administracion', 'operador'],
+      crear: ['super_admin', 'administracion', 'operador'],
+      editar: ['super_admin', 'administracion'],
+      eliminar: ['super_admin']
+    },
+    comunicacion: {
+      ver: ['super_admin', 'administracion', 'operador', 'residente'],
+      crear: ['super_admin', 'administracion'],
+      editar: ['super_admin', 'administracion'],
+      eliminar: ['super_admin']
+    },
+    gobernanza: {
+      ver: ['super_admin', 'administracion', 'residente'],
+      crear: ['super_admin'],
+      votar: ['residente'],
+      eliminar: ['super_admin']
+    },
+    directorio: {
+      ver: ['super_admin', 'administracion', 'operador'],
+      crear: ['super_admin', 'administracion'],
+      editar: ['super_admin', 'administracion'],
+      eliminar: ['super_admin']
+    },
+    configuracion: {
+      ver: ['super_admin'],
+      editar: ['super_admin']
+    }
+  }
 }
 
 export const seedAmenities: Amenity[] = [
@@ -7266,12 +7340,68 @@ export const seedEgresos: Egreso[] = [
   { id: 'eg-2026-03-recibo-de-luz', categoria: 'servicios', concepto: 'Recibo de Luz', description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800, monthKey: '2026-03', date: '2026-03-22', registeredBy: 'Samantha Guzman', status: 'Pagado' },
   { id: 'eg-2026-03-mantenimiento-elevadores', categoria: 'mantenimiento', concepto: 'Mantenimiento Elevadores', description: 'Póliza mensual mantenimiento preventivo.', amount: 4500, monthKey: '2026-03', date: '2026-03-5', registeredBy: 'Samantha Guzman', status: 'Pagado' },
   { id: 'eg-2026-04-staff-1', categoria: 'administracion', concepto: 'Honorarios — Samantha Guzman', description: 'Honorarios Administradora General correspondientes a abril.', amount: 19500, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
-  { id: 'eg-2026-04-staff-2', categoria: 'nomina', concepto: 'Nomina — Ricardo Hernandez', description: 'Sueldo Guardia correspondiente a abril.', amount: 13000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
-  { id: 'eg-2026-04-staff-3', categoria: 'nomina', concepto: 'Nomina — Angel García', description: 'Sueldo Guardia correspondiente a abril.', amount: 13000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pagado' },
+  { id: 'eg-2026-04-staff-2', categoria: 'nomina', concepto: 'Nomina — Ricardo Hernandez', description: 'Sueldo Guardia correspondiente a abril.', amount: 13000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
+  { id: 'eg-2026-04-staff-3', categoria: 'nomina', concepto: 'Nomina — Angel García', description: 'Sueldo Guardia correspondiente a abril.', amount: 13000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
   { id: 'eg-2026-04-staff-4', categoria: 'nomina', concepto: 'Nomina — Enrique Martinez', description: 'Sueldo Jardinero correspondiente a abril.', amount: 11000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
   { id: 'eg-2026-04-staff-5', categoria: 'nomina', concepto: 'Nomina — Valentina Sanchez', description: 'Sueldo Limpieza correspondiente a abril.', amount: 10000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
   { id: 'eg-2026-04-staff-6', categoria: 'nomina', concepto: 'Nomina — Carla Lopez', description: 'Sueldo Limpieza correspondiente a abril.', amount: 10000, monthKey: '2026-04', date: '2026-04-01', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
   { id: 'eg-2026-04-recibo-de-agua', categoria: 'servicios', concepto: 'Recibo de Agua', description: 'Servicio de agua potable.', amount: 3200, monthKey: '2026-04', date: '2026-04-20', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
   { id: 'eg-2026-04-recibo-de-luz', categoria: 'servicios', concepto: 'Recibo de Luz', description: 'Servicio de energía eléctrica áreas comunes.', amount: 5800, monthKey: '2026-04', date: '2026-04-22', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
   { id: 'eg-2026-04-mantenimiento-elevadores', categoria: 'mantenimiento', concepto: 'Mantenimiento Elevadores', description: 'Póliza mensual mantenimiento preventivo.', amount: 4500, monthKey: '2026-04', date: '2026-04-5', registeredBy: 'Samantha Guzman', status: 'Pendiente' },
+]
+
+export const seedInventory: InventoryItem[] = [
+  { 
+    id: 'inv-1', 
+    name: 'Podadora Honda HRX', 
+    category: 'Jardinero', 
+    ownerId: 'building',
+    owner: 'Lote Alemania', 
+    currentUserId: 'staff-4', 
+    currentUser: 'Enrique Martinez', 
+    lastUpdated: '2026-04-10', 
+    notes: 'Mantenimiento preventivo realizado en marzo.' 
+  },
+  { 
+    id: 'inv-2', 
+    name: 'Kit de Limpieza Pro', 
+    category: 'Limpieza', 
+    ownerId: 'building',
+    owner: 'Lote Alemania', 
+    currentUserId: 'staff-5', 
+    currentUser: 'Valentina Sanchez', 
+    lastUpdated: '2026-04-12' 
+  },
+  { 
+    id: 'inv-3', 
+    name: 'Radio Motorola T800', 
+    category: 'Guardia', 
+    ownerId: 'building',
+    owner: 'Lote Alemania', 
+    currentUserId: 'staff-2', 
+    currentUser: 'Ricardo Hernandez', 
+    lastUpdated: '2026-04-15' 
+  },
+  { 
+    id: 'inv-4', 
+    name: 'Escalera Telescópica 6m', 
+    category: 'Propiedad', 
+    ownerId: 'building',
+    owner: 'Lote Alemania', 
+    currentUserId: null,
+    currentUser: 'Bodega Central', 
+    lastUpdated: '2026-03-20',
+    notes: 'Ubicada en cuarto de máquinas.'
+  },
+  { 
+    id: 'inv-5', 
+    name: 'Bicicleta Brompton (Residente)', 
+    category: 'Propiedad', 
+    ownerId: 'res-B0101',
+    owner: 'Zsolt Miller', 
+    currentUserId: null, 
+    currentUser: 'Bici-Rack 04', 
+    lastUpdated: '2026-04-20', 
+    notes: 'En resguardo por viaje del propietario.' 
+  }
 ]

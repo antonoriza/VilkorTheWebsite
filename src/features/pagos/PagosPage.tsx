@@ -76,7 +76,7 @@ type ActiveTab = 'ledger' | 'report'
 export default function PagosPage() {
   const { role, apartment: myApartment } = useAuth()
   const { state, dispatch } = useStore()
-  const isAdmin = role === 'admin'
+  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
   const bc = state.buildingConfig
 
   // ── Tab ──

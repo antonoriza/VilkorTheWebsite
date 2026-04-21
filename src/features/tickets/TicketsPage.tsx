@@ -25,8 +25,8 @@ export default function TicketsPage() {
   const { user, role, apartment } = useAuth()
   const { state, dispatch } = useStore()
   
-  const isAdmin = role === 'admin'
-  const isResident = role === 'resident'
+  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
+  const isResident = role === 'residente'
 
   // Admin Filters
   const [filterStatus, setFilterStatus] = useState<string>('')

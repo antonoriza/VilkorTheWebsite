@@ -16,7 +16,7 @@ export default function Votaciones() {
   const [formOptions, setFormOptions] = useState<string[]>(['Opción 1', 'Opción 2'])
   const [selections, setSelections] = useState<Record<string, string>>({})
 
-  const isAdmin = role === 'admin'
+  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
 
   const handleVote = (votacionId: string) => {
     const selected = selections[votacionId]

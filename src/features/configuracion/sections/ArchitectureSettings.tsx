@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { BuildingConfig, Amenity, CriticalEquipment } from '../../../core/store/seed'
 
 const AMENITY_TEMPLATES = [
@@ -404,7 +404,7 @@ export default function ArchitectureSettings({
     </div>
   )
 
-  const ContextualSaveFooter = ({ label }: { label: string }) => (
+  const ContextualSaveFooter = ({ label: _label }: { label: string }) => (
     <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end">
       <button 
         onClick={handleSave}

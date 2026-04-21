@@ -14,12 +14,15 @@ import AdminConfiguracion from './features/configuracion/AdminConfiguracion'
 import ResidentConfiguracion from './features/configuracion/ResidentConfiguracion'
 import DashboardLayout from './layouts/DashboardLayout'
 
+import type { Role } from './core/auth/AuthContext'
+
 /** Redirects to login if not authenticated, or to the correct home if wrong role */
-function RequireRole({ allowed, children }: { allowed: ('resident' | 'admin')[]; children: React.ReactElement }) {
+function RequireRole({ allowed, children }: { allowed: Role[]; children: React.ReactElement }) {
   const { isAuthenticated, role } = useAuth()
   if (!isAuthenticated) return <Navigate to="/login" replace />
   if (!allowed.includes(role)) {
-    return <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} replace />
+    const home = (role === 'super_admin' || role === 'administracion' || role === 'operador') ? '/admin' : '/dashboard'
+    return <Navigate to={home} replace />
   }
   return children
 }
@@ -31,22 +34,22 @@ function App() {
       <Route element={<DashboardLayout />}>
         {/* Resident-only home */}
         <Route path="/dashboard" element={
-          <RequireRole allowed={['resident']}><ResidentDashboard /></RequireRole>
+          <RequireRole allowed={['residente']}><ResidentDashboard /></RequireRole>
         } />
-        {/* Admin-only home */}
+        {/* Admin / Staff home */}
         <Route path="/admin" element={
-          <RequireRole allowed={['admin']}><AdminDashboard /></RequireRole>
+          <RequireRole allowed={['super_admin', 'administracion', 'operador']}><AdminDashboard /></RequireRole>
         } />
         {/* Admin-only management */}
         <Route path="/usuarios" element={
-          <RequireRole allowed={['admin']}><UsuariosPage /></RequireRole>
+          <RequireRole allowed={['super_admin', 'administracion']}><UsuariosPage /></RequireRole>
         } />
         <Route path="/configuracion" element={
-          <RequireRole allowed={['admin']}><AdminConfiguracion /></RequireRole>
+          <RequireRole allowed={['super_admin', 'administracion']}><AdminConfiguracion /></RequireRole>
         } />
         {/* Resident settings */}
         <Route path="/mi-configuracion" element={
-          <RequireRole allowed={['resident']}><ResidentConfiguracion /></RequireRole>
+          <RequireRole allowed={['residente']}><ResidentConfiguracion /></RequireRole>
         } />
         {/* Shared modules */}
         <Route path="/avisos" element={<AvisosPage />} />

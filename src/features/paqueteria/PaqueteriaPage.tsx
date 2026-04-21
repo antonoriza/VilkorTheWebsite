@@ -25,7 +25,7 @@ export default function PaqueteriaPage() {
   const [formApartment, setFormApartment] = useState('')
   const [formLocation, setFormLocation] = useState('Caseta')
 
-  const isAdmin = role === 'admin'
+  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
 
   /** 
    * Filtered list of packages based on user role and search query 

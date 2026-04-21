@@ -32,7 +32,7 @@ export default function Avisos() {
   /** Active status filter driven by metric card clicks. null = show all */
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'expired' | 'scheduled'>('all')
 
-  const isAdmin = role === 'admin'
+  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
   const bc = state.buildingConfig
   const todayStr = new Date().toISOString().split('T')[0]
 

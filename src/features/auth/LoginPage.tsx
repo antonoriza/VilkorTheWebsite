@@ -28,7 +28,8 @@ export default function LoginPage() {
 
   // Redirect if already logged in
   if (isAuthenticated) {
-    return <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} replace />
+    const home = (role === 'super_admin' || role === 'administracion' || role === 'operador') ? '/admin' : '/dashboard'
+    return <Navigate to={home} replace />
   }
 
   /**
@@ -48,7 +49,7 @@ export default function LoginPage() {
 
     if (lowerEmail.includes('admin') || lowerEmail === 'admin') {
       // Simple admin pattern for demo
-      setAuth('Administrador', 'ADMIN', email, 'admin')
+      setAuth('Administrador', 'ADMIN', email, 'super_admin')
       navigate('/admin')
     } else {
       // Resident verification against store
@@ -58,7 +59,7 @@ export default function LoginPage() {
       )
 
       if (matchedResident) {
-        setAuth(matchedResident.name, matchedResident.apartment, matchedResident.email, 'resident')
+        setAuth(matchedResident.name, matchedResident.apartment, matchedResident.email, 'residente')
         navigate('/dashboard')
       } else {
         setError('Credenciales inválidas. Intente con admin@property.com o un correo de residente.')

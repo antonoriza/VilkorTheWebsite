@@ -8,6 +8,7 @@ import ArchitectureSettings from './sections/ArchitectureSettings'
 import FinanceSettings from './sections/FinanceSettings'
 import ComunicacionSettings from './sections/ComunicacionSettings'
 import LogisticaSettings from './sections/LogisticaSettings'
+import PermisosSettings from './sections/PermisosSettings'
 import SystemSettings from './sections/SystemSettings'
 
 /** Tracks which confirmation dialog is currently visible */
@@ -26,7 +27,6 @@ export default function AdminConfiguracion() {
   const [saved, setSaved] = useState(false)
 
   // Local states for forms
-  const [newTower, setNewTower] = useState('')
   const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget>(null)
 
   /** Dispatches a partial building config update */
@@ -45,13 +45,6 @@ export default function AdminConfiguracion() {
     dispatch({ type: 'ADD_AMENITY', payload: { id: `amen-${Date.now()}`, name: name.trim(), icon } })
   }
 
-  const handleAddTower = () => {
-    if (!newTower.trim()) return
-    const t = newTower.trim().toUpperCase()
-    if (bc.towers.includes(t)) return
-    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { towers: [...bc.towers, t] } })
-    setNewTower('')
-  }
 
   const executeConfirm = () => {
     if (!confirmTarget) return
@@ -131,6 +124,9 @@ export default function AdminConfiguracion() {
         {activeTab === 'servicios' && (
           <LogisticaSettings
             bc={bc}
+            inventory={state.inventory}
+            residents={state.residents}
+            staff={state.staff}
             dispatch={dispatch}
             handleSave={handleSave}
             saved={saved}
@@ -139,7 +135,17 @@ export default function AdminConfiguracion() {
           />
         )}
 
-        {(activeTab === 'permisos' || activeTab === 'auditoria') && (
+        {activeTab === 'permisos' && (
+          <PermisosSettings
+            bc={bc}
+            residents={state.residents || []}
+            staff={state.staff || []}
+            labelClass={labelClass}
+            inputClass={inputClass}
+          />
+        )}
+
+        {activeTab === 'auditoria' && (
           <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 text-center space-y-4">
              <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto text-slate-300">
                <span className="material-symbols-outlined text-4xl">construction</span>

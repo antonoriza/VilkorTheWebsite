@@ -6,28 +6,30 @@ import { useAuth } from '../core/auth/AuthContext'
 import { useStore } from '../core/store/store'
 import { useState, useMemo } from 'react'
 
+import { hasPermission } from '../core/store/store'
+
 /** Navigation item definition with role-based filtering */
 const baseNavItems = [
-  { to: '/dashboard', icon: 'home', label: 'Inicio', roles: ['resident'] },
-  { to: '/admin', icon: 'dashboard', label: 'Panel Admin', roles: ['admin'] },
-  { to: '/avisos', icon: 'notifications', label: 'Avisos', roles: ['resident', 'admin'] },
-  { to: '/pagos', icon: 'account_balance', label: 'Finanzas', roles: ['resident', 'admin'] },
-  { to: '/paqueteria', icon: 'package_2', label: 'Paquetería', roles: ['resident', 'admin'] },
-  { to: '/amenidades', icon: 'outdoor_grill', label: 'Amenidades', roles: ['resident', 'admin'], requiresAmenities: true },
-  { to: '/votaciones', icon: 'how_to_vote', label: 'Votaciones', roles: ['resident', 'admin'] },
-  { to: '/tickets', icon: 'confirmation_number', label: 'Tickets', roles: ['resident', 'admin'] },
-  { to: '/usuarios', icon: 'group', label: 'Usuarios', roles: ['admin'] },
+  { to: '/dashboard', icon: 'home', label: 'Inicio', groups: ['residente'] },
+  { to: '/admin', icon: 'dashboard', label: 'Panel Admin', groups: ['super_admin', 'administracion', 'operador'] },
+  { to: '/avisos', icon: 'notifications', label: 'Avisos', resource: 'comunicacion', action: 'ver' },
+  { to: '/pagos', icon: 'account_balance', label: 'Finanzas', resource: 'finanzas', action: 'ver' },
+  { to: '/paqueteria', icon: 'package_2', label: 'Paquetería', resource: 'comunicacion', action: 'ver' },
+  { to: '/amenidades', icon: 'outdoor_grill', label: 'Amenidades', resource: 'gobernanza', action: 'ver', requiresAmenities: true },
+  { to: '/votaciones', icon: 'how_to_vote', label: 'Votaciones', resource: 'comunicacion', action: 'ver' },
+  { to: '/tickets', icon: 'confirmation_number', label: 'Tickets', resource: 'logistica', action: 'ver' },
+  { to: '/usuarios', icon: 'group', label: 'Usuarios', resource: 'directorio', action: 'ver' },
 ]
 
-/** Flat Settings Navigation Items */
+/** Flat Settings Navigation Items with Permission Mapping */
 const settingsItems = [
-  { id: 'perfil', label: 'Perfil del Inmueble', icon: 'branding_watermark', desc: 'Identidad legal y Digital Twin' },
-  { id: 'finanzas', label: 'Contabilidad y Finanzas', icon: 'payments', desc: 'Reglas de cobro y recargos' },
-  { id: 'comunicacion', label: 'Avisos/Notificaciones', icon: 'campaign', desc: 'Avisos y votaciones' },
-  { id: 'servicios', label: 'Logística e Inventario', icon: 'confirmation_number', desc: 'SLA y procesos' },
-  { id: 'permisos', label: 'Directorio y Permisos', icon: 'shield_person', desc: 'Roles y niveles de acceso' },
-  { id: 'auditoria', label: 'Auditoría y Trazabilidad', icon: 'history_edu', desc: 'Logs de actividad' },
-  { id: 'resiliencia', label: 'Resiliencia del Sistema', icon: 'data_usage', desc: 'Backups y reset' },
+  { id: 'perfil', label: 'Perfil del Inmueble', icon: 'branding_watermark', desc: 'Identidad legal y Digital Twin', resource: 'configuracion' },
+  { id: 'finanzas', label: 'Contabilidad y Finanzas', icon: 'payments', desc: 'Reglas de cobro y recargos', resource: 'finanzas' },
+  { id: 'comunicacion', label: 'Avisos/Notificaciones', icon: 'campaign', desc: 'Avisos y votaciones', resource: 'comunicacion' },
+  { id: 'servicios', label: 'Logística e Inventario', icon: 'confirmation_number', desc: 'SLA y procesos', resource: 'logistica' },
+  { id: 'permisos', label: 'Directorio y Permisos', icon: 'shield_person', desc: 'Roles y niveles de acceso', resource: 'directorio' },
+  { id: 'auditoria', label: 'Auditoría y Trazabilidad', icon: 'history_edu', desc: 'Logs de actividad', resource: 'auditoria' },
+  { id: 'resiliencia', label: 'Resiliencia del Sistema', icon: 'data_usage', desc: 'Backups y reset', resource: 'configuracion' },
 ]
 
 export default function DashboardLayout() {
@@ -41,20 +43,41 @@ export default function DashboardLayout() {
   const isConfigRoute = location.pathname === '/configuracion'
   const bc = state.buildingConfig
   const hasAmenities = state.amenities.length > 0
-  const homePath = role === 'admin' ? '/admin' : '/dashboard'
+  const homePath = (role === 'super_admin' || role === 'administracion' || role === 'operador') ? '/admin' : '/dashboard'
 
+  // Dynamic nav filtering based on Permissions Matrix
   const navItems = useMemo(() =>
     baseNavItems.filter(item => {
-      if (!item.roles.includes(role)) return false
-      if ((item as any).requiresAmenities && !hasAmenities) return false
+      // 1. Basic role grouping (for Home/Admin split)
+      if (item.groups && !item.groups.includes(role)) return false
+      
+      // 2. Resource-based permissions
+      if (item.resource) {
+        if (!hasPermission(state, item.resource as any, item.action || 'ver', role as any)) return false
+      }
+      
+      // 3. Conditional features
+      if (item.requiresAmenities && !hasAmenities) return false
+      
       return true
     }),
-  [role, hasAmenities])
+  [role, hasAmenities, state])
+
+  // Filter settings tabs based on permissions
+  const filteredSettings = useMemo(() => 
+    settingsItems.filter(item => {
+      // Perfil is visible to anyone in config if they can "ver" configuracion
+      if (item.id === 'perfil') return hasPermission(state, 'configuracion', 'ver', role as any)
+      
+      // Resource based filtering
+      return hasPermission(state, item.resource as any, 'ver', role as any)
+    }),
+  [role, state])
 
   if (!isAuthenticated) return <Navigate to="/login" replace />
 
   const myNotifs = state.notificaciones.filter(n => 
-    role === 'admin' ? n.userId === 'admin' : n.userId === user
+    (role === 'super_admin' || role === 'administracion') ? n.userId === 'admin' : n.userId === user
   )
 
   const handleNotifClick = (n: typeof myNotifs[0]) => {
@@ -109,7 +132,7 @@ export default function DashboardLayout() {
             ))
           ) : (
             <div className="space-y-1">
-              {settingsItems.map((item) => {
+              {filteredSettings.map((item) => {
                 const searchParams = new URLSearchParams(location.search)
                 const activeTab = searchParams.get('tab') || 'perfil'
                 const isActive = activeTab === item.id
@@ -143,13 +166,13 @@ export default function DashboardLayout() {
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-slate-900 truncate">{user}</p>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black opacity-60">
-                    {role === 'admin' ? 'Administrador' : apartment}
+                    {(role === 'super_admin' || role === 'administracion' || role === 'operador') ? role.replace('_', ' ').toUpperCase() : apartment}
                   </p>
                 </div>
               </div>
               <div className="space-y-1">
                 <Link
-                  to={role === 'admin' ? '/configuracion' : '/mi-configuracion'}
+                  to={(role === 'super_admin' || role === 'administracion') ? '/configuracion' : '/mi-configuracion'}
                   className="flex items-center px-4 py-2.5 text-slate-500 hover:text-slate-900 text-[13px] font-bold transition-all rounded-xl hover:bg-slate-100/50"
                 >
                   <span className="material-symbols-outlined text-lg mr-3">settings</span> Configuración
@@ -180,11 +203,11 @@ export default function DashboardLayout() {
           <div />
           <div className="flex items-center space-x-3">
             <div className={`flex items-center space-x-2 px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest ${
-                role === 'admin' ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'
+                (role === 'super_admin' || role === 'administracion' || role === 'operador') ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'
               }`}
             >
-              <span className="material-symbols-outlined text-base">{role === 'admin' ? 'shield_person' : 'person'}</span>
-              <span>{role === 'admin' ? 'Administrador' : 'Residente'}</span>
+              <span className="material-symbols-outlined text-base">{(role === 'super_admin' || role === 'administracion' || role === 'operador') ? 'shield_person' : 'person'}</span>
+              <span>{(role === 'super_admin' || role === 'administracion' || role === 'operador') ? role.replace('_', ' ') : 'Residente'}</span>
             </div>
 
             <div className="relative">
