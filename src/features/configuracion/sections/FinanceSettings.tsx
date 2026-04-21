@@ -60,15 +60,7 @@ function CuotasTab({ bc, dispatch, handleSave, saved }: Props) {
   const updateSurcharge = (patch: Partial<SurchargeConfig>) =>
     dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { surcharge: { ...surcharge, ...patch } } })
 
-  const MATURITY_LABELS: Record<string, string> = {
-    next_month_01: 'Día 01 del mes siguiente',
-    next_month_10: 'Día 10 del mes siguiente (Gracia)',
-    current_month_end: 'Último día del mes en curso',
-    day_of_event: 'Día del evento',
-    '1_day_before': '24h antes del evento',
-    immediate: 'Inmediato',
-    '7_days_grace': '7 días de gracia',
-  }
+
 
   return (
     <div className="animate-in fade-in duration-500 space-y-10">

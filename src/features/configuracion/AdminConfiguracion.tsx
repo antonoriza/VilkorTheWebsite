@@ -98,7 +98,6 @@ export default function AdminConfiguracion() {
         {activeTab === 'perfil' && (
           <ArchitectureSettings
             bc={bc}
-            residents={state.residents}
             amenities={state.amenities}
             update={update}
             onRequestGroupingModeChange={(mode) => setConfirmTarget({ action: 'changeGroupingMode', mode })}

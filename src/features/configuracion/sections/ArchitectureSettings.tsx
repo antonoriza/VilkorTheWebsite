@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { BuildingConfig, Resident, Amenity, CriticalEquipment } from '../../../core/store/seed'
+import { BuildingConfig, Amenity, CriticalEquipment } from '../../../core/store/seed'
 
 const AMENITY_TEMPLATES = [
   { label: 'Asador', icon: 'outdoor_grill' },
@@ -357,7 +357,6 @@ function EquipamientoTab({ equipment, containers, groupingMode, update, handleSa
 
 interface Props {
   bc: BuildingConfig
-  residents: Resident[]
   amenities: Amenity[]
   handleAddAmenity: (name: string, icon: string) => void
   handleDeleteAmenity: (id: string, name: string) => void
@@ -371,7 +370,6 @@ interface Props {
 
 export default function ArchitectureSettings({ 
   bc, 
-  residents, 
   amenities,
   handleAddAmenity,
   handleDeleteAmenity,

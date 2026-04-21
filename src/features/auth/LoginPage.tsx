@@ -40,25 +40,30 @@ export default function LoginPage() {
     setIsLoading(true)
     setError('')
 
-    // Artificial delay for UX "authentication" feel
-    setTimeout(() => {
-      setIsLoading(false)
+    // DEVELOPMENT BYPASS: Artificial delay removed for faster development iteration.
+    // Password is not verified; any value is accepted.
+    setIsLoading(false)
 
-      if (email.toLowerCase().includes('admin')) {
-        // Simple admin pattern for demo
-        setAuth('Administrador', 'ADMIN', email, 'admin')
-        navigate('/admin')
+    const lowerEmail = email.toLowerCase()
+
+    if (lowerEmail.includes('admin') || lowerEmail === 'admin') {
+      // Simple admin pattern for demo
+      setAuth('Administrador', 'ADMIN', email, 'admin')
+      navigate('/admin')
+    } else {
+      // Resident verification against store
+      const matchedResident = state.residents.find(r => 
+        r.email.toLowerCase() === lowerEmail || 
+        r.apartment.toLowerCase() === lowerEmail
+      )
+
+      if (matchedResident) {
+        setAuth(matchedResident.name, matchedResident.apartment, matchedResident.email, 'resident')
+        navigate('/dashboard')
       } else {
-        // Resident verification against store
-        const matchedResident = state.residents.find(r => r.email.toLowerCase() === email.toLowerCase())
-        if (matchedResident) {
-          setAuth(matchedResident.name, matchedResident.apartment, matchedResident.email, 'resident')
-          navigate('/dashboard')
-        } else {
-          setError('Credenciales inválidas. Contacte al administrador para registrar su acceso.')
-        }
+        setError('Credenciales inválidas. Intente con admin@property.com o un correo de residente.')
       }
-    }, 1000)
+    }
   }
 
   return (
@@ -127,18 +132,23 @@ export default function LoginPage() {
               <span className="material-symbols-outlined text-[14px] mr-2">lightbulb</span>
               Demo Credentials
             </p>
-            <div className="grid grid-cols-1 gap-3">
-              <div className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl">
-                 <span className="text-[11px] font-bold text-slate-500">Admin Login</span>
-                 <span className="text-[11px] font-black text-slate-900">admin@property.com</span>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2 flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl">
+                 <div className="flex flex-col">
+                   <span className="text-[11px] font-bold text-slate-500">Admin Login</span>
+                   <span className="text-[11px] font-black text-slate-900">admin@property.com</span>
+                 </div>
+                 <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Pass: any</span>
               </div>
-               <div className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl">
-                 <span className="text-[11px] font-bold text-slate-500">Resident (Zsolt)</span>
-                  <span className="text-[11px] font-black text-slate-900">b0101@gmail.com</span>
+               <div className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl">
+                 <span className="text-[11px] font-bold text-slate-500">Zsolt</span>
+                 <span className="text-[11px] font-black text-slate-900">b0101@gmail.com</span>
+                 <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">Pass: any</span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl">
-                 <span className="text-[11px] font-bold text-slate-500">Resident (Michal A201)</span>
-                  <span className="text-[11px] font-black text-slate-900">a0201.1@gmail.com</span>
+              <div className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl">
+                 <span className="text-[11px] font-bold text-slate-500">Michal (A201)</span>
+                 <span className="text-[11px] font-black text-slate-900">a0201.1@gmail.com</span>
+                 <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">Pass: any</span>
               </div>
             </div>
           </div>
@@ -161,12 +171,12 @@ export default function LoginPage() {
                 </span>
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-14 pr-4 py-4.5 bg-slate-50 border-2 border-transparent rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:bg-white focus:border-slate-900 transition-all font-semibold"
-                  placeholder="b0101@gmail.com"
+                  placeholder="b0101@gmail.com or B0101"
                 />
               </div>
             </div>
@@ -174,7 +184,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <label htmlFor="password" className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                  Secure Password
+                  Password (Any character accepted)
                 </label>
                 <a href="#" className="text-[10px] font-bold text-slate-400 uppercase hover:text-slate-900 transition-colors">Forgot?</a>
               </div>
@@ -189,7 +199,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full pl-14 pr-14 py-4.5 bg-slate-50 border-2 border-transparent rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:bg-white focus:border-slate-900 transition-all font-semibold"
-                  placeholder="••••••••"
+                  placeholder="Anything works"
                 />
                 <button
                   type="button"

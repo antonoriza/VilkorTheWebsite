@@ -19,13 +19,14 @@ import type { Aviso, StaffRole } from '../../core/store/seed'
 const DAYS_OF_WEEK = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D']
 
 /** Allowed staff role categories */
-const STAFF_ROLES: StaffRole[] = ['Guardia', 'Jardinero', 'Limpieza']
+const STAFF_ROLES: StaffRole[] = ['Guardia', 'Jardinero', 'Limpieza', 'Administradora General']
 
 /** Material icon for each staff role */
 const ROLE_ICONS: Record<StaffRole, string> = {
   Guardia: 'shield_person',
   Jardinero: 'yard',
   Limpieza: 'mop',
+  'Administradora General': 'manage_accounts',
 }
 
 export default function AdminDashboard() {

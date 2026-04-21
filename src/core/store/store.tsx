@@ -20,7 +20,8 @@ import {
   seedTickets, seedTicketCounter, seedAdeudos, seedEgresos, CURRENT_STATE_VERSION,
   type Aviso, type Pago, type Paquete, type Reservacion, type Votacion,
   type Notificacion, type Resident, type StaffMember, type Amenity, type BuildingConfig,
-  type Ticket, type TicketActivity, type Adeudo, type Egreso, type RecurringEgreso
+  type Ticket, type TicketActivity, type Adeudo, type Egreso, type RecurringEgreso,
+  type FinancialMaturityRules, type GroupingMode
 } from './seed'
 
 // ─── State Shape ─────────────────────────────────────────────────────
@@ -115,6 +116,63 @@ function migrateStaffRole(role: string): 'Jardinero' | 'Limpieza' | 'Guardia' {
 // ─── Maturity Helper ────────────────────────────────────────────────
 
 /**
+ * Determines the exact maturity Date for a pending Pago, returning null if uncertain.
+ */
+export function getMaturityTargetDate(p: Pago, rules: FinancialMaturityRules, nowIso: string): Date | null {
+  const baseConcepto = (p.concepto || '').split(/[:—]/)[0].trim()
+
+  // 1. Mantenimiento
+  if (baseConcepto === 'Mantenimiento') {
+    if (!p.monthKey) return null
+    const [y, m] = p.monthKey.split('-').map(Number)
+    
+    if (rules.mantenimiento === 'next_month_10') {
+      return new Date(y, m, 10) // Month 'm' is already index for next month in JS (0-indexed)
+    } else if (rules.mantenimiento === 'next_month_01') {
+      return new Date(y, m, 1)
+    } else if (rules.mantenimiento === 'current_month_end') {
+      return new Date(y, m, 0)
+    }
+    return null
+  }
+
+  // 2. Reserva Amenidad
+  if (baseConcepto === 'Reserva Amenidad') {
+    if (rules.amenidad === 'immediate') return null
+    if (!p.monthKey) return null
+    
+    const parts = p.monthKey.split('-').map(Number)
+    let eventDate: Date
+    
+    if (parts.length === 3) {
+      const [y, m, d] = parts
+      eventDate = new Date(y, m - 1, d)
+    } else if (parts.length === 2) {
+      const [y, m] = parts
+      eventDate = new Date(y, m, 0)
+    } else {
+      return null
+    }
+    
+    if (rules.amenidad === '1_day_before') {
+      eventDate.setDate(eventDate.getDate() - 1)
+    }
+    return eventDate
+  }
+
+  // 3. Multas & Otros
+  if (baseConcepto === 'Multa' || baseConcepto === 'Otros') {
+    if (rules.multaOtros === '7_days_grace') {
+      const [y, m] = (p.monthKey || nowIso.slice(0, 7)).split('-').map(Number)
+      return new Date(y, m - 1, 7) // 7th day of the month
+    }
+    return null
+  }
+
+  return null
+}
+
+/**
  * Determines if a financial charge (Pago) should be treated as an effective debt
  * (Adeudo) based on its category and current date.
  * 
@@ -127,71 +185,11 @@ export function isEffectiveDebt(p: Pago, nowIso: string, rules: FinancialMaturit
   if (p.status === 'Pagado') return false
   if (p.status === 'Vencido') return true
   
+  const targetDate = getMaturityTargetDate(p, rules, nowIso)
+  if (!targetDate) return true // Immediate fallback
+  
   const now = new Date(nowIso)
-  // Split by ':' or '—' and trim to get the core category
-  const baseConcepto = (p.concepto || '').split(/[:—]/)[0].trim()
-
-  // 1. Mantenimiento
-  if (baseConcepto === 'Mantenimiento') {
-    if (!p.monthKey) return true
-    const [y, m] = p.monthKey.split('-').map(Number)
-    
-    let maturityTarget: Date
-    if (rules.mantenimiento === 'next_month_10') {
-      maturityTarget = new Date(y, m, 10) // Month 'm' is already index for next month in JS (0-indexed)
-    } else if (rules.mantenimiento === 'next_month_01') {
-      maturityTarget = new Date(y, m, 1)
-    } else if (rules.mantenimiento === 'current_month_end') {
-      // Last day of current month
-      maturityTarget = new Date(y, m, 0)
-    } else {
-      return true // Unknown rule
-    }
-    
-    return now.getTime() >= maturityTarget.getTime()
-  }
-
-  // 2. Reserva Amenidad
-  if (baseConcepto === 'Reserva Amenidad') {
-    if (rules.amenidad === 'immediate') return true
-    if (!p.monthKey) return true
-    
-    // If we have YYYY-MM-DD
-    const parts = p.monthKey.split('-').map(Number)
-    let eventDate: Date
-    
-    if (parts.length === 3) {
-      // YYYY-MM-DD
-      const [y, m, d] = parts
-      eventDate = new Date(y, m - 1, d)
-    } else if (parts.length === 2) {
-      // YYYY-MM (Fallback to end of month for grace)
-      const [y, m] = parts
-      eventDate = new Date(y, m, 0) // Last day of that month
-    } else {
-      return true
-    }
-    
-    if (rules.amenidad === '1_day_before') {
-      eventDate.setDate(eventDate.getDate() - 1)
-    }
-    
-    return now.getTime() >= eventDate.getTime()
-  }
-
-  // 3. Multas & Otros
-  if (baseConcepto === 'Multa' || baseConcepto === 'Otros') {
-    if (rules.multaOtros === '7_days_grace') {
-      // If we don't have createdAt, we assume it belongs to the current month's start
-      const [y, m] = (p.monthKey || nowIso.slice(0, 7)).split('-').map(Number)
-      const graceEnd = new Date(y, m - 1, 7) // 7th day of the month
-      return now.getTime() >= graceEnd.getTime()
-    }
-    return true // immediate or unknown rule
-  }
-
-  // 4. Default Catch-all: No rule = Immediate Debt
-  return true
+  return now.getTime() >= targetDate.getTime()
 }
 
 /**
@@ -610,14 +608,67 @@ function reducer(state: StoreState, action: Action): StoreState {
 
     case 'PROCESS_MATURITY': {
       const now = action.payload.nowIso
+      const nowDate = new Date(now)
+      const rules = state.buildingConfig.maturityRules
+      const surcharge = state.buildingConfig.surcharge
+
+      // 1. Mark as 'Vencido'
+      const updatedPagos = state.pagos.map(p => {
+        if (p.status === 'Pendiente' && isEffectiveDebt(p, now, rules)) {
+          return { ...p, status: 'Vencido' as const }
+        }
+        return p
+      })
+
+      // 2. Apply Surcharges if enabled
+      let newRecargos: Pago[] = []
+      if (surcharge && surcharge.enabled) {
+        updatedPagos.forEach(p => {
+          if (p.status === 'Vencido' && !p.concepto.startsWith('Recargo Moratorio')) {
+            const target = getMaturityTargetDate(p, rules, now)
+            if (target) {
+              const graceTarget = new Date(target)
+              graceTarget.setDate(graceTarget.getDate() + surcharge.graceDays)
+              
+              if (nowDate.getTime() >= graceTarget.getTime()) {
+                const baseConcepto = p.concepto || 'Mantenimiento'
+                const isMonthly = !!p.monthKey && baseConcepto === 'Mantenimiento'
+                const recargoConcepto = `Recargo Moratorio — ${isMonthly ? p.month : baseConcepto}`
+                
+                // Only generate if it doesn't already exist for this monthKey/source
+                const existing = updatedPagos.some(
+                  ep => ep.apartment === p.apartment && ep.concepto === recargoConcepto && ep.monthKey === p.monthKey
+                )
+                
+                if (!existing) {
+                  const amount = surcharge.type === 'fixed' 
+                    ? surcharge.amount 
+                    : p.amount * (surcharge.amount / 100)
+                  
+                  newRecargos.push({
+                    id: `pg-recargo-${p.id}-${Date.now()}`,
+                    apartment: p.apartment,
+                    resident: p.resident,
+                    month: isMonthly ? p.month : 'Acumulado',
+                    monthKey: p.monthKey || now.slice(0, 7),
+                    concepto: recargoConcepto,
+                    amount: Math.round(amount * 100) / 100,
+                    status: 'Pendiente',
+                    paymentDate: null,
+                    notes: `Autogenerado por mora de ${surcharge.graceDays} días.`
+                  })
+                }
+              }
+            }
+          }
+        })
+      }
+
+      const finalList = newRecargos.length > 0 ? [...updatedPagos, ...newRecargos] : updatedPagos
+      
       return {
         ...state,
-        pagos: state.pagos.map(p => {
-          if (p.status === 'Pendiente' && isEffectiveDebt(p, now, state.buildingConfig.maturityRules)) {
-            return { ...p, status: 'Vencido' }
-          }
-          return p
-        })
+        pagos: finalList
       }
     }
 

@@ -188,7 +188,7 @@ export interface Resident {
 // ─── Staff ───────────────────────────────────────────────────────────
 
 /** Allowed staff role categories */
-export type StaffRole = 'Jardinero' | 'Limpieza' | 'Guardia'
+export type StaffRole = 'Jardinero' | 'Limpieza' | 'Guardia' | 'Administradora General'
 
 /** A building staff member */
 export interface StaffMember {
@@ -617,8 +617,8 @@ export const seedBuildingConfig: BuildingConfig = {
     frequency: 'monthly',
   },
   banking: {
-    clabe: '',
-    bankName: '',
+    clabe: '0123 4567 8901 2345 67',
+    bankName: 'BBVA México',
     accountHolder: 'Canton Alfa Inc.',
     acceptsTransfer: true,
     acceptsCash: false,

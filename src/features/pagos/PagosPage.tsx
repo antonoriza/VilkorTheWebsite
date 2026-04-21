@@ -65,10 +65,6 @@ const ADEUDO_TYPE_LABELS: Record<AdeudoType, string> = {
 
 // ── Charge type for unified modal ──
 type ChargeType = 'ingreso' | 'egreso'
-const CHARGE_TYPES: { key: ChargeType; label: string; icon: string; desc: string }[] = [
-  { key: 'ingreso', label: 'Ingreso', icon: 'savings',       desc: 'Registrar un pago o cobro a una unidad (Cargo)' },
-  { key: 'egreso',  label: 'Gasto',   icon: 'trending_down', desc: 'Registrar una salida de dinero o gasto operativo' },
-]
 
 // Sort types
 type LedgerSortKey = 'apartment' | 'concepto' | 'month' | 'amount' | 'paymentDate' | 'status'
@@ -166,6 +162,9 @@ export default function PagosPage() {
   // ── Receipt preview ──
   const [previewPago, setPreviewPago] = useState<Pago | null>(null)
 
+  // ── Resident Payment Modal ──
+  const [residentPayTarget, setResidentPayTarget] = useState<string | null>(null)
+
   // ── Confirm dialogs ──
   const [revokeTarget, setRevokeTarget] = useState<{ id: string; apartment: string; month: string } | null>(null)
   const [expConfirm, setExpConfirm] = useState<{ id: string; action: 'annul' | 'resolve_llamado' | 'delete'; apartment: string } | null>(null)
@@ -180,8 +179,6 @@ export default function PagosPage() {
   const [egDate, setEgDate] = useState(TODAY_ISO.split('T')[0])
   const [egDescription, setEgDescription] = useState('')
   const [egConcepto, setEgConcepto] = useState('')
-
-  const [isNotifying, setIsNotifying] = useState(false)
   const [egAmount, setEgAmount] = useState('')
 
   // ── Egreso delete confirm ──
@@ -224,7 +221,7 @@ export default function PagosPage() {
         status: 'Pendiente' as const,
         paymentDate: null,
         _isAdeudo: true
-      }))
+      })) as (Pago & { _isAdeudo: boolean })[]
     return [...basePagos, ...activeAdeudos]
   }, [state.pagos, state.adeudos, state.residents])
 
@@ -234,16 +231,16 @@ export default function PagosPage() {
 
   const filteredPagos = useMemo(() => {
     let data = isAdmin ? unifiedPagos : unifiedPagos.filter(p => p.apartment === myApartment)
-    if (!isAdmin || lFilterMonth) data = data.filter(p => (p.monthKey || '') === lFilterMonth)
-    if (lFilterTower) {
+    if (isAdmin && lFilterMonth) data = data.filter(p => (p.monthKey || '') === lFilterMonth)
+    if (isAdmin && lFilterTower) {
       data = data.filter(p => {
         const res = state.residents.find(r => r.apartment === p.apartment)
         return res?.tower === lFilterTower
       })
     }
-    if (lFilterUnit)     data = data.filter(p => p.apartment === lFilterUnit)
-    if (lFilterStatus)   data = data.filter(p => p.status === lFilterStatus)
-    if (lFilterConcepto) data = data.filter(p => (p.concepto || 'Mantenimiento') === lFilterConcepto)
+    if (isAdmin && lFilterUnit)     data = data.filter(p => p.apartment === lFilterUnit)
+    if (isAdmin && lFilterStatus)   data = data.filter(p => p.status === lFilterStatus)
+    if (isAdmin && lFilterConcepto) data = data.filter(p => (p.concepto || 'Mantenimiento') === lFilterConcepto)
     return [...data].sort((a, b) => {
       let va: string | number, vb: string | number
       switch (lSortKey) {
@@ -498,11 +495,36 @@ export default function PagosPage() {
     dispatch({ type: 'UPDATE_PAGO', payload: { ...pago, status: 'Pendiente', paymentDate: null, receiptData: undefined, receiptType: undefined, receiptName: undefined } })
   }
 
-  // Resident submits payment: Pendiente → Por validar
+  // Resident clicks pay: opens modal
   const handleResidentPay = (id: string) => {
-    const pago = state.pagos.find(p => p.id === id)
+    setResidentPayTarget(id)
+  }
+
+  // Resident submits receipt from modal
+  const handleResidentSubmit = () => {
+    if (!residentPayTarget) return
+    const pago = state.pagos.find(p => p.id === residentPayTarget)
     if (!pago) return
-    dispatch({ type: 'UPDATE_PAGO', payload: { ...pago, status: 'Por validar', paymentDate: new Date().toISOString().split('T')[0] } })
+    if (!mReceiptData) {
+      setMReceiptError('Debes adjuntar un comprobante.')
+      return
+    }
+    dispatch({ 
+      type: 'UPDATE_PAGO', 
+      payload: { 
+        ...pago, 
+        status: 'Por validar', 
+        paymentDate: new Date().toISOString().split('T')[0],
+        receiptData: mReceiptData,
+        receiptType: mReceiptType,
+        receiptName: mReceiptName || undefined
+      } 
+    })
+    setResidentPayTarget(null)
+    setMReceiptData('')
+    setMReceiptType(undefined)
+    setMReceiptName('')
+    setMReceiptError('')
   }
 
   // Egreso: toggle status between Pendiente and Pagado
@@ -906,7 +928,6 @@ export default function PagosPage() {
                   { label: 'Facturas Pendientes', value: egresoKpis.pendingCount, amount: egresoKpis.pendingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', filterKey: 'Pendiente' },
                   { label: 'Flujo Total', value: ledgerEgresos.length, amount: egresoKpis.total, icon: 'trending_down', color: 'bg-rose-500', iconColor: 'text-rose-600', filterKey: '' },
                 ].map(k => {
-                  const isActive = false // Not implemented filtering for Egresos yet to keep it simple
                   const progress = egresoKpis.total > 0 ? (egresoKpis.paidTotal / egresoKpis.total) * 100 : 0
 
                   return (
@@ -1006,6 +1027,7 @@ export default function PagosPage() {
             const res = state.residents.find(r => r.apartment === lFilterUnit)
             const uUpcoming = state.pagos.filter(p => p.apartment === lFilterUnit && p.status === 'Pendiente' && !isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules))
             const uOverdue  = state.pagos.filter(p => p.apartment === lFilterUnit && (p.status === 'Vencido' || isEffectiveDebt(p, TODAY_ISO, state.buildingConfig.maturityRules)))
+            const uPagos = [...uUpcoming, ...uOverdue]
             const uAdeudos  = state.adeudos.filter(a => a.apartment === lFilterUnit && a.status === 'Activo' && a.amount > 0 && !a.id.startsWith('ad-auto-'))
             
             const pp = uUpcoming.reduce((s, p) => s + p.amount, 0)
@@ -1116,9 +1138,7 @@ export default function PagosPage() {
           {/* ── Resident balance cards ── */}
           {!isAdmin && (() => {
             const myPagos = state.pagos.filter(p => p.apartment === myApartment)
-            const pending = myPagos.filter(p => p.status === 'Pendiente')
-            const porValidar = myPagos.filter(p => p.status === 'Por validar')
-            const myAdeudos = state.adeudos.filter(a => a.apartment === myApartment && a.status === 'Activo')
+              const myAdeudos = state.adeudos.filter(a => a.apartment === myApartment && a.status === 'Activo')
             return (
               <div className="space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1522,7 +1542,7 @@ export default function PagosPage() {
                       )}
                       {!isAdmin && (
                         <td className="px-5 py-4 text-center">
-                          {pago.status === 'Pendiente' && (
+                          {(pago.status === 'Pendiente' || pago.status === 'Vencido') && (
                             <button onClick={() => handleResidentPay(pago.id)}
                               className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl border transition-all bg-slate-900 text-white border-slate-900 hover:bg-slate-800">
                               Pagar
@@ -2054,6 +2074,108 @@ export default function PagosPage() {
             )}
           </div>
         )}
+      </Modal>
+
+      {/* ═══ Resident Payment Modal ═══ */}
+      <Modal open={!!residentPayTarget} onClose={() => {
+        setResidentPayTarget(null)
+        setMReceiptData('')
+        setMReceiptType(undefined)
+        setMReceiptName('')
+        setMReceiptError('')
+      }} title="Instrucciones de Pago">
+        {(() => {
+          const pago = state.pagos.find(p => p.id === residentPayTarget)
+          if (!pago) return null
+          
+          const b = bc.banking || { acceptsTransfer: false, acceptsCash: false, acceptsOxxo: false }
+          
+          return (
+            <div className="space-y-6">
+              {/* Payment Summary */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total a Pagar</p>
+                <p className="text-3xl font-headline font-black text-slate-900">${pago.amount.toLocaleString('es-MX')} MXN</p>
+                <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-wider">{pago.concepto}</p>
+                <p className="text-xs text-slate-400 mt-1">Status: <span className="font-bold">{pago.status}</span></p>
+              </div>
+
+              {/* Banking Details */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-black text-slate-900">1. Realiza tu pago</h3>
+                
+                {b.acceptsTransfer ? (
+                  <div className="bg-slate-900 text-white rounded-xl p-5 space-y-4 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-[0.02] transform rotate-45 translate-x-10 -translate-y-10" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-[0.02] rounded-full transform -translate-x-8 translate-y-8" />
+                    
+                    <div className="grid grid-cols-2 gap-4 relative z-10">
+                      <div>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Banco</p>
+                        <p className="text-sm font-semibold">{b.bankName || 'Por definir'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Titular</p>
+                        <p className="text-sm font-semibold truncate" title={b.accountHolder}>{b.accountHolder || 'Por definir'}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">CLABE Interbancaria</p>
+                        <p className="text-xl font-bold tracking-widest font-mono text-emerald-400">{b.clabe || '000 0000 0000 0000 00'}</p>
+                      </div>
+                      <div className="col-span-2 pt-2 border-t border-slate-800">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Referencia</p>
+                        <p className="text-sm font-semibold">
+                          {b.referenceFormat === 'apartment' ? `Depto ${myApartment}` : b.customReferenceNote || `Depto ${myApartment}`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center justify-center text-rose-600 text-sm font-bold">
+                    No hay cuenta bancaria configurada. Contacta a administración.
+                  </div>
+                )}
+                
+                {/* Method Pills */}
+                <div className="flex gap-2 justify-center">
+                  {b.acceptsTransfer && <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">SPEI</span>}
+                  {b.acceptsCash && <span className="bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Efectivo Caseta</span>}
+                  {b.acceptsOxxo && <span className="bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">OXXO Pay</span>}
+                </div>
+
+                {b.notes && (
+                  <p className="text-xs text-slate-500 italic text-center px-4">{b.notes}</p>
+                )}
+              </div>
+
+              {/* Receipt Upload */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <h3 className="text-sm font-black text-slate-900">2. Adjunta Comprobante</h3>
+                <div className="space-y-2">
+                  <input type="file" accept=".pdf, image/jpeg, image/png" onChange={handleReceiptUpload}
+                    className="block w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-slate-900 file:text-white" />
+                  {mReceiptError && <p className="text-xs text-rose-600 font-bold ml-1">{mReceiptError}</p>}
+                  {mReceiptName && !mReceiptError && (
+                    <div className="flex items-center gap-2 ml-1">
+                      <span className="material-symbols-outlined text-emerald-500 text-[14px]">check_circle</span>
+                      <span className="text-xs text-emerald-600 font-bold max-w-[250px] truncate">{mReceiptName}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Submit */}
+              <div className="pt-2">
+                <button onClick={handleResidentSubmit} disabled={!mReceiptData && b.acceptsTransfer}
+                  className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all flex justify-center items-center gap-2 ${
+                    !mReceiptData && b.acceptsTransfer ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.98] hover:shadow-lg'
+                  }`}>
+                  <span className="material-symbols-outlined text-[16px]">send</span> Enviar Comprobante
+                </button>
+              </div>
+            </div>
+          )
+        })()}
       </Modal>
 
       {/* ═══ Confirm Dialogs ═══ */}
