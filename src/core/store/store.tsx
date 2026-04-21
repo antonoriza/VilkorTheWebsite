@@ -279,6 +279,8 @@ function loadInitialState(): StoreState {
             if (!parsed.buildingConfig.defaultUnitDna) parsed.buildingConfig.defaultUnitDna = seedBuildingConfig.defaultUnitDna
             if (!parsed.buildingConfig.equipment) parsed.buildingConfig.equipment = seedBuildingConfig.equipment
             if (!parsed.buildingConfig.vendors) parsed.buildingConfig.vendors = seedBuildingConfig.vendors
+            if (!parsed.buildingConfig.surcharge) parsed.buildingConfig.surcharge = seedBuildingConfig.surcharge
+            if (!parsed.buildingConfig.banking) parsed.buildingConfig.banking = seedBuildingConfig.banking
           }
         }
 

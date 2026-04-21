@@ -386,6 +386,10 @@ export interface BuildingConfig {
   recurringEgresos: RecurringEgreso[]
   /** Rules for debt maturity */
   maturityRules: FinancialMaturityRules
+  /** Moratory surcharge rules — applied by the surcharge engine on matured debts */
+  surcharge: SurchargeConfig
+  /** Payment method configuration — shown to residents in their payment ledger */
+  banking: BankingConfig
   /** Digital Twin: Spatial zoning mapping */
   zoning: ZoningPoint[]
   /** Digital Twin: Topology hierarchies */
@@ -396,6 +400,35 @@ export interface BuildingConfig {
   equipment: CriticalEquipment[]
   /** Agentic vendor directory — resolver uses this to route incidents */
   vendors: Vendor[]
+}
+
+/** Moratory surcharge rule applied after grace period on unpaid debts */
+export interface SurchargeConfig {
+  /** Whether surcharges are active */
+  enabled: boolean
+  /** percent = % of outstanding balance; fixed = flat MXN amount */
+  type: 'percent' | 'fixed'
+  /** The rate or amount (e.g. 5 for 5% or 500 for $500 MXN flat) */
+  amount: number
+  /** Days overdue before the first surcharge is applied */
+  graceDays: number
+  /** How often the surcharge compounds */
+  frequency: 'monthly' | 'one_time'
+}
+
+/** Building bank account and payment method configuration */
+export interface BankingConfig {
+  /** 18-digit CLABE interbancaria */
+  clabe: string
+  bankName: string
+  accountHolder: string
+  acceptsTransfer: boolean
+  acceptsCash: boolean
+  acceptsOxxo: boolean
+  /** How resident constructs their payment reference */
+  referenceFormat: 'apartment' | 'custom'
+  customReferenceNote?: string
+  notes?: string
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
@@ -575,6 +608,23 @@ export const seedBuildingConfig: BuildingConfig = {
     mantenimiento: 'next_month_01',
     amenidad: 'day_of_event',
     multaOtros: 'immediate'
+  },
+  surcharge: {
+    enabled: false,
+    type: 'percent',
+    amount: 5,
+    graceDays: 10,
+    frequency: 'monthly',
+  },
+  banking: {
+    clabe: '',
+    bankName: '',
+    accountHolder: 'Canton Alfa Inc.',
+    acceptsTransfer: true,
+    acceptsCash: false,
+    acceptsOxxo: false,
+    referenceFormat: 'apartment',
+    notes: 'Indicar número de departamento en referencia del pago.',
   },
   zoning: [
     { id: 'zn-1', name: 'Lobby Principal', type: 'lobby', linkedContainer: 'RIN' },
