@@ -94,7 +94,7 @@ type Action =
   | { type: 'GENERATE_MONTHLY_RECORDS'; payload: { monthKey: string } }
   | { type: 'CLEANUP_EXPIRED'; payload: { nowIso: string } }
   | { type: 'PROCESS_MATURITY'; payload: { nowIso: string } }
-  | { type: 'RESET' }
+  | { type: 'RESET'; payload?: { groupingMode: GroupingMode } }
 
 /** localStorage key for persisting state */
 const STORAGE_KEY = 'cantonalfa_store'
@@ -278,6 +278,7 @@ function loadInitialState(): StoreState {
             if (!parsed.buildingConfig.zoning) parsed.buildingConfig.zoning = seedBuildingConfig.zoning
             if (!parsed.buildingConfig.defaultUnitDna) parsed.buildingConfig.defaultUnitDna = seedBuildingConfig.defaultUnitDna
             if (!parsed.buildingConfig.equipment) parsed.buildingConfig.equipment = seedBuildingConfig.equipment
+            if (!parsed.buildingConfig.vendors) parsed.buildingConfig.vendors = seedBuildingConfig.vendors
           }
         }
 
@@ -684,7 +685,13 @@ function reducer(state: StoreState, action: Action): StoreState {
     case 'RESET':
       localStorage.removeItem(STORAGE_KEY)
       localStorage.removeItem('cantonalfa_settings')
-      return getSeedState()
+      const newState = getSeedState()
+      if (action.payload?.groupingMode) {
+        newState.buildingConfig.groupingMode = action.payload.groupingMode
+        // When resetting mode, we should also ensure topology matches the new target mode
+        newState.buildingConfig.topology.containers = []
+      }
+      return newState
 
     default:
       return state

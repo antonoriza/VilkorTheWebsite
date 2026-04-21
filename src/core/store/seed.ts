@@ -211,6 +211,8 @@ export interface StaffMember {
 export interface Amenity {
   id: string
   name: string
+  /** Material Symbols icon identifier */
+  icon: string
 }
 
 // ─── Building Configuration ──────────────────────────────────────────
@@ -253,6 +255,8 @@ export interface TopologyContainer {
   id: string
   name: string
   unitsCount: number
+  parkingCount: number
+  storageCount: number
 }
 
 export interface TopologyParams {
@@ -281,9 +285,51 @@ export interface UtilityPoint {
 export interface CriticalEquipment {
   id: string
   name: string
-  type: 'solar' | 'ac' | 'boiler' | 'pump'
+  type: 'solar' | 'ac' | 'boiler' | 'pump' | 'elevator' | 'cistern' | 'cctv' | 'electric_plant' | 'transformer' | 'hvac' | 'intercom' | 'gate'
+  category: 'transporte' | 'hidraulica' | 'energia' | 'seguridad'
+  /** Container association: '*' = todas, or a specific container name e.g. 'Torre A' */
+  location?: string
   lastMaintenance?: string
   nextMaintenance?: string
+}
+
+/** Agentic-first vendor directory — used by resolver to route incidents to the right contact */
+export type VendorCategory =
+  | 'limpieza'
+  | 'plomeria'
+  | 'elevadores'
+  | 'electricidad'
+  | 'seguridad'
+  | 'jardineria'
+  | 'hvac'
+  | 'otro'
+
+export const VENDOR_CATEGORY_LABELS: Record<VendorCategory, string> = {
+  limpieza:      'Limpieza / Recolección',
+  plomeria:      'Plomería',
+  elevadores:    'Elevadores',
+  electricidad:  'Electricidad',
+  seguridad:     'Seguridad',
+  jardineria:    'Jardinería',
+  hvac:          'HVAC / Climatización',
+  otro:          'Otro',
+}
+
+export interface Vendor {
+  id: string
+  /** Human-readable service name (e.g. "Recolección de Basura") */
+  service: string
+  /** Company or individual name */
+  name: string
+  category: VendorCategory
+  /** Primary contact phone */
+  phone: string
+  email?: string
+  /** When they operate, e.g. "L-V 7:00-15:00" */
+  schedule?: string
+  /** urgencias = call immediately; mantenimiento = scheduled; recurrente = fixed calendar */
+  type: 'urgencias' | 'mantenimiento' | 'recurrente'
+  notes?: string
 }
 
 /** Rule-based maturity settings for financial charges */
@@ -348,6 +394,8 @@ export interface BuildingConfig {
   defaultUnitDna: UnitDna
   /** Digital Twin: Global equipment inventory */
   equipment: CriticalEquipment[]
+  /** Agentic vendor directory — resolver uses this to route incidents */
+  vendors: Vendor[]
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
@@ -535,8 +583,8 @@ export const seedBuildingConfig: BuildingConfig = {
   ],
   topology: {
     containers: [
-      { id: 'top-1', name: 'RIN', unitsCount: 58 },
-      { id: 'top-2', name: 'DANUBIO', unitsCount: 58 }
+      { id: 'top-1', name: 'RIN', unitsCount: 58, parkingCount: 65, storageCount: 40 },
+      { id: 'top-2', name: 'DANUBIO', unitsCount: 58, parkingCount: 65, storageCount: 40 }
     ],
     unitNomenclature: 'X000'
   },
@@ -547,15 +595,28 @@ export const seedBuildingConfig: BuildingConfig = {
     usageType: 'propietario'
   },
   equipment: [
-    { id: 'eq-1', name: 'Paneles Solares Roof Garden', type: 'solar', nextMaintenance: '2026-06-15' },
-    { id: 'eq-2', name: 'Bomba de Agua Principal', type: 'pump', nextMaintenance: '2026-05-10' }
+    { id: 'eq-1', name: 'Elevador 1', type: 'elevator', category: 'transporte', location: 'DANUBIO', nextMaintenance: '2026-06-15' },
+    { id: 'eq-2', name: 'Escalera Mecánica 1', type: 'elevator', category: 'transporte', location: 'DANUBIO', nextMaintenance: '2026-08-01' },
+    { id: 'eq-3', name: 'Bomba 1', type: 'pump', category: 'hidraulica', location: '*', nextMaintenance: '2026-05-10' },
+    { id: 'eq-4', name: 'Cisterna 1', type: 'cistern', category: 'hidraulica', location: '*', nextMaintenance: '2026-07-20' },
+    { id: 'eq-5', name: 'Paneles Solares 1', type: 'solar', category: 'energia', location: '*', nextMaintenance: '2026-06-15' },
+    { id: 'eq-6', name: 'Planta Eléctrica 1', type: 'electric_plant', category: 'energia', location: '*', nextMaintenance: '2026-09-01' },
+    { id: 'eq-7', name: 'CCTV 1', type: 'cctv', category: 'seguridad', location: '*', nextMaintenance: '2026-05-30' },
+    { id: 'eq-8', name: 'Portón/Acceso 1', type: 'gate', category: 'seguridad', location: '*', nextMaintenance: '2026-10-01' },
+  ],
+  vendors: [
+    { id: 'v-1', service: 'Recolección de Basura', name: 'Servicios Urbanos CDMX', category: 'limpieza', phone: '55 1234 5678', schedule: 'L-S 7:00-10:00', type: 'recurrente', notes: 'Pase L, Mi, V para residuos generales. M para reciclaje.' },
+    { id: 'v-2', service: 'Plomería (Urgencias)', name: 'Fontanería Rápida 24h', category: 'plomeria', phone: '55 9876 5432', type: 'urgencias', notes: 'Disponible 24/7. Cobro de urgencia nocturna aplica.' },
+    { id: 'v-3', service: 'Técnicos de Elevadores', name: 'Elevadores Thyssen KM', category: 'elevadores', phone: '55 5555 1111', email: 'soporte@thyssenkm.com', schedule: 'L-V 8:00-18:00', type: 'mantenimiento', notes: 'Contrato anual de mantenimiento preventivo. Emergencias ext. 2.' },
+    { id: 'v-4', service: 'Electricidad General', name: 'Ingelectra', category: 'electricidad', phone: '55 4321 8765', schedule: 'L-V 9:00-17:00', type: 'mantenimiento' },
+    { id: 'v-5', service: 'Seguridad Perimetral', name: 'Grupo Segura SA', category: 'seguridad', phone: '55 0000 9999', type: 'urgencias', notes: 'Panel de alarma conectado directoramente a su central de monitoreo.' },
   ]
 }
 
 export const seedAmenities: Amenity[] = [
-  { id: 'amen-1', name: 'Asador 1' },
-  { id: 'amen-2', name: 'Asador 2' },
-  { id: 'amen-3', name: 'Asador 3' },
+  { id: 'amen-1', name: 'Asador 1', icon: 'outdoor_grill' },
+  { id: 'amen-2', name: 'Asador 2', icon: 'outdoor_grill' },
+  { id: 'amen-3', name: 'Asador 3', icon: 'outdoor_grill' },
 ]
 
 export const seedResidents: Resident[] = [

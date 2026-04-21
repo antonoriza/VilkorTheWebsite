@@ -30,16 +30,15 @@ const settingsGroups = [
   {
     title: 'Gobernanza Operativa',
     items: [
-      { id: 'finanzas', label: 'Estrategia Financiera', icon: 'payments', desc: 'Reglas de cobro y recargos' },
-      { id: 'comunicacion', label: 'Protocolos de Comunicación', icon: 'campaign', desc: 'Avisos y votaciones' },
-      { id: 'servicios', label: 'Flujos de Servicio', icon: 'confirmation_number', desc: 'SLA y logística' },
+      { id: 'finanzas', label: 'Contabilidad y Finanzas', icon: 'payments', desc: 'Reglas de cobro y recargos' },
+      { id: 'comunicacion', label: 'Avisos/Notificaciones', icon: 'campaign', desc: 'Avisos y votaciones' },
+      { id: 'servicios', label: 'Logística', icon: 'confirmation_number', desc: 'SLA y procesos' },
     ]
   },
   {
     title: 'Seguridad y Acceso',
     items: [
       { id: 'permisos', label: 'Directorio y Permisos', icon: 'shield_person', desc: 'Roles y niveles de acceso' },
-      { id: 'integraciones', label: 'Ecosistema de Integraciones', icon: 'hub', desc: 'API, Webhooks e IoT' },
     ]
   },
   {
