@@ -199,41 +199,47 @@ export default function DashboardLayout() {
 
       {/* ── Main Content Area ── */}
       <main className="ml-72 w-full min-h-screen flex flex-col">
-        <header className="flex justify-between items-center px-10 h-20 sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200">
+        <header className="flex justify-between items-center px-6 h-14 sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-100">
           <div />
-          <div className="flex items-center space-x-3">
-            <div className={`flex items-center space-x-2 px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-widest ${
-                (role === 'super_admin' || role === 'administracion' || role === 'operador') ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'
+          <div className="flex items-center space-x-2">
+            {/* Subtle Role Badge */}
+            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-bold uppercase tracking-wider ${
+                (role === 'super_admin' || role === 'administracion' || role === 'operador') 
+                  ? 'bg-rose-50/50 border-rose-100 text-rose-600' 
+                  : 'bg-emerald-50/50 border-emerald-100 text-emerald-600'
               }`}
             >
-              <span className="material-symbols-outlined text-base">{(role === 'super_admin' || role === 'administracion' || role === 'operador') ? 'shield_person' : 'person'}</span>
+              <span className={`w-1 h-1 rounded-full ${(role === 'super_admin' || role === 'administracion' || role === 'operador') ? 'bg-rose-500' : 'bg-emerald-500'}`} />
               <span>{(role === 'super_admin' || role === 'administracion' || role === 'operador') ? role.replace('_', ' ') : 'Residente'}</span>
             </div>
 
+            <div className="h-4 w-[1px] bg-slate-200 mx-1" />
+
+            {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setShowNotif(!showNotif)}
-                className="relative w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-all"
+                className="relative w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-900 transition-all"
               >
-                <span className="material-symbols-outlined">notifications</span>
+                <span className="material-symbols-outlined text-[20px]">notifications</span>
                 {myNotifs.some(n => !n.read) && (
-                  <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white animate-pulse"></span>
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose-500 rounded-full border border-white animate-pulse"></span>
                 )}
               </button>
               {showNotif && (
-                <div className="absolute right-0 mt-3 w-80 bg-white rounded-3xl shadow-2xl shadow-slate-300 border border-slate-100 p-6 animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 p-5 animate-in fade-in zoom-in-95 duration-200">
                   <div className="flex items-center justify-between mb-4">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Alertas</p>
-                    <button onClick={() => setShowNotif(false)} className="text-slate-400 hover:text-slate-900 transition-colors"><span className="material-symbols-outlined text-lg">close</span></button>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Notificaciones</p>
+                    <button onClick={() => setShowNotif(false)} className="text-slate-400 hover:text-slate-900 transition-colors"><span className="material-symbols-outlined text-base">close</span></button>
                   </div>
-                  <div className="max-h-64 overflow-y-auto space-y-3 custom-scrollbar pr-1">
+                  <div className="max-h-64 overflow-y-auto space-y-2.5 custom-scrollbar pr-1">
                     {myNotifs.length === 0 ? (
-                      <p className="text-center text-[11px] text-slate-400 py-6 font-bold uppercase tracking-widest">Sin novedades</p>
+                      <p className="text-center text-[10px] text-slate-400 py-6 font-bold uppercase tracking-widest">Sin novedades</p>
                     ) : (
                       myNotifs.map(n => (
-                        <div key={n.id} onClick={() => handleNotifClick(n)} className={`p-4 rounded-2xl border transition-all cursor-pointer ${n.read ? 'bg-slate-50 border-slate-100' : 'bg-emerald-50/30 border-emerald-100'}`}>
-                          <p className="text-[11px] font-black text-slate-900 leading-tight uppercase tracking-tight">{n.title}</p>
-                          <p className="text-[11px] text-slate-600 mt-2 font-medium">{n.message}</p>
+                        <div key={n.id} onClick={() => handleNotifClick(n)} className={`p-3.5 rounded-xl border transition-all cursor-pointer ${n.read ? 'bg-slate-50/50 border-slate-100' : 'bg-emerald-50/20 border-emerald-100'}`}>
+                          <p className="text-[10px] font-black text-slate-900 leading-tight uppercase tracking-tight">{n.title}</p>
+                          <p className="text-[10px] text-slate-500 mt-1.5 font-medium leading-relaxed">{n.message}</p>
                         </div>
                       ))
                     )}
@@ -242,22 +248,25 @@ export default function DashboardLayout() {
               )}
             </div>
 
+            {/* Profile Menu */}
             <div className="relative">
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-all"
+                className="w-8 h-8 flex items-center justify-center rounded-lg overflow-hidden border border-slate-100 hover:border-slate-200 bg-white transition-all group"
               >
-                <span className="material-symbols-outlined">account_circle</span>
+                <div className="w-full h-full bg-slate-900 flex items-center justify-center text-white text-[10px] font-black tracking-tight group-hover:scale-110 transition-transform">
+                  {user.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                </div>
               </button>
               {showProfileMenu && (
-                <div className="absolute right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl shadow-slate-300 border border-slate-100 p-5 animate-in fade-in zoom-in-95 duration-200">
-                  <div className="pb-4 mb-4 border-b border-slate-100">
-                    <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight">{user}</p>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-60">{role}</p>
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 p-4 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="pb-3 mb-3 border-b border-slate-100">
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight truncate">{user}</p>
+                    <p className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-0.5 opacity-60">{role.replace('_', ' ')}</p>
                   </div>
-                  <button onClick={logout} className="flex items-center w-full px-4 py-3 text-[11px] text-rose-600 hover:bg-rose-50 font-black uppercase tracking-widest rounded-2xl transition-all">
-                    <span className="material-symbols-outlined text-lg mr-3">logout</span>
-                    Finalizar Sesión
+                  <button onClick={logout} className="flex items-center w-full px-3 py-2.5 text-[9px] text-rose-600 hover:bg-rose-50 font-black uppercase tracking-widest rounded-xl transition-all">
+                    <span className="material-symbols-outlined text-base mr-2.5">logout</span>
+                    Cerrar Sesión
                   </button>
                 </div>
               )}
