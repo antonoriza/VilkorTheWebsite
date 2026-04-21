@@ -11,6 +11,7 @@
     "db:seed": "bun run src/db/seed.ts"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.6",
     "@propertypulse/shared": "workspace:*",
     "better-auth": "^1.2.0",
     "drizzle-orm": "^0.44.0",
