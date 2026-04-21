@@ -13,7 +13,8 @@
  *   - StoreProvider — React context provider wrapping the app.
  *   - useStore() — Hook to access { state, dispatch }.
  */
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, useRef, type ReactNode } from 'react'
+import { loadState, saveState, resetDatabase } from '../../db/database'
 import {
   seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
   seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
@@ -225,14 +226,30 @@ function getSeedState(): StoreState {
 }
 
 /**
- * Loads the initial state from localStorage, applying migrations
- * for schema changes from previous versions. Falls back to seed
- * data if no stored state exists or if parsing fails.
+ * Loads the initial state from SQLite, falling back to localStorage
+ * (for migration from the old persistence layer), then to seed data.
+ *
+ * Migration path: SQLite → localStorage → seed data
+ * Once loaded from localStorage, the state is saved to SQLite and
+ * localStorage is cleared on next persist cycle.
  */
 function loadInitialState(): StoreState {
+  // 1. Try SQLite first (primary persistence layer)
+  try {
+    const sqlState = loadState<StoreState>()
+    if (sqlState) {
+      console.log('[Store] Loaded from SQLite')
+      return applyMigrations(sqlState)
+    }
+  } catch (err) {
+    console.warn('[Store] SQLite load failed, trying localStorage:', err)
+  }
+
+  // 2. Try localStorage (backward compatibility / migration)
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
+      console.log('[Store] Migrating from localStorage to SQLite')
       const parsed = JSON.parse(raw) as StoreState
       const version = parsed.version || 1
       // ── MIGRATION V1 -> V2 ──
@@ -441,10 +458,34 @@ function loadInitialState(): StoreState {
     }
   } catch { /* fall through to seed data on any error */ }
 
-  // No stored state found — return fresh seed data
+  // 3. No stored state found — return fresh seed data
+  console.log('[Store] No saved state found, using seed data')
   return getSeedState()
 }
 
+/**
+ * Applies schema migrations to a previously-persisted state object.
+ * This handles state loaded from SQLite (which was written by a prior version
+ * of the store) and ensures all expected slices exist.
+ */
+function applyMigrations(parsed: StoreState): StoreState {
+  // Ensure all slices exist
+  if (!parsed.notificaciones) parsed.notificaciones = []
+  if (!parsed.residents) parsed.residents = seedResidents
+  if (!parsed.staff) parsed.staff = seedStaff
+  if (!parsed.amenities) parsed.amenities = seedAmenities
+  if (!parsed.inventory) parsed.inventory = seedInventory
+  if (!parsed.tickets) parsed.tickets = seedTickets
+  if (!parsed.ticketCounter && parsed.ticketCounter !== 0) parsed.ticketCounter = seedTicketCounter
+  if (!parsed.adeudos) parsed.adeudos = seedAdeudos
+  if (!parsed.egresos) parsed.egresos = seedEgresos
+  if (!parsed.buildingConfig) parsed.buildingConfig = { ...seedBuildingConfig }
+  if (!parsed.buildingConfig.permissionsMatrix) {
+    parsed.buildingConfig.permissionsMatrix = seedBuildingConfig.permissionsMatrix
+  }
+  parsed.version = CURRENT_STATE_VERSION
+  return parsed
+}
 // ─── Permissions Helper ─────────────────────────────────────────────
 
 /**
@@ -807,9 +848,11 @@ function reducer(state: StoreState, action: Action): StoreState {
     }
 
     // Full system reset to seed data
-    case 'RESET':
+    case 'RESET': {
+      // Clear all persistence layers
       localStorage.removeItem(STORAGE_KEY)
       localStorage.removeItem('cantonalfa_settings')
+      resetDatabase().catch(err => console.error('[Store] Reset DB failed:', err))
       const newState = getSeedState()
       if (action.payload?.groupingMode) {
         newState.buildingConfig.groupingMode = action.payload.groupingMode
@@ -817,6 +860,7 @@ function reducer(state: StoreState, action: Action): StoreState {
         newState.buildingConfig.topology.containers = []
       }
       return newState
+    }
 
     default:
       return state
@@ -832,10 +876,12 @@ const StoreContext = createContext<{
 
 /**
  * StoreProvider — Wraps the app to provide centralized state.
- * Runs expired-package cleanup on mount and auto-saves to localStorage.
+ * Runs expired-package cleanup on mount and auto-saves to SQLite.
+ * Falls back to localStorage if SQLite write fails.
  */
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, loadInitialState)
+  const isFirstRender = useRef(true)
 
   // Run cleanup for expired packages on initial mount
   useEffect(() => {
@@ -846,9 +892,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'GENERATE_MONTHLY_RECORDS', payload: { monthKey } })
   }, [])
 
-  // Persist state to localStorage on every change
+  // Persist state to SQLite + IndexedDB on every change
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    // Skip the initial render to avoid persisting seed data before cleanup/generation
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    
+    // Primary: SQLite → IndexedDB
+    saveState(state).catch(err => {
+      console.error('[Store] SQLite save failed, falling back to localStorage:', err)
+      // Fallback: localStorage (degraded but functional)
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      } catch { /* storage quota exceeded — ignore */ }
+    })
   }, [state])
 
   return (

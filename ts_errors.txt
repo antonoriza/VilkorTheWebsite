@@ -1,6 +1,0 @@
-src/features/avisos/AvisosPage.tsx(271,122): error TS2322: Type '{ children: Element | null; open: boolean; onClose: () => void; title: string; maxWidth: string; }' is not assignable to type 'IntrinsicAttributes & ModalProps'.
-  Property 'maxWidth' does not exist on type 'IntrinsicAttributes & ModalProps'.
-src/features/dashboard/AdminDashboard.tsx(377,76): error TS2304: Cannot find name 'ROLE_ICONS'.
-src/features/dashboard/AdminDashboard.tsx(555,20): error TS2552: Cannot find name 'STAFF_ROLES'. Did you mean 'staffRole'?
-src/features/dashboard/AdminDashboard.tsx(555,36): error TS7006: Parameter 'r' implicitly has an 'any' type.
-src/features/dashboard/AdminDashboard.tsx(615,78): error TS2304: Cannot find name 'ROLE_ICONS'.
