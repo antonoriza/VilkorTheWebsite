@@ -6,7 +6,7 @@
  *   - tenants: property registry
  *   - userTenants: user-to-tenant role mappings
  */
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 // ─── Better Auth Required Tables ─────────────────────────────────────
 // These table names and columns are required by Better Auth's Drizzle adapter.
@@ -82,4 +82,7 @@ export const userTenants = sqliteTable('user_tenants', {
   role:      text('role').notNull(),
   apartment: text('apartment'),
   createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
-})
+}, (table) => ({
+  uniqueUserTenant: uniqueIndex('idx_user_tenants_unique').on(table.userId, table.tenantId),
+}))
+

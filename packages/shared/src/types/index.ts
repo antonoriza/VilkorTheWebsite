@@ -17,11 +17,12 @@ export interface Notificacion {
   userId: string
   title: string
   message: string
-  /** ISO date string (YYYY-MM-DD) */
-  date: string
   read: boolean
   /** Optional deep-link path (e.g. "/amenidades") for click navigation */
   actionLink?: string
+  /** ISO timestamp */
+  createdAt: string
+  updatedAt: string
 }
 
 // ─── Announcement ────────────────────────────────────────────────────
@@ -73,9 +74,11 @@ export interface Aviso {
 /** A charge/payment record in the billing ledger for a residential unit */
 export interface Pago {
   id: string
+  /** FK to residents table (nullable for backward compat) */
+  residentId?: string
   /** Apartment identifier (e.g. "A101") */
   apartment: string
-  /** Name of the responsible resident */
+  /** Name of the responsible resident (display snapshot) */
   resident: string
   /** Human-readable month (e.g. "abril de 2026") */
   month: string
@@ -98,6 +101,9 @@ export interface Pago {
   receiptName?: string
   /** Admin/system notes (e.g. advance payment annotations) */
   notes?: string
+  /** ISO timestamps */
+  createdAt: string
+  updatedAt: string
 }
 
 // ─── Package ─────────────────────────────────────────────────────────
@@ -179,6 +185,10 @@ export interface Resident {
   /** Tower/section identifier (e.g. "A", "B") */
   tower: string
   email: string
+  phone?: string
+  /** ISO timestamps */
+  createdAt: string
+  updatedAt: string
 }
 
 // ─── Staff ───────────────────────────────────────────────────────────
@@ -219,8 +229,9 @@ export interface InventoryItem {
   currentUser: string
   /** Detailed notes */
   notes?: string
-  /** ISO date of last modification */
-  lastUpdated: string
+  /** ISO timestamps */
+  createdAt: string
+  updatedAt: string
 }
 
 // ─── Amenity ─────────────────────────────────────────────────────────

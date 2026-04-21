@@ -22,7 +22,8 @@ app.post('/', adminOnly, validate('json', z.object({ name: z.string().min(1), ic
   const db = c.get('db') as any
   const body = c.req.valid('json' as never) as { name: string; icon: string }
   const id = nanoid()
-  await db.insert(amenities).values({ id, ...body })
+  const now = new Date().toISOString()
+  await db.insert(amenities).values({ id, ...body, createdAt: now, updatedAt: now })
   const [created] = await db.select().from(amenities).where(eq(amenities.id, id))
   return c.json(created, 201)
 })
@@ -40,7 +41,8 @@ app.post('/reservaciones', validate('json', z.object({
   const db = c.get('db') as any
   const body = c.req.valid('json' as never) as { date: string; grill: string; resident: string; apartment: string }
   const id = nanoid()
-  await db.insert(reservaciones).values({ id, ...body, status: 'Reservado' })
+  const now = new Date().toISOString()
+  await db.insert(reservaciones).values({ id, ...body, status: 'Reservado', createdAt: now, updatedAt: now })
   const [created] = await db.select().from(reservaciones).where(eq(reservaciones.id, id))
   return c.json(created, 201)
 })
@@ -49,7 +51,7 @@ app.patch('/reservaciones/:id', async (c) => {
   const db = c.get('db') as any
   const id = c.req.param('id')
   const { status } = await c.req.json()
-  await db.update(reservaciones).set({ status }).where(eq(reservaciones.id, id))
+  await db.update(reservaciones).set({ status, updatedAt: new Date().toISOString() }).where(eq(reservaciones.id, id))
   const [updated] = await db.select().from(reservaciones).where(eq(reservaciones.id, id))
   if (!updated) return c.json({ error: 'Not Found' }, 404)
   return c.json(updated)

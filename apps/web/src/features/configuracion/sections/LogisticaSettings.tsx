@@ -293,7 +293,7 @@ const INVENTORY_CATEGORY_ICONS: Record<InventoryCategory, string> = {
   Propiedad: 'corporate_fare',
 }
 
-const EMPTY_INVENTORY: Omit<InventoryItem, 'id' | 'lastUpdated'> = {
+const EMPTY_INVENTORY: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
   name: '', 
   category: 'Propiedad', 
   ownerId: 'building',
@@ -317,7 +317,7 @@ function InventarioTab({
 }) {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState<Omit<InventoryItem, 'id' | 'lastUpdated'>>(EMPTY_INVENTORY)
+  const [form, setForm] = useState<Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>>(EMPTY_INVENTORY)
 
   const handleAdd = () => {
     if (!form.name.trim()) return
@@ -342,7 +342,8 @@ function InventarioTab({
       ...form,
       owner: finalOwner,
       currentUser: finalUser || 'Sin asignar',
-      lastUpdated: now
+      createdAt: now,
+      updatedAt: now
     }
     
     if (editingId) {

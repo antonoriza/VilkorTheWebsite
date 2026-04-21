@@ -49,7 +49,8 @@ app.post('/', adminOnly, validate('json', createResidentSchema), async (c) => {
   const db = c.get('db') as any
   const body = c.req.valid('json' as never) as z.infer<typeof createResidentSchema>
   const id = nanoid()
-  await db.insert(residents).values({ id, ...body })
+  const now = new Date().toISOString()
+  await db.insert(residents).values({ id, ...body, createdAt: now, updatedAt: now })
   const [created] = await db.select().from(residents).where(eq(residents.id, id))
   return c.json(created, 201)
 })
@@ -59,7 +60,7 @@ app.patch('/:id', adminOnly, validate('json', updateResidentSchema), async (c) =
   const db = c.get('db') as any
   const id = c.req.param('id')
   const body = c.req.valid('json' as never) as z.infer<typeof updateResidentSchema>
-  await db.update(residents).set(body).where(eq(residents.id, id))
+  await db.update(residents).set({ ...body, updatedAt: new Date().toISOString() }).where(eq(residents.id, id))
   const [updated] = await db.select().from(residents).where(eq(residents.id, id))
   if (!updated) return c.json({ error: 'Not Found' }, 404)
   return c.json(updated)

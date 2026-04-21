@@ -2,11 +2,13 @@
  * Tickets API Routes
  *
  * Service request lifecycle management with activity logging.
+ * Refactored: activities are now stored in a normalized ticket_activities
+ * table instead of a JSON column on the tickets table.
  */
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { eq, desc } from 'drizzle-orm'
-import { tickets, counters } from '../db/schema/tenant'
+import { tickets, ticketActivities, counters } from '../db/schema/tenant'
 import { validate } from '../middleware/validate'
 import { staffOrAbove } from '../middleware/rbac'
 import { nanoid } from '../db/utils'
@@ -36,11 +38,22 @@ const addActivitySchema = z.object({
   message: z.string().min(1),
 })
 
+/** Enrich a ticket with its activities from the normalized table */
+async function enrichTicket(db: any, ticket: any) {
+  const activities = await db.select().from(ticketActivities)
+    .where(eq(ticketActivities.ticketId, ticket.id))
+    .orderBy(ticketActivities.createdAt)
+  return { ...ticket, activities }
+}
+
 // GET /api/tickets
 app.get('/', async (c) => {
   const db = c.get('db') as any
   const results = await db.select().from(tickets).orderBy(desc(tickets.createdAt))
-  return c.json(results)
+
+  // Enrich each ticket with its activities
+  const enriched = await Promise.all(results.map((t: any) => enrichTicket(db, t)))
+  return c.json(enriched)
 })
 
 // GET /api/tickets/:id
@@ -48,7 +61,7 @@ app.get('/:id', async (c) => {
   const db = c.get('db') as any
   const [result] = await db.select().from(tickets).where(eq(tickets.id, c.req.param('id')))
   if (!result) return c.json({ error: 'Not Found' }, 404)
-  return c.json(result)
+  return c.json(await enrichTicket(db, result))
 })
 
 // POST /api/tickets — any authenticated user can create
@@ -72,11 +85,10 @@ app.post('/', validate('json', createTicketSchema), async (c) => {
     createdAt: now,
     updatedAt: now,
     resolvedAt: null,
-    activities: [],
   })
 
   const [created] = await db.select().from(tickets).where(eq(tickets.id, id))
-  return c.json(created, 201)
+  return c.json(await enrichTicket(db, created), 201)
 })
 
 // PATCH /api/tickets/:id — staff+ can update status
@@ -94,31 +106,33 @@ app.patch('/:id', staffOrAbove, validate('json', updateTicketSchema), async (c) 
   await db.update(tickets).set(updates).where(eq(tickets.id, id))
   const [updated] = await db.select().from(tickets).where(eq(tickets.id, id))
   if (!updated) return c.json({ error: 'Not Found' }, 404)
-  return c.json(updated)
+  return c.json(await enrichTicket(db, updated))
 })
 
 // POST /api/tickets/:id/activities — add activity note
 app.post('/:id/activities', validate('json', addActivitySchema), async (c) => {
   const db = c.get('db') as any
-  const id = c.req.param('id')
+  const ticketId = c.req.param('id')
   const body = c.req.valid('json' as never) as z.infer<typeof addActivitySchema>
 
-  const [ticket] = await db.select().from(tickets).where(eq(tickets.id, id))
+  const [ticket] = await db.select().from(tickets).where(eq(tickets.id, ticketId))
   if (!ticket) return c.json({ error: 'Not Found' }, 404)
 
-  const currentActivities = (ticket.activities as any[]) || []
-  const newActivity = {
-    id: nanoid(),
+  const activityId = nanoid()
+  const now = new Date().toISOString()
+
+  await db.insert(ticketActivities).values({
+    id: activityId,
+    ticketId,
     ...body,
-    createdAt: new Date().toISOString(),
-  }
+    createdAt: now,
+  })
 
-  await db.update(tickets).set({
-    activities: [...currentActivities, newActivity],
-    updatedAt: new Date().toISOString(),
-  }).where(eq(tickets.id, id))
+  // Update ticket's updated_at timestamp
+  await db.update(tickets).set({ updatedAt: now }).where(eq(tickets.id, ticketId))
 
-  return c.json(newActivity, 201)
+  const [created] = await db.select().from(ticketActivities).where(eq(ticketActivities.id, activityId))
+  return c.json(created, 201)
 })
 
 export default app

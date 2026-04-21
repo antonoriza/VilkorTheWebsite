@@ -168,9 +168,11 @@ async function seedDemo() {
 
   // ── Residents (116) ──
   const residents = generateResidents()
-  const insertResident = raw.prepare('INSERT INTO residents (id, name, apartment, tower, email) VALUES (?, ?, ?, ?, ?)')
+  const insertResident = raw.prepare(
+    'INSERT INTO residents (id, name, apartment, tower, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  )
   for (const r of residents) {
-    insertResident.run(`res-${r.apartment}`, r.name, r.apartment, r.tower, r.email)
+    insertResident.run(`res-${r.apartment}`, r.name, r.apartment, r.tower, r.email, NOW, NOW)
   }
   console.log(`[seed]   ✓ ${residents.length} residents (Mexican names)`)
 
@@ -181,37 +183,42 @@ async function seedDemo() {
     { name: 'Valentina Sánchez', role: 'Limpieza', shiftStart: '08:00', shiftEnd: '17:00', workDays: ['L','M','Mi','J','V','S'] },
     { name: 'Samantha Guzmán', role: 'Administradora General', shiftStart: '09:00', shiftEnd: '18:00', workDays: ['L','M','Mi','J','V'] },
   ]
-  const insertStaff = raw.prepare('INSERT INTO staff (id, name, role, shift_start, shift_end, work_days) VALUES (?, ?, ?, ?, ?, ?)')
+  const insertStaff = raw.prepare(
+    'INSERT INTO staff (id, name, role, shift_start, shift_end, work_days, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  )
   for (const s of staffMembers) {
-    insertStaff.run(nanoid(), s.name, s.role, s.shiftStart, s.shiftEnd, JSON.stringify(s.workDays))
+    insertStaff.run(nanoid(), s.name, s.role, s.shiftStart, s.shiftEnd, JSON.stringify(s.workDays), NOW, NOW)
   }
   console.log(`[seed]   ✓ ${staffMembers.length} staff members`)
 
   // ── Amenities ──
-  const amenities = [
+  const amenitiesList = [
     { name: 'Asador 1', icon: 'outdoor_grill' },
     { name: 'Asador 2', icon: 'outdoor_grill' },
     { name: 'Asador 3', icon: 'outdoor_grill' },
   ]
-  const insertAmenity = raw.prepare('INSERT INTO amenities (id, name, icon) VALUES (?, ?, ?)')
-  for (const a of amenities) {
-    insertAmenity.run(nanoid(), a.name, a.icon)
+  const insertAmenity = raw.prepare(
+    'INSERT INTO amenities (id, name, icon, created_at, updated_at) VALUES (?, ?, ?, ?, ?)'
+  )
+  for (const a of amenitiesList) {
+    insertAmenity.run(nanoid(), a.name, a.icon, NOW, NOW)
   }
-  console.log(`[seed]   ✓ ${amenities.length} amenities`)
+  console.log(`[seed]   ✓ ${amenitiesList.length} amenities`)
 
   // ── Pagos (current month for each resident) ──
-  const pagoStatuses = ['Pagado', 'Pagado', 'Pagado', 'Pendiente', 'Por validar', 'Pendiente', 'Pagado', 'Vencido']
+  const pagoStatuses = ['Pagado', 'Pagado', 'Pagado', 'Pendiente', 'Por validar', 'Pendiente', 'Pagado', 'Vencido'] as const
   const insertPago = raw.prepare(`INSERT INTO pagos
-    (id, apartment, resident, month, month_key, concepto, amount, status, payment_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    (id, resident_id, apartment, resident, month, month_key, concepto, amount, status, payment_date, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 
   let pagoCount = 0
   for (const r of residents) {
     const status = pagoStatuses[pagoCount % pagoStatuses.length]
     insertPago.run(
-      nanoid(), r.apartment, r.name, 'abril de 2026', '2026-04',
+      nanoid(), `res-${r.apartment}`, r.apartment, r.name, 'abril de 2026', '2026-04',
       'Mantenimiento', 1800, status,
-      status === 'Pagado' ? '2026-04-05' : null
+      status === 'Pagado' ? '2026-04-05' : null,
+      NOW, NOW
     )
     pagoCount++
   }
@@ -226,16 +233,15 @@ async function seedDemo() {
   ]
 
   const insertTicket = raw.prepare(`INSERT INTO tickets
-    (id, number, subject, description, category, priority, status, created_by, apartment, created_at, updated_at, resolved_at, activities)
+    (id, number, subject, description, category, priority, status, created_by, resident_id, apartment, created_at, updated_at, resolved_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 
   for (let i = 0; i < ticketData.length; i++) {
     const t = ticketData[i]
     insertTicket.run(
       nanoid(), i + 1, t.subject, t.desc, t.category, t.priority, t.status,
-      t.by, t.apt, NOW, NOW,
+      t.by, `res-${t.apt}`, t.apt, NOW, NOW,
       t.status === 'Resuelto' ? NOW : null,
-      JSON.stringify([])
     )
   }
   console.log(`[seed]   ✓ ${ticketData.length} tickets`)
@@ -245,15 +251,15 @@ async function seedDemo() {
 
   // ── Avisos ──
   const insertAviso = raw.prepare(`INSERT INTO avisos
-    (id, title, category, description, attachment, date, pinned, tracking)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+    (id, title, category, description, attachment, date, pinned, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 
   insertAviso.run(nanoid(), 'Mantenimiento de elevadores', 'general',
     'Se realizará mantenimiento preventivo a los elevadores los días 25 y 26 de abril. Se solicita usar escaleras durante el horario de 9:00 a 14:00.',
-    '', '2026-04-20', 1, '[]')
+    '', '2026-04-20', 1, NOW, NOW)
   insertAviso.run(nanoid(), 'Asamblea Ordinaria Abril 2026', 'asamblea',
     'Se convoca a todos los condóminos a la asamblea ordinaria del mes de abril. Orden del día: revisión financiera, mantenimiento preventivo y asuntos generales.',
-    '', '2026-04-15', 0, '[]')
+    '', '2026-04-15', 0, NOW, NOW)
   console.log('[seed]   ✓ 2 avisos')
 
   // ── Building Config ──

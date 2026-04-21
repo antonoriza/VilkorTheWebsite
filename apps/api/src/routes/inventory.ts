@@ -26,7 +26,7 @@ app.post('/', staffOrAbove, validate('json', z.object({
   const db = c.get('db') as any
   const body = c.req.valid('json' as never) as any
   const id = nanoid()
-  await db.insert(inventory).values({ id, ...body, lastUpdated: new Date().toISOString() })
+  await db.insert(inventory).values({ id, ...body, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() })
   const [created] = await db.select().from(inventory).where(eq(inventory.id, id))
   return c.json(created, 201)
 })
@@ -35,7 +35,7 @@ app.patch('/:id', staffOrAbove, async (c) => {
   const db = c.get('db') as any
   const id = c.req.param('id')
   const body = await c.req.json()
-  await db.update(inventory).set({ ...body, lastUpdated: new Date().toISOString() }).where(eq(inventory.id, id))
+  await db.update(inventory).set({ ...body, updatedAt: new Date().toISOString() }).where(eq(inventory.id, id))
   const [updated] = await db.select().from(inventory).where(eq(inventory.id, id))
   if (!updated) return c.json({ error: 'Not Found' }, 404)
   return c.json(updated)

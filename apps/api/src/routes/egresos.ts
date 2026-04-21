@@ -45,7 +45,8 @@ app.post('/', adminOnly, validate('json', createEgresoSchema), async (c) => {
   const db = c.get('db') as any
   const body = c.req.valid('json' as never) as z.infer<typeof createEgresoSchema>
   const id = nanoid()
-  await db.insert(egresos).values({ id, ...body })
+  const now = new Date().toISOString()
+  await db.insert(egresos).values({ id, ...body, createdAt: now, updatedAt: now })
   const [created] = await db.select().from(egresos).where(eq(egresos.id, id))
   return c.json(created, 201)
 })
@@ -54,7 +55,7 @@ app.patch('/:id', adminOnly, validate('json', updateEgresoSchema), async (c) => 
   const db = c.get('db') as any
   const id = c.req.param('id')
   const body = c.req.valid('json' as never) as z.infer<typeof updateEgresoSchema>
-  await db.update(egresos).set(body).where(eq(egresos.id, id))
+  await db.update(egresos).set({ ...body, updatedAt: new Date().toISOString() }).where(eq(egresos.id, id))
   const [updated] = await db.select().from(egresos).where(eq(egresos.id, id))
   if (!updated) return c.json({ error: 'Not Found' }, 404)
   return c.json(updated)

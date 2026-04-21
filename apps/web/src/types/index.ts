@@ -219,8 +219,9 @@ export interface InventoryItem {
   currentUser: string
   /** Detailed notes */
   notes?: string
-  /** ISO date of last modification */
-  lastUpdated: string
+  /** ISO timestamps */
+  createdAt: string
+  updatedAt: string
 }
 
 // ─── Amenity ─────────────────────────────────────────────────────────

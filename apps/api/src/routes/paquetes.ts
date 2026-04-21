@@ -29,7 +29,8 @@ app.post('/', staffOrAbove, validate('json', createPaqueteSchema), async (c) => 
   const db = c.get('db') as any
   const body = c.req.valid('json' as never) as z.infer<typeof createPaqueteSchema>
   const id = nanoid()
-  await db.insert(paquetes).values({ id, ...body, status: 'Pendiente', deliveredDate: null })
+  const now = new Date().toISOString()
+  await db.insert(paquetes).values({ id, ...body, status: 'Pendiente', deliveredDate: null, createdAt: now, updatedAt: now })
   const [created] = await db.select().from(paquetes).where(eq(paquetes.id, id))
   return c.json(created, 201)
 })
@@ -37,7 +38,7 @@ app.post('/', staffOrAbove, validate('json', createPaqueteSchema), async (c) => 
 app.patch('/:id/deliver', staffOrAbove, async (c) => {
   const db = c.get('db') as any
   const id = c.req.param('id')
-  await db.update(paquetes).set({ status: 'Entregado', deliveredDate: new Date().toISOString().split('T')[0] }).where(eq(paquetes.id, id))
+  await db.update(paquetes).set({ status: 'Entregado', deliveredDate: new Date().toISOString().split('T')[0], updatedAt: new Date().toISOString() }).where(eq(paquetes.id, id))
   const [updated] = await db.select().from(paquetes).where(eq(paquetes.id, id))
   if (!updated) return c.json({ error: 'Not Found' }, 404)
   return c.json(updated)
