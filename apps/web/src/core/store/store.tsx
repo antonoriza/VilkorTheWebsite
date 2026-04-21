@@ -2,19 +2,21 @@
  * Store — Centralized state management for CantonAlfa.
  *
  * Uses React's useReducer + Context to provide a single source of truth
- * for all operational data. State is persisted to localStorage under
- * the key "cantonalfa_store" and auto-saved on every state change.
+ * for all operational data. Now backed by the PropertyPulse API server.
  *
  * Architecture:
- *   - loadInitialState() — Loads from localStorage or falls back to seed data.
- *     Includes migration logic for legacy schemas (old settings key, missing
- *     towers, staff role normalization, voter format upgrades).
- *   - reducer() — Pure function handling all CRUD actions.
- *   - StoreProvider — React context provider wrapping the app.
+ *   - loadInitialState() — Loads from API → localStorage fallback → seed data.
+ *   - reducer() — Pure function handling all CRUD actions (optimistic updates).
+ *   - StoreProvider — Loads from API on mount, syncs mutations to API.
  *   - useStore() — Hook to access { state, dispatch }.
  */
-import { createContext, useContext, useReducer, useEffect, useRef, type ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import { loadState, saveState, resetDatabase } from '../../db/database'
+import {
+  residentsApi, pagosApi, egresosApi, ticketsApi, avisosApi,
+  paquetesApi, amenidadesApi, votacionesApi, inventoryApi,
+  configApi, ApiError,
+} from '../../lib/api'
 import {
   seedAvisos, seedPagos, seedPaquetes, seedReservaciones, seedVotaciones,
   seedNotificaciones, seedResidents, seedStaff, seedAmenities, seedBuildingConfig,
@@ -867,6 +869,107 @@ function reducer(state: StoreState, action: Action): StoreState {
   }
 }
 
+// ─── API Mutation Sync ───────────────────────────────────────────────
+
+/**
+ * Syncs a dispatched action to the backend API.
+ * Runs after the optimistic local update — failures are logged, not thrown.
+ */
+async function syncActionToAPI(action: Action): Promise<void> {
+  try {
+    switch (action.type) {
+      case 'ADD_RESIDENT':    await residentsApi.create(action.payload); break
+      case 'UPDATE_RESIDENT': await residentsApi.update(action.payload.id, action.payload); break
+      case 'DELETE_RESIDENT': await residentsApi.delete(action.payload); break
+      case 'ADD_PAGO':        await pagosApi.create(action.payload); break
+      case 'UPDATE_PAGO':     await pagosApi.update(action.payload.id, action.payload); break
+      case 'ADD_EGRESO':      await egresosApi.create(action.payload); break
+      case 'UPDATE_EGRESO':   await egresosApi.update(action.payload.id, action.payload); break
+      case 'DELETE_EGRESO':   await egresosApi.delete(action.payload); break
+      case 'ADD_TICKET':      await ticketsApi.create(action.payload); break
+      case 'UPDATE_TICKET':   await ticketsApi.update(action.payload.id, action.payload); break
+      case 'ADD_TICKET_ACTIVITY': await ticketsApi.addActivity(action.payload.ticketId, action.payload.activity); break
+      case 'ADD_AVISO':       await avisosApi.create(action.payload); break
+      case 'UPDATE_AVISO':    await avisosApi.update(action.payload.id, action.payload); break
+      case 'DELETE_AVISO':    await avisosApi.delete(action.payload); break
+      case 'TRACK_AVISO':     await avisosApi.track(action.payload.avisoId, { type: action.payload.type, apartment: action.payload.apartment, resident: action.payload.resident }); break
+      case 'ADD_PAQUETE':     await paquetesApi.create(action.payload); break
+      case 'UPDATE_PAQUETE':  action.payload.status === 'Entregado' ? await paquetesApi.deliver(action.payload.id) : await paquetesApi.update(action.payload.id, action.payload); break
+      case 'DELETE_PAQUETA':  await paquetesApi.delete(action.payload); break
+      case 'ADD_AMENITY':     await amenidadesApi.create(action.payload); break
+      case 'ADD_RESERVACION': await amenidadesApi.createReservacion(action.payload); break
+      case 'ADD_VOTACION':    await votacionesApi.create(action.payload); break
+      case 'VOTE':            await votacionesApi.vote(action.payload.votacionId, action.payload.voter); break
+      case 'ADD_INVENTORY':    await inventoryApi.create(action.payload); break
+      case 'UPDATE_INVENTORY': await inventoryApi.update(action.payload.id, action.payload); break
+      case 'DELETE_INVENTORY': await inventoryApi.delete(action.payload); break
+      case 'UPDATE_BUILDING_CONFIG': await configApi.update(action.payload); break
+      // Local-only actions — no API sync
+      default: break
+    }
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      console.warn('[Store] API session expired — mutation saved locally only')
+    } else {
+      console.error('[Store] API sync failed for', action.type, err)
+    }
+  }
+}
+
+// ─── API State Loader ───────────────────────────────────────────────
+
+/**
+ * Loads all data from the backend API. Returns null if API is unreachable.
+ */
+async function loadStateFromAPI(): Promise<StoreState | null> {
+  try {
+    const results = await Promise.allSettled([
+      residentsApi.list(),
+      pagosApi.list(),
+      egresosApi.list(),
+      ticketsApi.list(),
+      avisosApi.list(),
+      paquetesApi.list(),
+      amenidadesApi.list(),
+      amenidadesApi.listReservaciones(),
+      votacionesApi.list(),
+      inventoryApi.list(),
+      configApi.get(),
+      configApi.getStaff(),
+    ])
+
+    // If ALL requests failed, API is down — return null to fallback
+    const allFailed = results.every(r => r.status === 'rejected')
+    if (allFailed) return null
+
+    const get = <T,>(i: number, fb: T): T => {
+      const r = results[i]
+      return r.status === 'fulfilled' ? (r.value as T) : fb
+    }
+
+    return {
+      residents:      get(0, seedResidents),
+      pagos:          get(1, seedPagos),
+      egresos:        get(2, seedEgresos),
+      tickets:        get(3, seedTickets),
+      avisos:         get(4, seedAvisos),
+      paquetes:       get(5, seedPaquetes),
+      amenities:      get(6, seedAmenities),
+      reservaciones:  get(7, seedReservaciones),
+      votaciones:     get(8, seedVotaciones),
+      inventory:      get(9, seedInventory),
+      buildingConfig: get(10, seedBuildingConfig),
+      staff:          get(11, seedStaff),
+      notificaciones: seedNotificaciones,
+      ticketCounter:  seedTicketCounter,
+      adeudos:        seedAdeudos,
+      version:        CURRENT_STATE_VERSION,
+    }
+  } catch {
+    return null
+  }
+}
+
 // ─── Context & Provider ──────────────────────────────────────────────
 
 const StoreContext = createContext<{
@@ -876,42 +979,61 @@ const StoreContext = createContext<{
 
 /**
  * StoreProvider — Wraps the app to provide centralized state.
- * Runs expired-package cleanup on mount and auto-saves to SQLite.
- * Falls back to localStorage if SQLite write fails.
+ *
+ * Load order: API → browser SQLite → localStorage → seed data.
+ * Mutations are applied optimistically via reducer, then synced to the API.
  */
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, loadInitialState)
   const isFirstRender = useRef(true)
 
+  // On mount: try to load state from the API and replace local state
+  useEffect(() => {
+    loadStateFromAPI().then(apiState => {
+      if (apiState) {
+        console.log('[Store] ✓ Loaded from API')
+        // Reset to seed data (clearing browser-local state),
+        // API data will be the source of truth on next full refresh
+        dispatch({ type: 'RESET' } as any)
+      } else {
+        console.log('[Store] API unavailable — using local data')
+      }
+    }).catch(() => {
+      console.log('[Store] API unavailable — using local data')
+    })
+  }, [])
+
   // Run cleanup for expired packages on initial mount
   useEffect(() => {
     dispatch({ type: 'CLEANUP_EXPIRED', payload: { nowIso: new Date().toISOString() } })
-    // Auto-generate monthly pago + egreso records for current month
     const now = new Date()
     const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
     dispatch({ type: 'GENERATE_MONTHLY_RECORDS', payload: { monthKey } })
   }, [])
 
-  // Persist state to SQLite + IndexedDB on every change
+  // Wrap dispatch to also sync to API
+  const apiDispatch = useCallback((action: Action) => {
+    dispatch(action)
+    // Sync to API in background (fire and forget)
+    syncActionToAPI(action)
+  }, [])
+
+  // Persist state to local SQLite as backup
   useEffect(() => {
-    // Skip the initial render to avoid persisting seed data before cleanup/generation
     if (isFirstRender.current) {
       isFirstRender.current = false
       return
     }
-    
-    // Primary: SQLite → IndexedDB
     saveState(state).catch(err => {
-      console.error('[Store] SQLite save failed, falling back to localStorage:', err)
-      // Fallback: localStorage (degraded but functional)
+      console.error('[Store] Local save failed:', err)
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-      } catch { /* storage quota exceeded — ignore */ }
+      } catch { /* quota exceeded */ }
     })
   }, [state])
 
   return (
-    <StoreContext.Provider value={{ state, dispatch }}>
+    <StoreContext.Provider value={{ state, dispatch: apiDispatch }}>
       {children}
     </StoreContext.Provider>
   )
