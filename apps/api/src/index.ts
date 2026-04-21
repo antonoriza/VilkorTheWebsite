@@ -10,6 +10,7 @@ import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 import { auth } from './auth'
 import { tenantMiddleware } from './middleware/tenant'
+import { auditMiddleware } from './middleware/audit'
 
 // Route modules
 import residentsRoutes from './routes/residents'
@@ -23,6 +24,7 @@ import votacionesRoutes from './routes/votaciones'
 import inventoryRoutes from './routes/inventory'
 import configRoutes from './routes/config'
 import dashboardRoutes from './routes/dashboard'
+import auditRoutes from './routes/audit'
 
 const app = new Hono()
 
@@ -89,6 +91,7 @@ app.get('/api/me', async (c) => {
 
 const api = new Hono()
 api.use('*', tenantMiddleware)
+api.use('*', auditMiddleware)
 
 api.route('/residents', residentsRoutes)
 api.route('/pagos', pagosRoutes)
@@ -101,6 +104,7 @@ api.route('/votaciones', votacionesRoutes)
 api.route('/inventory', inventoryRoutes)
 api.route('/config', configRoutes)
 api.route('/dashboard', dashboardRoutes)
+api.route('/audit', auditRoutes)
 
 app.route('/api', api)
 

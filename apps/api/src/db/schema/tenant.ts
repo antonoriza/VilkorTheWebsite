@@ -286,3 +286,19 @@ export const counters = sqliteTable('counters', {
   key:   text('key').primaryKey(),                          // e.g. "ticket_number"
   value: integer('value').notNull().default(0),
 })
+
+// ─── Audit Log ───────────────────────────────────────────────────────
+// Immutable record of every mutating admin operation.
+// Written by auditMiddleware — never updated or deleted by the application.
+
+export const auditLog = sqliteTable('audit_log', {
+  id:         text('id').primaryKey(),
+  actorId:    text('actor_id').notNull(),                    // user ID from Better Auth session
+  actorRole:  text('actor_role').notNull(),                  // role at time of action
+  action:     text('action').notNull(),                      // HTTP method: POST, PATCH, DELETE
+  resource:   text('resource').notNull(),                    // request path: /api/pagos/abc123
+  statusCode: integer('status_code'),                        // response status: 200, 201, 404, etc.
+  ipAddress:  text('ip_address'),
+  userAgent:  text('user_agent'),
+  createdAt:  text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
+})

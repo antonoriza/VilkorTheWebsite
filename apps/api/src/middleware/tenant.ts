@@ -3,7 +3,8 @@
  *
  * Extracts the authenticated user's session via Better Auth,
  * resolves their tenant from the X-Tenant-ID header,
- * verifies access, and injects the tenant database into context.
+ * verifies access, checks tenant lifecycle status, and injects
+ * the tenant database into context.
  *
  * Context variables set:
  *   - session: Better Auth session + user
@@ -22,8 +23,12 @@ interface UserTenantRow {
   apartment: string | null
 }
 
+interface TenantRow {
+  status: string
+}
+
 /**
- * Middleware: authenticate + resolve tenant + inject DB
+ * Middleware: authenticate + resolve tenant + check lifecycle + inject DB
  */
 export const tenantMiddleware = createMiddleware(async (c, next) => {
   // 1. Authenticate — get session from Better Auth
@@ -47,7 +52,23 @@ export const tenantMiddleware = createMiddleware(async (c, next) => {
     return c.json({ error: 'Forbidden', message: 'No access to this tenant' }, 403)
   }
 
-  // 4. Inject into context
+  // 4. Check tenant lifecycle status — reject if not active
+  const tenant = rawMasterDb
+    .query('SELECT status FROM tenants WHERE id = ?')
+    .get(tenantId) as TenantRow | null
+
+  if (!tenant || tenant.status !== 'active') {
+    const statusMsg = !tenant
+      ? 'Tenant not found'
+      : `Tenant is ${tenant.status}`
+    return c.json({
+      error: 'Forbidden',
+      message: statusMsg,
+      code: 'TENANT_NOT_ACTIVE',
+    }, 403)
+  }
+
+  // 5. Inject into context
   c.set('session', session)
   c.set('tenantId', tenantId)
   c.set('tenantRole', userTenant.role)

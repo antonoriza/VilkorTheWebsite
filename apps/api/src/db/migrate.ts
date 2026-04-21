@@ -319,6 +319,18 @@ export const TENANT_DDL = `
     value INTEGER NOT NULL DEFAULT 0
   );
 
+  CREATE TABLE IF NOT EXISTS audit_log (
+    id          TEXT PRIMARY KEY,
+    actor_id    TEXT NOT NULL,
+    actor_role  TEXT NOT NULL,
+    action      TEXT NOT NULL,
+    resource    TEXT NOT NULL,
+    status_code INTEGER,
+    ip_address  TEXT,
+    user_agent  TEXT,
+    created_at  TEXT NOT NULL
+  );
+
   -- ─── Performance Indexes ──────────────────────────────────────────
   CREATE INDEX IF NOT EXISTS idx_pagos_apartment ON pagos(apartment);
   CREATE INDEX IF NOT EXISTS idx_pagos_month_key ON pagos(month_key);
@@ -341,6 +353,9 @@ export const TENANT_DDL = `
   CREATE UNIQUE INDEX IF NOT EXISTS idx_poll_votes_unique ON poll_votes(poll_id, apartment);
   CREATE INDEX IF NOT EXISTS idx_pagos_resident ON pagos(resident_id);
   CREATE INDEX IF NOT EXISTS idx_tickets_resident ON tickets(resident_id);
+  CREATE INDEX IF NOT EXISTS idx_audit_log_actor ON audit_log(actor_id);
+  CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at);
+  CREATE INDEX IF NOT EXISTS idx_audit_log_resource ON audit_log(resource);
 `
 
 // ─── Runner ──────────────────────────────────────────────────────────
