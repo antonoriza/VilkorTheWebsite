@@ -10,8 +10,9 @@ import { tickets, counters } from '../db/schema/tenant'
 import { validate } from '../middleware/validate'
 import { staffOrAbove } from '../middleware/rbac'
 import { nanoid } from '../db/utils'
+import type { AppEnv } from '../types'
 
-const app = new Hono()
+const app = new Hono<AppEnv>()
 
 const createTicketSchema = z.object({
   subject: z.string().min(1),

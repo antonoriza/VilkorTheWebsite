@@ -6,8 +6,9 @@
 import { Hono } from 'hono'
 import { sql } from 'drizzle-orm'
 import { pagos, tickets, residents, adeudos, egresos, paquetes } from '../db/schema/tenant'
+import type { AppEnv } from '../types'
 
-const app = new Hono()
+const app = new Hono<AppEnv>()
 
 // GET /api/dashboard — all KPIs in one call
 app.get('/', async (c) => {

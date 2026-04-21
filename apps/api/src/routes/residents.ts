@@ -11,8 +11,9 @@ import { residents } from '../db/schema/tenant'
 import { validate } from '../middleware/validate'
 import { adminOnly } from '../middleware/rbac'
 import { nanoid } from '../db/utils'
+import type { AppEnv } from '../types'
 
-const app = new Hono()
+const app = new Hono<AppEnv>()
 
 // ─── Schemas ─────────────────────────────────────────────────────────
 

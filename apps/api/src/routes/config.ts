@@ -5,8 +5,9 @@ import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { buildingConfig, staff } from '../db/schema/tenant'
 import { adminOnly } from '../middleware/rbac'
+import type { AppEnv } from '../types'
 
-const app = new Hono()
+const app = new Hono<AppEnv>()
 
 // GET /api/config — returns the building config document
 app.get('/', async (c) => {

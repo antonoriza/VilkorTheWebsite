@@ -8,8 +8,9 @@ import { paquetes } from '../db/schema/tenant'
 import { validate } from '../middleware/validate'
 import { staffOrAbove } from '../middleware/rbac'
 import { nanoid } from '../db/utils'
+import type { AppEnv } from '../types'
 
-const app = new Hono()
+const app = new Hono<AppEnv>()
 
 const createPaqueteSchema = z.object({
   recipient: z.string().min(1),
