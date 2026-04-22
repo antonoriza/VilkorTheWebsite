@@ -5,6 +5,8 @@ import { Outlet, NavLink, Link, Navigate, useNavigate, useLocation } from 'react
 import { useAuth } from '../core/auth/AuthContext'
 import { useStore } from '../core/store/store'
 import { useState, useMemo } from 'react'
+import DemoBanner from '../core/components/DemoBanner'
+import { useDemoMode } from '../core/hooks/useDemoMode'
 
 import { hasPermission } from '../core/store/store'
 
@@ -34,6 +36,7 @@ const settingsItems = [
 
 export default function DashboardLayout() {
   const { user, apartment, role, isAuthenticated, logout } = useAuth()
+  const isDemo = useDemoMode()
   const { state, dispatch } = useStore()
   const navigate = useNavigate()
   const location = useLocation()
@@ -90,14 +93,31 @@ export default function DashboardLayout() {
 
   return (
     <div className="bg-[#F8FAFC] text-on-surface flex min-h-screen font-body">
+      {/* ── Demo Environment Banner ── */}
+      <DemoBanner />
+
       {/* ── Sidebar Navigation ── */}
-      <aside className="h-screen w-72 fixed left-0 top-0 flex flex-col border-r border-slate-200 bg-white z-50 transition-all duration-300">
+      <aside
+        className="h-screen w-72 fixed left-0 flex flex-col border-r border-slate-200 bg-white z-50 transition-all duration-300"
+        style={{ top: isDemo ? '2rem' : '0' }}
+      >
         
         {!isConfigRoute ? (
-          <Link to={homePath} className="p-8 block hover:opacity-80 transition-opacity">
-            <h1 className="text-xl font-headline font-black tracking-tight text-slate-900 leading-tight">{bc.buildingName}</h1>
-            <p className="text-[10px] font-bold font-label tracking-widest text-slate-400 mt-1 uppercase">{bc.buildingAddress}</p>
-          </Link>
+          <div>
+            <Link to={homePath} className="px-8 pt-8 pb-3 block hover:opacity-80 transition-opacity">
+              <h1 className="text-xl font-headline font-black tracking-tight text-slate-900 leading-tight">{bc.buildingName}</h1>
+              <p className="text-[10px] font-bold font-label tracking-widest text-slate-400 mt-1 uppercase">{bc.buildingAddress}</p>
+            </Link>
+            {/* Demo sidebar badge */}
+            {isDemo && (
+              <div className="px-8 pb-3">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 text-[8px] font-black uppercase tracking-[0.2em] rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                  Demo
+                </span>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="p-8 pb-4">
             <button 
@@ -198,7 +218,10 @@ export default function DashboardLayout() {
       </aside>
 
       {/* ── Main Content Area ── */}
-      <main className="ml-72 w-full min-h-screen flex flex-col">
+      <main
+        className="ml-72 w-full min-h-screen flex flex-col"
+        style={{ paddingTop: isDemo ? '2rem' : '0' }}
+      >
         <header className="flex justify-between items-center px-6 h-14 sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-100">
           <div />
           <div className="flex items-center space-x-2">

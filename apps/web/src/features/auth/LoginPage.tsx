@@ -11,6 +11,7 @@
 import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../core/auth/AuthContext'
+import { useDemoMode } from '../../core/hooks/useDemoMode'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
@@ -23,6 +24,7 @@ interface DemoAccount {
 
 export default function LoginPage() {
   const { login, isAuthenticated, role, isLoading: authLoading } = useAuth()
+  const isDemoMode = useDemoMode()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,16 +33,14 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [demoAccounts, setDemoAccounts] = useState<DemoAccount[]>([])
 
-  // Fetch demo accounts from the API — empty array in production
+  // Fetch the actual account list for the dropdown (separate from isDemoMode)
   useEffect(() => {
+    if (!isDemoMode) return
     fetch(`${API_URL}/api/demo/accounts`)
       .then(r => r.json())
       .then(d => setDemoAccounts(d.accounts ?? []))
       .catch(() => {})
-  }, [])
-
-  // isDemoMode is true if the API returned at least one demo account
-  const isDemoMode = demoAccounts.length > 0
+  }, [isDemoMode])
 
   // Redirect if already logged in
   if (authLoading) {
