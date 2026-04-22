@@ -600,6 +600,7 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
 
 export default function FinanceSettings({ bc, dispatch, handleSave, saved, labelClass, inputClass }: Props) {
   const [activeTab, setActiveTab] = useState('catalogo')
+  const [mensualidadOpen, setMensualidadOpen] = useState(false)
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -619,30 +620,57 @@ export default function FinanceSettings({ bc, dispatch, handleSave, saved, label
       </div>
 
       {activeTab === 'catalogo' && (
-        <div className="space-y-16">
-          {/* ═══ INGRESOS ═══ */}
+        <div className="space-y-12">
+
+          {/* ═══ MENSUALIDAD HERO CARD ═══ */}
+          <div className={`border-2 rounded-[2rem] overflow-hidden transition-all duration-300 ${mensualidadOpen ? 'border-slate-900 shadow-2xl shadow-slate-200' : 'border-slate-200 hover:border-slate-300 hover:shadow-lg'}`}>
+            {/* Collapsed header — always visible */}
+            <button
+              onClick={() => setMensualidadOpen(!mensualidadOpen)}
+              className="w-full flex items-center justify-between p-6 text-left group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-emerald-600 text-2xl">home</span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-headline font-black text-slate-900 uppercase tracking-tight">Mensualidad</h3>
+                    <span className="text-[7px] font-black text-emerald-700 uppercase tracking-widest bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">Sistema</span>
+                    <span className="text-[7px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">Recurrente</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-medium mt-0.5">Cuota de mantenimiento · Auto-generada cada mes por unidad</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="text-2xl font-black text-slate-900 tracking-tight">${bc.monthlyFee.toLocaleString()}</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">MXN / mes</p>
+                </div>
+                <span className={`material-symbols-outlined text-slate-300 text-xl transition-transform duration-300 ${mensualidadOpen ? 'rotate-180' : ''}`}>expand_more</span>
+              </div>
+            </button>
+
+            {/* Expanded detail — cuota config inline */}
+            {mensualidadOpen && (
+              <div className="border-t border-slate-100 bg-slate-50/30 p-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                <CuotasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
+              </div>
+            )}
+          </div>
+
+          {/* ═══ OTROS CONCEPTOS ═══ */}
           <section>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                <span className="material-symbols-outlined text-emerald-600 text-xl">trending_up</span>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center">
+                <span className="material-symbols-outlined text-slate-500 text-lg">receipt_long</span>
               </div>
               <div>
-                <h3 className="text-sm font-headline font-black text-slate-900 uppercase tracking-tight">Ingresos</h3>
-                <p className="text-[10px] text-slate-400 font-medium">Conceptos de cobro, cuota base y reglas de vencimiento</p>
+                <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Otros Conceptos de Cobro</h3>
+                <p className="text-[9px] text-slate-400 font-medium">Multas, reservaciones, cargos eventuales y personalizados</p>
               </div>
             </div>
-
-            {/* Conceptos de cobro */}
-            <div className="mb-10">
-              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4 mb-6">Conceptos de Cobro</h4>
-              <ConceptosTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
-            </div>
-
-            {/* Cuota base y reglas — inline */}
-            <div>
-              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4 mb-6">Cuota Base y Reglas</h4>
-              <CuotasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
-            </div>
+            <ConceptosTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
           </section>
 
           {/* ═══ DIVIDER ═══ */}
@@ -661,6 +689,35 @@ export default function FinanceSettings({ bc, dispatch, handleSave, saved, label
             </div>
             <RecurrentesTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
           </section>
+
+          {/* ═══ RESUMEN FINANCIERO ═══ */}
+          {(() => {
+            const ingreso = bc.totalUnits * bc.monthlyFee
+            const egreso = (bc.recurringEgresos || []).reduce((s, r) => s + r.amount, 0)
+            const margen = ingreso > 0 ? Math.round(((ingreso - egreso) / ingreso) * 100) : 0
+            return (
+              <div className="bg-slate-900 rounded-[2rem] p-8 text-white">
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-6">Resumen Financiero Mensual</p>
+                <div className="grid grid-cols-3 gap-6">
+                  <div>
+                    <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Ingreso Proyectado</p>
+                    <p className="text-2xl font-black tracking-tight">${ingreso.toLocaleString()}</p>
+                    <p className="text-[8px] text-slate-500 font-bold mt-1">{bc.totalUnits} unidades × ${bc.monthlyFee.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold text-rose-400 uppercase tracking-widest mb-1">Egreso Operativo</p>
+                    <p className="text-2xl font-black tracking-tight">${egreso.toLocaleString()}</p>
+                    <p className="text-[8px] text-slate-500 font-bold mt-1">{(bc.recurringEgresos || []).length} partidas fijas</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold text-sky-400 uppercase tracking-widest mb-1">Margen Operativo</p>
+                    <p className="text-2xl font-black tracking-tight">${(ingreso - egreso).toLocaleString()}</p>
+                    <p className={`text-[8px] font-black mt-1 ${margen >= 50 ? 'text-emerald-400' : margen >= 20 ? 'text-amber-400' : 'text-rose-400'}`}>{margen}% del ingreso</p>
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       )}
 
