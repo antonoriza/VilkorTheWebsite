@@ -386,7 +386,7 @@ export default function ArchitectureSettings({
   const initialSubtab = searchParams.get('subtab')
   const validSubtabs = ['categoria', 'amenidades', 'equipamiento', 'identidad']
   const [activeTab, setActiveTab] = useState(
-    initialSubtab && validSubtabs.includes(initialSubtab) ? initialSubtab : 'categoria'
+    initialSubtab && validSubtabs.includes(initialSubtab) ? initialSubtab : 'identidad'
   )
   // Sync subtab when URL changes while component is mounted
   useEffect(() => {
@@ -395,10 +395,10 @@ export default function ArchitectureSettings({
   }, [searchParams])
 
   const tabs = [
-    { id: 'categoria', label: 'Categoría', icon: 'account_tree' },
-    { id: 'amenidades', label: 'Amenidades', icon: 'outdoor_grill' },
-    { id: 'equipamiento', label: 'Equipamiento', icon: 'settings_input_component' },
     { id: 'identidad', label: 'Identidad', icon: 'branding_watermark' },
+    { id: 'categoria', label: 'Categoría', icon: 'account_tree' },
+    { id: 'equipamiento', label: 'Equipo', icon: 'settings_input_component' },
+    { id: 'amenidades', label: 'Amenidades', icon: 'outdoor_grill' },
   ]
 
   const SectionHeader = ({ label, icon }: { label: string, icon: string }) => (
