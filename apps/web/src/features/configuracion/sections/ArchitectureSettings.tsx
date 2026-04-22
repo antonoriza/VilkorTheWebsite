@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { BuildingConfig, Amenity, CriticalEquipment } from '../../../types'
 
 const AMENITY_TEMPLATES = [
@@ -380,7 +381,18 @@ export default function ArchitectureSettings({
   labelClass, 
   inputClass 
 }: Props) {
-  const [activeTab, setActiveTab] = useState('categoria')
+  // Read subtab from URL so setup checklist can deep-link (e.g. ?tab=perfil&subtab=identidad)
+  const [searchParams] = useSearchParams()
+  const initialSubtab = searchParams.get('subtab')
+  const validSubtabs = ['categoria', 'amenidades', 'equipamiento', 'identidad']
+  const [activeTab, setActiveTab] = useState(
+    initialSubtab && validSubtabs.includes(initialSubtab) ? initialSubtab : 'categoria'
+  )
+  // Sync subtab when URL changes while component is mounted
+  useEffect(() => {
+    const subtab = searchParams.get('subtab')
+    if (subtab && validSubtabs.includes(subtab)) setActiveTab(subtab)
+  }, [searchParams])
 
   const tabs = [
     { id: 'categoria', label: 'Categoría', icon: 'account_tree' },

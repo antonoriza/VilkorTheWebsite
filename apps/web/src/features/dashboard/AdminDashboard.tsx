@@ -116,7 +116,7 @@ export default function AdminDashboard() {
       description: 'Nombre, dirección y datos generales del edificio',
       icon: 'apartment',
       done: !!bc.buildingName && !!bc.buildingAddress,
-      href: '/configuracion?tab=perfil',
+      href: '/configuracion?tab=perfil&subtab=identidad',
     },
     {
       id: 'architecture',
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
       description: 'Estructura del edificio: torres, pisos y departamentos',
       icon: 'domain_add',
       done: bc.totalUnits > 0,
-      href: '/configuracion?tab=perfil',
+      href: '/configuracion?tab=perfil&subtab=categoria',
     },
     {
       id: 'residents',
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
       optional: true,
       done: state.amenities.length > 0 || amenitiesSkipped,
       skipped: amenitiesSkipped && state.amenities.length === 0,
-      href: '/configuracion?tab=perfil',
+      href: '/configuracion?tab=perfil&subtab=amenidades',
     },
   ]
   const completedSteps = setupSteps.filter(s => s.done).length
