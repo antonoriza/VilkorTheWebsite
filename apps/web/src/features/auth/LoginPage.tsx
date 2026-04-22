@@ -14,6 +14,15 @@ import { useAuth } from '../../core/auth/AuthContext'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
+/** All demo accounts — mirrors demo/fixtures/accounts.ts + db/seed.ts */
+const DEMO_ACCOUNTS = [
+  { label: 'Super Admin',    role: 'super_admin', email: 'admin@property.com', password: 'admin123' },
+  { label: 'Residente B0101', role: 'residente',  email: 'B0101@gmail.com',    password: 'demo123' },
+  { label: 'Residente B0102', role: 'residente',  email: 'B0102@gmail.com',    password: 'demo123' },
+  { label: 'Residente A0101', role: 'residente',  email: 'A0101@gmail.com',    password: 'demo123' },
+  { label: 'Residente A0102', role: 'residente',  email: 'A0102@gmail.com',    password: 'demo123' },
+] as const
+
 export default function LoginPage() {
   const { login, isAuthenticated, role, isLoading: authLoading } = useAuth()
 
@@ -133,25 +142,47 @@ export default function LoginPage() {
             <p className="text-slate-500 font-medium text-lg">Experience the next generation of property management.</p>
           </div>
 
-          {/* Demo credentials — only shown when APP_MODE=demo */}
+          {/* Demo account selector — only shown when APP_MODE=demo */}
           {isDemoMode && (
-            <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-indigo-500/10 transition-colors" />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
-                <span className="material-symbols-outlined text-[14px] mr-2">lightbulb</span>
-                Demo Credentials
-              </p>
-              <button
-                type="button"
-                onClick={() => fillCredentials('admin@property.com', 'admin123')}
-                className="w-full flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
-              >
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-slate-500">Super Admin</span>
-                  <span className="text-[11px] font-black text-slate-900">admin@property.com</span>
-                </div>
-                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">admin123</span>
-              </button>
+            <div className="p-5 bg-amber-50 border border-amber-200/60 rounded-2xl relative overflow-hidden">
+              {/* Demo badge */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-400 text-amber-900 text-[9px] font-black uppercase tracking-widest rounded-full">
+                  <span className="material-symbols-outlined text-[11px]">science</span>
+                  Demo Mode
+                </span>
+                <p className="text-[10px] font-semibold text-amber-700">
+                  Select an account to log in instantly
+                </p>
+              </div>
+
+              {/* Dropdown */}
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-amber-500 pointer-events-none">
+                  <span className="material-symbols-outlined text-[18px]">manage_accounts</span>
+                </span>
+                <select
+                  id="demo-account-select"
+                  defaultValue=""
+                  onChange={(e) => {
+                    const acct = DEMO_ACCOUNTS.find(a => a.email === e.target.value)
+                    if (acct) {
+                      fillCredentials(acct.email, acct.password)
+                    }
+                  }}
+                  className="w-full pl-9 pr-8 py-2.5 bg-white border border-amber-200 rounded-xl text-[12px] font-semibold text-slate-800 appearance-none cursor-pointer outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all"
+                >
+                  <option value="" disabled>— Choose a demo account —</option>
+                  {DEMO_ACCOUNTS.map((acct) => (
+                    <option key={acct.email} value={acct.email}>
+                      {acct.label} · {acct.email}
+                    </option>
+                  ))}
+                </select>
+                <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-amber-400 pointer-events-none">
+                  <span className="material-symbols-outlined text-[16px]">expand_more</span>
+                </span>
+              </div>
             </div>
           )}
 
