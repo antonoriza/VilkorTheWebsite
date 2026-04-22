@@ -104,36 +104,44 @@ export default function AdminDashboard() {
       id: 'profile',
       label: 'Configura el perfil del inmueble',
       done: !!bc.buildingName && !!bc.buildingAddress,
-      href: '/admin/configuracion?tab=perfil',
+      href: '/configuracion?tab=perfil',
     },
     {
       id: 'architecture',
       label: 'Define torres y unidades',
       done: bc.totalUnits > 0,
-      href: '/admin/configuracion?tab=perfil',
+      href: '/configuracion?tab=perfil',
     },
     {
       id: 'residents',
       label: 'Agrega residentes',
       done: state.residents.length > 0,
-      href: '/admin/usuarios',
+      href: '/usuarios',
     },
     {
       id: 'finances',
       label: 'Configura cuotas de mantenimiento',
       done: bc.monthlyFee > 0,
-      href: '/admin/configuracion?tab=finanzas',
+      href: '/configuracion?tab=finanzas',
     },
     {
       id: 'amenities',
       label: 'Agrega amenidades (opcional)',
       done: state.amenities.length > 0,
-      href: '/admin/configuracion?tab=perfil',
+      href: '/configuracion?tab=perfil',
     },
   ]
   const completedSteps = setupSteps.filter(s => s.done).length
   const isSetupComplete = completedSteps === setupSteps.length
   const showSetupCard = !isSetupComplete && isAdmin
+
+  /**
+   * "Virgin" state: no building name configured AND no residents yet.
+   * This is Day 0 — nothing operational to show, focus entirely on setup.
+   * Once ANY resident is added OR the building is named, we transition
+   * to the normal operational dashboard.
+   */
+  const isSystemVirgin = !bc.buildingName && state.residents.length === 0
 
   // Most recent announcements for the sidebar
   const recentNotices = useMemo(() => {
@@ -378,7 +386,26 @@ export default function AdminDashboard() {
         </section>
       )}
 
-      {/* ── Health Gauge + KPI Cards ── */}
+      {/* ── DAY ZERO: System virgin — show welcoming empty state below the checklist ── */}
+      {isSystemVirgin && (
+        <section className="flex flex-col items-center justify-center py-16 text-center animate-in fade-in duration-700">
+          <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm">
+            <span className="material-symbols-outlined text-4xl text-slate-300">dashboard_customize</span>
+          </div>
+          <h2 className="text-2xl font-headline font-extrabold text-slate-900 mb-2 tracking-tight">
+            Bienvenido a PropertyPulse
+          </h2>
+          <p className="text-slate-500 font-medium max-w-md leading-relaxed">
+            Completa los pasos de configuración arriba para activar el panel de control. Los indicadores, alertas y módulos operativos aparecerán automáticamente una vez que el sistema esté inicializado.
+          </p>
+          <p className="mt-4 text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">
+            Panel operativo no disponible hasta configuración inicial
+          </p>
+        </section>
+      )}
+
+      {/* ── OPERATIONAL DASHBOARD — hidden while system is virgin ── */}
+      {!isSystemVirgin && (<>
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         {/* Composite health gauge */}
         <div className="xl:col-span-4 bg-white border border-slate-200 rounded-3xl p-8 hero-pattern relative overflow-hidden shadow-sm flex flex-col justify-center items-center text-center">
@@ -709,7 +736,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ── Staff Management Modal ── */}
+      </>) /* end !isSystemVirgin */}
+
       <Modal open={showStaffModal} onClose={resetStaffForm} title={editingStaffId ? 'Editar Personal' : 'Agregar Personal'}>
         <div className="space-y-6">
           <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
