@@ -4,8 +4,8 @@ import { BuildingConfig, EGRESO_CATEGORIA_LABELS, EgresoCategoria, SurchargeConf
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: 'cuotas',      label: 'Cuotas y Reglas',    icon: 'gavel' },
   { id: 'conceptos',   label: 'Conceptos',          icon: 'receipt_long' },
+  { id: 'cuotas',      label: 'Cuotas y Reglas',    icon: 'gavel' },
   { id: 'recurrentes', label: 'Egresos Recurrentes', icon: 'autorenew' },
   { id: 'cuentas',     label: 'Cuentas y Bancos',   icon: 'account_balance' },
 ]
@@ -603,7 +603,7 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function FinanceSettings({ bc, dispatch, handleSave, saved, labelClass, inputClass }: Props) {
-  const [activeTab, setActiveTab] = useState('cuotas')
+  const [activeTab, setActiveTab] = useState('conceptos')
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
