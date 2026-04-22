@@ -233,8 +233,8 @@ export default function AdminDashboard() {
   const [viewAsambleaModal, setViewAsambleaModal] = useState(false)
 
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* ── Toast Notifications ── */}
+    <>
+      {/* ── Toast Notifications (fixed, outside layout flow) ── */}
       <div className="fixed top-24 right-10 z-[200] space-y-3">
         {toasts.map(t => (
           <div
@@ -253,8 +253,9 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* ── Page Header ── */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+      <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* ── Page Header ── */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
         <div>
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
             The Control Tower
@@ -809,6 +810,7 @@ export default function AdminDashboard() {
           </div>
         )}
       </Modal>
-    </div>
+      </div>
+    </>
   )
 }

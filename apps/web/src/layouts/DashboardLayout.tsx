@@ -297,7 +297,7 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        <div className="p-10 max-w-full mx-auto w-full">
+        <div className="px-10 pt-6 pb-10 max-w-full mx-auto w-full">
           <Outlet />
         </div>
       </main>
