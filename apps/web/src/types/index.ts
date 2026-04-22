@@ -399,6 +399,37 @@ export interface BankingConfig {
   notes?: string
 }
 
+/** Concept category — groups ingresos and egresos in one catalog */
+export type ConceptoCategoria = 'ingreso' | 'egreso'
+
+export const CONCEPTO_CATEGORIA_LABELS: Record<ConceptoCategoria, string> = {
+  ingreso: 'Ingreso',
+  egreso: 'Egreso',
+}
+
+/** A unified financial concept: both income charges and operational expenses */
+export interface ConceptoFinanciero {
+  id: string
+  /** Human name, e.g. "Mensualidad", "Multa", "Nómina Porteros" */
+  concepto: string
+  /** Amount in MXN */
+  monto: number
+  /** Income or expense */
+  categoria: ConceptoCategoria
+  /** Optional description */
+  descripcion?: string
+  /** Maturity rule identifier */
+  vencimiento: string
+  /** Grace days before surcharge applies */
+  diasGracia: number
+  /** Surcharge as percentage — mutually exclusive with recargoMonto */
+  recargoPct: number | null
+  /** Surcharge as fixed MXN amount — mutually exclusive with recargoPct */
+  recargoMonto: number | null
+  /** System-default concepts cannot be deleted */
+  sistema?: boolean
+}
+
 export interface BuildingConfig {
   /** Property classification (Digital Twin category) */
   propertyCategory: PropertyCategory
@@ -448,6 +479,8 @@ export interface BuildingConfig {
   vendors: Vendor[]
   /** ThingWorx-style permissions matrix */
   permissionsMatrix: PermissionMatrix
+  /** Unified financial concept catalog — replaces scattered fee/surcharge fields */
+  conceptosFinancieros?: ConceptoFinanciero[]
 }
 
 // ─── Ticket ──────────────────────────────────────────────────────────
