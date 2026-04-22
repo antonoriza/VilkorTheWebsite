@@ -103,30 +103,40 @@ export default function AdminDashboard() {
     {
       id: 'profile',
       label: 'Configura el perfil del inmueble',
+      description: 'Nombre, dirección y datos generales del edificio',
+      icon: 'apartment',
       done: !!bc.buildingName && !!bc.buildingAddress,
       href: '/configuracion?tab=perfil',
     },
     {
       id: 'architecture',
       label: 'Define torres y unidades',
+      description: 'Estructura del edificio: torres, pisos y departamentos',
+      icon: 'domain_add',
       done: bc.totalUnits > 0,
       href: '/configuracion?tab=perfil',
     },
     {
       id: 'residents',
       label: 'Agrega residentes',
+      description: 'Registro de propietarios e inquilinos por unidad',
+      icon: 'group_add',
       done: state.residents.length > 0,
       href: '/usuarios',
     },
     {
       id: 'finances',
       label: 'Configura cuotas de mantenimiento',
+      description: 'Monto mensual, día de corte y reglas de vencimiento',
+      icon: 'account_balance',
       done: bc.monthlyFee > 0,
       href: '/configuracion?tab=finanzas',
     },
     {
       id: 'amenities',
-      label: 'Agrega amenidades (opcional)',
+      label: 'Agrega amenidades',
+      description: 'Áreas comunes, asadores, salones — opcional',
+      icon: 'outdoor_grill',
       done: state.amenities.length > 0,
       href: '/configuracion?tab=perfil',
     },
@@ -302,110 +312,169 @@ export default function AdminDashboard() {
       </div>
 
       <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        {/* ── Page Header ── */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-        <div>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
-            The Control Tower
-          </span>
-          <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
-            {bc.buildingName}
-          </h1>
-          <p className="text-slate-500 font-medium mt-1">
-            {bc.buildingAddress} — Gestión Operativa Global
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setShowAvisoModal(true)}
-            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
-          >
-            <span className="material-symbols-outlined text-lg font-bold">add</span>
-            <span>Nuevo Aviso</span>
-          </button>
-        </div>
-      </header>
 
-      {/* ── DAY ZERO welcome — shown first when system is virgin ── */}
-      {isSystemVirgin && (
-        <section className="flex flex-col items-center justify-center py-16 text-center animate-in fade-in duration-700">
-          <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm">
-            <span className="material-symbols-outlined text-4xl text-slate-300">dashboard_customize</span>
+        {/* ── Page Header — HIDDEN when system is virgin ── */}
+        {!isSystemVirgin && (
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
+              The Control Tower
+            </span>
+            <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
+              {bc.buildingName}
+            </h1>
+            <p className="text-slate-500 font-medium mt-1">
+              {bc.buildingAddress} — Gestión Operativa Global
+            </p>
           </div>
-          <h2 className="text-2xl font-headline font-extrabold text-slate-900 mb-2 tracking-tight">
-            Bienvenido a PropertyPulse
-          </h2>
-          <p className="text-slate-500 font-medium max-w-md leading-relaxed">
-            Completa los pasos de configuración a continuación para activar el panel de control. Los indicadores, alertas y módulos operativos aparecerán automáticamente una vez que el sistema esté inicializado.
-          </p>
-          <p className="mt-4 text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">
-            Panel operativo no disponible hasta configuración inicial
-          </p>
-        </section>
-      )}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowAvisoModal(true)}
+              className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
+            >
+              <span className="material-symbols-outlined text-lg font-bold">add</span>
+              <span>Nuevo Aviso</span>
+            </button>
+          </div>
+        </header>
+        )}
 
-      {/* ── Setup Checklist Card — shown below welcome when system is unconfigured ── */}
-      {showSetupCard && (
-        <section className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 shadow-xl shadow-slate-200 animate-in fade-in slide-in-from-top-2 duration-500">
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-white text-lg">rocket_launch</span>
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {/* DAY ZERO ONBOARDING — premium first-run experience           */}
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {isSystemVirgin && (
+          <div className="space-y-8 animate-in fade-in duration-700">
+            {/* ── Hero welcome ── */}
+            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-12 md:p-16 text-center shadow-2xl shadow-slate-300/30">
+              {/* Decorative background elements */}
+              <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+              <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
+
+              <div className="relative z-10 max-w-xl mx-auto">
+                <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/10">
+                  <span className="material-symbols-outlined text-3xl text-white/80">rocket_launch</span>
                 </div>
+                <h1 className="text-3xl md:text-4xl font-headline font-black text-white tracking-tight mb-4">
+                  Bienvenido a PropertyPulse
+                </h1>
+                <p className="text-white/60 font-medium leading-relaxed text-base md:text-lg max-w-lg mx-auto">
+                  Tu plataforma de gestión inmobiliaria está lista. Completa los pasos a continuación para activar todos los módulos del sistema.
+                </p>
+              </div>
+            </section>
+
+            {/* ── Setup Checklist ── */}
+            <section className="space-y-5">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.25em]">Configuración inicial</p>
-                  <p className="text-sm font-black text-white">Configura tu edificio para comenzar</p>
+                  <h2 className="text-lg font-headline font-extrabold text-slate-900 tracking-tight">Configuración Inicial</h2>
+                  <p className="text-sm text-slate-400 font-medium mt-0.5">Completa cada paso para habilitar el panel operativo</p>
                 </div>
-                <div className="ml-auto flex items-center gap-2">
-                  <span className="text-[11px] font-black text-white/50">{completedSteps}/{setupSteps.length}</span>
-                  <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-black text-slate-900">{completedSteps}<span className="text-slate-300">/{setupSteps.length}</span></span>
+                  <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-400 rounded-full transition-all duration-700"
+                      className="h-full bg-emerald-500 rounded-full transition-all duration-700 ease-out"
                       style={{ width: `${(completedSteps / setupSteps.length) * 100}%` }}
                     />
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {setupSteps.map((step, i) => (
                   <Link
                     key={step.id}
                     to={step.href}
-                    className={`group flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
+                    className={`group relative flex items-start gap-4 p-5 rounded-2xl border-2 transition-all duration-200 ${
                       step.done
-                        ? 'bg-white/5 border-white/10 opacity-60 cursor-default pointer-events-none'
-                        : 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-white/40'
+                        ? 'bg-emerald-50/50 border-emerald-100 cursor-default pointer-events-none'
+                        : 'bg-white border-slate-100 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-100 hover:-translate-y-0.5'
                     }`}
                   >
-                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-black transition-all ${
+                    {/* Step icon */}
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                       step.done
-                        ? 'bg-emerald-400 text-emerald-900'
-                        : 'bg-white/10 text-white/60 group-hover:bg-white/20'
+                        ? 'bg-emerald-100 text-emerald-600'
+                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
                     }`}>
                       {step.done
-                        ? <span className="material-symbols-outlined text-[14px]">check</span>
-                        : <span>{i + 1}</span>
+                        ? <span className="material-symbols-outlined text-xl">check_circle</span>
+                        : <span className="material-symbols-outlined text-xl">{step.icon}</span>
                       }
                     </div>
-                    <span className={`text-[11px] font-bold leading-tight ${
-                      step.done ? 'text-white/40 line-through' : 'text-white/80 group-hover:text-white'
-                    }`}>
-                      {step.label}
-                    </span>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${
+                          step.done ? 'text-emerald-500' : 'text-slate-300'
+                        }`}>
+                          Paso {i + 1}{step.done ? ' ✓' : ''}
+                        </span>
+                      </div>
+                      <h3 className={`text-sm font-bold mt-1 leading-snug ${
+                        step.done ? 'text-emerald-700 line-through decoration-emerald-300' : 'text-slate-900 group-hover:text-slate-900'
+                      }`}>
+                        {step.label}
+                      </h3>
+                      <p className={`text-xs mt-1 leading-relaxed ${
+                        step.done ? 'text-emerald-500/70' : 'text-slate-400'
+                      }`}>
+                        {step.description}
+                      </p>
+                    </div>
+                    {/* Arrow indicator */}
                     {!step.done && (
-                      <span className="material-symbols-outlined text-white/30 group-hover:text-white/60 text-base ml-auto shrink-0 transition-colors">arrow_forward</span>
+                      <span className="material-symbols-outlined text-slate-200 group-hover:text-slate-400 text-lg shrink-0 mt-1 transition-all group-hover:translate-x-0.5">
+                        arrow_forward
+                      </span>
                     )}
                   </Link>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
-        </section>
-      )}
+        )}
 
-      {/* ── OPERATIONAL DASHBOARD — hidden while system is virgin ── */}
-      {!isSystemVirgin && (<>
+        {/* ── Setup Checklist — compact version shown when NOT virgin but still incomplete ── */}
+        {showSetupCard && !isSystemVirgin && (
+          <section className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 shadow-xl shadow-slate-200 animate-in fade-in slide-in-from-top-2 duration-500">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-white text-base">rocket_launch</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-black text-white">Configuración pendiente</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-black text-white/50">{completedSteps}/{setupSteps.length}</span>
+                <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-400 rounded-full transition-all duration-700"
+                    style={{ width: `${(completedSteps / setupSteps.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {setupSteps.filter(s => !s.done).map((step) => (
+                <Link
+                  key={step.id}
+                  to={step.href}
+                  className="group flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 hover:border-white/30 transition-all"
+                >
+                  <span className="material-symbols-outlined text-white/60 text-sm">{step.icon}</span>
+                  <span className="text-[11px] font-bold text-white/80 group-hover:text-white">{step.label}</span>
+                  <span className="material-symbols-outlined text-white/30 group-hover:text-white/60 text-sm">arrow_forward</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── OPERATIONAL DASHBOARD — hidden while system is virgin ── */}
+        {!isSystemVirgin && (<>
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-10">
         {/* Composite health gauge */}
         <div className="xl:col-span-4 bg-white border border-slate-200 rounded-3xl p-8 hero-pattern relative overflow-hidden shadow-sm flex flex-col justify-center items-center text-center">
