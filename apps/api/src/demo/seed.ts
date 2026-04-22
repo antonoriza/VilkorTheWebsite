@@ -18,7 +18,7 @@ import { PAGO_STATUSES, PAGO_CONCEPTO, PAGO_AMOUNT, PAGO_MONTH, PAGO_MONTH_KEY, 
 import { ticketData } from './fixtures/tickets'
 import { avisoData } from './fixtures/avisos'
 import { buildingConfig } from './fixtures/building-config'
-import { DEMO_ACCOUNT_INDICES, DEMO_ACCOUNT_PASSWORD, DEMO_ACCOUNT_ROLE } from './fixtures/accounts'
+import { DEMO_ACCOUNT_APARTMENTS, DEMO_ACCOUNT_PASSWORD, DEMO_ACCOUNT_ROLE } from './fixtures/accounts'
 
 export async function seedDemo(tenantId: string): Promise<void> {
   console.log('[demo] Phase 2: Demo data...')
@@ -116,11 +116,12 @@ export async function seedDemo(tenantId: string): Promise<void> {
   console.log('[demo]   ✓ Building config')
 
   // ── Demo resident auth accounts ───────────────────────────────────────
-  const demoAccounts = DEMO_ACCOUNT_INDICES.map(i => ({
-    name: residents[i].name,
-    email: residents[i].email,
-    apartment: residents[i].apartment,
-  }))
+  // Look up by apartment code — stable regardless of generation order
+  const demoAccounts = DEMO_ACCOUNT_APARTMENTS.map(apt => {
+    const r = residents.find(res => res.apartment === apt)
+    if (!r) throw new Error(`[demo] Apartment ${apt} not found in generated residents`)
+    return { name: r.name, email: r.email, apartment: r.apartment }
+  })
 
   for (const acct of demoAccounts) {
     try {
