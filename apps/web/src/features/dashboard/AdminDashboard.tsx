@@ -9,7 +9,7 @@
  * an in-app ConfirmDialog component.
  */
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useStore } from '../../core/store/store'
 import { useAuth } from '../../core/auth/AuthContext'
 import Modal from '../../core/components/Modal'
@@ -62,6 +62,16 @@ export default function AdminDashboard() {
 
   // Inline aviso creation via unified component
   const [showAvisoModal, setShowAvisoModal] = useState(false)
+
+  // ── Optional step: amenities skip/confirm ─────────────────────────────
+  const navigate = useNavigate()
+  const [amenitiesSkipped, setAmenitiesSkipped] = useState<boolean>(
+    () => localStorage.getItem('pp_amenities_skipped') === 'true'
+  )
+  const skipAmenities = () => {
+    localStorage.setItem('pp_amenities_skipped', 'true')
+    setAmenitiesSkipped(true)
+  }
 
   // In-app confirm dialog state (replaces window.confirm)
   const [confirmDeleteStaffId, setConfirmDeleteStaffId] = useState<string | null>(null)
@@ -137,7 +147,9 @@ export default function AdminDashboard() {
       label: 'Agrega amenidades',
       description: 'Áreas comunes, asadores, salones — opcional',
       icon: 'outdoor_grill',
-      done: state.amenities.length > 0,
+      optional: true,
+      done: state.amenities.length > 0 || amenitiesSkipped,
+      skipped: amenitiesSkipped && state.amenities.length === 0,
       href: '/configuracion?tab=perfil',
     },
   ]
@@ -386,7 +398,65 @@ export default function AdminDashboard() {
                 {setupSteps.map((step, i) => {
                   const isLocked = i > 0 && !setupSteps[i - 1].done
                   const isActive = !step.done && !isLocked
+                  const isOptionalPrompt = isActive && !!step.optional
 
+                  // ── Optional step — render as choice prompt, not a link ──
+                  if (isOptionalPrompt) {
+                    return (
+                      <div
+                        key={step.id}
+                        className="relative flex flex-col gap-4 p-5 rounded-2xl border-2 bg-white border-primary/20 shadow-md shadow-primary/5"
+                      >
+                        {/* Header */}
+                        <div className="flex items-start gap-4">
+                          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 text-primary">
+                            <span className="material-symbols-outlined text-xl">{step.icon}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+                                Paso {i + 1} — Opcional
+                              </span>
+                            </div>
+                            <h3 className="text-sm font-bold mt-1 leading-snug text-slate-900">
+                              {step.label}
+                            </h3>
+                            <p className="text-xs mt-1 leading-relaxed text-slate-400">
+                              ¿Tu edificio cuenta con áreas comunes o amenidades?
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Choice buttons */}
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button
+                            onClick={() => navigate(step.href)}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-700 transition-all"
+                          >
+                            <span className="material-symbols-outlined text-base">add_circle</span>
+                            Configurar ahora
+                          </button>
+                          <button
+                            onClick={skipAmenities}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 text-slate-500 text-[11px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-100 hover:text-slate-700 transition-all border border-slate-200"
+                          >
+                            <span className="material-symbols-outlined text-base">do_not_disturb_on</span>
+                            No por ahora
+                          </button>
+                        </div>
+
+                        {/* Settings note */}
+                        <p className="text-[10px] text-slate-300 font-medium text-center leading-relaxed">
+                          Puedes agregar amenidades en cualquier momento desde{' '}
+                          <Link to="/configuracion?tab=perfil" className="underline hover:text-slate-500 transition-colors">
+                            Configuración
+                          </Link>
+                        </p>
+                      </div>
+                    )
+                  }
+
+                  // ── Normal step — done / locked / active link ──
                   return (
                     <Link
                       key={step.id}
@@ -394,7 +464,9 @@ export default function AdminDashboard() {
                       onClick={isLocked ? (e) => e.preventDefault() : undefined}
                       className={`group relative flex items-start gap-4 p-5 rounded-2xl border-2 transition-all duration-200 ${
                         step.done
-                          ? 'bg-emerald-50/50 border-emerald-100 cursor-default pointer-events-none'
+                          ? step.skipped
+                            ? 'bg-slate-50 border-slate-100 cursor-default pointer-events-none opacity-60'
+                            : 'bg-emerald-50/50 border-emerald-100 cursor-default pointer-events-none'
                           : isLocked
                             ? 'bg-slate-50 border-slate-100 cursor-not-allowed opacity-50'
                             : 'bg-white border-slate-100 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-100 hover:-translate-y-0.5'
@@ -403,13 +475,17 @@ export default function AdminDashboard() {
                       {/* Step icon */}
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                         step.done
-                          ? 'bg-emerald-100 text-emerald-600'
+                          ? step.skipped
+                            ? 'bg-slate-100 text-slate-400'
+                            : 'bg-emerald-100 text-emerald-600'
                           : isLocked
                             ? 'bg-slate-100 text-slate-300'
                             : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
                       }`}>
                         {step.done
-                          ? <span className="material-symbols-outlined text-xl">check_circle</span>
+                          ? step.skipped
+                            ? <span className="material-symbols-outlined text-xl">skip_next</span>
+                            : <span className="material-symbols-outlined text-xl">check_circle</span>
                           : isLocked
                             ? <span className="material-symbols-outlined text-xl">lock</span>
                             : <span className="material-symbols-outlined text-xl">{step.icon}</span>
@@ -421,17 +497,22 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-2">
                           <span className={`text-[10px] font-black uppercase tracking-widest ${
                             step.done
-                              ? 'text-emerald-500'
+                              ? step.skipped ? 'text-slate-400' : 'text-emerald-500'
                               : isLocked
                                 ? 'text-slate-300'
                                 : 'text-slate-400'
                           }`}>
-                            Paso {i + 1}{step.done ? ' ✓' : isLocked ? ' — Bloqueado' : ''}
+                            Paso {i + 1}
+                            {step.done
+                              ? step.skipped ? ' — Omitido' : ' ✓'
+                              : isLocked ? ' — Bloqueado' : ''}
                           </span>
                         </div>
                         <h3 className={`text-sm font-bold mt-1 leading-snug ${
                           step.done
-                            ? 'text-emerald-700 line-through decoration-emerald-300'
+                            ? step.skipped
+                              ? 'text-slate-400'
+                              : 'text-emerald-700 line-through decoration-emerald-300'
                             : isLocked
                               ? 'text-slate-300'
                               : 'text-slate-900'
@@ -440,14 +521,16 @@ export default function AdminDashboard() {
                         </h3>
                         <p className={`text-xs mt-1 leading-relaxed ${
                           step.done
-                            ? 'text-emerald-500/70'
+                            ? step.skipped ? 'text-slate-400' : 'text-emerald-500/70'
                             : isLocked
                               ? 'text-slate-300'
                               : 'text-slate-400'
                         }`}>
-                          {isLocked
-                            ? `Completa el paso ${i} primero`
-                            : step.description}
+                          {step.done && step.skipped
+                            ? 'Puedes activarlo cuando quieras desde Configuración'
+                            : isLocked
+                              ? `Completa el paso ${i} primero`
+                              : step.description}
                         </p>
                       </div>
 
