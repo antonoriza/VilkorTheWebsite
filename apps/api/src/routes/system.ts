@@ -104,4 +104,65 @@ systemRoutes.post('/factory-reset', requireRole('super_admin'), async (c) => {
   }
 })
 
+/**
+ * POST /demo-restore — Only available in APP_MODE=demo.
+ *
+ * Runs a full factory-reset, then immediately re-seeds all demo
+ * fixture data. Restores the system to a "fresh demo" state.
+ *
+ * Returns 403 in production to prevent accidental misuse.
+ */
+systemRoutes.post('/demo-restore', requireRole('super_admin'), async (c) => {
+  const isDemo = (process.env.APP_MODE || 'production') === 'demo'
+  if (!isDemo) {
+    return c.json({ error: 'demo-restore is only available in demo mode' }, 403)
+  }
+
+  const tenantId = c.get('tenantId') as string
+  const session = c.get('session') as any
+  const currentUserId = session.user.id
+
+  try {
+    // ── Step 1: Wipe all tenant data (same as factory-reset) ──────────
+    const raw = tenantDB.getRaw(tenantId)
+    raw.exec('PRAGMA foreign_keys = OFF')
+    for (const table of TENANT_TABLES_TO_TRUNCATE) {
+      raw.exec(`DELETE FROM ${table}`)
+    }
+    raw.exec('PRAGMA foreign_keys = ON')
+
+    // Remove demo resident accounts from master DB (keep super_admin)
+    const demoUsers = rawMasterDb
+      .query('SELECT user_id FROM user_tenants WHERE tenant_id = ? AND role != ?')
+      .all(tenantId, 'super_admin') as { user_id: string }[]
+
+    for (const { user_id } of demoUsers) {
+      if (user_id === currentUserId) continue
+      rawMasterDb.exec(`DELETE FROM user_tenants WHERE user_id = '${user_id}' AND tenant_id = '${tenantId}'`)
+      const otherTenants = rawMasterDb
+        .query('SELECT COUNT(*) as c FROM user_tenants WHERE user_id = ?')
+        .get(user_id) as { c: number }
+      if (otherTenants.c === 0) {
+        rawMasterDb.exec(`DELETE FROM session WHERE userId = '${user_id}'`)
+        rawMasterDb.exec(`DELETE FROM account WHERE userId = '${user_id}'`)
+        rawMasterDb.exec(`DELETE FROM user WHERE id = '${user_id}'`)
+      }
+    }
+
+    // ── Step 2: Re-seed all demo fixture data ─────────────────────────
+    const { seedDemo } = await import('../demo/seed')
+    await seedDemo(tenantId)
+
+    console.log(`[system] ✓ Demo restore complete for tenant "${tenantId}"`)
+
+    return c.json({
+      ok: true,
+      message: 'Demo restore complete — system is back to fresh demo state',
+    })
+  } catch (err: any) {
+    console.error('[system] Demo restore failed:', err.message)
+    return c.json({ error: 'Demo restore failed', message: err.message }, 500)
+  }
+})
+
 export default systemRoutes

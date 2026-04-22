@@ -175,4 +175,7 @@ export const systemApi = {
   factoryReset: () => request<{ ok: boolean; message: string }>('/api/system/factory-reset', {
     method: 'POST',
   }),
+  demoRestore: () => request<{ ok: boolean; message: string }>('/api/system/demo-restore', {
+    method: 'POST',
+  }),
 }

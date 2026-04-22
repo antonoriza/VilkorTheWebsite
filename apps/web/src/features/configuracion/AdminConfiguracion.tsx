@@ -3,7 +3,9 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useStore } from '../../core/store/store'
 import { useAuth } from '../../core/auth/AuthContext'
 import { systemApi } from '../../lib/api'
+import { useDemoMode } from '../../core/hooks/useDemoMode'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
+import DemoResetModal from '../../core/components/DemoResetModal'
 
 // Sections
 import ArchitectureSettings from './sections/ArchitectureSettings'
@@ -25,11 +27,13 @@ export default function AdminConfiguracion() {
   const { state, dispatch } = useStore()
   const { logout } = useAuth()
   const navigate = useNavigate()
+  const isDemo = useDemoMode()
   const bc = state.buildingConfig
   const [searchParams] = useSearchParams()
   const activeTab = searchParams.get('tab') || 'perfil'
   const [saved, setSaved] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
+  const [showDemoReset, setShowDemoReset] = useState(false)
 
   // Local states for forms
   const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget>(null)
@@ -65,6 +69,8 @@ export default function AdminConfiguracion() {
         window.location.reload()
         break
       case 'reset':
+        // In demo mode the DemoResetModal handles the reset — this branch
+        // is only reached in production where isDemoMode is false.
         setIsResetting(true)
         try {
           await systemApi.factoryReset()
@@ -171,7 +177,10 @@ export default function AdminConfiguracion() {
         )}
 
         {activeTab === 'resiliencia' && (
-          <SystemSettings handleReset={() => setConfirmTarget({ action: 'reset' })} />
+          <SystemSettings
+            handleReset={() => isDemo ? setShowDemoReset(true) : setConfirmTarget({ action: 'reset' })}
+            isDemoMode={isDemo}
+          />
         )}
       </div>
 
@@ -188,7 +197,7 @@ export default function AdminConfiguracion() {
       </ConfirmDialog>
 
       <ConfirmDialog
-        open={confirmTarget?.action === 'reset' || confirmTarget?.action === 'deleteAmenity' || confirmTarget?.action === 'deleteTower'}
+        open={confirmTarget?.action === 'deleteAmenity' || confirmTarget?.action === 'deleteTower' || (!isDemo && confirmTarget?.action === 'reset')}
         onClose={() => setConfirmTarget(null)}
         onConfirm={executeConfirm}
         title={
@@ -202,6 +211,32 @@ export default function AdminConfiguracion() {
         {confirmTarget?.action === 'deleteTower' && `¿Eliminar "${confirmTarget.tower}"? Hay ${confirmTarget.residentCount} residente(s).`}
         {confirmTarget?.action === 'reset' && '¿Seguro? Esto eliminará todos los datos. Esta acción no se puede deshacer.'}
       </ConfirmDialog>
+
+      {/* Demo-mode context-aware reset modal — shown instead of ConfirmDialog in demo */}
+      <DemoResetModal
+        open={showDemoReset}
+        onClose={() => setShowDemoReset(false)}
+        onDemoRestore={async () => {
+          try {
+            await systemApi.demoRestore()
+            await logout()
+            navigate('/login', { replace: true })
+          } catch (err: any) {
+            setShowDemoReset(false)
+            alert('Error al restaurar demo: ' + (err.message || 'Error desconocido'))
+          }
+        }}
+        onFactoryReset={async () => {
+          try {
+            await systemApi.factoryReset()
+            await logout()
+            navigate('/login', { replace: true })
+          } catch (err: any) {
+            setShowDemoReset(false)
+            alert('Error al restablecer sistema: ' + (err.message || 'Error desconocido'))
+          }
+        }}
+      />
     </div>
   )
 }
