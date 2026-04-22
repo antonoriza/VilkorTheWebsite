@@ -326,7 +326,25 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      {/* ── Setup Checklist Card — shown when system is unconfigured ── */}
+      {/* ── DAY ZERO welcome — shown first when system is virgin ── */}
+      {isSystemVirgin && (
+        <section className="flex flex-col items-center justify-center py-16 text-center animate-in fade-in duration-700">
+          <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm">
+            <span className="material-symbols-outlined text-4xl text-slate-300">dashboard_customize</span>
+          </div>
+          <h2 className="text-2xl font-headline font-extrabold text-slate-900 mb-2 tracking-tight">
+            Bienvenido a PropertyPulse
+          </h2>
+          <p className="text-slate-500 font-medium max-w-md leading-relaxed">
+            Completa los pasos de configuración a continuación para activar el panel de control. Los indicadores, alertas y módulos operativos aparecerán automáticamente una vez que el sistema esté inicializado.
+          </p>
+          <p className="mt-4 text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">
+            Panel operativo no disponible hasta configuración inicial
+          </p>
+        </section>
+      )}
+
+      {/* ── Setup Checklist Card — shown below welcome when system is unconfigured ── */}
       {showSetupCard && (
         <section className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 shadow-xl shadow-slate-200 animate-in fade-in slide-in-from-top-2 duration-500">
           <div className="flex items-start justify-between gap-6">
@@ -383,24 +401,6 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* ── DAY ZERO: System virgin — show welcoming empty state below the checklist ── */}
-      {isSystemVirgin && (
-        <section className="flex flex-col items-center justify-center py-16 text-center animate-in fade-in duration-700">
-          <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-6 border border-slate-100 shadow-sm">
-            <span className="material-symbols-outlined text-4xl text-slate-300">dashboard_customize</span>
-          </div>
-          <h2 className="text-2xl font-headline font-extrabold text-slate-900 mb-2 tracking-tight">
-            Bienvenido a PropertyPulse
-          </h2>
-          <p className="text-slate-500 font-medium max-w-md leading-relaxed">
-            Completa los pasos de configuración arriba para activar el panel de control. Los indicadores, alertas y módulos operativos aparecerán automáticamente una vez que el sistema esté inicializado.
-          </p>
-          <p className="mt-4 text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">
-            Panel operativo no disponible hasta configuración inicial
-          </p>
         </section>
       )}
 
