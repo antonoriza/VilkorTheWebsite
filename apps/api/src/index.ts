@@ -25,6 +25,7 @@ import inventoryRoutes from './routes/inventory'
 import configRoutes from './routes/config'
 import dashboardRoutes from './routes/dashboard'
 import auditRoutes from './routes/audit'
+import systemRoutes from './routes/system'
 
 const app = new Hono()
 
@@ -105,6 +106,7 @@ api.route('/inventory', inventoryRoutes)
 api.route('/config', configRoutes)
 api.route('/dashboard', dashboardRoutes)
 api.route('/audit', auditRoutes)
+api.route('/system', systemRoutes)
 
 app.route('/api', api)
 

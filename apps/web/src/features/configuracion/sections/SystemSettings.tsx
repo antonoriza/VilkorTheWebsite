@@ -17,7 +17,7 @@ export default function SystemSettings({ handleReset }: Props) {
           <div className="max-w-md">
             <p className="text-sm font-bold text-slate-900">Restablecer Sistema (Fábrica)</p>
             <p className="text-[11px] text-slate-500 font-medium mt-1 leading-relaxed">
-              Esta acción eliminará todos los registros históricos de pagos, residentes, tickets y configuraciones personalizadas. La aplicación volverá a su estado de semillas (demo) inicial.
+              Esta acción eliminará todos los registros históricos de pagos, residentes, tickets, staff y configuraciones personalizadas. La aplicación volverá a su estado de fábrica con solo el administrador base.
             </p>
           </div>
           <button 

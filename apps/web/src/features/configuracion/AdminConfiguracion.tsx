@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useStore } from '../../core/store/store'
+import { useAuth } from '../../core/auth/AuthContext'
+import { systemApi } from '../../lib/api'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 
 // Sections
@@ -21,10 +23,13 @@ type ConfirmTarget =
 
 export default function AdminConfiguracion() {
   const { state, dispatch } = useStore()
+  const { logout } = useAuth()
+  const navigate = useNavigate()
   const bc = state.buildingConfig
   const [searchParams] = useSearchParams()
   const activeTab = searchParams.get('tab') || 'perfil'
   const [saved, setSaved] = useState(false)
+  const [isResetting, setIsResetting] = useState(false)
 
   // Local states for forms
   const [confirmTarget, setConfirmTarget] = useState<ConfirmTarget>(null)
@@ -46,7 +51,7 @@ export default function AdminConfiguracion() {
   }
 
 
-  const executeConfirm = () => {
+  const executeConfirm = async () => {
     if (!confirmTarget) return
     switch (confirmTarget.action) {
       case 'deleteAmenity':
@@ -60,8 +65,16 @@ export default function AdminConfiguracion() {
         window.location.reload()
         break
       case 'reset':
-        dispatch({ type: 'RESET' })
-        window.location.reload()
+        setIsResetting(true)
+        try {
+          await systemApi.factoryReset()
+          await logout()
+          navigate('/login', { replace: true })
+        } catch (err: any) {
+          console.error('[Reset] Factory reset failed:', err)
+          setIsResetting(false)
+          alert('Error al restablecer el sistema: ' + (err.message || 'Error desconocido'))
+        }
         break
     }
     setConfirmTarget(null)

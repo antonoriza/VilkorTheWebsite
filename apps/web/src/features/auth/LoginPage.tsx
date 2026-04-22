@@ -141,37 +141,17 @@ export default function LoginPage() {
                 <span className="material-symbols-outlined text-[14px] mr-2">lightbulb</span>
                 Demo Credentials
               </p>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('admin@property.com', 'admin123')}
-                  className="col-span-2 flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-bold text-slate-500">Admin</span>
-                    <span className="text-[11px] font-black text-slate-900">admin@property.com</span>
-                  </div>
-                  <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">admin123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('B0101@gmail.com', 'demo123')}
-                  className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
-                >
-                  <span className="text-[11px] font-bold text-slate-500">Residente B0101</span>
-                  <span className="text-[11px] font-black text-slate-900">B0101@gmail.com</span>
-                  <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">demo123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => fillCredentials('A0101@gmail.com', 'demo123')}
-                  className="flex flex-col p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
-                >
-                  <span className="text-[11px] font-bold text-slate-500">Residente A0101</span>
-                  <span className="text-[11px] font-black text-slate-900">A0101@gmail.com</span>
-                  <span className="text-[9px] font-black text-emerald-600 mt-1 uppercase">demo123</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => fillCredentials('admin@property.com', 'admin123')}
+                className="w-full flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:border-emerald-300 transition-colors cursor-pointer text-left"
+              >
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-bold text-slate-500">Super Admin</span>
+                  <span className="text-[11px] font-black text-slate-900">admin@property.com</span>
+                </div>
+                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">admin123</span>
+              </button>
             </div>
           )}
 

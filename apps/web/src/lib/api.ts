@@ -170,3 +170,9 @@ export const configApi = {
 export const dashboardApi = {
   getKPIs: () => request<any>('/api/dashboard'),
 }
+
+export const systemApi = {
+  factoryReset: () => request<{ ok: boolean; message: string }>('/api/system/factory-reset', {
+    method: 'POST',
+  }),
+}
