@@ -49,10 +49,30 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
   const [adding, setAdding] = useState(false)
   const [draft, setDraft] = useState({ ...EMPTY_ROW })
 
-  // Derive conceptos — seed Mensualidad from legacy fields if array is empty
-  const conceptos: ConceptoFinanciero[] = bc.conceptosFinancieros?.length
-    ? bc.conceptosFinancieros
-    : [{ ...DEFAULT_MENSUALIDAD, monto: bc.monthlyFee || 0, diasGracia: bc.surcharge?.graceDays || 10, recargoPct: bc.surcharge?.type === 'percent' ? bc.surcharge.amount : null, recargoMonto: bc.surcharge?.type === 'fixed' ? bc.surcharge.amount : null }]
+  // Derive conceptos — always guarantee Mensualidad system entry is present
+  const conceptos: ConceptoFinanciero[] = (() => {
+    const saved = bc.conceptosFinancieros ?? []
+    // Build the canonical Mensualidad from legacy fields or existing entry
+    const existingMens = saved.find(c => c.id === 'mensualidad')
+    const mensualidad: ConceptoFinanciero = {
+      ...DEFAULT_MENSUALIDAD,
+      monto: existingMens?.monto ?? bc.monthlyFee ?? 0,
+      diasGracia: existingMens?.diasGracia ?? bc.surcharge?.graceDays ?? 10,
+      recargoPct: existingMens !== undefined
+        ? existingMens.recargoPct
+        : (bc.surcharge?.type === 'percent' ? (bc.surcharge.amount || 5) : null),
+      recargoMonto: existingMens !== undefined
+        ? existingMens.recargoMonto
+        : (bc.surcharge?.type === 'fixed' ? bc.surcharge.amount : null),
+      vencimiento: existingMens?.vencimiento ?? bc.maturityRules?.mantenimiento ?? 'next_month_01',
+      descripcion: existingMens?.descripcion ?? DEFAULT_MENSUALIDAD.descripcion,
+      // Always force categoria to 'ingreso' for the system entry
+      categoria: 'ingreso',
+      sistema: true,
+    }
+    const rest = saved.filter(c => c.id !== 'mensualidad')
+    return [mensualidad, ...rest]
+  })()
 
   const save = (updated: ConceptoFinanciero[]) => {
     // Sync legacy fields from Mensualidad entry
