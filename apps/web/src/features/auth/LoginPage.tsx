@@ -166,7 +166,7 @@ export default function LoginPage() {
                   id="demo-account-select"
                   defaultValue=""
                   onChange={(e) => {
-                    const acct = DEMO_ACCOUNTS.find(a => a.email === e.target.value)
+                    const acct = demoAccounts.find(a => a.email === e.target.value)
                     if (acct) {
                       fillCredentials(acct.email, acct.password)
                     }
