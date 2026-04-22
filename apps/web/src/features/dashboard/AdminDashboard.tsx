@@ -383,55 +383,83 @@ export default function AdminDashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {setupSteps.map((step, i) => (
-                  <Link
-                    key={step.id}
-                    to={step.href}
-                    className={`group relative flex items-start gap-4 p-5 rounded-2xl border-2 transition-all duration-200 ${
-                      step.done
-                        ? 'bg-emerald-50/50 border-emerald-100 cursor-default pointer-events-none'
-                        : 'bg-white border-slate-100 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-100 hover:-translate-y-0.5'
-                    }`}
-                  >
-                    {/* Step icon */}
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                      step.done
-                        ? 'bg-emerald-100 text-emerald-600'
-                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
-                    }`}>
-                      {step.done
-                        ? <span className="material-symbols-outlined text-xl">check_circle</span>
-                        : <span className="material-symbols-outlined text-xl">{step.icon}</span>
-                      }
-                    </div>
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${
-                          step.done ? 'text-emerald-500' : 'text-slate-300'
-                        }`}>
-                          Paso {i + 1}{step.done ? ' ✓' : ''}
-                        </span>
+                {setupSteps.map((step, i) => {
+                  const isLocked = i > 0 && !setupSteps[i - 1].done
+                  const isActive = !step.done && !isLocked
+
+                  return (
+                    <Link
+                      key={step.id}
+                      to={isLocked ? '#' : step.href}
+                      onClick={isLocked ? (e) => e.preventDefault() : undefined}
+                      className={`group relative flex items-start gap-4 p-5 rounded-2xl border-2 transition-all duration-200 ${
+                        step.done
+                          ? 'bg-emerald-50/50 border-emerald-100 cursor-default pointer-events-none'
+                          : isLocked
+                            ? 'bg-slate-50 border-slate-100 cursor-not-allowed opacity-50'
+                            : 'bg-white border-slate-100 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-100 hover:-translate-y-0.5'
+                      }`}
+                    >
+                      {/* Step icon */}
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
+                        step.done
+                          ? 'bg-emerald-100 text-emerald-600'
+                          : isLocked
+                            ? 'bg-slate-100 text-slate-300'
+                            : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
+                      }`}>
+                        {step.done
+                          ? <span className="material-symbols-outlined text-xl">check_circle</span>
+                          : isLocked
+                            ? <span className="material-symbols-outlined text-xl">lock</span>
+                            : <span className="material-symbols-outlined text-xl">{step.icon}</span>
+                        }
                       </div>
-                      <h3 className={`text-sm font-bold mt-1 leading-snug ${
-                        step.done ? 'text-emerald-700 line-through decoration-emerald-300' : 'text-slate-900 group-hover:text-slate-900'
-                      }`}>
-                        {step.label}
-                      </h3>
-                      <p className={`text-xs mt-1 leading-relaxed ${
-                        step.done ? 'text-emerald-500/70' : 'text-slate-400'
-                      }`}>
-                        {step.description}
-                      </p>
-                    </div>
-                    {/* Arrow indicator */}
-                    {!step.done && (
-                      <span className="material-symbols-outlined text-slate-200 group-hover:text-slate-400 text-lg shrink-0 mt-1 transition-all group-hover:translate-x-0.5">
-                        arrow_forward
-                      </span>
-                    )}
-                  </Link>
-                ))}
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-black uppercase tracking-widest ${
+                            step.done
+                              ? 'text-emerald-500'
+                              : isLocked
+                                ? 'text-slate-300'
+                                : 'text-slate-400'
+                          }`}>
+                            Paso {i + 1}{step.done ? ' ✓' : isLocked ? ' — Bloqueado' : ''}
+                          </span>
+                        </div>
+                        <h3 className={`text-sm font-bold mt-1 leading-snug ${
+                          step.done
+                            ? 'text-emerald-700 line-through decoration-emerald-300'
+                            : isLocked
+                              ? 'text-slate-300'
+                              : 'text-slate-900'
+                        }`}>
+                          {step.label}
+                        </h3>
+                        <p className={`text-xs mt-1 leading-relaxed ${
+                          step.done
+                            ? 'text-emerald-500/70'
+                            : isLocked
+                              ? 'text-slate-300'
+                              : 'text-slate-400'
+                        }`}>
+                          {isLocked
+                            ? `Completa el paso ${i} primero`
+                            : step.description}
+                        </p>
+                      </div>
+
+                      {/* Trailing indicator */}
+                      {isActive && (
+                        <span className="material-symbols-outlined text-slate-200 group-hover:text-slate-500 text-lg shrink-0 mt-1 transition-all group-hover:translate-x-0.5">
+                          arrow_forward
+                        </span>
+                      )}
+                    </Link>
+                  )
+                })}
               </div>
             </section>
           </div>
@@ -458,17 +486,29 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {setupSteps.filter(s => !s.done).map((step) => (
-                <Link
-                  key={step.id}
-                  to={step.href}
-                  className="group flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 hover:border-white/30 transition-all"
-                >
-                  <span className="material-symbols-outlined text-white/60 text-sm">{step.icon}</span>
-                  <span className="text-[11px] font-bold text-white/80 group-hover:text-white">{step.label}</span>
-                  <span className="material-symbols-outlined text-white/30 group-hover:text-white/60 text-sm">arrow_forward</span>
-                </Link>
-              ))}
+              {setupSteps.filter(s => !s.done).map((step) => {
+                const originalIndex = setupSteps.indexOf(step)
+                const isLocked = originalIndex > 0 && !setupSteps[originalIndex - 1].done
+                return isLocked ? (
+                  <span
+                    key={step.id}
+                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 border border-white/5 opacity-40 cursor-not-allowed"
+                  >
+                    <span className="material-symbols-outlined text-white/40 text-sm">lock</span>
+                    <span className="text-[11px] font-bold text-white/40">{step.label}</span>
+                  </span>
+                ) : (
+                  <Link
+                    key={step.id}
+                    to={step.href}
+                    className="group flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 hover:border-white/30 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-white/60 text-sm">{step.icon}</span>
+                    <span className="text-[11px] font-bold text-white/80 group-hover:text-white">{step.label}</span>
+                    <span className="material-symbols-outlined text-white/30 group-hover:text-white/60 text-sm">arrow_forward</span>
+                  </Link>
+                )
+              })}
             </div>
           </section>
         )}
