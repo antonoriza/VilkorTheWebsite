@@ -407,6 +407,76 @@ export const CONCEPTO_CATEGORIA_LABELS: Record<ConceptoCategoria, string> = {
   egreso: 'Egreso',
 }
 
+// ─── Vencimiento (Maturity Rule) ──────────────────────────────────────────────
+
+/** The 5 admin-configurable due-date modes */
+export type VencimientoTipo =
+  | 'n_dias'               // N days after charge generation
+  | 'dia_n_mes_siguiente'  // Day N of the following month
+  | 'ultimo_dia_mes'       // Last day of the current month
+  | 'inmediato'            // Same day as generation
+  | 'na'                   // No due date (e.g. one-off concepts)
+
+export const VENCIMIENTO_TIPO_LABELS: Record<VencimientoTipo, string> = {
+  n_dias:              'N días',
+  dia_n_mes_siguiente: 'Día N mes sig.',
+  ultimo_dia_mes:      'Último día del mes',
+  inmediato:           'Inmediato',
+  na:                  'N/A',
+}
+
+/** Structured due-date rule stored per concept */
+export interface VencimientoRule {
+  tipo: VencimientoTipo
+  /** Parametric N — only used for n_dias and dia_n_mes_siguiente */
+  n?: number
+}
+
+/** Human-readable label for a VencimientoRule */
+export function vencimientoLabel(v: VencimientoRule): string {
+  switch (v.tipo) {
+    case 'n_dias':              return `${v.n ?? 1} día${(v.n ?? 1) !== 1 ? 's' : ''}`
+    case 'dia_n_mes_siguiente': return `Día ${String(v.n ?? 1).padStart(2, '0')} mes sig.`
+    case 'ultimo_dia_mes':      return 'Último día del mes'
+    case 'inmediato':           return 'Inmediato'
+    case 'na':                  return 'N/A'
+  }
+}
+
+/** Parse legacy string vencimiento keys or passthrough new VencimientoRule */
+export function parseVencimiento(v: unknown): VencimientoRule {
+  if (v && typeof v === 'object' && 'tipo' in v) return v as VencimientoRule
+  if (typeof v === 'string') {
+    if (v === 'next_month_01') return { tipo: 'dia_n_mes_siguiente', n: 1 }
+    if (v === 'next_month_10') return { tipo: 'dia_n_mes_siguiente', n: 10 }
+    if (v === 'current_month_end') return { tipo: 'ultimo_dia_mes' }
+    if (v === 'immediate')     return { tipo: 'inmediato' }
+  }
+  return { tipo: 'na' }
+}
+
+/** Compute the actual due date from a VencimientoRule relative to a charge date */
+export function computeDueDate(rule: VencimientoRule, from: Date = new Date()): Date | null {
+  const d = new Date(from)
+  switch (rule.tipo) {
+    case 'n_dias':
+      d.setDate(d.getDate() + (rule.n ?? 1))
+      return d
+    case 'dia_n_mes_siguiente':
+      d.setMonth(d.getMonth() + 1, rule.n ?? 1)
+      return d
+    case 'ultimo_dia_mes':
+      d.setMonth(d.getMonth() + 1, 0)
+      return d
+    case 'inmediato':
+      return d
+    case 'na':
+      return null
+  }
+}
+
+// ─── ConceptoFinanciero ───────────────────────────────────────────────────────
+
 /** A unified financial concept: both income charges and operational expenses */
 export interface ConceptoFinanciero {
   id: string
@@ -418,8 +488,8 @@ export interface ConceptoFinanciero {
   categoria: ConceptoCategoria
   /** Optional description */
   descripcion?: string
-  /** Maturity rule identifier */
-  vencimiento: string
+  /** Structured due-date rule — admin-defined */
+  vencimiento: VencimientoRule
   /** Grace days before surcharge applies */
   diasGracia: number
   /** Surcharge as percentage — mutually exclusive with recargoMonto */

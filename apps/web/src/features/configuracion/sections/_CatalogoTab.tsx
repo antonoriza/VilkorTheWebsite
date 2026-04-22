@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { BuildingConfig, ConceptoFinanciero, ConceptoCategoria, CONCEPTO_CATEGORIA_LABELS } from '../../../types'
+import {
+  BuildingConfig, ConceptoFinanciero, ConceptoCategoria, CONCEPTO_CATEGORIA_LABELS,
+  VencimientoRule, VencimientoTipo, VENCIMIENTO_TIPO_LABELS, vencimientoLabel, parseVencimiento,
+} from '../../../types'
 
 interface Props {
   bc: BuildingConfig
@@ -14,20 +17,46 @@ const DEFAULT_MENSUALIDAD: ConceptoFinanciero = {
   monto: 0,
   categoria: 'ingreso',
   descripcion: 'Cuota de mantenimiento mensual',
-  vencimiento: 'next_month_01',
+  vencimiento: { tipo: 'dia_n_mes_siguiente', n: 1 },
   diasGracia: 10,
-  recargoPct: 5,
+  recargoPct: null,
   recargoMonto: null,
   sistema: true,
 }
 
-const VENCIMIENTO_OPTIONS = [
-  { v: 'next_month_01', l: 'Día 01 mes sig.' },
-  { v: 'next_month_10', l: 'Día 10 (gracia)' },
-  { v: 'current_month_end', l: 'Último día mes' },
-  { v: 'immediate', l: 'Inmediato' },
-  { v: 'na', l: 'N/A' },
+const VENCIMIENTO_TIPOS_ORDERED: VencimientoTipo[] = [
+  'n_dias', 'dia_n_mes_siguiente', 'ultimo_dia_mes', 'inmediato', 'na',
 ]
+
+/** Compact inline editor for VencimientoRule used in the table */
+function VencimientoEditor({ value, onChange }: { value: VencimientoRule; onChange: (v: VencimientoRule) => void }) {
+  const needsN = value.tipo === 'n_dias' || value.tipo === 'dia_n_mes_siguiente'
+  return (
+    <div className="flex items-center gap-1">
+      <select
+        value={value.tipo}
+        onChange={e => {
+          const tipo = e.target.value as VencimientoTipo
+          const needsNNew = tipo === 'n_dias' || tipo === 'dia_n_mes_siguiente'
+          onChange({ tipo, n: needsNNew ? (value.n ?? 1) : undefined })
+        }}
+        className="bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[9px] font-bold text-slate-700 outline-none focus:border-slate-900 cursor-pointer max-w-[110px]"
+      >
+        {VENCIMIENTO_TIPOS_ORDERED.map(t => (
+          <option key={t} value={t}>{VENCIMIENTO_TIPO_LABELS[t]}</option>
+        ))}
+      </select>
+      {needsN && (
+        <input
+          type="number" min={1} max={value.tipo === 'dia_n_mes_siguiente' ? 28 : 365}
+          value={value.n ?? 1}
+          onChange={e => onChange({ ...value, n: Math.max(1, parseInt(e.target.value) || 1) })}
+          className="w-12 bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[9px] font-bold text-slate-900 outline-none focus:border-slate-900 text-center"
+        />
+      )}
+    </div>
+  )
+}
 
 const CATEGORIA_COLORS: Record<ConceptoCategoria, string> = {
   ingreso: 'bg-emerald-50 text-emerald-700 border-emerald-100',
@@ -36,7 +65,7 @@ const CATEGORIA_COLORS: Record<ConceptoCategoria, string> = {
 
 const EMPTY_ROW: Omit<ConceptoFinanciero, 'id'> = {
   concepto: '', monto: 0, categoria: 'ingreso', descripcion: '',
-  vencimiento: 'na', diasGracia: 0, recargoPct: null, recargoMonto: null,
+  vencimiento: { tipo: 'na' }, diasGracia: 0, recargoPct: null, recargoMonto: null,
 }
 
 const SUB_TABS = [
@@ -65,7 +94,7 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
       recargoMonto: existingMens !== undefined
         ? existingMens.recargoMonto
         : (bc.surcharge?.enabled && bc.surcharge?.type === 'fixed' ? bc.surcharge.amount : null),
-      vencimiento: existingMens?.vencimiento ?? bc.maturityRules?.mantenimiento ?? 'next_month_01',
+      vencimiento: parseVencimiento(existingMens?.vencimiento ?? bc.maturityRules?.mantenimiento ?? null),
       descripcion: existingMens?.descripcion ?? DEFAULT_MENSUALIDAD.descripcion,
       categoria: 'ingreso',
       sistema: true,
@@ -178,7 +207,10 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
               <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-4">Ingresos</p>
               {ingresos.length === 0 ? <p className="text-[10px] text-slate-300">Sin conceptos</p> : ingresos.map(c => (
                 <div key={c.id} className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
-                  <span className="text-[10px] font-bold text-slate-700">{c.concepto}</span>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-700">{c.concepto}</span>
+                    <p className="text-[8px] text-slate-400 mt-0.5">{vencimientoLabel(c.vencimiento)}</p>
+                  </div>
                   <div className="text-right">
                     <span className="text-[10px] font-black text-slate-900">${c.monto.toLocaleString()}</span>
                     {c.id === 'mensualidad' && bc.totalUnits > 0 && (
@@ -192,7 +224,10 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
               <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest mb-4">Egresos</p>
               {egresos.length === 0 ? <p className="text-[10px] text-slate-300">Sin conceptos</p> : egresos.map(c => (
                 <div key={c.id} className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
-                  <span className="text-[10px] font-bold text-slate-700">{c.concepto}</span>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-700">{c.concepto}</span>
+                    <p className="text-[8px] text-slate-400 mt-0.5">{vencimientoLabel(c.vencimiento)}</p>
+                  </div>
                   <span className="text-[10px] font-black text-slate-900">${c.monto.toLocaleString()}</span>
                 </div>
               ))}
@@ -264,13 +299,10 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
                         />
                       </td>
                       <td className="px-4 py-3">
-                        <select
+                        <VencimientoEditor
                           value={c.vencimiento}
-                          onChange={e => updateRow(c.id, { vencimiento: e.target.value })}
-                          className="bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[9px] font-bold text-slate-700 outline-none focus:border-slate-900 cursor-pointer"
-                        >
-                          {VENCIMIENTO_OPTIONS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
-                        </select>
+                          onChange={v => updateRow(c.id, { vencimiento: v })}
+                        />
                       </td>
                       <td className="px-4 py-3">
                         <input
@@ -430,16 +462,37 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
               <div>
                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-3">Reglas de Vencimiento</p>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Fecha de vencimiento</label>
+                  <div className="col-span-2">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Tipo de vencimiento</label>
                     <select
-                      value={draft.vencimiento}
-                      onChange={e => setDraft(d => ({ ...d, vencimiento: e.target.value }))}
+                      value={draft.vencimiento.tipo}
+                      onChange={e => {
+                        const tipo = e.target.value as VencimientoTipo
+                        const needsN = tipo === 'n_dias' || tipo === 'dia_n_mes_siguiente'
+                        setDraft(d => ({ ...d, vencimiento: { tipo, n: needsN ? (d.vencimiento.n ?? 1) : undefined } }))
+                      }}
                       className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-700 outline-none focus:border-slate-900 cursor-pointer"
                     >
-                      {VENCIMIENTO_OPTIONS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+                      {VENCIMIENTO_TIPOS_ORDERED.map(t => (
+                        <option key={t} value={t}>{VENCIMIENTO_TIPO_LABELS[t]}</option>
+                      ))}
                     </select>
                   </div>
+                  {(draft.vencimiento.tipo === 'n_dias' || draft.vencimiento.tipo === 'dia_n_mes_siguiente') && (
+                    <div>
+                      <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">
+                        {draft.vencimiento.tipo === 'n_dias' ? 'Número de días' : 'Día del mes (1–28)'}
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={draft.vencimiento.tipo === 'dia_n_mes_siguiente' ? 28 : 365}
+                        value={draft.vencimiento.n ?? 1}
+                        onChange={e => setDraft(d => ({ ...d, vencimiento: { ...d.vencimiento, n: Math.max(1, parseInt(e.target.value) || 1) } }))}
+                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-900 outline-none focus:border-slate-900 transition-colors"
+                      />
+                    </div>
+                  )}
                   <div>
                     <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Días de gracia</label>
                     <input
