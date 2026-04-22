@@ -58,15 +58,15 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
       ...DEFAULT_MENSUALIDAD,
       monto: existingMens?.monto ?? bc.monthlyFee ?? 0,
       diasGracia: existingMens?.diasGracia ?? bc.surcharge?.graceDays ?? 10,
+      // BUG 2 FIX: only seed surcharge values when surcharge is explicitly enabled
       recargoPct: existingMens !== undefined
         ? existingMens.recargoPct
-        : (bc.surcharge?.type === 'percent' ? (bc.surcharge.amount || 5) : null),
+        : (bc.surcharge?.enabled && bc.surcharge?.type === 'percent' ? bc.surcharge.amount : null),
       recargoMonto: existingMens !== undefined
         ? existingMens.recargoMonto
-        : (bc.surcharge?.type === 'fixed' ? bc.surcharge.amount : null),
+        : (bc.surcharge?.enabled && bc.surcharge?.type === 'fixed' ? bc.surcharge.amount : null),
       vencimiento: existingMens?.vencimiento ?? bc.maturityRules?.mantenimiento ?? 'next_month_01',
       descripcion: existingMens?.descripcion ?? DEFAULT_MENSUALIDAD.descripcion,
-      // Always force categoria to 'ingreso' for the system entry
       categoria: 'ingreso',
       sistema: true,
     }
@@ -110,9 +110,12 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
   // Financial summary calcs
   const ingresos = conceptos.filter(c => c.categoria === 'ingreso')
   const egresos = conceptos.filter(c => c.categoria === 'egreso')
-  const totalIngreso = ingresos.reduce((s, c) => s + c.monto * (c.id === 'mensualidad' ? bc.totalUnits : 1), 0)
+  const totalIngreso = ingresos.reduce((s, c) => s + c.monto * (c.id === 'mensualidad' ? Math.max(bc.totalUnits, 1) : 1), 0)
   const totalEgreso = egresos.reduce((s, c) => s + c.monto, 0)
-  const margen = totalIngreso > 0 ? Math.round(((totalIngreso - totalEgreso) / totalIngreso) * 100) : 0
+  const margen = totalIngreso > 0 ? Math.round(((totalIngreso - totalEgreso) / totalIngreso) * 100) : null
+  // True projected ingreso respects actual unit count (not inflated by placeholder)
+  const proyectedIngreso = ingresos.reduce((s, c) => s + c.monto * (c.id === 'mensualidad' ? bc.totalUnits : 1), 0)
+  const isConfigured = bc.totalUnits > 0 || bc.monthlyFee > 0
 
   return (
     <div>
@@ -137,23 +140,36 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
         <div className="space-y-8">
           <div className="bg-slate-900 rounded-[2rem] p-8 text-white">
             <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-6">Resumen Financiero Mensual</p>
-            <div className="grid grid-cols-3 gap-6">
-              <div>
-                <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Ingreso Proyectado</p>
-                <p className="text-2xl font-black tracking-tight">${totalIngreso.toLocaleString()}</p>
-                <p className="text-[8px] text-slate-500 font-bold mt-1">{ingresos.length} conceptos de ingreso</p>
+            {!isConfigured ? (
+              <div className="flex items-center gap-4 py-2">
+                <span className="material-symbols-outlined text-slate-500 text-2xl">info</span>
+                <div>
+                  <p className="text-sm font-bold text-slate-300">Configura el total de unidades y mensualidad</p>
+                  <p className="text-[9px] text-slate-500 font-medium mt-0.5">Ve a Ajustes → General para definir el número de departamentos y la cuota base.</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[9px] font-bold text-rose-400 uppercase tracking-widest mb-1">Egreso Operativo</p>
-                <p className="text-2xl font-black tracking-tight">${totalEgreso.toLocaleString()}</p>
-                <p className="text-[8px] text-slate-500 font-bold mt-1">{egresos.length} partidas de egreso</p>
+            ) : (
+              <div className="grid grid-cols-3 gap-6">
+                <div>
+                  <p className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Ingreso Proyectado</p>
+                  <p className="text-2xl font-black tracking-tight">${proyectedIngreso.toLocaleString()}</p>
+                  <p className="text-[8px] text-slate-500 font-bold mt-1">{ingresos.length} concepto{ingresos.length !== 1 ? 's' : ''} · {bc.totalUnits} unidades</p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-bold text-rose-400 uppercase tracking-widest mb-1">Egreso Operativo</p>
+                  <p className="text-2xl font-black tracking-tight">${totalEgreso.toLocaleString()}</p>
+                  <p className="text-[8px] text-slate-500 font-bold mt-1">{egresos.length} partida{egresos.length !== 1 ? 's' : ''} de egreso</p>
+                </div>
+                <div>
+                  <p className="text-[9px] font-bold text-sky-400 uppercase tracking-widest mb-1">Margen Operativo</p>
+                  <p className="text-2xl font-black tracking-tight">${(proyectedIngreso - totalEgreso).toLocaleString()}</p>
+                  {margen !== null
+                    ? <p className={`text-[8px] font-black mt-1 ${margen >= 50 ? 'text-emerald-400' : margen >= 20 ? 'text-amber-400' : 'text-rose-400'}`}>{margen}% del ingreso</p>
+                    : <p className="text-[8px] text-slate-500 font-bold mt-1">Sin ingresos configurados</p>
+                  }
+                </div>
               </div>
-              <div>
-                <p className="text-[9px] font-bold text-sky-400 uppercase tracking-widest mb-1">Margen Operativo</p>
-                <p className="text-2xl font-black tracking-tight">${(totalIngreso - totalEgreso).toLocaleString()}</p>
-                <p className={`text-[8px] font-black mt-1 ${margen >= 50 ? 'text-emerald-400' : margen >= 20 ? 'text-amber-400' : 'text-rose-400'}`}>{margen}% del ingreso</p>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Quick concept breakdown */}
@@ -163,7 +179,12 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
               {ingresos.length === 0 ? <p className="text-[10px] text-slate-300">Sin conceptos</p> : ingresos.map(c => (
                 <div key={c.id} className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
                   <span className="text-[10px] font-bold text-slate-700">{c.concepto}</span>
-                  <span className="text-[10px] font-black text-slate-900">${c.monto.toLocaleString()}{c.id === 'mensualidad' ? ` × ${bc.totalUnits}` : ''}</span>
+                  <div className="text-right">
+                    <span className="text-[10px] font-black text-slate-900">${c.monto.toLocaleString()}</span>
+                    {c.id === 'mensualidad' && bc.totalUnits > 0 && (
+                      <span className="text-[9px] text-slate-400 font-medium ml-1">× {bc.totalUnits} = ${(c.monto * bc.totalUnits).toLocaleString()}</span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -263,12 +284,13 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
                           type="number" min={0} step={0.5}
                           value={c.recargoPct ?? ''}
                           onChange={e => {
-                            const v = parseFloat(e.target.value)
-                            updateRow(c.id, { recargoPct: isNaN(v) ? null : v, recargoMonto: isNaN(v) ? c.recargoMonto : null })
+                            // BUG 3 FIX: empty string → null so lock releases correctly
+                            const v = e.target.value === '' ? null : parseFloat(e.target.value)
+                            updateRow(c.id, { recargoPct: v, recargoMonto: v !== null ? null : c.recargoMonto })
                           }}
                           placeholder="—"
-                          disabled={c.recargoMonto != null}
-                          className={`w-14 bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-slate-900 text-center ${c.recargoMonto != null ? 'opacity-30 cursor-not-allowed' : ''}`}
+                          disabled={c.recargoMonto !== null}
+                          className={`w-14 bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-slate-900 text-center ${c.recargoMonto !== null ? 'opacity-30 cursor-not-allowed' : ''}`}
                         />
                       </td>
                       <td className="px-4 py-3">
@@ -276,12 +298,12 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
                           type="number" min={0}
                           value={c.recargoMonto ?? ''}
                           onChange={e => {
-                            const v = parseFloat(e.target.value)
-                            updateRow(c.id, { recargoMonto: isNaN(v) ? null : v, recargoPct: isNaN(v) ? c.recargoPct : null })
+                            const v = e.target.value === '' ? null : parseFloat(e.target.value)
+                            updateRow(c.id, { recargoMonto: v, recargoPct: v !== null ? null : c.recargoPct })
                           }}
                           placeholder="—"
-                          disabled={c.recargoPct != null}
-                          className={`w-16 bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-slate-900 text-center ${c.recargoPct != null ? 'opacity-30 cursor-not-allowed' : ''}`}
+                          disabled={c.recargoPct !== null}
+                          className={`w-16 bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-slate-900 text-center ${c.recargoPct !== null ? 'opacity-30 cursor-not-allowed' : ''}`}
                         />
                       </td>
                       <td className="px-4 py-3">
