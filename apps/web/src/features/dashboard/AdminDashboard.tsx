@@ -82,7 +82,11 @@ export default function AdminDashboard() {
   const occupiedUnits = new Set(state.residents.map(r => r.apartment)).size
   const occupancyPct = totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0
   // Composite health score: 50% payment, 30% occupancy, 20% package delivery
-  const healthPct = Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
+  // Guard: if there are no residents and no pagos, the system has no data to measure — return 0
+  const hasOperationalData = totalPagos > 0 || occupiedUnits > 0
+  const healthPct = !hasOperationalData
+    ? 0
+    : Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
 
   // Open ticket count — derived from real ticket state
   const openTicketsCount = state.tickets.filter(t => t.status !== 'Cerrado' && t.status !== 'Resuelto').length
