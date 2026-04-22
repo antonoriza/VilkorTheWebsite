@@ -305,11 +305,18 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
                         />
                       </td>
                       <td className="px-4 py-3">
-                        <input
-                          type="number" min={0} value={c.diasGracia}
-                          onChange={e => updateRow(c.id, { diasGracia: parseInt(e.target.value) || 0 })}
-                          className="w-14 bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-slate-900 text-center"
-                        />
+                        {(() => {
+                          const noGrace = c.vencimiento.tipo === 'inmediato' || c.vencimiento.tipo === 'na'
+                          return (
+                            <input
+                              type="number" min={0}
+                              value={noGrace ? 0 : c.diasGracia}
+                              disabled={noGrace}
+                              onChange={e => !noGrace && updateRow(c.id, { diasGracia: parseInt(e.target.value) || 0 })}
+                              className={`w-14 bg-transparent border border-slate-100 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-slate-900 text-center ${noGrace ? 'opacity-30 cursor-not-allowed' : ''}`}
+                            />
+                          )
+                        })()}
                       </td>
                       <td className="px-4 py-3">
                         <input
@@ -469,7 +476,12 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
                       onChange={e => {
                         const tipo = e.target.value as VencimientoTipo
                         const needsN = tipo === 'n_dias' || tipo === 'dia_n_mes_siguiente'
-                        setDraft(d => ({ ...d, vencimiento: { tipo, n: needsN ? (d.vencimiento.n ?? 1) : undefined } }))
+                        const noGrace = tipo === 'inmediato' || tipo === 'na'
+                        setDraft(d => ({
+                          ...d,
+                          vencimiento: { tipo, n: needsN ? (d.vencimiento.n ?? 1) : undefined },
+                          diasGracia: noGrace ? 0 : d.diasGracia,
+                        }))
                       }}
                       className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-700 outline-none focus:border-slate-900 cursor-pointer"
                     >
@@ -493,16 +505,26 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
                       />
                     </div>
                   )}
-                  <div>
-                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Días de gracia</label>
-                    <input
-                      type="number" min={0}
-                      value={draft.diasGracia || ''}
-                      onChange={e => setDraft(d => ({ ...d, diasGracia: parseInt(e.target.value) || 0 }))}
-                      placeholder="0"
-                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-900 outline-none focus:border-slate-900 transition-colors"
-                    />
-                  </div>
+                  {/* Días de gracia — only relevant when there IS a future due date */}
+                  {(() => {
+                    const noGrace = draft.vencimiento.tipo === 'inmediato' || draft.vencimiento.tipo === 'na'
+                    return (
+                      <div className={`transition-opacity ${noGrace ? 'opacity-30 pointer-events-none' : ''}`}>
+                        <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                          Días de gracia
+                          {noGrace && <span className="material-symbols-outlined text-[10px] text-slate-400">lock</span>}
+                        </label>
+                        <input
+                          type="number" min={0}
+                          value={noGrace ? '' : (draft.diasGracia || '')}
+                          disabled={noGrace}
+                          onChange={e => setDraft(d => ({ ...d, diasGracia: parseInt(e.target.value) || 0 }))}
+                          placeholder={noGrace ? 'N/A' : '0'}
+                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-900 outline-none focus:border-slate-900 transition-colors"
+                        />
+                      </div>
+                    )
+                  })()}
                 </div>
               </div>
 
