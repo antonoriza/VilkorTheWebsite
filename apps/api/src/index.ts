@@ -60,6 +60,57 @@ app.get('/api/app-mode', (c) => c.json({
   mode: process.env.APP_MODE || 'production',
 }))
 
+// ─── Public Endpoint: Demo Accounts (no auth required) ───────────────
+//
+// Returns all login accounts available for the demo tenant.
+// In production returns an empty array — this endpoint is safe to expose
+// because demo passwords are intentionally public (printed in seed logs,
+// README, etc). Never returns real user data in production.
+
+app.get('/api/demo/accounts', async (c) => {
+  const isDemo = (process.env.APP_MODE || 'production') === 'demo'
+  if (!isDemo) return c.json({ accounts: [] })
+
+  try {
+    const { rawMasterDb } = await import('./db/master')
+
+    // Fetch all users associated with the demo tenant
+    const rows = rawMasterDb.query(`
+      SELECT u.email, ut.role, ut.apartment
+      FROM user_tenants ut
+      JOIN user u ON u.id = ut.user_id
+      WHERE ut.tenant_id = 'demo'
+      ORDER BY
+        CASE ut.role
+          WHEN 'super_admin'    THEN 1
+          WHEN 'administracion' THEN 2
+          WHEN 'operador'       THEN 3
+          WHEN 'residente'      THEN 4
+          ELSE 5
+        END,
+        ut.apartment ASC
+    `).all() as { email: string; role: string; apartment: string | null }[]
+
+    const accounts = rows.map(row => ({
+      email:    row.email,
+      role:     row.role,
+      label:    row.role === 'super_admin'
+                  ? 'Super Admin'
+                  : row.role === 'administracion'
+                    ? 'Administración'
+                    : row.role === 'operador'
+                      ? 'Operador'
+                      : `Residente ${row.apartment ?? ''}`.trim(),
+      // Password is role-derived — Better Auth hashes prevent reading from DB
+      password: row.role === 'super_admin' ? 'admin123' : 'demo123',
+    }))
+
+    return c.json({ accounts })
+  } catch (e: any) {
+    return c.json({ accounts: [], error: e.message }, 500)
+  }
+})
+
 // ─── Authenticated (no tenant): User Info ────────────────────────────
 
 app.get('/api/me', async (c) => {

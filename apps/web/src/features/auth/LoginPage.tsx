@@ -14,14 +14,12 @@ import { useAuth } from '../../core/auth/AuthContext'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-/** All demo accounts — mirrors demo/fixtures/accounts.ts + db/seed.ts */
-const DEMO_ACCOUNTS = [
-  { label: 'Super Admin',    role: 'super_admin', email: 'admin@property.com', password: 'admin123' },
-  { label: 'Residente B0101', role: 'residente',  email: 'B0101@gmail.com',    password: 'demo123' },
-  { label: 'Residente B0102', role: 'residente',  email: 'B0102@gmail.com',    password: 'demo123' },
-  { label: 'Residente A0101', role: 'residente',  email: 'A0101@gmail.com',    password: 'demo123' },
-  { label: 'Residente A0102', role: 'residente',  email: 'A0102@gmail.com',    password: 'demo123' },
-] as const
+interface DemoAccount {
+  label: string
+  role: string
+  email: string
+  password: string
+}
 
 export default function LoginPage() {
   const { login, isAuthenticated, role, isLoading: authLoading } = useAuth()
@@ -31,15 +29,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const [isDemoMode, setIsDemoMode] = useState(false)
+  const [demoAccounts, setDemoAccounts] = useState<DemoAccount[]>([])
 
-  // Fetch app mode to decide whether to show demo credentials
+  // Fetch demo accounts from the API — empty array in production
   useEffect(() => {
-    fetch(`${API_URL}/api/app-mode`)
+    fetch(`${API_URL}/api/demo/accounts`)
       .then(r => r.json())
-      .then(d => setIsDemoMode(d.mode === 'demo'))
-      .catch(() => {}) // silently ignore if API is down
+      .then(d => setDemoAccounts(d.accounts ?? []))
+      .catch(() => {})
   }, [])
+
+  // isDemoMode is true if the API returned at least one demo account
+  const isDemoMode = demoAccounts.length > 0
 
   // Redirect if already logged in
   if (authLoading) {
@@ -173,7 +174,7 @@ export default function LoginPage() {
                   className="w-full pl-9 pr-8 py-2.5 bg-white border border-amber-200 rounded-xl text-[12px] font-semibold text-slate-800 appearance-none cursor-pointer outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all"
                 >
                   <option value="" disabled>— Choose a demo account —</option>
-                  {DEMO_ACCOUNTS.map((acct) => (
+                  {demoAccounts.map((acct) => (
                     <option key={acct.email} value={acct.email}>
                       {acct.label} · {acct.email}
                     </option>
