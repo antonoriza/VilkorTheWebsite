@@ -4,6 +4,7 @@ import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
+import EmptyState from '../../core/components/EmptyState'
 import {
   type Ticket,
   type TicketStatus,
@@ -321,10 +322,15 @@ export default function TicketsPage() {
           </div>
         ))}
         {allTickets.length === 0 && (
-          <div className="p-12 text-center bg-transparent rounded-3xl border-2 border-dashed border-slate-200">
-            <span className="material-symbols-outlined text-4xl text-slate-300 mb-2">assignment_turned_in</span>
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">No hay tickets registrados</p>
-          </div>
+          <EmptyState
+            icon="assignment_turned_in"
+            title={isAdmin ? 'Sin tickets activos' : 'Sin solicitudes activas'}
+            subtitle={isAdmin
+              ? 'Los residentes pueden enviar solicitudes de mantenimiento desde su portal. Los tickets aparecerán aquí.'
+              : 'Levanta una solicitud de servicio y el equipo de administración te responderá.'
+            }
+            action={isAdmin ? undefined : { label: 'Nuevo Ticket', onClick: () => setShowCreateModal(true) }}
+          />
         )}
       </div>
 

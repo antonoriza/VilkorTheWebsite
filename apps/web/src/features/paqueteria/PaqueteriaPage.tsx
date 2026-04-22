@@ -14,6 +14,7 @@ import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
+import EmptyState from '../../core/components/EmptyState'
 
 
 export default function PaqueteriaPage() {
@@ -196,8 +197,26 @@ export default function PaqueteriaPage() {
               ))}
               {filteredPaquetes.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-8 py-12 text-center text-slate-400 font-medium">
-                    No se encontraron registros de paquetería.
+                  <td colSpan={6} className="px-8 py-10">
+                    {state.paquetes.length === 0 ? (
+                      <EmptyState
+                        icon="package_2"
+                        title={isAdmin ? 'Sin paquetes registrados' : 'Sin paquetes pendientes'}
+                        subtitle={isAdmin
+                          ? state.residents.length === 0
+                            ? 'Agrega residentes primero para poder registrar la recepción de paquetes.'
+                            : 'Registra la llegada de un paquete y notifica al residente.'
+                          : 'No tienes paquetes pendientes de recogida en recepción.'
+                        }
+                        action={isAdmin && state.residents.length > 0 ? { label: 'Registrar Paquete', onClick: () => setShowModal(true) } : undefined}
+                      />
+                    ) : (
+                      <EmptyState
+                        icon="search_off"
+                        title="Sin resultados"
+                        subtitle="No se encontraron paquetes con esos criterios de búsqueda."
+                      />
+                    )}
                   </td>
                 </tr>
               )}

@@ -11,6 +11,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useStore } from '../../core/store/store'
+import { useAuth } from '../../core/auth/AuthContext'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import AvisoFormModal from '../../core/components/AvisoFormModal'
@@ -31,6 +32,8 @@ const ROLE_ICONS: Record<StaffRole, string> = {
 
 export default function AdminDashboard() {
   const { state, dispatch } = useStore()
+  const { role } = useAuth()
+  const isAdmin = role === 'super_admin' || role === 'administracion'
   const [toasts, setToasts] = useState<{ id: string; message: string; type: 'approve' | 'reject' }[]>([])
 
   // Derived approvals from reservations
@@ -94,6 +97,43 @@ export default function AdminDashboard() {
   const ticketResolutionPct = totalTickets > 0
     ? Math.round(state.tickets.filter(t => t.status === 'Cerrado' || t.status === 'Resuelto').length / totalTickets * 100)
     : 0
+
+  // ── Setup checklist — visible only when system is unconfigured ─────
+  const setupSteps = [
+    {
+      id: 'profile',
+      label: 'Configura el perfil del inmueble',
+      done: !!bc.buildingName && !!bc.buildingAddress,
+      href: '/admin/configuracion?tab=perfil',
+    },
+    {
+      id: 'architecture',
+      label: 'Define torres y unidades',
+      done: bc.totalUnits > 0,
+      href: '/admin/configuracion?tab=perfil',
+    },
+    {
+      id: 'residents',
+      label: 'Agrega residentes',
+      done: state.residents.length > 0,
+      href: '/admin/usuarios',
+    },
+    {
+      id: 'finances',
+      label: 'Configura cuotas de mantenimiento',
+      done: bc.monthlyFee > 0,
+      href: '/admin/configuracion?tab=finanzas',
+    },
+    {
+      id: 'amenities',
+      label: 'Agrega amenidades (opcional)',
+      done: state.amenities.length > 0,
+      href: '/admin/configuracion?tab=perfil',
+    },
+  ]
+  const completedSteps = setupSteps.filter(s => s.done).length
+  const isSetupComplete = completedSteps === setupSteps.length
+  const showSetupCard = !isSetupComplete && isAdmin
 
   // Most recent announcements for the sidebar
   const recentNotices = useMemo(() => {
@@ -277,6 +317,66 @@ export default function AdminDashboard() {
           </button>
         </div>
       </header>
+
+      {/* ── Setup Checklist Card — shown when system is unconfigured ── */}
+      {showSetupCard && (
+        <section className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 shadow-xl shadow-slate-200 animate-in fade-in slide-in-from-top-2 duration-500">
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-white text-lg">rocket_launch</span>
+                </div>
+                <div>
+                  <p className="text-[9px] font-black text-white/40 uppercase tracking-[0.25em]">Configuración inicial</p>
+                  <p className="text-sm font-black text-white">Configura tu edificio para comenzar</p>
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <span className="text-[11px] font-black text-white/50">{completedSteps}/{setupSteps.length}</span>
+                  <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-400 rounded-full transition-all duration-700"
+                      style={{ width: `${(completedSteps / setupSteps.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                {setupSteps.map((step, i) => (
+                  <Link
+                    key={step.id}
+                    to={step.href}
+                    className={`group flex items-center gap-3 p-3.5 rounded-2xl border transition-all ${
+                      step.done
+                        ? 'bg-white/5 border-white/10 opacity-60 cursor-default pointer-events-none'
+                        : 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-white/40'
+                    }`}
+                  >
+                    <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-black transition-all ${
+                      step.done
+                        ? 'bg-emerald-400 text-emerald-900'
+                        : 'bg-white/10 text-white/60 group-hover:bg-white/20'
+                    }`}>
+                      {step.done
+                        ? <span className="material-symbols-outlined text-[14px]">check</span>
+                        : <span>{i + 1}</span>
+                      }
+                    </div>
+                    <span className={`text-[11px] font-bold leading-tight ${
+                      step.done ? 'text-white/40 line-through' : 'text-white/80 group-hover:text-white'
+                    }`}>
+                      {step.label}
+                    </span>
+                    {!step.done && (
+                      <span className="material-symbols-outlined text-white/30 group-hover:text-white/60 text-base ml-auto shrink-0 transition-colors">arrow_forward</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Health Gauge + KPI Cards ── */}
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-10">

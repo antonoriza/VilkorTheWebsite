@@ -17,6 +17,7 @@ import { useStore } from '../../core/store/store'
 import Modal from '../../core/components/Modal'
 import AvisoFormModal from '../../core/components/AvisoFormModal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
+import EmptyState from '../../core/components/EmptyState'
 import { type Aviso } from '../../types'
 
 export default function Avisos() {
@@ -451,8 +452,21 @@ export default function Avisos() {
         </>
       )}
 
+      {/* ── Empty state — when no avisos match current filter ── */}
+      {visibleAvisos.length === 0 && (
+        <EmptyState
+          icon="campaign"
+          title={state.avisos.length === 0 ? 'Sin avisos publicados' : 'Sin resultados'}
+          subtitle={state.avisos.length === 0
+            ? isAdmin
+              ? 'Publica el primer aviso para que los residentes puedan verlo en su portal.'
+              : 'El administrador no ha publicado avisos todavía.'
+            : 'Ningún aviso coincide con el filtro activo. Prueba con otro.'}
+          action={isAdmin && state.avisos.length === 0 ? { label: 'Nuevo Aviso', onClick: handleOpenCreate } : undefined}
+        />
+      )}
 
-      {/* ── Unified Form Modal ── */}
+
       <AvisoFormModal
         open={showFormModal}
         onClose={() => { setShowFormModal(false); setEditingAviso(null) }}

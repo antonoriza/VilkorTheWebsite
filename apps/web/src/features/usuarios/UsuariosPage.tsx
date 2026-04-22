@@ -12,6 +12,7 @@ import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
+import EmptyState from '../../core/components/EmptyState'
 
 export default function UsuariosPage() {
   const { role } = useAuth()
@@ -182,8 +183,21 @@ export default function UsuariosPage() {
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-slate-400 font-medium text-sm">
-                  No se encontraron residentes
+                <td colSpan={5} className="px-6 py-10">
+                  {residents.length === 0 ? (
+                    <EmptyState
+                      icon="group"
+                      title="Sin residentes registrados"
+                      subtitle="Agrega el primer residente para comenzar a gestionar cobros, reservaciones y votaciones."
+                      action={{ label: 'Agregar Residente', onClick: () => setShowModal(true) }}
+                    />
+                  ) : (
+                    <EmptyState
+                      icon="search_off"
+                      title="Sin resultados"
+                      subtitle="No se encontraron residentes con esos criterios de búsqueda."
+                    />
+                  )}
                 </td>
               </tr>
             )}

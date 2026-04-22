@@ -32,7 +32,7 @@ export default function AdminConfiguracion() {
   const [searchParams] = useSearchParams()
   const activeTab = searchParams.get('tab') || 'perfil'
   const [saved, setSaved] = useState(false)
-  const [isResetting, setIsResetting] = useState(false)
+  const [_isResetting, setIsResetting] = useState(false)
   const [showDemoReset, setShowDemoReset] = useState(false)
 
   // Local states for forms

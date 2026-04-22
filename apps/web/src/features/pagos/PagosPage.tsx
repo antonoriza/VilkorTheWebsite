@@ -19,6 +19,7 @@ import { useStore, isEffectiveDebt } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
+import EmptyState from '../../core/components/EmptyState'
 import { type Pago, type AdeudoType, type EgresoCategoria, EGRESO_CATEGORIA_LABELS } from '../../types'
 import { pdf } from '@react-pdf/renderer'
 import FinancialReportPDF, { type ReportData, type IncomeRow, type ExpenseRow } from './FinancialReportPDF'
@@ -720,6 +721,17 @@ export default function PagosPage() {
 
   return (
     <div className="space-y-6">
+
+      {/* ── Dependency guard: admin with no residents — module is empty by design —— */}
+      {isAdmin && state.residents.length === 0 && state.pagos.length === 0 && (
+        <EmptyState
+          variant="page"
+          icon="receipt_long"
+          title="Sin datos financieros"
+          subtitle="Agrega residentes y configura las cuotas de mantenimiento para comenzar a gestionar cobros y pagos."
+          action={{ label: 'Ir a Usuarios', href: '/admin/usuarios' }}
+        />
+      )}
 
       {/* ═══ Header ═══ */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
@@ -2199,6 +2211,7 @@ export default function PagosPage() {
         title="Eliminar Egreso" confirmLabel="Eliminar" variant="danger">
         ¿Eliminar permanentemente este registro de egreso?
       </ConfirmDialog>
+
     </div>
   )
 }

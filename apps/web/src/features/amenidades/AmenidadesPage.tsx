@@ -14,6 +14,7 @@ import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
+import EmptyState from '../../core/components/EmptyState'
 
 /** Pre-defined time slots for reservations */
 const TIME_SLOTS = ['10:00 – 14:00', '14:00 – 18:00', '18:00 – 22:00']
@@ -154,17 +155,15 @@ export default function AmenidadesPage() {
   // Early return if no amenities are defined (module hidden logic)
   if (amenities.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 text-center animate-in fade-in duration-700">
-        <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6 border border-slate-100 shadow-sm">
-          <span className="material-symbols-outlined text-5xl text-slate-300">outdoor_grill</span>
-        </div>
-        <h2 className="text-2xl font-headline font-extrabold text-slate-900 mb-2 tracking-tight">Módulo Desactivado</h2>
-        <p className="text-slate-500 font-medium max-w-sm leading-relaxed">
-          {isAdmin
-            ? 'Actualmente no hay amenidades configuradas en el sistema. Puedes agregarlas desde la sección de Configuración.'
-            : 'El edificio no cuenta con amenidades disponibles para reservación en este momento.'}
-        </p>
-      </div>
+      <EmptyState
+        variant="page"
+        icon="outdoor_grill"
+        title="Sin amenidades configuradas"
+        subtitle={isAdmin
+          ? 'Agrega amenidades desde Configuración para que los residentes puedan hacer reservaciones.'
+          : 'El edificio no cuenta con amenidades disponibles para reservación en este momento.'}
+        action={isAdmin ? { label: 'Ir a Configuración', href: '/admin/configuracion?tab=perfil' } : undefined}
+      />
     )
   }
 
@@ -253,8 +252,12 @@ export default function AmenidadesPage() {
               ))}
               {filteredReservaciones.length === 0 && (
                 <tr>
-                  <td colSpan={isAdmin ? 6 : 4} className="px-8 py-16 text-center">
-                    <p className="text-slate-400 font-medium text-sm">No se encontraron reservaciones activas.</p>
+                  <td colSpan={isAdmin ? 6 : 4} className="px-8 py-10">
+                    <EmptyState
+                      icon="event_busy"
+                      title="Sin reservaciones activas"
+                      subtitle={isAdmin ? 'Los residentes aún no han realizado reservaciones.' : 'No tienes reservaciones activas. Haz clic en “Nueva reservación” para comenzar.'}
+                    />
                   </td>
                 </tr>
               )}

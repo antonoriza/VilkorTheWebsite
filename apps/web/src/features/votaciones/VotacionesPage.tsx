@@ -3,6 +3,7 @@ import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
+import EmptyState from '../../core/components/EmptyState'
 import { type Votacion } from '../../types'
 
 export default function Votaciones() {
@@ -217,6 +218,17 @@ export default function Votaciones() {
             </div>
           )
         })}
+        {state.votaciones.length === 0 && (
+          <EmptyState
+            icon="how_to_vote"
+            title="Sin votaciones activas"
+            subtitle={isAdmin
+              ? 'Crea la primera votación comunitaria para que los residentes puedan participar.'
+              : 'No hay votaciones activas en este momento. El administrador te avisará cuando haya una nueva.'
+            }
+            action={isAdmin ? { label: 'Nueva Votación', onClick: () => setShowModal(true) } : undefined}
+          />
+        )}
       </div>
 
       {/* Add Modal */}
