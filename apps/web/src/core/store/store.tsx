@@ -671,7 +671,7 @@ async function loadStateFromAPI(): Promise<StoreState | null> {
       reservaciones:  get(7, []),
       votaciones:     get(8, []),
       inventory:      get(9, []),
-      buildingConfig: get(10, EMPTY_BUILDING_CONFIG),
+      buildingConfig: { ...EMPTY_BUILDING_CONFIG, ...get(10, {}) },
       staff:          get(11, []),
       notificaciones: [],
       ticketCounter:  0,
