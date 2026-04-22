@@ -4,9 +4,7 @@ import { BuildingConfig, EGRESO_CATEGORIA_LABELS, EgresoCategoria, SurchargeConf
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: 'conceptos',   label: 'Conceptos',          icon: 'receipt_long' },
-  { id: 'cuotas',      label: 'Cuotas y Reglas',    icon: 'gavel' },
-  { id: 'recurrentes', label: 'Egresos Recurrentes', icon: 'autorenew' },
+  { id: 'catalogo',    label: 'Catálogo Financiero', icon: 'receipt_long' },
   { id: 'cuentas',     label: 'Cuentas y Bancos',   icon: 'account_balance' },
 ]
 
@@ -52,7 +50,7 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
 
 // ─── Tab: Cuotas y Reglas ────────────────────────────────────────────────────
 
-function CuotasTab({ bc, dispatch, handleSave, saved }: Props) {
+function CuotasTab({ bc, dispatch, handleSave: _handleSave, saved: _saved }: Props) {
   const totalUnits = bc.totalUnits
   const projected = totalUnits * bc.monthlyFee
   const surcharge = bc.surcharge || { enabled: false, type: 'percent', amount: 5, graceDays: 10, frequency: 'monthly' }
@@ -243,7 +241,6 @@ function CuotasTab({ bc, dispatch, handleSave, saved }: Props) {
         </div>
       </div>
 
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
@@ -258,7 +255,7 @@ const CONCEPTO_META: Record<string, { type: 'recurrente' | 'eventual'; icon: str
 }
 const DEFAULT_META = { type: 'eventual' as const, icon: 'receipt_long', color: 'bg-slate-100 text-slate-600 border-slate-200', desc: 'Concepto personalizado' }
 
-function ConceptosTab({ bc, dispatch, handleSave, saved }: Props) {
+function ConceptosTab({ bc, dispatch, handleSave: _handleSave, saved: _saved }: Props) {
   const [newConcepto, setNewConcepto] = useState('')
   const [expanded, setExpanded] = useState<string | null>(null)
   const [newSub, setNewSub] = useState('')
@@ -355,7 +352,6 @@ function ConceptosTab({ bc, dispatch, handleSave, saved }: Props) {
         </p>
       </div>
 
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
@@ -603,7 +599,7 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export default function FinanceSettings({ bc, dispatch, handleSave, saved, labelClass, inputClass }: Props) {
-  const [activeTab, setActiveTab] = useState('conceptos')
+  const [activeTab, setActiveTab] = useState('catalogo')
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -621,10 +617,54 @@ export default function FinanceSettings({ bc, dispatch, handleSave, saved, label
           </button>
         ))}
       </div>
-      {activeTab === 'cuotas'      && <CuotasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />}
-      {activeTab === 'conceptos'   && <ConceptosTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />}
-      {activeTab === 'recurrentes' && <RecurrentesTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />}
-      {activeTab === 'cuentas'     && <CuentasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />}
+
+      {activeTab === 'catalogo' && (
+        <div className="space-y-16">
+          {/* ═══ INGRESOS ═══ */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                <span className="material-symbols-outlined text-emerald-600 text-xl">trending_up</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-headline font-black text-slate-900 uppercase tracking-tight">Ingresos</h3>
+                <p className="text-[10px] text-slate-400 font-medium">Conceptos de cobro, cuota base y reglas de vencimiento</p>
+              </div>
+            </div>
+
+            {/* Conceptos de cobro */}
+            <div className="mb-10">
+              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4 mb-6">Conceptos de Cobro</h4>
+              <ConceptosTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
+            </div>
+
+            {/* Cuota base y reglas — inline */}
+            <div>
+              <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4 mb-6">Cuota Base y Reglas</h4>
+              <CuotasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
+            </div>
+          </section>
+
+          {/* ═══ DIVIDER ═══ */}
+          <div className="border-t-2 border-dashed border-slate-100" />
+
+          {/* ═══ EGRESOS ═══ */}
+          <section>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center">
+                <span className="material-symbols-outlined text-rose-500 text-xl">trending_down</span>
+              </div>
+              <div>
+                <h3 className="text-sm font-headline font-black text-slate-900 uppercase tracking-tight">Egresos Operativos</h3>
+                <p className="text-[10px] text-slate-400 font-medium">Gastos fijos mensuales que el agente contabiliza automáticamente</p>
+              </div>
+            </div>
+            <RecurrentesTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />
+          </section>
+        </div>
+      )}
+
+      {activeTab === 'cuentas' && <CuentasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />}
     </div>
   )
 }
