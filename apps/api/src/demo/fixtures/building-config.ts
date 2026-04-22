@@ -1,0 +1,115 @@
+/**
+ * Demo Fixture — Building Configuration
+ *
+ * Full building_config object for "Lote Alemania" (Coacalco).
+ * Includes: towers, topology, monthly fee, banking, equipment,
+ * vendors, permissions matrix, and recurring expenses.
+ */
+
+export const buildingConfig = {
+  propertyCategory: 'residencial',
+  type: 'towers',
+  groupingMode: 'vertical',
+  towers: ['RIN', 'DANUBIO'],
+  buildingName: 'Lote Alemania',
+  buildingAddress: 'Cosmopol HU Lifestyle, Coacalco',
+  zipCode: '55712',
+  city: 'Coacalco de Berriozábal',
+  state: 'Estado de México',
+  country: 'México',
+  managementCompany: 'Canton Alfa Inc.',
+  totalUnits: 116,
+  adminName: 'Administrador General',
+  adminEmail: 'admin@property.com',
+  adminPhone: '+52 55 1234 5678',
+  conceptosPago: ['Mantenimiento', 'Multa', 'Otros', 'Reserva Amenidad'],
+  subConceptos: {
+    Otros: [],
+    Multa: [],
+    Mantenimiento: [],
+    'Reserva Amenidad': [],
+  },
+  categoriasEgreso: [
+    'nomina',
+    'mantenimiento',
+    'servicios',
+    'equipo',
+    'seguros',
+    'administracion',
+    'otros',
+  ],
+  monthlyFee: 1800,
+  recurringEgresos: [
+    { id: 're-1', concepto: 'Nómina — Ricardo Hernández',  categoria: 'nomina',         amount: 13000, description: 'Pago mensual guardia de seguridad.' },
+    { id: 're-2', concepto: 'Nómina — Enrique Martínez',   categoria: 'nomina',         amount: 11000, description: 'Pago mensual jardinero.' },
+    { id: 're-3', concepto: 'Nómina — Valentina Sánchez',  categoria: 'nomina',         amount: 10000, description: 'Pago mensual personal de limpieza.' },
+    { id: 're-4', concepto: 'Recibo de Agua',              categoria: 'servicios',      amount: 3200,  description: 'Servicio de agua potable.' },
+    { id: 're-5', concepto: 'Recibo de Luz',               categoria: 'servicios',      amount: 5800,  description: 'Servicio de energía eléctrica áreas comunes.' },
+    { id: 're-6', concepto: 'Honorarios Administración',   categoria: 'administracion', amount: 15000, description: 'Cuota mensual de la empresa administradora.' },
+  ],
+  maturityRules: {
+    mantenimiento: 'next_month_01',
+    amenidad: 'day_of_event',
+    multaOtros: 'immediate',
+  },
+  surcharge: {
+    enabled: false,
+    type: 'percent',
+    amount: 5,
+    graceDays: 10,
+    frequency: 'monthly',
+  },
+  banking: {
+    clabe: '0123 4567 8901 2345 67',
+    bankName: 'BBVA México',
+    accountHolder: 'Canton Alfa Inc.',
+    acceptsTransfer: true,
+    acceptsCash: false,
+    acceptsOxxo: false,
+    referenceFormat: 'apartment',
+    notes: 'Indicar número de departamento en referencia del pago.',
+  },
+  zoning: [
+    { id: 'zn-1', name: 'Lobby Principal',      type: 'lobby',    linkedContainer: 'RIN' },
+    { id: 'zn-2', name: 'Elevadores Torre A',    type: 'elevator', linkedContainer: 'RIN' },
+    { id: 'zn-3', name: 'Acceso Vehicular Norte', type: 'gate',   linkedContainer: 'DANUBIO' },
+  ],
+  topology: {
+    containers: [
+      { id: 'top-1', name: 'RIN',     unitsCount: 58, parkingCount: 65, storageCount: 40 },
+      { id: 'top-2', name: 'DANUBIO', unitsCount: 58, parkingCount: 65, storageCount: 40 },
+    ],
+    unitNomenclature: 'X000',
+  },
+  defaultUnitDna: {
+    privateArea: 65,
+    totalArea: 72,
+    ownershipCoefficient: 0.0086,
+    usageType: 'propietario',
+  },
+  equipment: [
+    { id: 'eq-1', name: 'Elevador 1',          type: 'elevator',      category: 'transporte', location: 'DANUBIO', nextMaintenance: '2026-06-15' },
+    { id: 'eq-2', name: 'Escalera Mecánica 1', type: 'elevator',      category: 'transporte', location: 'DANUBIO', nextMaintenance: '2026-08-01' },
+    { id: 'eq-3', name: 'Bomba 1',             type: 'pump',          category: 'hidraulica', location: '*',       nextMaintenance: '2026-05-10' },
+    { id: 'eq-4', name: 'Cisterna 1',          type: 'cistern',       category: 'hidraulica', location: '*',       nextMaintenance: '2026-07-20' },
+    { id: 'eq-5', name: 'Paneles Solares 1',   type: 'solar',         category: 'energia',    location: '*',       nextMaintenance: '2026-06-15' },
+    { id: 'eq-6', name: 'Planta Eléctrica 1',  type: 'electric_plant',category: 'energia',    location: '*',       nextMaintenance: '2026-09-01' },
+    { id: 'eq-7', name: 'CCTV 1',              type: 'cctv',          category: 'seguridad',  location: '*',       nextMaintenance: '2026-05-30' },
+    { id: 'eq-8', name: 'Portón/Acceso 1',     type: 'gate',          category: 'seguridad',  location: '*',       nextMaintenance: '2026-10-01' },
+  ],
+  vendors: [
+    { id: 'v-1', service: 'Recolección de Basura',   name: 'Servicios Urbanos CDMX',  category: 'limpieza',    phone: '55 1234 5678', schedule: 'L-S 7:00-10:00', type: 'recurrente',   notes: 'Pase L, Mi, V para residuos generales. M para reciclaje.' },
+    { id: 'v-2', service: 'Plomería (Urgencias)',     name: 'Fontanería Rápida 24h',   category: 'plomeria',    phone: '55 9876 5432', type: 'urgencias',    notes: 'Disponible 24/7. Cobro de urgencia nocturna aplica.' },
+    { id: 'v-3', service: 'Técnicos de Elevadores',  name: 'Elevadores Thyssen KM',   category: 'elevadores',  phone: '55 5555 1111', email: 'soporte@thyssenkm.com', schedule: 'L-V 8:00-18:00', type: 'mantenimiento', notes: 'Contrato anual de mantenimiento preventivo. Emergencias ext. 2.' },
+    { id: 'v-4', service: 'Electricidad General',    name: 'Ingelectra',              category: 'electricidad', phone: '55 4321 8765', schedule: 'L-V 9:00-17:00', type: 'mantenimiento' },
+    { id: 'v-5', service: 'Seguridad Perimetral',    name: 'Grupo Segura SA',         category: 'seguridad',   phone: '55 0000 9999', type: 'urgencias',    notes: 'Panel de alarma conectado directamente a su central de monitoreo.' },
+  ],
+  permissionsMatrix: {
+    finanzas:     { ver: ['super_admin', 'administracion'],                               crear: ['super_admin', 'administracion'], editar: [],                                                        eliminar: [] },
+    logistica:    { ver: ['super_admin', 'administracion', 'operador'],                   crear: ['super_admin', 'administracion', 'operador'], editar: ['super_admin', 'administracion'],               eliminar: ['super_admin'] },
+    comunicacion: { ver: ['super_admin', 'administracion', 'operador', 'residente'],      crear: ['super_admin', 'administracion'], editar: ['super_admin', 'administracion'],               eliminar: ['super_admin'] },
+    gobernanza:   { ver: ['super_admin', 'administracion', 'residente'],                  crear: ['super_admin'], votar: ['residente'],                                                     eliminar: ['super_admin'] },
+    directorio:   { ver: ['super_admin', 'administracion', 'operador'],                   crear: ['super_admin', 'administracion'], editar: ['super_admin', 'administracion'],               eliminar: ['super_admin'] },
+    configuracion:{ ver: ['super_admin'],                                                 editar: ['super_admin'] },
+  },
+}
