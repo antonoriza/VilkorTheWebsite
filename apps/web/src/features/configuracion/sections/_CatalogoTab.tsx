@@ -294,53 +294,6 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
                     </tr>
                   ))}
 
-                  {/* ─── Add Row ─── */}
-                  {adding && (
-                    <tr className="bg-blue-50/30">
-                      <td className="px-4 py-3">
-                        <input value={draft.concepto} onChange={e => setDraft(d => ({ ...d, concepto: e.target.value }))} placeholder="Nombre del concepto" autoFocus
-                          className="w-full bg-transparent border border-blue-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-blue-500" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <input type="number" min={0} value={draft.monto || ''} onChange={e => setDraft(d => ({ ...d, monto: parseFloat(e.target.value) || 0 }))} placeholder="0"
-                          className="w-20 bg-transparent border border-blue-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-blue-500" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <select value={draft.categoria} onChange={e => setDraft(d => ({ ...d, categoria: e.target.value as ConceptoCategoria }))}
-                          className={`text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border cursor-pointer ${CATEGORIA_COLORS[draft.categoria]}`}>
-                          {Object.entries(CONCEPTO_CATEGORIA_LABELS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-                        </select>
-                      </td>
-                      <td className="px-4 py-3">
-                        <input value={draft.descripcion || ''} onChange={e => setDraft(d => ({ ...d, descripcion: e.target.value }))} placeholder="Opcional"
-                          className="w-28 bg-transparent border border-blue-200 rounded-lg px-2 py-1 text-[9px] text-slate-600 outline-none focus:border-blue-500" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <select value={draft.vencimiento} onChange={e => setDraft(d => ({ ...d, vencimiento: e.target.value }))}
-                          className="bg-transparent border border-blue-200 rounded-lg px-2 py-1 text-[9px] font-bold text-slate-700 outline-none focus:border-blue-500 cursor-pointer">
-                          {VENCIMIENTO_OPTIONS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
-                        </select>
-                      </td>
-                      <td className="px-4 py-3">
-                        <input type="number" min={0} value={draft.diasGracia || ''} onChange={e => setDraft(d => ({ ...d, diasGracia: parseInt(e.target.value) || 0 }))} placeholder="0"
-                          className="w-14 bg-transparent border border-blue-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-blue-500 text-center" />
-                      </td>
-                      <td className="px-4 py-3">
-                        <input type="number" min={0} step={0.5} value={draft.recargoPct ?? ''} placeholder="—" disabled={draft.recargoMonto != null}
-                          onChange={e => { const v = parseFloat(e.target.value); setDraft(d => ({ ...d, recargoPct: isNaN(v) ? null : v, recargoMonto: isNaN(v) ? d.recargoMonto : null })) }}
-                          className={`w-14 bg-transparent border border-blue-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-blue-500 text-center ${draft.recargoMonto != null ? 'opacity-30' : ''}`} />
-                      </td>
-                      <td className="px-4 py-3">
-                        <input type="number" min={0} value={draft.recargoMonto ?? ''} placeholder="—" disabled={draft.recargoPct != null}
-                          onChange={e => { const v = parseFloat(e.target.value); setDraft(d => ({ ...d, recargoMonto: isNaN(v) ? null : v, recargoPct: isNaN(v) ? d.recargoPct : null })) }}
-                          className={`w-16 bg-transparent border border-blue-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-900 outline-none focus:border-blue-500 text-center ${draft.recargoPct != null ? 'opacity-30' : ''}`} />
-                      </td>
-                      <td className="px-4 py-3 flex gap-1">
-                        <button onClick={addRow} className="text-emerald-600 hover:text-emerald-800"><span className="material-symbols-outlined text-sm">check</span></button>
-                        <button onClick={() => { setAdding(false); setDraft({ ...EMPTY_ROW }) }} className="text-slate-400 hover:text-slate-600"><span className="material-symbols-outlined text-sm">close</span></button>
-                      </td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             </div>
@@ -359,6 +312,183 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
               <span className="material-symbols-outlined text-sm">{saved ? 'check_circle' : 'save'}</span>
               {saved ? 'Guardado' : 'Guardar Cambios'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ═══ MODAL: Agregar Concepto ═══ */}
+      {adding && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 animate-in fade-in duration-200"
+          style={{ backgroundColor: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)' }}
+          onClick={() => { setAdding(false); setDraft({ ...EMPTY_ROW }) }}
+        >
+          <div
+            className="bg-white rounded-[2rem] shadow-2xl w-full max-w-xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-slate-900 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-white text-lg">add_circle</span>
+                </div>
+                <div>
+                  <h2 className="text-sm font-black text-slate-900 tracking-tight">Nuevo Concepto</h2>
+                  <p className="text-[9px] text-slate-400 font-medium mt-0.5">Ingreso o egreso al catálogo financiero</p>
+                </div>
+              </div>
+              <button
+                onClick={() => { setAdding(false); setDraft({ ...EMPTY_ROW }) }}
+                className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+              >
+                <span className="material-symbols-outlined text-slate-500 text-sm">close</span>
+              </button>
+            </div>
+
+            <div className="px-8 py-6 space-y-6">
+              {/* ── Información básica ── */}
+              <div>
+                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-3">Información Básica</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Concepto *</label>
+                    <input
+                      value={draft.concepto}
+                      onChange={e => setDraft(d => ({ ...d, concepto: e.target.value }))}
+                      placeholder="Ej: Multa ruido, Reserva amenidad, Agua..."
+                      autoFocus
+                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-medium text-slate-900 outline-none focus:border-slate-900 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Monto (MXN)</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">$</span>
+                      <input
+                        type="number" min={0}
+                        value={draft.monto || ''}
+                        onChange={e => setDraft(d => ({ ...d, monto: parseFloat(e.target.value) || 0 }))}
+                        placeholder="0"
+                        className="w-full border border-slate-200 rounded-xl pl-6 pr-4 py-2.5 text-[11px] font-bold text-slate-900 outline-none focus:border-slate-900 transition-colors"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Categoría</label>
+                    <div className="flex gap-2">
+                      {(['ingreso', 'egreso'] as ConceptoCategoria[]).map(cat => (
+                        <button
+                          key={cat}
+                          onClick={() => setDraft(d => ({ ...d, categoria: cat }))}
+                          className={`flex-1 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${
+                            draft.categoria === cat
+                              ? cat === 'ingreso' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-rose-50 border-rose-200 text-rose-700'
+                              : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                          }`}
+                        >
+                          {CONCEPTO_CATEGORIA_LABELS[cat]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Descripción</label>
+                    <input
+                      value={draft.descripcion || ''}
+                      onChange={e => setDraft(d => ({ ...d, descripcion: e.target.value }))}
+                      placeholder="Opcional — aparece como nota en el cobro"
+                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] text-slate-600 outline-none focus:border-slate-900 transition-colors"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Reglas de vencimiento ── */}
+              <div>
+                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-3">Reglas de Vencimiento</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Fecha de vencimiento</label>
+                    <select
+                      value={draft.vencimiento}
+                      onChange={e => setDraft(d => ({ ...d, vencimiento: e.target.value }))}
+                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-700 outline-none focus:border-slate-900 cursor-pointer"
+                    >
+                      {VENCIMIENTO_OPTIONS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Días de gracia</label>
+                    <input
+                      type="number" min={0}
+                      value={draft.diasGracia || ''}
+                      onChange={e => setDraft(d => ({ ...d, diasGracia: parseInt(e.target.value) || 0 }))}
+                      placeholder="0"
+                      className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-900 outline-none focus:border-slate-900 transition-colors"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Recargos ── */}
+              <div>
+                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Recargos Moratorios</p>
+                <p className="text-[8px] text-slate-400 mb-3">Elige uno: porcentaje <strong>o</strong> monto fijo. Son mutuamente exclusivos.</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className={`transition-opacity ${draft.recargoMonto != null ? 'opacity-30 pointer-events-none' : ''}`}>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                      Recargo %
+                      {draft.recargoMonto != null && <span className="material-symbols-outlined text-[10px] text-slate-400">lock</span>}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number" min={0} step={0.5}
+                        value={draft.recargoPct ?? ''}
+                        onChange={e => { const v = parseFloat(e.target.value); setDraft(d => ({ ...d, recargoPct: isNaN(v) ? null : v, recargoMonto: isNaN(v) ? d.recargoMonto : null })) }}
+                        placeholder="—"
+                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-[11px] font-bold text-slate-900 outline-none focus:border-slate-900 transition-colors"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">%</span>
+                    </div>
+                  </div>
+                  <div className={`transition-opacity ${draft.recargoPct != null ? 'opacity-30 pointer-events-none' : ''}`}>
+                    <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                      Recargo $
+                      {draft.recargoPct != null && <span className="material-symbols-outlined text-[10px] text-slate-400">lock</span>}
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">$</span>
+                      <input
+                        type="number" min={0}
+                        value={draft.recargoMonto ?? ''}
+                        onChange={e => { const v = parseFloat(e.target.value); setDraft(d => ({ ...d, recargoMonto: isNaN(v) ? null : v, recargoPct: isNaN(v) ? d.recargoPct : null })) }}
+                        placeholder="—"
+                        className="w-full border border-slate-200 rounded-xl pl-6 pr-4 py-2.5 text-[11px] font-bold text-slate-900 outline-none focus:border-slate-900 transition-colors"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 px-8 pb-8">
+              <button
+                onClick={() => { setAdding(false); setDraft({ ...EMPTY_ROW }) }}
+                className="px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={addRow}
+                disabled={!draft.concepto.trim()}
+                className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <span className="material-symbols-outlined text-sm">check</span>
+                Agregar Concepto
+              </button>
+            </div>
           </div>
         </div>
       )}
