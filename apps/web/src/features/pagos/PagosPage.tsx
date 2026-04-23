@@ -81,6 +81,7 @@ export default function PagosPage() {
   const [ledgerSubTab, setLedgerSubTab]   = useState<'ingresos' | 'egresos'>('ingresos')
   const [unitDetailView, setUnitDetailView] = useState<'pagos' | 'adeudos' | 'balance' | null>(null)
   const [showFilters, setShowFilters]     = useState(false)
+  const [egresoFilterStatus, setEgresoFilterStatus] = useState('')
 
   // ── Auto-process maturity on mount ──
   useEffect(() => {
@@ -109,6 +110,7 @@ export default function PagosPage() {
     setLFilterUnit('')
     setLFilterConcepto('')
     setLFilterStatus('')
+    setEgresoFilterStatus('')
     setUnitDetailView(null)
   }, [])
 
@@ -506,7 +508,7 @@ export default function PagosPage() {
           {isAdmin && ledgerSubTab === 'ingresos' && (
             <IngresoKpiStrip
               kpiItems={[
-                { label: 'Recaudación Mantenimiento', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: '', showInGlobal: false },
+                { label: 'Recaudación Mantenimiento', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: 'Pagado', showInGlobal: false },
                 { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'bg-rose-500', iconColor: 'text-rose-600', filterKey: 'Vencido', showInGlobal: true },
                 { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', filterKey: 'Pendiente', showInGlobal: true },
               ]}
@@ -516,7 +518,7 @@ export default function PagosPage() {
               lFilterStatus={lFilterStatus}
               showFilters={showFilters}
               todayKey={TODAY_KEY}
-              onStatusFilter={(fk) => { setLFilterStatus(fk); if (fk) setLFilterMonth('') }}
+              onStatusFilter={(fk) => setLFilterStatus(fk)}
             />
           )}
 
@@ -527,8 +529,10 @@ export default function PagosPage() {
               egresoKpis={egresoKpis}
               ledgerEgresos={ledgerEgresos}
               lFilterMonth={lFilterMonth}
+              lFilterStatus={egresoFilterStatus}
               showFilters={showFilters}
               ledgerSubTab={ledgerSubTab}
+              onStatusFilter={(fk) => setEgresoFilterStatus(fk)}
             />
           )}
 
@@ -658,7 +662,7 @@ export default function PagosPage() {
             {/* ── EGRESOS TABLE ── */}
             {isAdmin && ledgerSubTab === 'egresos' && (
               <EgresosTable
-                ledgerEgresos={ledgerEgresos}
+                ledgerEgresos={egresoFilterStatus ? ledgerEgresos.filter(e => e.status === egresoFilterStatus) : ledgerEgresos}
                 onToggleStatus={handleToggleEgresoStatus}
                 onPreview={(eg) => setPreviewPago(eg as any)}
                 onDelete={(id) => setDeleteEgresoId(id)}

@@ -85,7 +85,7 @@ export default function IngresoKpiStrip({
           </div>
         </div>
         {visibleKpis.map(k => {
-          const isClickable = !!k.filterKey && !showFilters
+          const isClickable = !!k.filterKey
           const isActive = isClickable && lFilterStatus === k.filterKey
 
           let progress = 0
