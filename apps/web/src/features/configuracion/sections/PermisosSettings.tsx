@@ -2,14 +2,13 @@ import { useState, useMemo } from 'react'
 import { Resident, StaffMember, BuildingConfig, UserGroup, Resource, PermissionAction } from '../../../types'
 import { useStore } from '../../../core/store/store'
 import { useAuth } from '../../../core/auth/AuthContext'
-import Modal from '../../../core/components/Modal'
 import ConfirmDialog from '../../../core/components/ConfirmDialog'
 
 // ─── Types & Shared ──────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: 'directorio', label: 'Directorio General', icon: 'groups' },
-  { id: 'roles',      label: 'Roles y Permisos',    icon: 'rule_settings' },
+  { id: 'acceso', label: 'Control de Acceso', icon: 'admin_panel_settings' },
+  { id: 'roles',  label: 'Roles y Permisos',  icon: 'rule_settings' },
 ]
 
 interface UnifiedPerson {
@@ -28,274 +27,157 @@ const ROLE_COLOR: Record<UnifiedPerson['type'], string> = {
   Administrador: 'bg-emerald-50 text-emerald-700 border-emerald-100',
 }
 
-// ─── Tab: Directorio General ────────────────────────────────────────────────
+// ─── Tab: Control de Acceso ──────────────────────────────────────────────────
 
-function DirectorioTab({
-  people, search, setSearch, labelClass, inputClass, inventory
+function ControlAccesoTab({
+  people, search, setSearch, labelClass, inputClass
 }: {
   people: UnifiedPerson[]
   search: string
   setSearch: (v: string) => void
   labelClass: string
   inputClass: string
-  inventory: any[]
 }) {
   const { role } = useAuth()
-  
-  const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null)
-  const [editingPerson, setEditingPerson] = useState<UnifiedPerson | null>(null)
   const [confirmBlockId, setConfirmBlockId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
-    let list = people.filter(p => 
+    let list = people.filter(p =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.subtext.toLowerCase().includes(search.toLowerCase()) ||
-      p.role.toLowerCase().includes(search.toLowerCase())
+      p.subtext.toLowerCase().includes(search.toLowerCase())
     )
-
-    // PRIVACY RULE: Operators only see Staff/Admins
-    if (role === 'operador') {
-      list = list.filter(p => p.type !== 'Residente')
-    }
-
+    if (role === 'operador') list = list.filter(p => p.type !== 'Residente')
     return list
   }, [people, search, role])
 
-  const selectedPerson = useMemo(() => 
-    people.find(p => p.id === selectedPersonId), 
-    [people, selectedPersonId]
-  )
-
-  const assignedAssets = useMemo(() => 
-    inventory.filter(i => i.currentUserId === selectedPersonId || i.ownerId === selectedPersonId),
-    [inventory, selectedPersonId]
-  )
-
   const handleBlock = () => {
-    console.log('[PERMISOS] Bloqueando acceso para:', confirmBlockId)
+    console.log('[ACCESO] Bloqueando acceso para:', confirmBlockId)
     setConfirmBlockId(null)
   }
 
+  const activeCount = filtered.length
+  const blockedCount = 0 // placeholder for future status field
+
   return (
-    <div className="animate-in fade-in duration-500 space-y-6">
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-end">
-        <div className="w-full md:max-w-md">
-          <label className={labelClass}>
-            {role === 'operador' ? 'Buscar Compañeros de Staff' : 'Buscar en el Directorio'}
-          </label>
-          <div className="relative">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-            <input 
-              type="text" 
-              value={search} 
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Nombre, departamento o puesto..." 
-              className={`${inputClass} pl-12 pr-10`} 
-            />
-            {search && (
-              <button 
-                onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors"
-              >
-                <span className="material-symbols-outlined text-[18px]">cancel</span>
-              </button>
-            )}
+    <div className="animate-in fade-in duration-500 space-y-8">
+      {/* Summary bar */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-4">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 shadow-sm">
+            <span className="material-symbols-outlined">shield</span>
+          </div>
+          <div>
+            <p className="text-2xl font-headline font-black text-emerald-700">{activeCount}</p>
+            <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest">Acceso Activo</p>
           </div>
         </div>
-        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pb-3">
-          Mostrando {filtered.length} de {people.length} registros
+        <div className="p-5 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-4">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-rose-500 shadow-sm">
+            <span className="material-symbols-outlined">block</span>
+          </div>
+          <div>
+            <p className="text-2xl font-headline font-black text-rose-700">{blockedCount}</p>
+            <p className="text-[9px] font-bold text-rose-500 uppercase tracking-widest">Bloqueados</p>
+          </div>
+        </div>
+        <div className="p-5 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-4">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-500 shadow-sm">
+            <span className="material-symbols-outlined">groups</span>
+          </div>
+          <div>
+            <p className="text-2xl font-headline font-black text-slate-700">{people.length}</p>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total Registrados</p>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* List of People */}
-        <div className="lg:col-span-7 space-y-2">
-          {filtered.length === 0 ? (
-            <div className="py-20 text-center bg-slate-50 border border-dashed border-slate-200 rounded-[2.5rem]">
-              <span className="material-symbols-outlined text-slate-200 text-5xl mb-4">person_search</span>
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">No hay resultados o acceso restringido</p>
-            </div>
-          ) : (
-            filtered.map((p) => (
-              <div 
-                key={p.id} 
-                onClick={() => setSelectedPersonId(p.id)}
-                className={`group flex items-center gap-4 p-4 border rounded-3xl transition-all cursor-pointer ${
-                  selectedPersonId === p.id 
-                    ? 'bg-slate-900 border-slate-900 shadow-xl shadow-slate-200 text-white' 
-                    : 'bg-white border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-900'
-                }`}
-              >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden border ${selectedPersonId === p.id ? 'border-white/20 bg-white/10' : 'bg-slate-50 border-slate-100'}`}>
-                  {p.photo ? (
-                    <img src={p.photo} alt={p.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className={`material-symbols-outlined text-2xl ${selectedPersonId === p.id ? 'text-white/40' : 'text-slate-300'}`}>
-                      {p.type === 'Residente' ? 'person' : (p.type === 'Administrador' ? 'verified_user' : 'engineering')}
-                    </span>
-                  )}
-                </div>
-                
-                <div className="flex-1 overflow-hidden">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className={`text-[12px] font-black uppercase tracking-tight truncate ${selectedPersonId === p.id ? 'text-white' : 'text-slate-900'}`}>{p.name}</p>
-                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${selectedPersonId === p.id ? 'bg-white/10 border-white/20 text-white' : ROLE_COLOR[p.type]}`}>
-                      {p.type}
-                    </span>
-                  </div>
+      {/* Description */}
+      <div className="flex items-start gap-4 p-5 bg-amber-50 border border-amber-100 rounded-2xl">
+        <span className="material-symbols-outlined text-amber-600 mt-0.5">info</span>
+        <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
+          Gestiona el acceso de cada persona al sistema. Bloquear a un usuario revoca inmediatamente
+          sus llaves digitales y detiene sus procesos operativos. Para gestión de perfiles, usa <strong>Usuarios</strong> en el menú principal.
+        </p>
+      </div>
+
+      {/* Search */}
+      <div className="relative max-w-md">
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+        <input
+          type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar persona..."
+          className={`${inputClass} pl-12 pr-10`}
+        />
+        {search && (
+          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors">
+            <span className="material-symbols-outlined text-[18px]">cancel</span>
+          </button>
+        )}
+      </div>
+
+      {/* Access list */}
+      <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+        <table className="w-full text-left">
+          <thead className="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Persona</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tipo</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(p => (
+              <tr key={p.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
+                <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <p className={`text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 ${selectedPersonId === p.id ? 'text-white/50' : 'text-slate-400'}`}>
-                      <span className="material-symbols-outlined text-[12px]">{p.type === 'Residente' ? 'home' : 'badge'}</span>
-                      {p.subtext}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                   <button 
-                    onClick={(e) => { e.stopPropagation(); setEditingPerson(p) }} 
-                    className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all ${selectedPersonId === p.id ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-slate-100 text-slate-500 hover:text-slate-900'}`}
-                   >
-                      <span className="material-symbols-outlined text-[18px]">edit</span>
-                   </button>
-                   <button 
-                    onClick={(e) => { e.stopPropagation(); setConfirmBlockId(p.id) }} 
-                    className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all ${selectedPersonId === p.id ? 'bg-rose-500/20 text-rose-200 hover:bg-rose-500/40' : 'bg-rose-50 text-rose-400 hover:text-rose-600'}`}
-                   >
-                      <span className="material-symbols-outlined text-[18px]">block</span>
-                   </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Selected Person Details & Assets */}
-        <div className="lg:col-span-5 space-y-6">
-          {selectedPerson ? (
-            <div className="p-8 bg-slate-50 border border-slate-100 rounded-[2.5rem] sticky top-6 space-y-8 animate-in fade-in zoom-in-95 duration-500">
-               <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="w-24 h-24 rounded-[2rem] bg-white border-4 border-white shadow-xl overflow-hidden">
-                    {selectedPerson.photo ? (
-                      <img src={selectedPerson.photo} alt={selectedPerson.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300">
-                        <span className="material-symbols-outlined text-4xl">
-                          {selectedPerson.type === 'Residente' ? 'person' : 'engineering'}
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 overflow-hidden border bg-slate-50 border-slate-100`}>
+                      {p.photo ? (
+                        <img src={p.photo} alt={p.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-lg text-slate-300">
+                          {p.type === 'Residente' ? 'person' : p.type === 'Administrador' ? 'verified_user' : 'engineering'}
                         </span>
-                      </div>
-                    )}
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">{p.name}</p>
+                      <p className="text-[10px] text-slate-400 font-medium">{p.subtext}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h5 className="text-xl font-headline font-black text-slate-900 tracking-tight">{selectedPerson.name}</h5>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">{selectedPerson.subtext}</p>
+                </td>
+                <td className="px-6 py-4">
+                  <span className={`text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border ${ROLE_COLOR[p.type]}`}>
+                    {p.type}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Activo</span>
                   </div>
-               </div>
-
-               <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                    <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
-                       <span className="material-symbols-outlined text-sm">inventory_2</span>
-                       Activos Asignados
-                    </p>
-                    <span className="px-2 py-0.5 bg-slate-900 text-white text-[9px] font-black rounded-lg">{assignedAssets.length}</span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {assignedAssets.length === 0 ? (
-                      <p className="text-[11px] text-slate-400 font-medium italic text-center py-4 bg-white/50 rounded-2xl border border-dashed border-slate-200">
-                        No hay artefactos vinculados a esta persona
-                      </p>
-                    ) : (
-                      assignedAssets.map(asset => (
-                        <div key={asset.id} className="flex items-center justify-between p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                           <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
-                                <span className="material-symbols-outlined text-sm">construction</span>
-                              </div>
-                              <div>
-                                 <p className="text-[11px] font-bold text-slate-900 leading-none">{asset.name}</p>
-                                 <p className="text-[9px] text-slate-400 font-medium mt-1">{asset.category}</p>
-                              </div>
-                           </div>
-                           <span className="material-symbols-outlined text-slate-200 text-sm">arrow_forward_ios</span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-               </div>
-
-               <div className="pt-4 grid grid-cols-2 gap-3">
-                  <button onClick={() => setEditingPerson(selectedPerson)} className="py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-slate-200 hover:bg-slate-800 transition-all">
-                    Editar Perfil
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <button
+                    onClick={() => setConfirmBlockId(p.id)}
+                    className="px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-xl border border-rose-200 text-rose-500 bg-rose-50 hover:bg-rose-100 hover:text-rose-700 transition-all"
+                  >
+                    Bloquear
                   </button>
-                  <button className="py-3 bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all">
-                    Ver Historial
-                  </button>
-               </div>
-            </div>
-          ) : (
-            <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-12 bg-slate-50/50 border border-dashed border-slate-200 rounded-[2.5rem]">
-               <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-sm mb-4">
-                  <span className="material-symbols-outlined text-slate-300 text-3xl">touch_app</span>
-               </div>
-               <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Selecciona una persona para ver detalles</p>
-            </div>
-          )}
-        </div>
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-6 py-16 text-center">
+                  <span className="material-symbols-outlined text-slate-200 text-4xl block mb-2">person_search</span>
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Sin resultados</p>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
-
-      {/* Modals for Functional Actions */}
-      <Modal 
-        open={!!editingPerson} 
-        onClose={() => setEditingPerson(null)} 
-        title={`Editar Perfil: ${editingPerson?.name}`}
-      >
-        <div className="p-8 space-y-6">
-           <div className="flex items-start gap-4 p-5 bg-amber-50 border border-amber-100 rounded-3xl">
-              <span className="material-symbols-outlined text-amber-600">report_problem</span>
-              <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
-                Estás editando un perfil maestro. Los cambios afectarán el acceso del usuario y el historial vinculado a sus activos.
-              </p>
-           </div>
-           
-           <div className="space-y-4">
-              <div>
-                <label className={labelClass}>Nombre Completo</label>
-                <input type="text" defaultValue={editingPerson?.name} className={inputClass} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                   <label className={labelClass}>Identificador (ID/Depto)</label>
-                   <input type="text" defaultValue={editingPerson?.subtext} className={inputClass} />
-                </div>
-                <div>
-                   <label className={labelClass}>Tipo de Usuario</label>
-                   <select defaultValue={editingPerson?.type} className={inputClass}>
-                      <option value="Administrador">Administrador</option>
-                      <option value="Staff">Operador (Staff)</option>
-                      <option value="Residente">Residente</option>
-                   </select>
-                </div>
-              </div>
-           </div>
-
-           <div className="pt-4 flex gap-3">
-              <button 
-                onClick={() => setEditingPerson(null)}
-                className="flex-1 py-4 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-slate-200"
-              >
-                Guardar Cambios
-              </button>
-              <button 
-                onClick={() => setEditingPerson(null)}
-                className="px-6 py-4 bg-white border border-slate-200 text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-2xl"
-              >
-                Cancelar
-              </button>
-           </div>
-        </div>
-      </Modal>
 
       <ConfirmDialog
         open={!!confirmBlockId}
@@ -469,7 +351,7 @@ export default function PermisosSettings({
   inputClass: string
 }) {
   const { state } = useStore()
-  const [activeTab, setActiveTab] = useState('directorio')
+  const [activeTab, setActiveTab] = useState('acceso')
   const [search, setSearch] = useState('')
 
   // Build unified directory with memoization
@@ -523,14 +405,13 @@ export default function PermisosSettings({
         ))}
       </div>
 
-      {activeTab === 'directorio' && (
-        <DirectorioTab 
+      {activeTab === 'acceso' && (
+        <ControlAccesoTab 
           people={unifiedDirectory} 
           search={search} 
           setSearch={setSearch} 
           labelClass={labelClass} 
           inputClass={inputClass}
-          inventory={state.inventory || []}
         />
       )}
       {activeTab === 'roles' && <RolesMatrixTab bc={bc} />}
