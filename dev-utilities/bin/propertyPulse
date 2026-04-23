@@ -105,6 +105,11 @@ run_dev() {
   echo -e "  ${GREEN}▸ API:${RESET}   ${run_api}"
   echo ""
 
+  export BETTER_AUTH_URL="${BETTER_AUTH_URL:-http://localhost:3000}"
+
+  # Ensure data directories exist
+  mkdir -p "$PROJECT_ROOT/apps/api/data/tenants"
+
   if [ "$run_web" = true ] && [ "$run_api" = true ]; then
     echo -e "  ${CYAN}Starting full stack...${RESET}"
     (cd "$PROJECT_ROOT" && bun run dev)
@@ -131,13 +136,18 @@ run_demo() {
   echo ""
 
   # Export demo environment
+  export APP_MODE=demo
   export DEMO_MODE=true
   export NODE_ENV=development
+  export BETTER_AUTH_URL="${BETTER_AUTH_URL:-http://localhost:3000}"
+
+  # Ensure data directories exist
+  mkdir -p "$PROJECT_ROOT/apps/api/data/tenants"
 
   # Seed demo data if API is being started
   if [ "$run_api" = true ]; then
     echo -e "  ${YELLOW}⚙  Seeding demo data...${RESET}"
-    (cd "$PROJECT_ROOT/apps/api" && bun run db:seed 2>/dev/null || echo -e "  ${DIM}(seed skipped or already seeded)${RESET}")
+    (cd "$PROJECT_ROOT/apps/api" && APP_MODE=demo bun run db:seed 2>&1) || echo -e "  ${DIM}(seed skipped or already seeded)${RESET}"
     echo ""
   fi
 
@@ -167,6 +177,10 @@ run_prod() {
   echo ""
 
   export NODE_ENV=production
+  export BETTER_AUTH_URL="${BETTER_AUTH_URL:-http://localhost:3000}"
+
+  # Ensure data directories exist
+  mkdir -p "$PROJECT_ROOT/apps/api/data/tenants"
 
   # Build web assets
   if [ "$run_web" = true ]; then

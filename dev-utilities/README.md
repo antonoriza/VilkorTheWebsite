@@ -4,13 +4,14 @@ Developer tooling for the PropertyPulse monorepo. Provides a unified CLI to mana
 
 ## Quick Start
 
+The command is already integrated into the project. No system changes are required.
+
 ```bash
 # Make the CLI executable (one-time setup)
 chmod +x dev-utilities/bin/propertyPulse
 
-# Optional: Add to your PATH for global access
-echo 'export PATH="$PATH:$(pwd)/dev-utilities/bin"' >> ~/.zshrc
-source ~/.zshrc
+# Run from root using bun
+bun propertyPulse help
 ```
 
 ## Commands
