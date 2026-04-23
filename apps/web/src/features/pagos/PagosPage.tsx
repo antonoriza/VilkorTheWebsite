@@ -511,6 +511,7 @@ export default function PagosPage() {
                 { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', filterKey: 'Pendiente', showInGlobal: true },
               ]}
               ledgerKpis={ledgerKpis}
+              totalEgresosPaid={egresoKpis.paidTotal}
               lFilterMonth={lFilterMonth}
               lFilterStatus={lFilterStatus}
               showFilters={showFilters}

@@ -21,7 +21,9 @@ export interface IngresoKpiStripProps {
     expectedMantenimientoTotal: number
     paidMantenimientoTotal: number
     totalPortfolioAmount: number
+    paidTotal: number
   }
+  totalEgresosPaid: number
   lFilterMonth: string
   lFilterStatus: string
   showFilters: boolean
@@ -30,10 +32,12 @@ export interface IngresoKpiStripProps {
 }
 
 export default function IngresoKpiStrip({
-  kpiItems, ledgerKpis,
+  kpiItems, ledgerKpis, totalEgresosPaid,
   lFilterMonth, lFilterStatus, showFilters, todayKey,
   onStatusFilter,
 }: IngresoKpiStripProps) {
+  const surplus = ledgerKpis.paidTotal - totalEgresosPaid
+  const isPositive = surplus >= 0
   const visibleKpis = kpiItems.filter(k => {
     if (k.label === 'Próximos Cargos') {
       return !lFilterMonth || lFilterMonth >= todayKey
@@ -57,6 +61,29 @@ export default function IngresoKpiStrip({
       </div>
 
       <div className="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+        {/* ── Superávit Operativo (always first) ── */}
+        <div className="relative flex-1 flex flex-col justify-center p-4 cursor-default">
+          <div className="flex items-baseline justify-between mb-1.5">
+            <span className="text-[9px] font-black uppercase tracking-[0.15em] text-slate-400">
+              Superávit Operativo
+            </span>
+            <span className={`material-symbols-outlined text-[14px] ${isPositive ? 'text-emerald-500' : 'text-rose-500'}`}>
+              {isPositive ? 'trending_up' : 'trending_down'}
+            </span>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className={`text-2xl font-headline font-black tracking-tight tabular-nums ${isPositive ? 'text-emerald-700' : 'text-rose-700'}`}>
+              {isPositive ? '' : '−'}${Math.abs(surplus).toLocaleString('es-MX')}
+            </span>
+          </div>
+          <span className="text-[9px] font-bold mt-1 text-slate-400">
+            {lFilterMonth ? 'Cobrado − Gastado este mes' : 'Ingresos cobrados − Egresos pagados'}
+          </span>
+          {/* Bottom accent line */}
+          <div className="absolute bottom-0 left-0 w-full h-[3px] overflow-hidden">
+            <div className={`h-full w-full ${isPositive ? 'bg-emerald-500' : 'bg-rose-500'}`} style={{ opacity: 0.3 }} />
+          </div>
+        </div>
         {visibleKpis.map(k => {
           const isClickable = !!k.filterKey && !showFilters
           const isActive = isClickable && lFilterStatus === k.filterKey
