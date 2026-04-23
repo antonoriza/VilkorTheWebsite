@@ -15,6 +15,8 @@ export interface Resident {
   /** Tower/section identifier (e.g. "A", "B") */
   tower: string
   email: string
+  /** Contact phone number */
+  phone?: string
 }
 
 // ─── Staff ───────────────────────────────────────────────────────────

@@ -6,15 +6,35 @@
  * residents-only table with a unified directory that serves as the
  * single source of truth for people management.
  *
- * CRUD: Residents can be added/deleted here. Staff is read-only
- * (managed via StaffPanel on the dashboard).
+ * CRUD: Residents and Staff can be added/deleted here.
+ * Staff creation dispatches the same ADD_STAFF action used elsewhere.
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
+import { StaffRole } from '../../types'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import EmptyState from '../../core/components/EmptyState'
+
+// ─── Staff Constants ─────────────────────────────────────────────────────────
+
+const STAFF_ROLES: { value: StaffRole; label: string; icon: string }[] = [
+  { value: 'Guardia',               label: 'Guardia',       icon: 'security' },
+  { value: 'Jardinero',             label: 'Jardinero',     icon: 'yard' },
+  { value: 'Limpieza',              label: 'Limpieza',      icon: 'cleaning_services' },
+  { value: 'Administradora General', label: 'Administrador', icon: 'manage_accounts' },
+]
+
+const WORK_DAYS = [
+  { id: 'L', label: 'L' },
+  { id: 'M', label: 'M' },
+  { id: 'Mi', label: 'Mi' },
+  { id: 'J', label: 'J' },
+  { id: 'V', label: 'V' },
+  { id: 'S', label: 'S' },
+  { id: 'D', label: 'D' },
+]
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -69,12 +89,25 @@ export default function UsuariosPage() {
   // ── Detail modal state ──
   const [detailPersonId, setDetailPersonId] = useState<string | null>(null)
 
-  // ── Add resident modal ──
+  // ── Add user modal ──
   const [showAddModal, setShowAddModal] = useState(false)
+  const [addTab, setAddTab] = useState<'residente' | 'staff'>('residente')
+
+  // Resident form
   const [formName, setFormName] = useState('')
   const [formApartment, setFormApartment] = useState('')
   const [formTower, setFormTower] = useState('')
   const [formEmail, setFormEmail] = useState('')
+  const [formPhone, setFormPhone] = useState('')
+
+  // Staff form
+  const [staffName, setStaffName] = useState('')
+  const [staffRole, setStaffRole] = useState<StaffRole>('Guardia')
+  const [staffPhoto, setStaffPhoto] = useState('')
+  const [staffDays, setStaffDays] = useState<string[]>(['L', 'M', 'Mi', 'J', 'V'])
+  const [staffStart, setStaffStart] = useState('07:00')
+  const [staffEnd, setStaffEnd] = useState('15:00')
+  const photoInputRef = useRef<HTMLInputElement>(null)
 
   // ── Delete confirm ──
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
@@ -149,7 +182,7 @@ export default function UsuariosPage() {
   const hasActiveFilters = typeFilter !== 'all' || towerFilter !== 'all' || search !== ''
 
   // ── CRUD Handlers ──
-  const handleAdd = () => {
+  const handleAddResident = () => {
     if (!formName.trim() || !formApartment.trim() || !formEmail.trim()) return
     const tower = formTower || (bc.towers.length > 0 ? bc.towers[0] : 'A')
     dispatch({
@@ -160,9 +193,49 @@ export default function UsuariosPage() {
         apartment: formApartment.toUpperCase(),
         tower: tower.toUpperCase(),
         email: formEmail.toLowerCase(),
+        phone: formPhone || undefined,
       },
     })
-    setFormName(''); setFormApartment(''); setFormTower(''); setFormEmail('')
+    setFormName(''); setFormApartment(''); setFormTower(''); setFormEmail(''); setFormPhone('')
+    setShowAddModal(false)
+  }
+
+  const handleAddStaff = () => {
+    if (!staffName.trim()) return
+    dispatch({
+      type: 'ADD_STAFF',
+      payload: {
+        id: `staff-${Date.now()}`,
+        name: staffName,
+        role: staffRole,
+        shiftStart: staffStart,
+        shiftEnd: staffEnd,
+        photo: staffPhoto || undefined,
+        workDays: staffDays,
+      },
+    })
+    setStaffName(''); setStaffRole('Guardia'); setStaffPhoto(''); setStaffDays(['L', 'M', 'Mi', 'J', 'V']); setStaffStart('07:00'); setStaffEnd('15:00')
+    setShowAddModal(false)
+  }
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      if (ev.target?.result) setStaffPhoto(ev.target.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const toggleWorkDay = (day: string) => {
+    setStaffDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day])
+  }
+
+  const resetAndCloseModal = () => {
+    setFormName(''); setFormApartment(''); setFormTower(''); setFormEmail(''); setFormPhone('')
+    setStaffName(''); setStaffRole('Guardia'); setStaffPhoto(''); setStaffDays(['L', 'M', 'Mi', 'J', 'V']); setStaffStart('07:00'); setStaffEnd('15:00')
+    setAddTab('residente')
     setShowAddModal(false)
   }
 
@@ -197,7 +270,7 @@ export default function UsuariosPage() {
           className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
         >
           <span className="material-symbols-outlined text-lg">person_add</span>
-          <span>Nuevo Residente</span>
+          <span>Nuevo Usuario</span>
         </button>
       </div>
 
@@ -481,55 +554,192 @@ export default function UsuariosPage() {
         )}
       </Modal>
 
-      {/* ── Add Resident Modal ── */}
-      <Modal open={showAddModal} onClose={() => setShowAddModal(false)} title="Registrar Nuevo Residente">
-        <div className="space-y-4 p-2">
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre Completo *</label>
-            <input
-              type="text" value={formName} onChange={e => setFormName(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
-              placeholder="Juan Antonio Pérez"
-            />
+      {/* ── Add User Modal (Tabbed) ── */}
+      <Modal open={showAddModal} onClose={resetAndCloseModal} title="Registrar Nuevo Usuario">
+        <div className="p-2 space-y-6">
+          {/* Tab Switcher */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setAddTab('residente')}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                addTab === 'residente'
+                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                  : 'bg-slate-50 border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300'
+              }`}
+            >
+              <span className="material-symbols-outlined text-sm">person</span>
+              Residente
+            </button>
+            <button
+              onClick={() => setAddTab('staff')}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                addTab === 'staff'
+                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                  : 'bg-slate-50 border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300'
+              }`}
+            >
+              <span className="material-symbols-outlined text-sm">engineering</span>
+              Staff
+            </button>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                {bc.type === 'towers' ? 'Torre' : 'Sección'} *
-              </label>
-              <select
-                value={formTower} onChange={e => setFormTower(e.target.value)}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+
+          {/* ─── Resident Form ─── */}
+          {addTab === 'residente' && (
+            <div className="space-y-4 animate-in fade-in duration-300">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre Completo *</label>
+                <input
+                  type="text" value={formName} onChange={e => setFormName(e.target.value)}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                  placeholder="Juan Antonio Pérez"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                    {bc.type === 'towers' ? 'Torre' : 'Sección'} *
+                  </label>
+                  <select
+                    value={formTower} onChange={e => setFormTower(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                  >
+                    <option value="">Seleccionar</option>
+                    {bc.towers.map(t => <option key={t} value={t}>{bc.type === 'towers' ? `Torre ${t}` : `Sección ${t}`}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Departamento *</label>
+                  <input
+                    type="text" value={formApartment} onChange={e => setFormApartment(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                    placeholder="A101" list="apartment-list"
+                  />
+                  <datalist id="apartment-list">
+                    {apartments.map(a => <option key={a} value={a} />)}
+                  </datalist>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email *</label>
+                  <input
+                    type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                    placeholder="correo@property.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Teléfono</label>
+                  <input
+                    type="tel" value={formPhone} onChange={e => setFormPhone(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                    placeholder="55 1234 5678"
+                  />
+                </div>
+              </div>
+              <button onClick={handleAddResident}
+                className="w-full py-3 mt-2 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
               >
-                <option value="">Seleccionar</option>
-                {bc.towers.map(t => <option key={t} value={t}>{bc.type === 'towers' ? `Torre ${t}` : `Sección ${t}`}</option>)}
-              </select>
+                Registrar Residente
+              </button>
             </div>
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Departamento *</label>
-              <input
-                type="text" value={formApartment} onChange={e => setFormApartment(e.target.value)}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
-                placeholder="A101" list="apartment-list"
-              />
-              <datalist id="apartment-list">
-                {apartments.map(a => <option key={a} value={a} />)}
-              </datalist>
+          )}
+
+          {/* ─── Staff Form ─── */}
+          {addTab === 'staff' && (
+            <div className="space-y-4 animate-in fade-in duration-300">
+              {/* Photo + Name row */}
+              <div className="flex items-start gap-4">
+                <button
+                  onClick={() => photoInputRef.current?.click()}
+                  className="w-20 h-20 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center shrink-0 overflow-hidden hover:border-slate-400 transition-all cursor-pointer group"
+                >
+                  {staffPhoto ? (
+                    <img src={staffPhoto} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-slate-300 text-2xl group-hover:text-slate-500 transition-colors">add_a_photo</span>
+                      <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest mt-1 group-hover:text-slate-500 transition-colors">Foto</span>
+                    </>
+                  )}
+                </button>
+                <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+                <div className="flex-1 space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre Completo *</label>
+                  <input
+                    type="text" value={staffName} onChange={e => setStaffName(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                    placeholder="Ricardo Hernández"
+                  />
+                </div>
+              </div>
+
+              {/* Role selector */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Categoría *</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {STAFF_ROLES.map(r => (
+                    <button
+                      key={r.value}
+                      onClick={() => setStaffRole(r.value)}
+                      className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                        staffRole === r.value
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-200'
+                          : 'bg-white border-slate-200 text-slate-400 hover:border-slate-400 hover:text-slate-700'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-lg">{r.icon}</span>
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Work days */}
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Días Laborales</label>
+                <div className="flex gap-2">
+                  {WORK_DAYS.map(d => (
+                    <button
+                      key={d.id}
+                      onClick={() => toggleWorkDay(d.id)}
+                      className={`w-10 h-10 rounded-xl text-[11px] font-black uppercase transition-all ${
+                        staffDays.includes(d.id)
+                          ? 'bg-slate-900 text-white shadow-md shadow-slate-200'
+                          : 'bg-slate-50 border border-slate-200 text-slate-400 hover:border-slate-400'
+                      }`}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Shift times */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Hora de Entrada</label>
+                  <input
+                    type="time" value={staffStart} onChange={e => setStaffStart(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Hora de Salida</label>
+                  <input
+                    type="time" value={staffEnd} onChange={e => setStaffEnd(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                  />
+                </div>
+              </div>
+
+              <button onClick={handleAddStaff}
+                className="w-full py-3 mt-2 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
+              >
+                Registrar Staff
+              </button>
             </div>
-          </div>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email *</label>
-            <input
-              type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
-              placeholder="correo@property.com"
-            />
-          </div>
-          <button onClick={handleAdd}
-            className="w-full py-3 mt-2 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
-          >
-            Registrar Residente
-          </button>
+          )}
         </div>
       </Modal>
 
