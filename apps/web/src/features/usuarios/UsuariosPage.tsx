@@ -13,6 +13,7 @@ import { useState, useMemo, useRef } from 'react'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import { StaffRole } from '../../types'
+import type { ShiftOverride } from '../../types'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import EmptyState from '../../core/components/EmptyState'
@@ -121,6 +122,20 @@ export default function UsuariosPage() {
 
   // ── Delete confirm ──
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null)
+
+  // ── Programación (planned overrides) state ──
+  type PlannedType = 'vacation' | 'pre_authorized'
+  const [progType, setProgType] = useState<PlannedType>('vacation')
+  const [progStart, setProgStart] = useState('')
+  const [progEnd, setProgEnd] = useState('')
+  const [progSubStaffId, setProgSubStaffId] = useState('')
+  const [progSubExternal, setProgSubExternal] = useState('')
+  const [progSubMode, setProgSubMode] = useState<'none' | 'staff' | 'external'>('none')
+  const [progNote, setProgNote] = useState('')
+  const resetProgForm = () => {
+    setProgType('vacation'); setProgStart(''); setProgEnd('')
+    setProgSubStaffId(''); setProgSubExternal(''); setProgSubMode('none'); setProgNote('')
+  }
 
   // ── Build unified directory ──
   const people: UnifiedPerson[] = useMemo(() => {
@@ -256,7 +271,16 @@ export default function UsuariosPage() {
 
   const confirmDelete = () => {
     if (deleteTarget) {
-      dispatch({ type: 'DELETE_RESIDENT', payload: deleteTarget.id })
+      const isStaff = staff.some(s => s.id === deleteTarget.id)
+      if (isStaff) {
+        dispatch({ type: 'DELETE_STAFF', payload: deleteTarget.id })
+        // Also clean up any overrides for this staff member
+        ;(state.shiftOverrides || [])
+          .filter(o => o.staffId === deleteTarget.id)
+          .forEach(o => dispatch({ type: 'REMOVE_SHIFT_OVERRIDE', payload: o.id }))
+      } else {
+        dispatch({ type: 'DELETE_RESIDENT', payload: deleteTarget.id })
+      }
       if (detailPersonId === deleteTarget.id) setDetailPersonId(null)
     }
   }
@@ -554,14 +578,180 @@ export default function UsuariosPage() {
               )}
             </div>
 
+            {/* ── Programación section (Staff only) ── */}
+            {detailPerson.type === 'Staff' && (() => {
+              const shiftOverrides = (state.shiftOverrides || []).filter(o => o.staffId === detailPerson.id)
+              const staffList = (state.staff || []).filter(s => s.id !== detailPerson.id)
+              const today = new Date().toISOString().slice(0, 10)
+
+              const handleAddPlanned = () => {
+                if (!progStart || !progEnd) return
+                if (progEnd < progStart) return
+                if (progSubMode === 'staff' && !progSubStaffId) return
+                if (progSubMode === 'external' && !progSubExternal.trim()) return
+                const override: ShiftOverride = {
+                  id: `so-${Date.now()}`,
+                  staffId: detailPerson.id,
+                  type: progType,
+                  startDate: progStart,
+                  endDate: progEnd,
+                  substituteStaffId: progSubMode === 'staff' ? progSubStaffId : undefined,
+                  substituteExternal: progSubMode === 'external' ? progSubExternal.trim() : undefined,
+                  note: progNote.trim() || undefined,
+                  reportedBy: role,
+                  reportedAt: new Date().toISOString(),
+                }
+                dispatch({ type: 'ADD_SHIFT_OVERRIDE', payload: override })
+                resetProgForm()
+              }
+
+              const fmtDate = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+
+              return (
+                <div className="space-y-4 border-t border-slate-100 pt-6">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">calendar_month</span>
+                      Programación de Ausencias
+                    </p>
+                    <span className="px-2 py-0.5 bg-slate-900 text-white text-[9px] font-black rounded-lg">{shiftOverrides.length}</span>
+                  </div>
+
+                  {/* Existing overrides list */}
+                  {shiftOverrides.length === 0 ? (
+                    <p className="text-[11px] text-slate-400 font-medium italic text-center py-3 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                      Sin ausencias ni vacaciones programadas
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {shiftOverrides
+                        .sort((a, b) => a.startDate.localeCompare(b.startDate))
+                        .map(o => {
+                          const isPast = o.endDate < today
+                          const subName = o.substituteStaffId
+                            ? staffList.find(s => s.id === o.substituteStaffId)?.name
+                            : o.substituteExternal
+                          return (
+                            <div key={o.id} className={`flex items-start justify-between p-3 rounded-2xl border ${
+                              isPast ? 'bg-slate-50/30 border-slate-100 opacity-50' : 'bg-white border-slate-200'
+                            }`}>
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg ${
+                                    o.type === 'vacation' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                                    'bg-amber-50 text-amber-700 border border-amber-100'
+                                  }`}>
+                                    {o.type === 'vacation' ? 'Vacaciones' : 'Ausencia Autorizada'}
+                                  </span>
+                                  {isPast && <span className="text-[9px] text-slate-300 font-bold uppercase">Pasado</span>}
+                                </div>
+                                <p className="text-[11px] font-bold text-slate-900">
+                                  {fmtDate(o.startDate)}{o.startDate !== o.endDate ? ` → ${fmtDate(o.endDate)}` : ''}
+                                </p>
+                                {subName && (
+                                  <p className="text-[10px] text-slate-500 font-medium">
+                                    Cubierto por: <span className="font-bold text-slate-700">{subName}</span>
+                                  </p>
+                                )}
+                                {o.note && <p className="text-[10px] text-slate-400 italic">"{o.note}"</p>}
+                              </div>
+                              <button
+                                onClick={() => dispatch({ type: 'REMOVE_SHIFT_OVERRIDE', payload: o.id })}
+                                className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0"
+                              >
+                                <span className="material-symbols-outlined text-[16px]">close</span>
+                              </button>
+                            </div>
+                          )
+                        })}
+                    </div>
+                  )}
+
+                  {/* Add override form */}
+                  <details className="group">
+                    <summary className="flex items-center gap-2 cursor-pointer text-[10px] font-black text-primary uppercase tracking-widest hover:text-primary-dim transition-colors list-none select-none">
+                      <span className="material-symbols-outlined text-sm group-open:rotate-45 transition-transform">add_circle</span>
+                      Programar Ausencia
+                    </summary>
+
+                    <div className="mt-4 space-y-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      {/* Type */}
+                      <div className="grid grid-cols-2 gap-2">
+                        {([['vacation', 'Vacaciones', 'beach_access'], ['pre_authorized', 'Ausencia Autorizada', 'event_busy']] as [PlannedType, string, string][]).map(([v, l, icon]) => (
+                          <button key={v} onClick={() => setProgType(v)}
+                            className={`flex items-center gap-2 py-2.5 px-3 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                              progType === v ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'
+                            }`}>
+                            <span className="material-symbols-outlined text-sm">{icon}</span>{l}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Dates */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Inicio</p>
+                          <input type="date" value={progStart} min={today} onChange={e => { setProgStart(e.target.value); if (!progEnd || e.target.value > progEnd) setProgEnd(e.target.value) }}
+                            className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary font-medium text-sm" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fin</p>
+                          <input type="date" value={progEnd} min={progStart || today} onChange={e => setProgEnd(e.target.value)}
+                            className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary font-medium text-sm" />
+                        </div>
+                      </div>
+
+                      {/* Optional substitute */}
+                      <div className="space-y-2">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sustituto (opcional)</p>
+                        <div className="flex gap-2">
+                          {(['none', 'staff', 'external'] as const).map(m => (
+                            <button key={m} onClick={() => setProgSubMode(m)}
+                              className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all ${
+                                progSubMode === m ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-400 border-slate-200'
+                              }`}>
+                              {m === 'none' ? 'Ninguno' : m === 'staff' ? 'Del Staff' : 'Externo'}
+                            </button>
+                          ))}
+                        </div>
+                        {progSubMode === 'staff' && (
+                          <select value={progSubStaffId} onChange={e => setProgSubStaffId(e.target.value)}
+                            className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary font-medium text-sm">
+                            <option value="">Seleccionar...</option>
+                            {staffList.map(s => <option key={s.id} value={s.id}>{s.name} — {s.role}</option>)}
+                          </select>
+                        )}
+                        {progSubMode === 'external' && (
+                          <input type="text" value={progSubExternal} onChange={e => setProgSubExternal(e.target.value)}
+                            placeholder="Nombre del sustituto externo"
+                            className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary font-medium text-sm" />
+                        )}
+                      </div>
+
+                      {/* Note */}
+                      <textarea value={progNote} onChange={e => setProgNote(e.target.value)} rows={2}
+                        placeholder="Nota interna (opcional)"
+                        className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary font-medium text-sm resize-none" />
+
+                      <button onClick={handleAddPlanned}
+                        disabled={!progStart || !progEnd || progEnd < progStart}
+                        className="w-full py-3 bg-slate-900 text-white font-black rounded-xl uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                        Guardar Programación
+                      </button>
+                    </div>
+                  </details>
+                </div>
+              )
+            })()}
+
             {/* Actions */}
-            {detailPerson.type === 'Residente' && (
+            {(detailPerson.type === 'Residente' || detailPerson.type === 'Staff') && (
               <div className="pt-2">
                 <button
                   onClick={() => { setDeleteTarget({ id: detailPerson.id, name: detailPerson.name }); setDetailPersonId(null) }}
                   className="w-full py-3 bg-rose-50 text-rose-600 text-[10px] font-black uppercase tracking-widest rounded-2xl border border-rose-100 hover:bg-rose-100 transition-all"
                 >
-                  Eliminar Residente
+                  Eliminar {detailPerson.type === 'Residente' ? 'Residente' : 'Personal'}
                 </button>
               </div>
             )}

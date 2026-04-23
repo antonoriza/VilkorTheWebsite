@@ -1,267 +1,452 @@
 /**
- * StaffModal — Staff management modal + inline "Staff on Duty" card list.
- * Consumed by: AdminDashboard.
+ * StaffSection — Operational "Staff en Turno" dashboard widget.
  *
- * Owns:
- *   - Form state (name, role, shift, photo, workDays)
- *   - CRUD handlers (add / edit / delete)
- *   - Modal with form + existing staff list
- *   - ConfirmDialog for deletion
- *   - Inline card list rendered on the dashboard
+ * Purpose (dashboard-only):
+ *   - Show today's expected staff with their real-time status
+ *   - Log same-day incidents (no-show, emergency substitute)
+ *   - Read planned overrides set in Gestión de Personas
+ *
+ * NOT responsible for:
+ *   - Adding / editing / deleting staff members → UsuariosPage
+ *   - Planned vacations / pre-authorized absences → UsuariosPage (Programación tab)
  */
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Modal from '../../../core/components/Modal'
 import ConfirmDialog from '../../../core/components/ConfirmDialog'
-import type { StaffMember, StaffRole } from '../../../types'
+import type { StaffMember, ShiftOverride } from '../../../types'
 
-const DAYS_OF_WEEK = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D']
-const STAFF_ROLES: StaffRole[] = ['Guardia', 'Jardinero', 'Limpieza', 'Administradora General']
-const ROLE_ICONS: Record<StaffRole, string> = {
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const ROLE_ICONS: Record<string, string> = {
   Guardia: 'shield_person',
   Jardinero: 'yard',
   Limpieza: 'mop',
   'Administradora General': 'manage_accounts',
 }
 
-interface StaffModalProps {
-  /** Current staff list from store */
-  staff: StaffMember[]
-  /** Dispatch actions for staff CRUD */
-  onAddStaff: (payload: StaffMember) => void
-  onUpdateStaff: (payload: StaffMember) => void
-  onDeleteStaff: (id: string) => void
+type IncidentType = 'absence' | 'substitute'
+
+const TODAY = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Returns the active override for a staff member on today's date, if any. */
+function getActiveOverride(staffId: string, overrides: ShiftOverride[]): ShiftOverride | undefined {
+  return overrides.find(o =>
+    o.staffId === staffId &&
+    TODAY >= o.startDate &&
+    TODAY <= o.endDate
+  )
 }
 
-/**
- * Renders the inline "Staff on Duty" section for the dashboard
- * AND manages the Staff CRUD modal + confirmation dialog internally.
- */
-export default function StaffSection({ staff, onAddStaff, onUpdateStaff, onDeleteStaff }: StaffModalProps) {
-  // Modal visibility
-  const [showModal, setShowModal] = useState(false)
+/** Returns the substitute name (from staff list or external free-text). */
+function resolveSubstituteName(override: ShiftOverride, staff: StaffMember[]): string {
+  if (override.substituteStaffId) {
+    return staff.find(s => s.id === override.substituteStaffId)?.name ?? '—'
+  }
+  return override.substituteExternal ?? '—'
+}
 
-  // Form state
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [name, setName] = useState('')
-  const [role, setRole] = useState<StaffRole>('Guardia')
-  const [shiftStart, setShiftStart] = useState('08:00')
-  const [shiftEnd, setShiftEnd] = useState('17:00')
-  const [photo, setPhoto] = useState('')
-  const [workDays, setWorkDays] = useState<string[]>(['L', 'M', 'Mi', 'J', 'V'])
+// ─── Status chip config ───────────────────────────────────────────────────────
 
-  // Confirm dialog
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+function StatusChip({ override, staff }: { override?: ShiftOverride; staff: StaffMember[] }) {
+  if (!override) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-700 border border-emerald-100">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+        En turno
+      </span>
+    )
+  }
+  if (override.type === 'vacation') {
+    const end = new Date(override.endDate + 'T12:00:00')
+    const fmt = end.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-blue-50 text-blue-700 border border-blue-100">
+        <span className="material-symbols-outlined text-[11px]">beach_access</span>
+        Vacaciones · vuelve {fmt}
+      </span>
+    )
+  }
+  if (override.type === 'pre_authorized') {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-amber-50 text-amber-700 border border-amber-100">
+        <span className="material-symbols-outlined text-[11px]">event_busy</span>
+        Ausencia autorizada
+      </span>
+    )
+  }
+  if (override.type === 'absence') {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-rose-50 text-rose-700 border border-rose-100">
+        <span className="material-symbols-outlined text-[11px]">person_off</span>
+        Ausente hoy
+      </span>
+    )
+  }
+  if (override.type === 'substitute') {
+    const subName = resolveSubstituteName(override, staff)
+    return (
+      <div className="flex flex-col gap-0.5">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-700 border border-indigo-100">
+          <span className="material-symbols-outlined text-[11px]">swap_horiz</span>
+          Cubierto por {subName}
+        </span>
+      </div>
+    )
+  }
+  return null
+}
 
-  const resetForm = () => {
-    setEditingId(null)
-    setName('')
-    setRole('Guardia')
-    setShiftStart('08:00')
-    setShiftEnd('17:00')
-    setPhoto('')
-    setWorkDays(['L', 'M', 'Mi', 'J', 'V'])
-    setShowModal(false)
+// ─── Props ────────────────────────────────────────────────────────────────────
+
+interface StaffSectionProps {
+  staff: StaffMember[]
+  shiftOverrides: ShiftOverride[]
+  currentUser: string
+  onAddOverride: (override: ShiftOverride) => void
+  onRemoveOverride: (id: string) => void
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export default function StaffSection({
+  staff, shiftOverrides, currentUser, onAddOverride, onRemoveOverride,
+}: StaffSectionProps) {
+
+  // ── Incident modal state ──
+  const [incidentTarget, setIncidentTarget] = useState<StaffMember | null>(null)
+  const [incidentType, setIncidentType] = useState<IncidentType>('absence')
+  const [subMode, setSubMode] = useState<'staff' | 'external'>('staff')
+  const [subStaffId, setSubStaffId] = useState('')
+  const [subExternal, setSubExternal] = useState('')
+  const [incidentNote, setIncidentNote] = useState('')
+
+  // ── Remove override confirm ──
+  const [removeTarget, setRemoveTarget] = useState<ShiftOverride | null>(null)
+
+  // ── Today's active staff (only those scheduled for today's weekday) ──
+  const DAY_MAP: Record<number, string> = { 1: 'L', 2: 'M', 3: 'Mi', 4: 'J', 5: 'V', 6: 'S', 0: 'D' }
+  const todayDay = DAY_MAP[new Date().getDay()]
+
+  const todayStaff = useMemo(() =>
+    staff.filter(s => (s.workDays || ['L', 'M', 'Mi', 'J', 'V']).includes(todayDay)),
+    [staff, todayDay]
+  )
+  const offDutyStaff = useMemo(() =>
+    staff.filter(s => !(s.workDays || ['L', 'M', 'Mi', 'J', 'V']).includes(todayDay)),
+    [staff, todayDay]
+  )
+
+  // ── Available substitutes (exclude the target) ──
+  const availableSubs = incidentTarget
+    ? staff.filter(s => s.id !== incidentTarget.id)
+    : []
+
+  const resetIncidentForm = () => {
+    setIncidentTarget(null)
+    setIncidentType('absence')
+    setSubMode('staff')
+    setSubStaffId('')
+    setSubExternal('')
+    setIncidentNote('')
   }
 
-  const openEdit = (s: StaffMember) => {
-    setEditingId(s.id)
-    setName(s.name)
-    setRole(s.role)
-    setShiftStart(s.shiftStart)
-    setShiftEnd(s.shiftEnd)
-    setPhoto(s.photo || '')
-    setWorkDays(s.workDays || ['L', 'M', 'Mi', 'J', 'V'])
-    setShowModal(true)
-  }
-
-  const handleSave = () => {
-    if (!name.trim()) return
-    const payload: StaffMember = {
-      id: editingId || `staff-${Date.now()}`,
-      name, role, shiftStart, shiftEnd, photo, workDays,
+  const handleLogIncident = () => {
+    if (!incidentTarget) return
+    if (incidentType === 'substitute') {
+      if (subMode === 'staff' && !subStaffId) return
+      if (subMode === 'external' && !subExternal.trim()) return
     }
-    if (editingId) {
-      onUpdateStaff(payload)
-    } else {
-      onAddStaff(payload)
+
+    const override: ShiftOverride = {
+      id: `so-${Date.now()}`,
+      staffId: incidentTarget.id,
+      type: incidentType,
+      startDate: TODAY,
+      endDate: TODAY,
+      substituteStaffId: incidentType === 'substitute' && subMode === 'staff' ? subStaffId : undefined,
+      substituteExternal: incidentType === 'substitute' && subMode === 'external' ? subExternal.trim() : undefined,
+      note: incidentNote.trim() || undefined,
+      reportedBy: currentUser,
+      reportedAt: new Date().toISOString(),
     }
-    resetForm()
+    onAddOverride(override)
+    resetIncidentForm()
   }
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (event) => setPhoto(event.target?.result as string)
-    reader.readAsDataURL(file)
-  }
+  // ─── Render ───────────────────────────────────────────────────────────────
 
-  const toggleDay = (day: string) => {
-    setWorkDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day])
+  const renderCard = (person: StaffMember) => {
+    const override = getActiveOverride(person.id, shiftOverrides)
+    const hasIncident = !!override && (override.type === 'absence' || override.type === 'substitute')
+
+    return (
+      <div
+        key={person.id}
+        className={`flex items-start gap-4 p-4 bg-white border rounded-2xl shadow-sm transition-all ${
+          override ? 'border-slate-200 opacity-90' : 'border-slate-200 hover:border-slate-300'
+        }`}
+      >
+        {/* Avatar */}
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${
+          override ? 'bg-slate-50 border-slate-100 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-400'
+        } overflow-hidden`}>
+          {person.photo ? (
+            <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+          ) : (
+            <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role] || 'person'}</span>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className={`text-sm font-bold tracking-tight ${override ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+              {person.name}
+            </p>
+          </div>
+          <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-0.5">
+            {person.role} · {person.shiftStart}–{person.shiftEnd}
+          </p>
+          <div className="mt-2">
+            <StatusChip override={override} staff={staff} />
+          </div>
+          {override?.note && (
+            <p className="text-[10px] text-slate-400 font-medium italic mt-1.5">
+              "{override.note}"
+            </p>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-col gap-1 shrink-0">
+          {!override ? (
+            <button
+              onClick={() => setIncidentTarget(person)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-amber-600 hover:bg-amber-50 transition-all"
+              title="Registrar incidencia de hoy"
+            >
+              <span className="material-symbols-outlined text-[18px]">report</span>
+            </button>
+          ) : hasIncident ? (
+            <button
+              onClick={() => setRemoveTarget(override)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all"
+              title="Anular incidencia"
+            >
+              <span className="material-symbols-outlined text-[18px]">undo</span>
+            </button>
+          ) : null}
+        </div>
+      </div>
+    )
   }
 
   return (
     <>
-      {/* ── Inline "Staff on Duty" cards ── */}
-      <section className="space-y-6">
+      {/* ── Dashboard section ── */}
+      <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Staff en Turno</h3>
-          <button
-            onClick={() => setShowModal(true)}
+          <div>
+            <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">
+              Staff en Turno
+            </h3>
+            <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+              {todayStaff.length} programados hoy
+            </p>
+          </div>
+          <a
+            href="/usuarios?filter=Staff"
             className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors"
           >
             Gestionar <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
-          </button>
+          </a>
         </div>
-        <div className="grid gap-4">
-          {staff.length === 0 && (
-            <div className="p-8 text-center text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
-              <span className="material-symbols-outlined text-3xl mb-2 block">person_off</span>
-              No hay personal registrado
+
+        {/* Today's staff */}
+        <div className="grid gap-3">
+          {todayStaff.length === 0 && (
+            <div className="p-8 text-center text-slate-400 font-medium bg-white border border-dashed border-slate-200 rounded-2xl">
+              <span className="material-symbols-outlined text-3xl mb-2 block">calendar_today</span>
+              No hay personal programado para hoy
             </div>
           )}
-          {staff.map((person) => (
-            <div key={person.id} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer" onClick={() => openEdit(person)}>
-              {person.photo ? (
-                <img src={person.photo} alt={person.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
-              ) : (
-                <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role] || 'person'}</span>
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-slate-900 truncate tracking-tight">{person.name}</p>
-                <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">{person.role}</p>
-                <p className="text-[9px] text-slate-400 font-semibold mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
-                  {person.shiftStart} – {person.shiftEnd} • {(person.workDays || ['L','M','Mi','J','V']).join(' ')}
-                </p>
-              </div>
-              <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" title="Online" />
-            </div>
-          ))}
+          {todayStaff.map(renderCard)}
         </div>
+
+        {/* Off-schedule staff (collapsed) */}
+        {offDutyStaff.length > 0 && (
+          <details className="group">
+            <summary className="flex items-center gap-2 cursor-pointer text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors list-none select-none">
+              <span className="material-symbols-outlined text-sm group-open:rotate-90 transition-transform">chevron_right</span>
+              {offDutyStaff.length} sin turno hoy
+            </summary>
+            <div className="grid gap-3 mt-3">
+              {offDutyStaff.map(person => {
+                const override = getActiveOverride(person.id, shiftOverrides)
+                return (
+                  <div key={person.id} className="flex items-center gap-4 p-3 bg-slate-50/50 border border-dashed border-slate-200 rounded-2xl opacity-60">
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-slate-300 border border-slate-100 overflow-hidden shrink-0">
+                      {person.photo
+                        ? <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+                        : <span className="material-symbols-outlined text-lg">{ROLE_ICONS[person.role] || 'person'}</span>
+                      }
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-400 truncate">{person.name}</p>
+                      <p className="text-[9px] font-semibold text-slate-300 uppercase tracking-widest">{person.role}</p>
+                    </div>
+                    {override && <StatusChip override={override} staff={staff} />}
+                  </div>
+                )
+              })}
+            </div>
+          </details>
+        )}
       </section>
 
-      {/* ── Staff CRUD Modal ── */}
-      <Modal open={showModal} onClose={resetForm} title={editingId ? 'Editar Personal' : 'Agregar Personal'}>
-        <div className="space-y-6">
-          <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{editingId ? 'Datos del empleado' : 'Nuevo Empleado'}</p>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <input
-                  type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                  placeholder="Nombre completo"
-                />
+      {/* ── Incident Modal ── */}
+      <Modal
+        open={!!incidentTarget}
+        onClose={resetIncidentForm}
+        title="Registrar Incidencia del Día"
+      >
+        {incidentTarget && (
+          <div className="p-2 space-y-6">
+
+            {/* Who */}
+            <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white border border-slate-200 overflow-hidden shrink-0">
+                {incidentTarget.photo
+                  ? <img src={incidentTarget.photo} alt={incidentTarget.name} className="w-full h-full object-cover" />
+                  : <span className="material-symbols-outlined text-xl text-slate-400">{ROLE_ICONS[incidentTarget.role] || 'person'}</span>
+                }
               </div>
-              <div className="col-span-2 md:col-span-1 space-y-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Categoría</label>
-                <select value={role} onChange={(e) => setRole(e.target.value as StaffRole)}
-                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                >
-                  {STAFF_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
+              <div>
+                <p className="text-sm font-black text-slate-900">{incidentTarget.name}</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{incidentTarget.role} · Turno hoy</p>
               </div>
-              <div className="col-span-2 md:col-span-1 space-y-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Fotografía (Sugerido 200x200 1:1)</label>
-                <input type="file" accept="image/jpeg, image/png" onChange={handlePhotoUpload}
-                  className="block w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-white"
-                />
+            </div>
+
+            {/* Incident type */}
+            <div className="space-y-2">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tipo de incidencia</p>
+              <div className="grid grid-cols-2 gap-2">
+                {([
+                  { id: 'absence', label: 'Ausente hoy', icon: 'person_off', desc: 'No se presentó a su turno' },
+                  { id: 'substitute', label: 'Sustitución', icon: 'swap_horiz', desc: 'Cubre otro trabajador' },
+                ] as { id: IncidentType; label: string; icon: string; desc: string }[]).map(opt => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setIncidentType(opt.id)}
+                    className={`flex flex-col items-start gap-1 p-4 rounded-2xl border-2 text-left transition-all ${
+                      incidentType === opt.id
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-lg shadow-slate-200'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                    }`}
+                  >
+                    <span className={`material-symbols-outlined text-xl ${incidentType === opt.id ? 'text-white' : 'text-slate-400'}`}>
+                      {opt.icon}
+                    </span>
+                    <p className="text-[11px] font-black uppercase tracking-widest">{opt.label}</p>
+                    <p className={`text-[10px] font-medium ${incidentType === opt.id ? 'text-white/60' : 'text-slate-400'}`}>
+                      {opt.desc}
+                    </p>
+                  </button>
+                ))}
               </div>
-              <div className="col-span-2 space-y-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Días Laborales</label>
-                <div className="flex flex-wrap gap-2">
-                  {DAYS_OF_WEEK.map(day => (
+            </div>
+
+            {/* Substitute fields */}
+            {incidentType === 'substitute' && (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">¿Quién cubre?</p>
+                <div className="flex gap-2">
+                  {(['staff', 'external'] as const).map(mode => (
                     <button
-                      key={day}
-                      onClick={() => toggleDay(day)}
-                      className={`w-9 h-9 rounded-lg font-bold text-xs border transition-all ${
-                        workDays.includes(day)
-                          ? 'bg-primary text-white border-primary shadow-sm'
+                      key={mode}
+                      onClick={() => setSubMode(mode)}
+                      className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                        subMode === mode
+                          ? 'bg-slate-900 text-white border-slate-900'
                           : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'
                       }`}
                     >
-                      {day}
+                      {mode === 'staff' ? 'Del Personal' : 'Externo'}
                     </button>
                   ))}
                 </div>
+                {subMode === 'staff' ? (
+                  <select
+                    value={subStaffId}
+                    onChange={e => setSubStaffId(e.target.value)}
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                  >
+                    <option value="">Seleccionar sustituto...</option>
+                    {availableSubs.map(s => (
+                      <option key={s.id} value={s.id}>{s.name} — {s.role}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={subExternal}
+                    onChange={e => setSubExternal(e.target.value)}
+                    placeholder="Nombre del sustituto externo"
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
+                  />
+                )}
               </div>
-              <div className="col-span-1 space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Entrada</label>
-                <input type="time" value={shiftStart} onChange={(e) => setShiftStart(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                />
-              </div>
-              <div className="col-span-1 space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Salida</label>
-                <input type="time" value={shiftEnd} onChange={(e) => setShiftEnd(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                />
-              </div>
+            )}
+
+            {/* Note */}
+            <div className="space-y-2">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Nota interna <span className="font-medium normal-case tracking-normal text-slate-300">(opcional)</span>
+              </p>
+              <textarea
+                value={incidentNote}
+                onChange={e => setIncidentNote(e.target.value)}
+                rows={2}
+                placeholder="Ej: No respondió al llamado, cita médica..."
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm resize-none"
+              />
             </div>
-            <button onClick={handleSave}
-              className="w-full py-3 mt-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
+
+            {/* Logged by */}
+            <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span className="material-symbols-outlined text-sm text-slate-400">history_edu</span>
+              <p className="text-[10px] text-slate-400 font-medium">
+                Registrado por <strong className="text-slate-600">{currentUser}</strong> · {new Date().toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
+            </div>
+
+            {/* Submit */}
+            <button
+              onClick={handleLogIncident}
+              disabled={incidentType === 'substitute' && subMode === 'staff' && !subStaffId || incidentType === 'substitute' && subMode === 'external' && !subExternal.trim()}
+              className="w-full py-3.5 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px] disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-slate-200"
             >
-              {editingId ? 'Guardar Cambios' : 'Agregar al Staff'}
+              Registrar Incidencia
             </button>
           </div>
-
-          {!editingId && (
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Personal Activo ({staff.length})</p>
-              {staff.length === 0 && (
-                <p className="text-sm text-slate-400 text-center py-4">No hay personal registrado</p>
-              )}
-              {staff.map((s) => (
-                <div key={s.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
-                  <div className="flex items-center space-x-3">
-                    {s.photo ? (
-                      <img src={s.photo} alt={s.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
-                    ) : (
-                      <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-500 border border-slate-100">
-                        <span className="material-symbols-outlined text-lg">{ROLE_ICONS[s.role] || 'person'}</span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-bold text-slate-900">{s.name}</p>
-                      <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
-                        {s.role} • {s.shiftStart}–{s.shiftEnd} • {(s.workDays || []).join(' ')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => openEdit(s)}
-                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-container/30 rounded-lg transition-all"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">edit</span>
-                    </button>
-                    <button onClick={() => setConfirmDeleteId(s.id)}
-                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </Modal>
 
-      {/* ── Confirm Delete Dialog ── */}
+      {/* ── Remove Override Confirm ── */}
       <ConfirmDialog
-        open={!!confirmDeleteId}
-        onClose={() => setConfirmDeleteId(null)}
+        open={!!removeTarget}
+        onClose={() => setRemoveTarget(null)}
         onConfirm={() => {
-          if (confirmDeleteId) onDeleteStaff(confirmDeleteId)
-          setConfirmDeleteId(null)
+          if (removeTarget) onRemoveOverride(removeTarget.id)
+          setRemoveTarget(null)
         }}
-        title="Eliminar Miembro del Staff"
-        confirmLabel="Eliminar"
+        title="Anular Incidencia"
+        confirmLabel="Anular"
         variant="danger"
       >
-        ¿Seguro que desea eliminar a este miembro del staff? Esta acción no se puede deshacer.
+        ¿Anular la incidencia registrada para hoy? El empleado volverá a aparecer como en turno.
       </ConfirmDialog>
     </>
   )

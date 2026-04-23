@@ -42,6 +42,32 @@ export interface StaffMember {
   workDays?: string[]
 }
 
+/**
+ * A planned or reactive deviation from a staff member's regular schedule.
+ * - Planned (set from Usuarios/staff profile): type 'vacation' | 'pre_authorized'
+ * - Reactive (set from Dashboard, day-of): type 'absence' | 'substitute'
+ */
+export interface ShiftOverride {
+  id: string
+  staffId: string
+  /** Override category */
+  type: 'vacation' | 'pre_authorized' | 'absence' | 'substitute'
+  /** Inclusive start date YYYY-MM-DD */
+  startDate: string
+  /** Inclusive end date YYYY-MM-DD (same as startDate for single-day) */
+  endDate: string
+  /** ID of another StaffMember covering this period (optional) */
+  substituteStaffId?: string
+  /** Free-text name if substitute is external (not in staff list) */
+  substituteExternal?: string
+  /** Optional note for audit trail */
+  note?: string
+  /** Username / role of the person who created this record */
+  reportedBy: string
+  /** ISO timestamp of creation */
+  reportedAt: string
+}
+
 /** An item in the building's inventory */
 export interface InventoryItem {
   id: string

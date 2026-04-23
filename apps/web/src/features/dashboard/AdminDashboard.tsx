@@ -201,6 +201,7 @@ export default function AdminDashboard() {
   }
 
   const staff = state.staff || []
+  const shiftOverrides = state.shiftOverrides || []
   
   const upcomingAsamblea = useMemo(() => state.avisos.find(a => a.category === 'asamblea'), [state.avisos])
   const asambleaStats = useMemo(() => {
@@ -446,9 +447,10 @@ export default function AdminDashboard() {
         <div className="space-y-10">
           <StaffSection
             staff={staff}
-            onAddStaff={(p) => dispatch({ type: 'ADD_STAFF', payload: p })}
-            onUpdateStaff={(p) => dispatch({ type: 'UPDATE_STAFF', payload: p })}
-            onDeleteStaff={(id) => dispatch({ type: 'DELETE_STAFF', payload: id })}
+            shiftOverrides={shiftOverrides}
+            currentUser={role}
+            onAddOverride={(o) => dispatch({ type: 'ADD_SHIFT_OVERRIDE', payload: o })}
+            onRemoveOverride={(id) => dispatch({ type: 'REMOVE_SHIFT_OVERRIDE', payload: id })}
           />
 
         </div>

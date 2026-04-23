@@ -13,7 +13,7 @@ import type {
   Aviso, Pago, Paquete, Reservacion, Votacion,
   Notificacion, Resident, StaffMember, Amenity, BuildingConfig,
   Ticket, TicketActivity, Adeudo, Egreso, RecurringEgreso,
-  GroupingMode, InventoryItem, UserGroup
+  GroupingMode, InventoryItem, UserGroup, ShiftOverride
 } from '../../types'
 
 // ═══════════════════════════════════════════════════════════════════
@@ -41,6 +41,8 @@ export interface StoreState {
   egresos: Egreso[]
   /** Building inventory items */
   inventory: InventoryItem[]
+  /** Planned and reactive staff schedule overrides */
+  shiftOverrides: ShiftOverride[]
   /** Data model version to handle migrations */
   version: number
 }
@@ -95,6 +97,9 @@ export type Action =
   | { type: 'ADD_INVENTORY'; payload: InventoryItem }
   | { type: 'UPDATE_INVENTORY'; payload: InventoryItem }
   | { type: 'DELETE_INVENTORY'; payload: string }
+  | { type: 'ADD_SHIFT_OVERRIDE'; payload: ShiftOverride }
+  | { type: 'REMOVE_SHIFT_OVERRIDE'; payload: string }  // id
+  | { type: 'UPDATE_SHIFT_OVERRIDE'; payload: ShiftOverride }
   | { type: 'UPDATE_PERMISSIONS_MATRIX'; payload: { resource: string; action: string; groups: UserGroup[] } }
   | { type: 'HYDRATE_FROM_API'; payload: StoreState }
   | { type: 'RESET'; payload?: { groupingMode: GroupingMode } }
@@ -122,7 +127,7 @@ export function emptyState(): StoreState {
     reservaciones: [], votaciones: [], residents: [], staff: [],
     amenities: [], buildingConfig: EMPTY_BUILDING_CONFIG,
     tickets: [], ticketCounter: 0, adeudos: [], egresos: [],
-    inventory: [], version: 1,
+    inventory: [], shiftOverrides: [], version: 1,
   }
 }
 
@@ -303,6 +308,14 @@ export function reducer(state: StoreState, action: Action): StoreState {
       return { ...state, inventory: (state.inventory || []).map(i => i.id === action.payload.id ? action.payload : i) }
     case 'DELETE_INVENTORY':
       return { ...state, inventory: (state.inventory || []).filter(i => i.id !== action.payload) }
+
+    // Shift overrides
+    case 'ADD_SHIFT_OVERRIDE':
+      return { ...state, shiftOverrides: [action.payload, ...(state.shiftOverrides || [])] }
+    case 'UPDATE_SHIFT_OVERRIDE':
+      return { ...state, shiftOverrides: (state.shiftOverrides || []).map(o => o.id === action.payload.id ? action.payload : o) }
+    case 'REMOVE_SHIFT_OVERRIDE':
+      return { ...state, shiftOverrides: (state.shiftOverrides || []).filter(o => o.id !== action.payload) }
 
     case 'UPDATE_PERMISSIONS_MATRIX': {
       const { resource, action: permAction, groups } = action.payload

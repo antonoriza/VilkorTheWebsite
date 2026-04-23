@@ -50,6 +50,7 @@ export async function loadStateFromAPI(): Promise<StoreState | null> {
       notificaciones: [],
       ticketCounter:  0,
       adeudos:        [],
+      shiftOverrides: [],
       version:        1,
     }
   } catch {
