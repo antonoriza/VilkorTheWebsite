@@ -46,6 +46,10 @@ export default function TicketsPage() {
   // Detail Modal State
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
 
+  // Sort
+  type TicketSortKey = 'newest' | 'oldest' | 'priority' | 'status'
+  const [ticketSort, setTicketSort] = useState<TicketSortKey>('newest')
+
   // Derived queries
   const allTickets = useMemo(() => {
     let t = state.tickets
@@ -56,8 +60,17 @@ export default function TicketsPage() {
     if (filterPriority) t = t.filter(ticket => ticket.priority === filterPriority)
     if (filterDept) t = t.filter(ticket => ticket.apartment.toLowerCase().includes(filterDept.toLowerCase()))
     
-    return t.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  }, [state.tickets, isResident, apartment, filterStatus, filterCategory, filterPriority, filterDept])
+    const PRIORITY_ORDER: Record<string, number> = { Alta: 0, Media: 1, Baja: 2 }
+    const STATUS_ORDER: Record<string, number> = { 'Nuevo': 0, 'Asignado': 1, 'En Proceso': 2, 'Resuelto': 3, 'Cerrado': 4 }
+
+    return [...t].sort((a, b) => {
+      if (ticketSort === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      if (ticketSort === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      if (ticketSort === 'priority') return (PRIORITY_ORDER[a.priority] ?? 9) - (PRIORITY_ORDER[b.priority] ?? 9)
+      if (ticketSort === 'status') return (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9)
+      return 0
+    })
+  }, [state.tickets, isResident, apartment, filterStatus, filterCategory, filterPriority, filterDept, ticketSort])
 
   const openTicketsCount = allTickets.filter(t => t.status !== 'Cerrado' && t.status !== 'Resuelto').length
   const processingCount = allTickets.filter(t => t.status === 'En Proceso').length
@@ -237,6 +250,31 @@ export default function TicketsPage() {
               <datalist id="dept-options-tickets">
                 {availableDepts.map(d => <option key={d} value={d} />)}
               </datalist>
+            </div>
+          </div>
+
+          {/* Sort selector */}
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Ordenar por</span>
+            <div className="flex items-center gap-2">
+              {([
+                { id: 'newest', label: 'Más recientes' },
+                { id: 'oldest', label: 'Más antiguos' },
+                { id: 'priority', label: 'Prioridad' },
+                { id: 'status', label: 'Estado' },
+              ] as { id: TicketSortKey; label: string }[]).map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => setTicketSort(opt.id)}
+                  className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                    ticketSort === opt.id
+                      ? 'bg-slate-900 text-white shadow-md shadow-slate-200'
+                      : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

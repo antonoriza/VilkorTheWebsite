@@ -3,7 +3,7 @@
  * Consumed by: PagosPage (ledger tab).
  * Does NOT handle: filter logic or table header/filter bar (those remain in PagosPage).
  */
-import { Fragment } from 'react'
+import { Fragment, useState, useMemo } from 'react'
 import StatusBadge from '../../../core/components/StatusBadge'
 import { isEffectiveDebt } from '../../../core/store/maturity'
 import { EGRESO_CATEGORIA_LABELS } from '../../../types/financial'
@@ -210,23 +210,47 @@ interface EgresosTableProps {
 }
 
 export function EgresosTable({ ledgerEgresos, onToggleStatus, onPreview, onDelete }: EgresosTableProps) {
+  type ESortKey = 'date' | 'categoria' | 'concepto' | 'amount' | 'status'
+  const [sk, setSk] = useState<ESortKey>('date')
+  const [sd, setSd] = useState<SortDir>('desc')
+  const handleESort = (col: ESortKey) => {
+    if (col === sk) setSd(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSk(col); setSd('asc') }
+  }
+
+  const sortedEgresos = useMemo(() => {
+    return [...ledgerEgresos].sort((a, b) => {
+      let av: string | number = ''
+      let bv: string | number = ''
+      if (sk === 'date') { av = a.date; bv = b.date }
+      else if (sk === 'categoria') { av = a.categoria; bv = b.categoria }
+      else if (sk === 'concepto') { av = a.concepto; bv = b.concepto }
+      else if (sk === 'amount') { av = a.amount; bv = b.amount }
+      else if (sk === 'status') { av = a.status; bv = b.status }
+      if (typeof av === 'number' && typeof bv === 'number') {
+        return sd === 'asc' ? av - bv : bv - av
+      }
+      const cmp = String(av).localeCompare(String(bv), 'es', { sensitivity: 'base' })
+      return sd === 'asc' ? cmp : -cmp
+    })
+  }, [ledgerEgresos, sk, sd])
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="border-b border-slate-100 bg-slate-50/60">
-            <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
-            <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoría</th>
-            <th className="px-5 py-3.5 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Concepto</th>
-            <th className="px-5 py-3.5 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monto</th>
-            <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
+            <SortTh col="date"      label="Fecha"     sortKey={sk} sortDir={sd} onSort={handleESort} />
+            <SortTh col="categoria" label="Categoría" sortKey={sk} sortDir={sd} onSort={handleESort} />
+            <SortTh col="concepto"  label="Concepto"  sortKey={sk} sortDir={sd} onSort={handleESort} />
+            <SortTh col="amount"    label="Monto"     right sortKey={sk} sortDir={sd} onSort={handleESort} />
+            <SortTh col="status"    label="Estado"    sortKey={sk} sortDir={sd} onSort={handleESort} />
             <th className="px-5 py-3.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acción</th>
           </tr>
         </thead>
         <tbody>
           {(() => {
             let lastMonth = ''
-            return ledgerEgresos.map(eg => {
+            return sortedEgresos.map(eg => {
               const currentMonth = eg.monthKey
               const isNewMonth = currentMonth !== lastMonth
               lastMonth = currentMonth
@@ -291,7 +315,7 @@ export function EgresosTable({ ledgerEgresos, onToggleStatus, onPreview, onDelet
               )
             })
           })()}
-          {ledgerEgresos.length === 0 && (
+          {sortedEgresos.length === 0 && (
             <tr>
               <td colSpan={6} className="px-6 py-12 text-center">
                 <div className="flex flex-col items-center gap-2">

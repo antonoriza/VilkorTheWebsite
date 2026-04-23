@@ -15,6 +15,7 @@ import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import EmptyState from '../../core/components/EmptyState'
+import SortableTh from '../../core/components/SortableTh'
 
 
 export default function PaqueteriaPage() {
@@ -25,6 +26,14 @@ export default function PaqueteriaPage() {
   const [formRecipient, setFormRecipient] = useState('')
   const [formApartment, setFormApartment] = useState('')
   const [formLocation, setFormLocation] = useState('')
+
+  type PaqSortKey = 'recipient' | 'apartment' | 'receivedDate' | 'status'
+  const [sortKey, setSortKey] = useState<PaqSortKey>('receivedDate')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+  const handleSort = (key: PaqSortKey) => {
+    if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir('asc') }
+  }
 
   const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
 
@@ -40,8 +49,13 @@ export default function PaqueteriaPage() {
         p.apartment.toLowerCase().includes(q)
       )
     }
-    return data
-  }, [state.paquetes, isAdmin, apartment, search])
+    return [...data].sort((a, b) => {
+      const av = (a[sortKey] ?? '') as string
+      const bv = (b[sortKey] ?? '') as string
+      const cmp = av.localeCompare(bv, 'es', { sensitivity: 'base' })
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [state.paquetes, isAdmin, apartment, search, sortKey, sortDir])
 
   /** Derive unique location options from existing package data */
   const knownLocations = useMemo(() => {
@@ -144,10 +158,10 @@ export default function PaqueteriaPage() {
           <table className="w-full">
             <thead>
               <tr className="border-t border-slate-100">
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Destinatario</th>
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Departamento</th>
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recibido</th>
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
+                <SortableTh<PaqSortKey> col="recipient" label="Destinatario" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-8" />
+                <SortableTh<PaqSortKey> col="apartment" label="Departamento" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-8" />
+                <SortableTh<PaqSortKey> col="receivedDate" label="Recibido" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-8" />
+                <SortableTh<PaqSortKey> col="status" label="Estado" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} className="px-8" />
                 <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ubicación</th>
                 <th className="px-8 py-4 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
               </tr>

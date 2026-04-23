@@ -3,6 +3,7 @@ import { Resident, StaffMember, BuildingConfig, UserGroup, Resource, PermissionA
 import { useStore } from '../../../core/store/store'
 import { useAuth } from '../../../core/auth/AuthContext'
 import ConfirmDialog from '../../../core/components/ConfirmDialog'
+import SortableTh from '../../../core/components/SortableTh'
 
 // ─── Types & Shared ──────────────────────────────────────────────────────────
 
@@ -29,33 +30,70 @@ const ROLE_COLOR: Record<UnifiedPerson['type'], string> = {
 
 // ─── Tab: Control de Acceso ──────────────────────────────────────────────────
 
+type PersonFilterType = 'all' | 'Residente' | 'Staff' | 'Administrador'
+
+const TYPE_CHIP_FILTERS: { id: PersonFilterType; label: string; icon: string }[] = [
+  { id: 'all',           label: 'Todos',          icon: 'groups' },
+  { id: 'Residente',     label: 'Residentes',     icon: 'person' },
+  { id: 'Staff',         label: 'Staff',           icon: 'engineering' },
+  { id: 'Administrador', label: 'Admins',          icon: 'verified_user' },
+]
+
 function ControlAccesoTab({
-  people, search, setSearch, labelClass, inputClass
+  people, search, setSearch, inputClass
 }: {
   people: UnifiedPerson[]
   search: string
   setSearch: (v: string) => void
-  labelClass: string
   inputClass: string
 }) {
   const { role } = useAuth()
   const [confirmBlockId, setConfirmBlockId] = useState<string | null>(null)
+  const [typeFilter, setTypeFilter] = useState<PersonFilterType>('all')
+
+  type AccesoSortKey = 'name' | 'type'
+  const [sortKey, setSortKey] = useState<AccesoSortKey>('name')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const handleSort = (key: AccesoSortKey) => {
+    if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir('asc') }
+  }
 
   const filtered = useMemo(() => {
-    let list = people.filter(p =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.subtext.toLowerCase().includes(search.toLowerCase())
-    )
+    let list = people
+    if (typeFilter !== 'all') list = list.filter(p => p.type === typeFilter)
+    if (search) {
+      const q = search.toLowerCase()
+      list = list.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.subtext.toLowerCase().includes(q) ||
+        p.role.toLowerCase().includes(q)
+      )
+    }
     if (role === 'operador') list = list.filter(p => p.type !== 'Residente')
-    return list
-  }, [people, search, role])
+    return [...list].sort((a, b) => {
+      const av = (a[sortKey] ?? '') as string
+      const bv = (b[sortKey] ?? '') as string
+      const cmp = av.localeCompare(bv, 'es', { sensitivity: 'base' })
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [people, search, role, typeFilter, sortKey, sortDir])
+
+  const typeCounts = useMemo(() => ({
+    all: people.length,
+    Residente: people.filter(p => p.type === 'Residente').length,
+    Staff: people.filter(p => p.type === 'Staff').length,
+    Administrador: people.filter(p => p.type === 'Administrador').length,
+  }), [people])
+
+  const hasFilters = typeFilter !== 'all' || search !== ''
 
   const handleBlock = () => {
     console.log('[ACCESO] Bloqueando acceso para:', confirmBlockId)
     setConfirmBlockId(null)
   }
 
-  const activeCount = filtered.length
+  const activeCount = people.filter(p => role !== 'operador' || p.type !== 'Residente').length
   const blockedCount = 0 // placeholder for future status field
 
   return (
@@ -100,28 +138,71 @@ function ControlAccesoTab({
         </p>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-        <input
-          type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar persona..."
-          className={`${inputClass} pl-12 pr-10`}
-        />
-        {search && (
-          <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">cancel</span>
-          </button>
-        )}
+      {/* Type filter chips + Search row */}
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+        {/* Type chips */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {TYPE_CHIP_FILTERS.map(f => (
+            <button
+              key={f.id}
+              onClick={() => setTypeFilter(f.id)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                typeFilter === f.id
+                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                  : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300'
+              }`}
+            >
+              <span className="material-symbols-outlined text-sm">{f.icon}</span>
+              {f.label}
+              <span className={`ml-0.5 text-[9px] ${typeFilter === f.id ? 'text-white/60' : 'text-slate-300'}`}>
+                {typeCounts[f.id]}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Search + clear */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+            <input
+              type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar persona, rol..."
+              className={`${inputClass} pl-12 pr-10 min-w-[240px]`}
+            />
+            {search && (
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors">
+                <span className="material-symbols-outlined text-[18px]">cancel</span>
+              </button>
+            )}
+          </div>
+          {hasFilters && (
+            <button
+              onClick={() => { setTypeFilter('all'); setSearch('') }}
+              className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-widest transition-colors whitespace-nowrap"
+            >
+              <span className="material-symbols-outlined text-sm">filter_alt_off</span>
+              Limpiar
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Access list */}
       <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+        {filtered.length > 0 && (
+          <div className="px-6 py-3 border-b border-slate-100 flex items-center justify-between">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              {filtered.length} {filtered.length === 1 ? 'persona' : 'personas'}
+              {hasFilters && <span className="text-slate-300"> de {people.length}</span>}
+            </span>
+          </div>
+        )}
         <table className="w-full text-left">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Persona</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tipo</th>
+              <SortableTh<AccesoSortKey> col="name" label="Persona" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+              <SortableTh<AccesoSortKey> col="type" label="Tipo" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
               <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado</th>
               <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Acción</th>
             </tr>
@@ -341,16 +422,14 @@ export default function PermisosSettings({
   bc,
   residents,
   staff,
-  labelClass,
   inputClass,
 }: {
   bc: BuildingConfig
   residents: Resident[]
   staff: StaffMember[]
-  labelClass: string
   inputClass: string
 }) {
-  const { state } = useStore()
+  useStore() // ensures store subscription for reactivity
   const [activeTab, setActiveTab] = useState('acceso')
   const [search, setSearch] = useState('')
 
@@ -410,7 +489,6 @@ export default function PermisosSettings({
           people={unifiedDirectory} 
           search={search} 
           setSearch={setSearch} 
-          labelClass={labelClass} 
           inputClass={inputClass}
         />
       )}

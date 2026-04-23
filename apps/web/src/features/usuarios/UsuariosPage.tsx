@@ -16,6 +16,7 @@ import { StaffRole } from '../../types'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import EmptyState from '../../core/components/EmptyState'
+import SortableTh from '../../core/components/SortableTh'
 
 // ─── Staff Constants ─────────────────────────────────────────────────────────
 
@@ -86,6 +87,15 @@ export default function UsuariosPage() {
   const [towerFilter, setTowerFilter] = useState('all')
   const [search, setSearch] = useState('')
 
+  // ── Sort state (applied after filters) ──
+  type PersonSortKey = 'name' | 'type' | 'role' | 'location'
+  const [sortKey, setSortKey] = useState<PersonSortKey>('name')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+  const handleSort = (key: PersonSortKey) => {
+    if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir('asc') }
+  }
+
   // ── Detail modal state ──
   const [detailPersonId, setDetailPersonId] = useState<string | null>(null)
 
@@ -145,7 +155,7 @@ export default function UsuariosPage() {
     return result
   }, [residents, staff, bc, role])
 
-  // ── Apply filters ──
+  // ── Apply filters then sort ──
   const filtered = useMemo(() => {
     let list = people
     if (typeFilter !== 'all') list = list.filter(p => p.type === typeFilter)
@@ -159,8 +169,13 @@ export default function UsuariosPage() {
         (p.email || '').toLowerCase().includes(q)
       )
     }
-    return list
-  }, [people, typeFilter, towerFilter, search])
+    return [...list].sort((a, b) => {
+      const av = (a[sortKey] ?? '') as string
+      const bv = (b[sortKey] ?? '') as string
+      const cmp = av.localeCompare(bv, 'es', { sensitivity: 'base' })
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [people, typeFilter, towerFilter, search, sortKey, sortDir])
 
   // ── Counts per type ──
   const typeCounts = useMemo(() => ({
@@ -358,10 +373,10 @@ export default function UsuariosPage() {
         <table className="w-full text-left">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Persona</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tipo</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Rol / Puesto</th>
-              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ubicación</th>
+              <SortableTh<PersonSortKey> col="name" label="Persona" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+              <SortableTh<PersonSortKey> col="type" label="Tipo" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+              <SortableTh<PersonSortKey> col="role" label="Rol / Puesto" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
+              <SortableTh<PersonSortKey> col="location" label="Ubicación" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
               <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Contacto</th>
               <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Acciones</th>
             </tr>

@@ -159,7 +159,6 @@ export default function AdminConfiguracion() {
             bc={bc}
             residents={state.residents || []}
             staff={state.staff || []}
-            labelClass={labelClass}
             inputClass={inputClass}
           />
         )}
