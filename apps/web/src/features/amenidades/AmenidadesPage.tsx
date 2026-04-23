@@ -19,17 +19,8 @@ import EmptyState from '../../core/components/EmptyState'
 /** Pre-defined time slots for reservations */
 const TIME_SLOTS = ['10:00 – 14:00', '14:00 – 18:00', '18:00 – 22:00']
 
-// ─── Helpers ─────────────────────────────────────────────────────────
+import { dateToMonthLabel } from '../../lib/month-utils'
 
-const MONTH_NAMES_ES = [
-  'enero','febrero','marzo','abril','mayo','junio',
-  'julio','agosto','septiembre','octubre','noviembre','diciembre',
-]
-
-function dateToMonthLabel(dateStr: string): string {
-  const [y, m] = dateStr.split('-')
-  return `${MONTH_NAMES_ES[parseInt(m, 10) - 1] || ''} de ${y}`
-}
 
 export default function AmenidadesPage() {
   const { role, apartment, user } = useAuth()

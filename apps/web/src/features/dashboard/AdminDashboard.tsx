@@ -9,26 +9,17 @@
  * an in-app ConfirmDialog component.
  */
 import { useState, useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useStore } from '../../core/store/store'
 import { useAuth } from '../../core/auth/AuthContext'
 import Modal from '../../core/components/Modal'
-import ConfirmDialog from '../../core/components/ConfirmDialog'
 import AvisoFormModal from '../../core/components/AvisoFormModal'
-import type { Aviso, StaffRole } from '../../types'
+import SetupChecklist from './components/SetupChecklist'
+import StaffSection from './components/StaffSection'
+import OperationalAlerts from './components/OperationalAlerts'
+import type { Aviso } from '../../types'
 
-const DAYS_OF_WEEK = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D']
 
-/** Allowed staff role categories */
-const STAFF_ROLES: StaffRole[] = ['Guardia', 'Jardinero', 'Limpieza', 'Administradora General']
-
-/** Material icon for each staff role */
-const ROLE_ICONS: Record<StaffRole, string> = {
-  Guardia: 'shield_person',
-  Jardinero: 'yard',
-  Limpieza: 'mop',
-  'Administradora General': 'manage_accounts',
-}
 
 export default function AdminDashboard() {
   const { state, dispatch } = useStore()
@@ -50,21 +41,12 @@ export default function AdminDashboard() {
       }))
   }, [state.reservaciones])
 
-  // Staff management modal
-  const [showStaffModal, setShowStaffModal] = useState(false)
-  const [editingStaffId, setEditingStaffId] = useState<string | null>(null)
-  const [staffName, setStaffName] = useState('')
-  const [staffRole, setStaffRole] = useState<StaffRole>('Guardia')
-  const [staffShiftStart, setStaffShiftStart] = useState('08:00')
-  const [staffShiftEnd, setStaffShiftEnd] = useState('17:00')
-  const [staffPhoto, setStaffPhoto] = useState('')
-  const [staffWorkDays, setStaffWorkDays] = useState<string[]>(['L', 'M', 'Mi', 'J', 'V'])
+
 
   // Inline aviso creation via unified component
   const [showAvisoModal, setShowAvisoModal] = useState(false)
 
   // ── Optional step: amenities skip/confirm ─────────────────────────────
-  const navigate = useNavigate()
   const [amenitiesSkipped, setAmenitiesSkipped] = useState<boolean>(
     () => localStorage.getItem('pp_amenities_skipped') === 'true'
   )
@@ -73,8 +55,7 @@ export default function AdminDashboard() {
     setAmenitiesSkipped(true)
   }
 
-  // In-app confirm dialog state (replaces window.confirm)
-  const [confirmDeleteStaffId, setConfirmDeleteStaffId] = useState<string | null>(null)
+
 
   const bc = state.buildingConfig
   const todayISO = new Date().toISOString().split('T')[0]
@@ -192,72 +173,7 @@ export default function AdminDashboard() {
     setTimeout(() => setToasts(prev => prev.filter(t => t.id !== toastId)), 3000)
   }
 
-  const resetStaffForm = () => {
-    setEditingStaffId(null)
-    setStaffName('')
-    setStaffRole('Guardia')
-    setStaffShiftStart('08:00')
-    setStaffShiftEnd('17:00')
-    setStaffPhoto('')
-    setStaffWorkDays(['L', 'M', 'Mi', 'J', 'V'])
-    setShowStaffModal(false)
-  }
 
-  const openEditStaff = (staff: any) => {
-    setEditingStaffId(staff.id)
-    setStaffName(staff.name)
-    setStaffRole(staff.role as StaffRole)
-    setStaffShiftStart(staff.shiftStart)
-    setStaffShiftEnd(staff.shiftEnd)
-    setStaffPhoto(staff.photo || '')
-    setStaffWorkDays(staff.workDays || ['L', 'M', 'Mi', 'J', 'V'])
-    setShowStaffModal(true)
-  }
-
-  const handleSaveStaff = () => {
-    if (!staffName.trim()) return
-    const payload = {
-      id: editingStaffId || `staff-${Date.now()}`,
-      name: staffName,
-      role: staffRole,
-      shiftStart: staffShiftStart,
-      shiftEnd: staffShiftEnd,
-      photo: staffPhoto,
-      workDays: staffWorkDays,
-    }
-
-    if (editingStaffId) {
-      dispatch({ type: 'UPDATE_STAFF', payload })
-    } else {
-      dispatch({ type: 'ADD_STAFF', payload })
-    }
-    resetStaffForm()
-  }
-
-  const handleStaffPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (event) => setStaffPhoto(event.target?.result as string)
-    reader.readAsDataURL(file)
-  }
-
-  const toggleWorkDay = (day: string) => {
-    setStaffWorkDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day])
-  }
-
-  /** Opens the in-app confirm dialog for staff deletion */
-  const handleDeleteStaff = (id: string) => {
-    setConfirmDeleteStaffId(id)
-  }
-
-  /** Executes staff deletion after user confirms */
-  const confirmDeleteStaff = () => {
-    if (confirmDeleteStaffId) {
-      dispatch({ type: 'DELETE_STAFF', payload: confirmDeleteStaffId })
-    }
-    setConfirmDeleteStaffId(null)
-  }
 
   /** Creates a new aviso from the unified modal */
   const handleSaveAviso = (data: Omit<Aviso, 'id'> & { id?: string }) => {
@@ -352,249 +268,14 @@ export default function AdminDashboard() {
         )}
 
         {/* ══════════════════════════════════════════════════════════════ */}
-        {/* DAY ZERO ONBOARDING — premium first-run experience           */}
+        {/* SETUP CHECKLIST — virgin onboarding or compact progress bar   */}
         {/* ══════════════════════════════════════════════════════════════ */}
-        {isSystemVirgin && (
-          <div className="space-y-8 animate-in fade-in duration-700">
-            {/* ── Hero welcome ── */}
-            <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-12 md:p-16 text-center shadow-2xl shadow-slate-300/30">
-              {/* Decorative background elements */}
-              <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-              <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
-
-              <div className="relative z-10 max-w-xl mx-auto">
-                <div className="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-6 border border-white/10">
-                  <span className="material-symbols-outlined text-3xl text-white/80">rocket_launch</span>
-                </div>
-                <h1 className="text-3xl md:text-4xl font-headline font-black text-white tracking-tight mb-4">
-                  Bienvenido a PropertyPulse
-                </h1>
-                <p className="text-white/60 font-medium leading-relaxed text-base md:text-lg max-w-lg mx-auto">
-                  Tu plataforma de gestión inmobiliaria está lista. Completa los pasos a continuación para activar todos los módulos del sistema.
-                </p>
-              </div>
-            </section>
-
-            {/* ── Setup Checklist ── */}
-            <section className="space-y-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-headline font-extrabold text-slate-900 tracking-tight">Configuración Inicial</h2>
-                  <p className="text-sm text-slate-400 font-medium mt-0.5">Completa cada paso para habilitar el panel operativo</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-black text-slate-900">{completedSteps}<span className="text-slate-300">/{setupSteps.length}</span></span>
-                  <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full transition-all duration-700 ease-out"
-                      style={{ width: `${(completedSteps / setupSteps.length) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {setupSteps.map((step, i) => {
-                  const isLocked = i > 0 && !setupSteps[i - 1].done
-                  const isActive = !step.done && !isLocked
-                  const isOptionalPrompt = isActive && !!step.optional
-
-                  // ── Optional step — render as choice prompt, not a link ──
-                  if (isOptionalPrompt) {
-                    return (
-                      <div
-                        key={step.id}
-                        className="relative flex flex-col gap-4 p-5 rounded-2xl border-2 bg-white border-primary/20 shadow-md shadow-primary/5"
-                      >
-                        {/* Header */}
-                        <div className="flex items-start gap-4">
-                          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 text-primary">
-                            <span className="material-symbols-outlined text-xl">{step.icon}</span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">
-                                Paso {i + 1} — Opcional
-                              </span>
-                            </div>
-                            <h3 className="text-sm font-bold mt-1 leading-snug text-slate-900">
-                              {step.label}
-                            </h3>
-                            <p className="text-xs mt-1 leading-relaxed text-slate-400">
-                              ¿Tu edificio cuenta con áreas comunes o amenidades?
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Choice buttons */}
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <button
-                            onClick={() => navigate(step.href)}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-700 transition-all"
-                          >
-                            <span className="material-symbols-outlined text-base">add_circle</span>
-                            Configurar ahora
-                          </button>
-                          <button
-                            onClick={skipAmenities}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 text-slate-500 text-[11px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-100 hover:text-slate-700 transition-all border border-slate-200"
-                          >
-                            <span className="material-symbols-outlined text-base">do_not_disturb_on</span>
-                            No por ahora
-                          </button>
-                        </div>
-
-                        {/* Settings note */}
-                        <p className="text-[10px] text-slate-300 font-medium text-center leading-relaxed">
-                          Puedes agregar amenidades en cualquier momento desde{' '}
-                          <Link to="/configuracion?tab=perfil" className="underline hover:text-slate-500 transition-colors">
-                            Configuración
-                          </Link>
-                        </p>
-                      </div>
-                    )
-                  }
-
-                  // ── Normal step — done / locked / active link ──
-                  return (
-                    <Link
-                      key={step.id}
-                      to={isLocked ? '#' : step.href}
-                      onClick={isLocked ? (e) => e.preventDefault() : undefined}
-                      className={`group relative flex items-start gap-4 p-5 rounded-2xl border-2 transition-all duration-200 ${
-                        step.done
-                          ? step.skipped
-                            ? 'bg-slate-50 border-slate-100 cursor-default pointer-events-none opacity-60'
-                            : 'bg-emerald-50/50 border-emerald-100 cursor-default pointer-events-none'
-                          : isLocked
-                            ? 'bg-slate-50 border-slate-100 cursor-not-allowed opacity-50'
-                            : 'bg-white border-slate-100 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-100 hover:-translate-y-0.5'
-                      }`}
-                    >
-                      {/* Step icon */}
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                        step.done
-                          ? step.skipped
-                            ? 'bg-slate-100 text-slate-400'
-                            : 'bg-emerald-100 text-emerald-600'
-                          : isLocked
-                            ? 'bg-slate-100 text-slate-300'
-                            : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
-                      }`}>
-                        {step.done
-                          ? step.skipped
-                            ? <span className="material-symbols-outlined text-xl">skip_next</span>
-                            : <span className="material-symbols-outlined text-xl">check_circle</span>
-                          : isLocked
-                            ? <span className="material-symbols-outlined text-xl">lock</span>
-                            : <span className="material-symbols-outlined text-xl">{step.icon}</span>
-                        }
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[10px] font-black uppercase tracking-widest ${
-                            step.done
-                              ? step.skipped ? 'text-slate-400' : 'text-emerald-500'
-                              : isLocked
-                                ? 'text-slate-300'
-                                : 'text-slate-400'
-                          }`}>
-                            Paso {i + 1}
-                            {step.done
-                              ? step.skipped ? ' — Omitido' : ' ✓'
-                              : isLocked ? ' — Bloqueado' : ''}
-                          </span>
-                        </div>
-                        <h3 className={`text-sm font-bold mt-1 leading-snug ${
-                          step.done
-                            ? step.skipped
-                              ? 'text-slate-400'
-                              : 'text-emerald-700 line-through decoration-emerald-300'
-                            : isLocked
-                              ? 'text-slate-300'
-                              : 'text-slate-900'
-                        }`}>
-                          {step.label}
-                        </h3>
-                        <p className={`text-xs mt-1 leading-relaxed ${
-                          step.done
-                            ? step.skipped ? 'text-slate-400' : 'text-emerald-500/70'
-                            : isLocked
-                              ? 'text-slate-300'
-                              : 'text-slate-400'
-                        }`}>
-                          {step.done && step.skipped
-                            ? 'Puedes activarlo cuando quieras desde Configuración'
-                            : isLocked
-                              ? `Completa el paso ${i} primero`
-                              : step.description}
-                        </p>
-                      </div>
-
-                      {/* Trailing indicator */}
-                      {isActive && (
-                        <span className="material-symbols-outlined text-slate-200 group-hover:text-slate-500 text-lg shrink-0 mt-1 transition-all group-hover:translate-x-0.5">
-                          arrow_forward
-                        </span>
-                      )}
-                    </Link>
-                  )
-                })}
-              </div>
-            </section>
-          </div>
-        )}
-
-        {/* ── Setup Checklist — compact version shown when NOT virgin but still incomplete ── */}
-        {showSetupCard && !isSystemVirgin && (
-          <section className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 shadow-xl shadow-slate-200 animate-in fade-in slide-in-from-top-2 duration-500">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-white text-base">rocket_launch</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-black text-white">Configuración pendiente</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-black text-white/50">{completedSteps}/{setupSteps.length}</span>
-                <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-emerald-400 rounded-full transition-all duration-700"
-                    style={{ width: `${(completedSteps / setupSteps.length) * 100}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {setupSteps.filter(s => !s.done).map((step) => {
-                const originalIndex = setupSteps.indexOf(step)
-                const isLocked = originalIndex > 0 && !setupSteps[originalIndex - 1].done
-                return isLocked ? (
-                  <span
-                    key={step.id}
-                    className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/5 border border-white/5 opacity-40 cursor-not-allowed"
-                  >
-                    <span className="material-symbols-outlined text-white/40 text-sm">lock</span>
-                    <span className="text-[11px] font-bold text-white/40">{step.label}</span>
-                  </span>
-                ) : (
-                  <Link
-                    key={step.id}
-                    to={step.href}
-                    className="group flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 hover:border-white/30 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-white/60 text-sm">{step.icon}</span>
-                    <span className="text-[11px] font-bold text-white/80 group-hover:text-white">{step.label}</span>
-                    <span className="material-symbols-outlined text-white/30 group-hover:text-white/60 text-sm">arrow_forward</span>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
-        )}
+        <SetupChecklist
+          steps={setupSteps}
+          isSystemVirgin={isSystemVirgin}
+          showSetupCard={showSetupCard && !isSystemVirgin}
+          onSkipAmenities={skipAmenities}
+        />
 
         {/* ── OPERATIONAL DASHBOARD — hidden while system is virgin ── */}
         {!isSystemVirgin && (<>
@@ -679,45 +360,12 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Left column: Staff + Notices */}
         <div className="space-y-10">
-          {/* Staff on duty */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Staff en Turno</h3>
-              <button
-                onClick={() => setShowStaffModal(true)}
-                className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors"
-              >
-                Gestionar <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
-              </button>
-            </div>
-            <div className="grid gap-4">
-              {staff.length === 0 && (
-                <div className="p-8 text-center text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
-                  <span className="material-symbols-outlined text-3xl mb-2 block">person_off</span>
-                  No hay personal registrado
-                </div>
-              )}
-              {staff.map((person) => (
-                <div key={person.id} className="flex items-center space-x-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-slate-300 transition-all group cursor-pointer" onClick={() => openEditStaff(person)}>
-                  {person.photo ? (
-                    <img src={person.photo} alt={person.name} className="w-12 h-12 rounded-xl object-cover border border-slate-200" />
-                  ) : (
-                    <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 font-black text-sm border border-slate-100 group-hover:bg-primary-container group-hover:text-primary transition-colors">
-                      <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role as StaffRole] || 'person'}</span>
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate tracking-tight">{person.name}</p>
-                    <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">{person.role}</p>
-                    <p className="text-[9px] text-slate-400 font-semibold mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
-                      {person.shiftStart} – {person.shiftEnd} • {(person.workDays || ['L','M','Mi','J','V']).join(' ')}
-                    </p>
-                  </div>
-                  <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" title="Online" />
-                </div>
-              ))}
-            </div>
-          </section>
+          <StaffSection
+            staff={staff}
+            onAddStaff={(p) => dispatch({ type: 'ADD_STAFF', payload: p })}
+            onUpdateStaff={(p) => dispatch({ type: 'UPDATE_STAFF', payload: p })}
+            onDeleteStaff={(id) => dispatch({ type: 'DELETE_STAFF', payload: id })}
+          />
 
           {/* Centro de Avisos */}
           <section className="space-y-6">
@@ -755,140 +403,15 @@ export default function AdminDashboard() {
 
         {/* Right column: Alerts + Approvals + Assembly */}
         <div className="space-y-10">
-          {/* Critical alerts */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-rose-600 text-[18px]">warning</span>
-                <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Alertas Críticas</h3>
-              </div>
-            </div>
-            <div className="space-y-4">
-              {(() => {
-                // Derive alerts from real system state
-                const currentAlerts: { title: string; body: string; icon: string; severity: 'critical' | 'warning'; link: string }[] = []
-
-                // Overdue payments
-                const overdueCount = state.pagos.filter(p => p.status === 'Vencido').length
-                if (overdueCount > 0) {
-                  currentAlerts.push({
-                    title: `${overdueCount} pago${overdueCount > 1 ? 's' : ''} vencido${overdueCount > 1 ? 's' : ''}`,
-                    body: 'Existen cargos vencidos pendientes de gestión.',
-                    icon: 'payments', severity: overdueCount > 5 ? 'critical' : 'warning', link: '/pagos',
-                  })
-                }
-
-                // Pending approval payments
-                const porValidarCount = state.pagos.filter(p => p.status === 'Por validar').length
-                if (porValidarCount > 0) {
-                  currentAlerts.push({
-                    title: `${porValidarCount} comprobante${porValidarCount > 1 ? 's' : ''} por validar`,
-                    body: 'Residentes han subido comprobantes esperando revisión.',
-                    icon: 'fact_check', severity: 'warning', link: '/pagos',
-                  })
-                }
-
-                // Stale open tickets (open > 72h)
-                const staleThreshold = Date.now() - 72 * 60 * 60 * 1000
-                const staleTickets = state.tickets.filter(t =>
-                  t.status !== 'Cerrado' && t.status !== 'Resuelto' && new Date(t.createdAt).getTime() < staleThreshold
-                ).length
-                if (staleTickets > 0) {
-                  currentAlerts.push({
-                    title: `${staleTickets} ticket${staleTickets > 1 ? 's' : ''} sin resolver (+72h)`,
-                    body: 'Tickets de servicio abiertos requieren atención.',
-                    icon: 'schedule', severity: staleTickets > 3 ? 'critical' : 'warning', link: '/tickets',
-                  })
-                }
-
-                // Undelivered packages > 3 days
-                const pkgThreshold = Date.now() - 3 * 24 * 60 * 60 * 1000
-                const stalePkgs = state.paquetes.filter(p =>
-                  p.status === 'Pendiente' && new Date(p.receivedDate).getTime() < pkgThreshold
-                ).length
-                if (stalePkgs > 0) {
-                  currentAlerts.push({
-                    title: `${stalePkgs} paquete${stalePkgs > 1 ? 's' : ''} sin entregar (+3 días)`,
-                    body: 'Paquetes en espera requieren notificación a residentes.',
-                    icon: 'package_2', severity: 'warning', link: '/paqueteria',
-                  })
-                }
-
-                // Building not configured
-                if (!bc.buildingName || bc.totalUnits === 0) {
-                  currentAlerts.push({
-                    title: 'Configuración pendiente',
-                    body: 'Configura nombre, torres y unidades del edificio para habilitar todas las funciones.',
-                    icon: 'settings', severity: 'warning', link: '/configuracion',
-                  })
-                }
-
-                if (currentAlerts.length === 0) {
-                  return (
-                    <div className="p-8 text-center text-emerald-600 font-medium bg-emerald-50/50 border border-emerald-100/50 rounded-2xl animate-in fade-in">
-                      <span className="material-symbols-outlined text-2xl mb-1 block">check_circle</span>
-                      <span className="text-[11px] uppercase tracking-widest font-black">Todo en orden</span>
-                    </div>
-                  )
-                }
-
-                return currentAlerts.map((alert) => (
-                  <Link to={alert.link} key={alert.title} className={`p-6 border rounded-3xl shadow-sm flex items-center space-x-5 group transition-all ${
-                    alert.severity === 'critical' ? 'bg-rose-50 border-rose-100' : 'bg-amber-50 border-amber-100'
-                  }`}>
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                      alert.severity === 'critical' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
-                    }`}>
-                      <span className="material-symbols-outlined">{alert.icon}</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-[15px] font-bold text-slate-900">{alert.title}</h4>
-                      <p className="text-sm text-slate-600 font-medium mt-1">{alert.body}</p>
-                    </div>
-                    <span className="material-symbols-outlined w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-slate-900 transition-all opacity-0 group-hover:opacity-100">
-                      trending_flat
-                    </span>
-                  </Link>
-                ))
-              })()}
-            </div>
-          </section>
-
-          {/* Approval queue */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Cola de Aprobaciones</h3>
-              <span className="px-2 py-0.5 bg-slate-900 text-white text-[10px] font-black rounded-lg">{approvals.length}</span>
-            </div>
-            <div className="space-y-4">
-              {approvals.length === 0 && (
-                <div className="p-8 text-center text-emerald-600 font-medium bg-emerald-50/50 border border-emerald-100/50 rounded-2xl animate-in fade-in">
-                  <span className="material-symbols-outlined text-2xl mb-1 block">check_circle</span>
-                  <span className="text-[11px] uppercase tracking-widest font-black">Todo en orden</span>
-                </div>
-              )}
-              {approvals.map((item) => (
-                <div key={item.id} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm flex items-center space-x-5 hover:border-slate-300 transition-all">
-                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-primary border border-slate-100">
-                    <span className="material-symbols-outlined text-lg font-bold">{item.icon}</span>
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest block mb-1">{item.type}</span>
-                    <h4 className="text-[14px] font-bold text-slate-900">{item.detail}</h4>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-tight">{item.date}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handleApproval(item.id, 'approve')} className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all flex items-center justify-center" title="Aprobar">
-                      <span className="material-symbols-outlined font-bold">check</span>
-                    </button>
-                    <button onClick={() => handleApproval(item.id, 'reject')} className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center" title="Rechazar">
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          <OperationalAlerts
+            pagos={state.pagos}
+            tickets={state.tickets}
+            paquetes={state.paquetes}
+            buildingName={bc.buildingName}
+            totalUnits={bc.totalUnits}
+            approvals={approvals}
+            onApproval={handleApproval}
+          />
 
           {/* Assembly card */}
           {upcomingAsamblea && (
@@ -930,132 +453,14 @@ export default function AdminDashboard() {
 
       </>) /* end !isSystemVirgin */}
 
-      <Modal open={showStaffModal} onClose={resetStaffForm} title={editingStaffId ? 'Editar Personal' : 'Agregar Personal'}>
-        <div className="space-y-6">
-          <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{editingStaffId ? 'Datos del empleado' : 'Nuevo Empleado'}</p>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <input
-                  type="text" value={staffName} onChange={(e) => setStaffName(e.target.value)}
-                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                  placeholder="Nombre completo"
-                />
-              </div>
-              <div className="col-span-2 md:col-span-1 space-y-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Categoría</label>
-                <select value={staffRole} onChange={(e) => setStaffRole(e.target.value as StaffRole)}
-                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                >
-                  {STAFF_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
-              </div>
-              <div className="col-span-2 md:col-span-1 space-y-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Fotografía (Sugerido 200x200 1:1)</label>
-                <input type="file" accept="image/jpeg, image/png" onChange={handleStaffPhotoUpload}
-                  className="block w-full px-2 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-900 file:text-white"
-                />
-              </div>
-              <div className="col-span-2 space-y-2">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Días Laborales</label>
-                <div className="flex flex-wrap gap-2">
-                  {DAYS_OF_WEEK.map(day => (
-                    <button
-                      key={day}
-                      onClick={() => toggleWorkDay(day)}
-                      className={`w-9 h-9 rounded-lg font-bold text-xs border transition-all ${
-                        staffWorkDays.includes(day)
-                          ? 'bg-primary text-white border-primary shadow-sm'
-                          : 'bg-white text-slate-400 border-slate-200 hover:border-slate-300'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="col-span-1 space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Entrada</label>
-                <input type="time" value={staffShiftStart} onChange={(e) => setStaffShiftStart(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                />
-              </div>
-              <div className="col-span-1 space-y-1">
-                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Salida</label>
-                <input type="time" value={staffShiftEnd} onChange={(e) => setStaffShiftEnd(e.target.value)}
-                  className="block w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm"
-                />
-              </div>
-            </div>
-            <button onClick={handleSaveStaff}
-              className="w-full py-3 mt-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px]"
-            >
-              {editingStaffId ? 'Guardar Cambios' : 'Agregar al Staff'}
-            </button>
-          </div>
 
-          {!editingStaffId && (
-            <div className="space-y-3">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Personal Activo ({staff.length})</p>
-              {staff.length === 0 && (
-                <p className="text-sm text-slate-400 text-center py-4">No hay personal registrado</p>
-              )}
-              {staff.map((s) => (
-                <div key={s.id} className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-slate-300 transition-all">
-                  <div className="flex items-center space-x-3">
-                    {s.photo ? (
-                      <img src={s.photo} alt={s.name} className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
-                    ) : (
-                      <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-500 border border-slate-100">
-                        <span className="material-symbols-outlined text-lg">{ROLE_ICONS[s.role as StaffRole] || 'person'}</span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-bold text-slate-900">{s.name}</p>
-                      <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
-                        {s.role} • {s.shiftStart}–{s.shiftEnd} • {(s.workDays || []).join(' ')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => openEditStaff(s)}
-                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-primary hover:bg-primary-container/30 rounded-lg transition-all"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">edit</span>
-                    </button>
-                    <button onClick={() => handleDeleteStaff(s.id)}
-                      className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </Modal>
-
-      {/* ── Inline Aviso Creation Modal ── */}
-      {/* ── Unified Aviso Form Modal ── */}
+      {/* ── Aviso Form Modal ── */}
       <AvisoFormModal
         open={showAvisoModal}
         onClose={() => setShowAvisoModal(false)}
         onSave={handleSaveAviso}
         hasActiveAsamblea={hasActiveAsamblea}
       />
-
-      {/* ── In-App Confirm Dialog for Staff Deletion ── */}
-      <ConfirmDialog
-        open={!!confirmDeleteStaffId}
-        onClose={() => setConfirmDeleteStaffId(null)}
-        onConfirm={confirmDeleteStaff}
-        title="Eliminar Miembro del Staff"
-        confirmLabel="Eliminar"
-        variant="danger"
-      >
-        ¿Seguro que desea eliminar a este miembro del staff? Esta acción no se puede deshacer.
-      </ConfirmDialog>
 
       {/* ── Auditoria Asamblea Modal ── */}
       <Modal open={viewAsambleaModal} onClose={() => setViewAsambleaModal(false)} title="Auditoría de Asistencia">
