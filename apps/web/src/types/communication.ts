@@ -62,4 +62,6 @@ export interface Aviso {
   pinned?: boolean
   /** Audit log of recipients who have formally interacted with this communication event */
   tracking?: AvisoTrackingEvent[]
+  /** Publication status: 'published' (default) or 'draft' */
+  status?: 'published' | 'draft'
 }

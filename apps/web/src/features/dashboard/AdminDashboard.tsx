@@ -8,7 +8,7 @@
  * BUG FIX: Replaced window.confirm() for staff deletion with
  * an in-app ConfirmDialog component.
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useStore } from '../../core/store/store'
 import { useAuth } from '../../core/auth/AuthContext'
@@ -89,6 +89,21 @@ export default function AdminDashboard() {
     ? Math.round(state.tickets.filter(t => t.status === 'Cerrado' || t.status === 'Resuelto').length / totalTickets * 100)
     : 0
 
+  // Avisos KPI — derived from date ranges and status field
+  const avisosKpi = useMemo(() => {
+    let activos = 0, programados = 0, borradores = 0
+    state.avisos.forEach(a => {
+      if (a.status === 'draft') {
+        borradores++
+      } else if (a.startDate && a.startDate > todayISO) {
+        programados++
+      } else if (!a.endDate || a.endDate >= todayISO) {
+        activos++
+      }
+    })
+    return { activos, programados, borradores, total: state.avisos.length }
+  }, [state.avisos, todayISO])
+
   // ── Setup checklist — visible only when system is unconfigured ─────
   const setupSteps = [
     {
@@ -147,15 +162,6 @@ export default function AdminDashboard() {
   const isSystemVirgin = !bc.buildingName && state.residents.length === 0
 
   // Most recent announcements for the sidebar
-  const recentNotices = useMemo(() => {
-    const icons = ['description', 'park', 'pool', 'campaign', 'notifications']
-    return state.avisos.slice(0, 2).map((a, i) => ({
-      title: a.title,
-      body: a.attachment,
-      time: a.date,
-      icon: icons[i] || 'description',
-    }))
-  }, [state.avisos])
 
   /** Handles approve/reject for approval queue items with toast feedback */
   const handleApproval = (id: string, action: 'approve' | 'reject') => {
@@ -218,6 +224,19 @@ export default function AdminDashboard() {
 
   const [viewAsambleaModal, setViewAsambleaModal] = useState(false)
 
+  // ── Avisos KPI carousel ──
+  const [avisoSlide, setAvisoSlide] = useState(0)
+  const avisoSlides = useMemo(() => [
+    { value: avisosKpi.activos, label: 'Activos', color: 'emerald', icon: 'campaign' },
+    { value: avisosKpi.programados, label: 'Programados', color: 'blue', icon: 'schedule' },
+    { value: avisosKpi.borradores, label: 'Borradores', color: 'slate', icon: 'edit_note' },
+  ], [avisosKpi])
+  const nextAvisoSlide = useCallback(() => setAvisoSlide(i => (i + 1) % 3), [])
+  useEffect(() => {
+    const timer = setInterval(nextAvisoSlide, 5000)
+    return () => clearInterval(timer)
+  }, [nextAvisoSlide])
+
   return (
     <>
       {/* ── Toast Notifications (fixed, outside layout flow) ── */}
@@ -245,9 +264,7 @@ export default function AdminDashboard() {
         {!isSystemVirgin && (
           <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-100">
           <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">
-              The Control Tower
-            </span>
+
             <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
               {bc.buildingName}
             </h1>
@@ -307,52 +324,119 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* KPI cards */}
-        <div className="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link to="/pagos" className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-emerald-200 transition-colors">
-            <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
-              <span className="material-symbols-outlined">payments</span>
+        {/* KPI cards — 3×2 compact grid */}
+        <div className="xl:col-span-8 grid grid-cols-3 grid-rows-2 gap-4">
+          {/* ── Row 1 ── */}
+          <Link to="/pagos" className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-emerald-200 transition-colors flex flex-col items-center text-center">
+            <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+              <span className="material-symbols-outlined text-xl">payments</span>
             </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Recaudación</p>
-              <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{recaudacionPct}%</span>
-                <span className="text-xs font-bold text-emerald-600">{paidPagos}/{totalPagos}</span>
-              </div>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Recaudación mensual</p>
+            <div className="flex items-baseline space-x-1.5">
+              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{recaudacionPct}%</span>
+              <span className="text-[10px] font-bold text-emerald-600">{paidPagos}/{totalPagos}</span>
             </div>
-            <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
+            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
               <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: `${recaudacionPct}%` }}></div>
             </div>
           </Link>
 
-          <Link to="/tickets" className="block bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-amber-200 transition-colors">
-            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
-              <span className="material-symbols-outlined">confirmation_number</span>
+          <Link to="/tickets" className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-amber-200 transition-colors flex flex-col items-center text-center">
+            <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+              <span className="material-symbols-outlined text-xl">confirmation_number</span>
             </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tickets Abiertos</p>
-              <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{openTicketsCount}</span>
-                <span className="text-xs font-bold text-slate-400">Pendientes</span>
-              </div>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Tickets</p>
+            <div className="flex items-baseline space-x-1.5">
+              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{openTicketsCount}</span>
+              <span className="text-[10px] font-bold text-slate-400">Pendientes</span>
             </div>
-            <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
+            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
               <div className="h-full bg-amber-500 rounded-full transition-all duration-700" style={{ width: `${ticketResolutionPct}%` }}></div>
             </div>
           </Link>
 
-          <Link to="/usuarios" className="block bg-white border border-slate-200 rounded-3xl p-8 shadow-sm space-y-4 hover:border-primary-container transition-colors">
-            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
-              <span className="material-symbols-outlined">apartment</span>
+          <Link to="/avisos" className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-indigo-200 transition-colors flex flex-col items-center text-center relative overflow-hidden">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-500 ${
+              avisoSlide === 0 ? 'bg-emerald-50 text-emerald-600' :
+              avisoSlide === 1 ? 'bg-blue-50 text-blue-600' :
+              'bg-slate-100 text-slate-500'
+            }`}>
+              <span className="material-symbols-outlined text-xl">{avisoSlides[avisoSlide].icon}</span>
             </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ocupación</p>
-              <div className="flex items-baseline space-x-2">
-                <span className="text-3xl font-headline font-black text-slate-900 tracking-tight">{occupancyPct}%</span>
-              </div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase mt-2">{occupiedUnits} de {totalUnits} unidades ocupadas</p>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Avisos</p>
+            <div className="flex items-baseline space-x-1.5">
+              <span key={avisoSlide} className="text-2xl font-headline font-black text-slate-900 tracking-tight animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {avisoSlides[avisoSlide].value}
+              </span>
+              <span key={`label-${avisoSlide}`} className={`text-[10px] font-bold animate-in fade-in duration-300 ${
+                avisoSlide === 0 ? 'text-emerald-600' :
+                avisoSlide === 1 ? 'text-blue-500' :
+                'text-slate-400'
+              }`}>
+                {avisoSlides[avisoSlide].label}
+              </span>
+            </div>
+            {/* Hover arrows */}
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAvisoSlide(i => (i - 1 + 3) % 3) }}
+              className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/90 shadow border border-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-slate-50"
+            >
+              <span className="material-symbols-outlined text-sm text-slate-500">chevron_left</span>
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAvisoSlide(i => (i + 1) % 3) }}
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/90 shadow border border-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-slate-50"
+            >
+              <span className="material-symbols-outlined text-sm text-slate-500">chevron_right</span>
+            </button>
+            {/* Slide indicator — tiny dots, only visible on hover */}
+            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              {avisoSlides.map((_, i) => (
+                <span key={i} className={`rounded-full transition-all duration-300 ${
+                  i === avisoSlide ? 'w-1.5 h-1.5 bg-slate-400' : 'w-1 h-1 bg-slate-200'
+                }`} />
+              ))}
             </div>
           </Link>
+
+          {/* ── Row 2 — TBD KPIs ── */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 flex flex-col items-center text-center">
+            <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-500">
+              <span className="material-symbols-outlined text-xl">package_2</span>
+            </div>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Paquetería</p>
+            <div className="flex items-baseline space-x-1.5">
+              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{pendingPaquetes}</span>
+              <span className="text-[10px] font-bold text-slate-400">Pendientes</span>
+            </div>
+            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
+              <div className="h-full bg-violet-400 rounded-full transition-all duration-700" style={{ width: `${pendingPaquetes > 0 ? 100 : 0}%` }}></div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-dashed border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 flex flex-col items-center text-center opacity-50">
+            <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+              <span className="material-symbols-outlined text-xl">how_to_vote</span>
+            </div>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Votaciones</p>
+            <div className="flex items-baseline space-x-1.5">
+              <span className="text-2xl font-headline font-black text-slate-300 tracking-tight">—</span>
+              <span className="text-[10px] font-bold text-slate-300">TBD</span>
+            </div>
+            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden"></div>
+          </div>
+
+          <div className="bg-white border border-dashed border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 flex flex-col items-center text-center opacity-50">
+            <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+              <span className="material-symbols-outlined text-xl">outdoor_grill</span>
+            </div>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Amenidades</p>
+            <div className="flex items-baseline space-x-1.5">
+              <span className="text-2xl font-headline font-black text-slate-300 tracking-tight">—</span>
+              <span className="text-[10px] font-bold text-slate-300">TBD</span>
+            </div>
+            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden"></div>
+          </div>
         </div>
       </section>
 
@@ -367,38 +451,6 @@ export default function AdminDashboard() {
             onDeleteStaff={(id) => dispatch({ type: 'DELETE_STAFF', payload: id })}
           />
 
-          {/* Centro de Avisos */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest font-headline">Centro de Avisos</h3>
-              <Link to="/avisos" className="text-[10px] font-bold text-primary hover:text-primary-dim uppercase tracking-widest flex items-center transition-colors">
-                Ver todos <span className="material-symbols-outlined text-[14px] ml-1">trending_flat</span>
-              </Link>
-            </div>
-            <div className="space-y-4">
-              {recentNotices.length === 0 ? (
-                <div className="p-8 text-center text-emerald-600 font-medium bg-emerald-50/50 border border-emerald-100/50 rounded-2xl animate-in fade-in">
-                  <span className="material-symbols-outlined text-2xl mb-1 block">check_circle</span>
-                  <span className="text-[11px] uppercase tracking-widest font-black">Todo en orden</span>
-                </div>
-              ) : (
-                recentNotices.map((notice) => (
-                  <div key={notice.title} className="flex items-start space-x-5 p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 flex-shrink-0">
-                      <span className="material-symbols-outlined">{notice.icon}</span>
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex justify-between items-start">
-                        <h4 className="text-[15px] font-bold text-slate-900 leading-tight">{notice.title}</h4>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{notice.time}</span>
-                      </div>
-                      <p className="text-sm text-slate-500 font-medium leading-relaxed">{notice.body}</p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </section>
         </div>
 
         {/* Right column: Alerts + Approvals + Assembly */}

@@ -13,7 +13,7 @@ import { hasPermission } from '../core/store/store'
 /** Navigation item definition with role-based filtering */
 const baseNavItems = [
   { to: '/dashboard', icon: 'home', label: 'Inicio', groups: ['residente'] },
-  { to: '/admin', icon: 'dashboard', label: 'Panel Admin', groups: ['super_admin', 'administracion', 'operador'] },
+  { to: '/admin', icon: 'dashboard', label: 'Panel de Administración', groups: ['super_admin', 'administracion', 'operador'] },
   { to: '/avisos', icon: 'notifications', label: 'Avisos', resource: 'comunicacion', action: 'ver' },
   { to: '/pagos', icon: 'account_balance', label: 'Finanzas', resource: 'finanzas', action: 'ver' },
   { to: '/paqueteria', icon: 'package_2', label: 'Paquetería', resource: 'comunicacion', action: 'ver' },
@@ -137,7 +137,7 @@ export default function DashboardLayout() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.label === 'Inicio' || item.label === 'Panel Admin'}
+                end={item.label === 'Inicio' || item.label === 'Panel de Administración'}
                 className={({ isActive }) => 
                   `flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${
                     isActive 
