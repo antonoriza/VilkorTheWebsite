@@ -184,64 +184,65 @@ export default function StaffSection({
     return (
       <div
         key={person.id}
-        className={`flex items-start gap-4 p-4 bg-white border rounded-2xl shadow-sm transition-all ${
+        className={`flex flex-col bg-white border rounded-2xl shadow-sm transition-all overflow-hidden ${
           override ? 'border-slate-200 opacity-90' : 'border-slate-200 hover:border-slate-300'
         }`}
       >
-        {/* Avatar */}
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${
-          override ? 'bg-slate-50 border-slate-100 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-400'
-        } overflow-hidden`}>
-          {person.photo ? (
-            <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
-          ) : (
-            <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role] || 'person'}</span>
-          )}
-        </div>
+        {/* ── Card body ── */}
+        <div className="flex items-start gap-4 p-4">
+          {/* Avatar */}
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${
+            override ? 'bg-slate-50 border-slate-100 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-400'
+          } overflow-hidden`}>
+            {person.photo ? (
+              <img src={person.photo} alt={person.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="material-symbols-outlined text-xl">{ROLE_ICONS[person.role] || 'person'}</span>
+            )}
+          </div>
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Info */}
+          <div className="flex-1 min-w-0">
             <p className={`text-sm font-bold tracking-tight ${override ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
               {person.name}
             </p>
-          </div>
-          <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-0.5">
-            {person.role} · {person.shiftStart}–{person.shiftEnd}
-          </p>
-          <div className="mt-2">
-            <StatusChip override={override} staff={staff} />
-          </div>
-          {override?.note && (
-            <p className="text-[10px] text-slate-400 font-medium italic mt-1.5">
-              "{override.note}"
+            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest mt-0.5">
+              {person.role} · {person.shiftStart}–{person.shiftEnd}
             </p>
-          )}
+            <div className="mt-2">
+              <StatusChip override={override} staff={staff} />
+            </div>
+            {override?.note && (
+              <p className="text-[10px] text-slate-400 font-medium italic mt-1.5">
+                "{override.note}"
+              </p>
+            )}
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col gap-1 shrink-0">
-          {!override ? (
-            <button
-              onClick={() => setIncidentTarget(person)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-amber-600 hover:bg-amber-50 transition-all"
-              title="Registrar incidencia de hoy"
-            >
-              <span className="material-symbols-outlined text-[18px]">report</span>
-            </button>
-          ) : hasIncident ? (
-            <button
-              onClick={() => setRemoveTarget(override)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all"
-              title="Anular incidencia"
-            >
-              <span className="material-symbols-outlined text-[18px]">undo</span>
-            </button>
-          ) : null}
-        </div>
+        {/* ── Action footer strip ── */}
+        {!override && (
+          <button
+            onClick={() => setIncidentTarget(person)}
+            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-t border-slate-100 text-[10px] font-black uppercase tracking-widest text-amber-600 bg-amber-50/40 hover:bg-amber-50 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[15px]">report</span>
+            Registrar Incidencia
+          </button>
+        )}
+        {hasIncident && (
+          <button
+            onClick={() => setRemoveTarget(override!)}
+            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 border-t border-slate-100 text-[10px] font-black uppercase tracking-widest text-rose-500 bg-rose-50/40 hover:bg-rose-50 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[15px]">undo</span>
+            Anular Incidencia
+          </button>
+        )}
       </div>
     )
   }
+
 
   return (
     <>
