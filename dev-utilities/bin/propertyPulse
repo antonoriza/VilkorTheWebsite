@@ -1,0 +1,255 @@
+#!/usr/bin/env bash
+# ═══════════════════════════════════════════════════════════════════
+# propertyPulse — Developer CLI for PropertyPulse monorepo
+# ═══════════════════════════════════════════════════════════════════
+# Usage:
+#   propertyPulse run              Start the full stack (web + api) in dev mode
+#   propertyPulse run -demo        Start in demo mode (seeds demo data)
+#   propertyPulse run -prod        Start in production mode (builds + serves)
+#   propertyPulse run -web         Start only the web frontend
+#   propertyPulse run -api         Start only the API backend
+#   propertyPulse help             Show this help message
+# ═══════════════════════════════════════════════════════════════════
+
+set -euo pipefail
+
+# ── Resolve project root (relative to this script) ──
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# ── Colors ──
+BOLD="\033[1m"
+DIM="\033[2m"
+RESET="\033[0m"
+GREEN="\033[0;32m"
+CYAN="\033[0;36m"
+YELLOW="\033[0;33m"
+RED="\033[0;31m"
+MAGENTA="\033[0;35m"
+
+# ── Banner ──
+banner() {
+  echo ""
+  echo -e "${BOLD}${CYAN}  ╔══════════════════════════════════════════╗${RESET}"
+  echo -e "${BOLD}${CYAN}  ║   ${MAGENTA}▓▓ ${BOLD}PropertyPulse${RESET}${BOLD}${CYAN}   Dev Utilities       ║${RESET}"
+  echo -e "${BOLD}${CYAN}  ╚══════════════════════════════════════════╝${RESET}"
+  echo ""
+}
+
+# ── Help ──
+show_help() {
+  banner
+  echo -e "  ${BOLD}USAGE${RESET}"
+  echo -e "    ${GREEN}propertyPulse${RESET} ${CYAN}<command>${RESET} [flags]"
+  echo ""
+  echo -e "  ${BOLD}COMMANDS${RESET}"
+  echo -e "    ${CYAN}run${RESET}          Start the application stack"
+  echo -e "    ${CYAN}help${RESET}         Show this help message"
+  echo ""
+  echo -e "  ${BOLD}RUN FLAGS${RESET}"
+  echo -e "    ${YELLOW}-demo${RESET}       Start in demo mode (seeds sample data, relaxed auth)"
+  echo -e "    ${YELLOW}-prod${RESET}       Start in production mode (builds assets, optimized)"
+  echo -e "    ${YELLOW}-web${RESET}        Start only the web frontend (Vite dev server)"
+  echo -e "    ${YELLOW}-api${RESET}        Start only the API backend (Hono + Bun)"
+  echo -e "    ${DIM}(no flag)${RESET}    Start full stack in development mode (default)"
+  echo ""
+  echo -e "  ${BOLD}EXAMPLES${RESET}"
+  echo -e "    ${DIM}$ propertyPulse run${RESET}           ${DIM}# full stack dev mode${RESET}"
+  echo -e "    ${DIM}$ propertyPulse run -demo${RESET}     ${DIM}# full stack with demo data${RESET}"
+  echo -e "    ${DIM}$ propertyPulse run -prod${RESET}     ${DIM}# production build + serve${RESET}"
+  echo -e "    ${DIM}$ propertyPulse run -web${RESET}      ${DIM}# web only${RESET}"
+  echo ""
+}
+
+# ── Preflight checks ──
+preflight() {
+  if ! command -v bun &> /dev/null; then
+    echo -e "  ${RED}✖ bun is not installed.${RESET} Install it at https://bun.sh"
+    exit 1
+  fi
+
+  if [ ! -f "$PROJECT_ROOT/package.json" ]; then
+    echo -e "  ${RED}✖ Cannot locate project root.${RESET} Expected package.json at $PROJECT_ROOT"
+    exit 1
+  fi
+
+  # Ensure dependencies are installed
+  if [ ! -d "$PROJECT_ROOT/node_modules" ]; then
+    echo -e "  ${YELLOW}⚙  Installing dependencies...${RESET}"
+    (cd "$PROJECT_ROOT" && bun install)
+  fi
+}
+
+# ── Load .env if present ──
+load_env() {
+  local env_file="$PROJECT_ROOT/.env"
+  if [ -f "$env_file" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "$env_file"
+    set +a
+    echo -e "  ${DIM}▸ Loaded .env${RESET}"
+  fi
+}
+
+# ── Run: Development Mode (default) ──
+run_dev() {
+  local run_web=true
+  local run_api=true
+
+  if [ "${ONLY_WEB:-}" = "true" ]; then run_api=false; fi
+  if [ "${ONLY_API:-}" = "true" ]; then run_web=false; fi
+
+  echo -e "  ${GREEN}▸ Mode:${RESET}  ${BOLD}Development${RESET}"
+  echo -e "  ${GREEN}▸ Web:${RESET}   ${run_web}"
+  echo -e "  ${GREEN}▸ API:${RESET}   ${run_api}"
+  echo ""
+
+  if [ "$run_web" = true ] && [ "$run_api" = true ]; then
+    echo -e "  ${CYAN}Starting full stack...${RESET}"
+    (cd "$PROJECT_ROOT" && bun run dev)
+  elif [ "$run_web" = true ]; then
+    echo -e "  ${CYAN}Starting web frontend only...${RESET}"
+    (cd "$PROJECT_ROOT" && bun run dev:web)
+  elif [ "$run_api" = true ]; then
+    echo -e "  ${CYAN}Starting API backend only...${RESET}"
+    (cd "$PROJECT_ROOT" && bun run dev:api)
+  fi
+}
+
+# ── Run: Demo Mode ──
+run_demo() {
+  local run_web=true
+  local run_api=true
+
+  if [ "${ONLY_WEB:-}" = "true" ]; then run_api=false; fi
+  if [ "${ONLY_API:-}" = "true" ]; then run_web=false; fi
+
+  echo -e "  ${GREEN}▸ Mode:${RESET}  ${BOLD}${YELLOW}Demo${RESET}"
+  echo -e "  ${GREEN}▸ Web:${RESET}   ${run_web}"
+  echo -e "  ${GREEN}▸ API:${RESET}   ${run_api}"
+  echo ""
+
+  # Export demo environment
+  export DEMO_MODE=true
+  export NODE_ENV=development
+
+  # Seed demo data if API is being started
+  if [ "$run_api" = true ]; then
+    echo -e "  ${YELLOW}⚙  Seeding demo data...${RESET}"
+    (cd "$PROJECT_ROOT/apps/api" && bun run db:seed 2>/dev/null || echo -e "  ${DIM}(seed skipped or already seeded)${RESET}")
+    echo ""
+  fi
+
+  if [ "$run_web" = true ] && [ "$run_api" = true ]; then
+    echo -e "  ${CYAN}Starting full stack in demo mode...${RESET}"
+    (cd "$PROJECT_ROOT" && bun run dev)
+  elif [ "$run_web" = true ]; then
+    echo -e "  ${CYAN}Starting web frontend (demo env)...${RESET}"
+    (cd "$PROJECT_ROOT" && bun run dev:web)
+  elif [ "$run_api" = true ]; then
+    echo -e "  ${CYAN}Starting API backend (demo env)...${RESET}"
+    (cd "$PROJECT_ROOT" && bun run dev:api)
+  fi
+}
+
+# ── Run: Production Mode ──
+run_prod() {
+  local run_web=true
+  local run_api=true
+
+  if [ "${ONLY_WEB:-}" = "true" ]; then run_api=false; fi
+  if [ "${ONLY_API:-}" = "true" ]; then run_web=false; fi
+
+  echo -e "  ${GREEN}▸ Mode:${RESET}  ${BOLD}${RED}Production${RESET}"
+  echo -e "  ${GREEN}▸ Web:${RESET}   ${run_web}"
+  echo -e "  ${GREEN}▸ API:${RESET}   ${run_api}"
+  echo ""
+
+  export NODE_ENV=production
+
+  # Build web assets
+  if [ "$run_web" = true ]; then
+    echo -e "  ${YELLOW}⚙  Building web assets...${RESET}"
+    (cd "$PROJECT_ROOT/apps/web" && bun run build)
+    echo -e "  ${GREEN}✓ Build complete${RESET}"
+    echo ""
+  fi
+
+  # Run database migrations
+  if [ "$run_api" = true ]; then
+    echo -e "  ${YELLOW}⚙  Running database migrations...${RESET}"
+    (cd "$PROJECT_ROOT/apps/api" && bun run db:migrate 2>/dev/null || echo -e "  ${DIM}(migrations skipped)${RESET}")
+    echo ""
+  fi
+
+  if [ "$run_web" = true ] && [ "$run_api" = true ]; then
+    echo -e "  ${CYAN}Starting production stack...${RESET}"
+    echo -e "  ${DIM}Web: preview server  |  API: production runtime${RESET}"
+    echo ""
+    # Start API in background, web preview in foreground
+    (cd "$PROJECT_ROOT/apps/api" && bun run start) &
+    API_PID=$!
+    trap "kill $API_PID 2>/dev/null" EXIT
+    (cd "$PROJECT_ROOT/apps/web" && bun run preview)
+  elif [ "$run_web" = true ]; then
+    echo -e "  ${CYAN}Serving built web assets...${RESET}"
+    (cd "$PROJECT_ROOT/apps/web" && bun run preview)
+  elif [ "$run_api" = true ]; then
+    echo -e "  ${CYAN}Starting API in production mode...${RESET}"
+    (cd "$PROJECT_ROOT/apps/api" && bun run start)
+  fi
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# Main
+# ═══════════════════════════════════════════════════════════════════
+
+COMMAND="${1:-help}"
+shift || true
+
+case "$COMMAND" in
+  run)
+    banner
+    preflight
+    load_env
+
+    MODE="dev"
+    ONLY_WEB=""
+    ONLY_API=""
+
+    # Parse flags
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        -demo|--demo)  MODE="demo" ;;
+        -prod|--prod)  MODE="prod" ;;
+        -web|--web)    ONLY_WEB=true ;;
+        -api|--api)    ONLY_API=true ;;
+        *)
+          echo -e "  ${RED}✖ Unknown flag: $1${RESET}"
+          echo -e "  Run ${CYAN}propertyPulse help${RESET} for usage."
+          exit 1
+          ;;
+      esac
+      shift
+    done
+
+    export ONLY_WEB ONLY_API
+
+    case "$MODE" in
+      dev)  run_dev  ;;
+      demo) run_demo ;;
+      prod) run_prod ;;
+    esac
+    ;;
+
+  help|--help|-h)
+    show_help
+    ;;
+
+  *)
+    echo -e "  ${RED}✖ Unknown command: $COMMAND${RESET}"
+    show_help
+    exit 1
+    ;;
+esac
