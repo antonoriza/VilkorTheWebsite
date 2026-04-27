@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { BuildingConfig, BankingConfig } from '../../../types'
-import { SettingsTabBar, SaveFooter } from '../../../core/components/SettingsShell'
+import { SettingsTabBar, SaveFooter, SectionHeader, FieldGroup, FormInput } from '../../../core/components/SettingsShell'
 import CatalogoTab from './_CatalogoTab'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
@@ -15,8 +15,6 @@ interface Props {
   dispatch: React.Dispatch<any>
   handleSave: () => void
   saved: boolean
-  labelClass: string
-  inputClass: string
 }
 
 // ─── Constants for CuentasTab ─────────────────────────────────────────────────
@@ -31,7 +29,7 @@ function formatClabe(raw: string) {
   return raw.replace(/\D/g, '').slice(0, 18)
 }
 
-function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }: Props) {
+function CuentasTab({ bc, dispatch, handleSave, saved }: Props) {
   const banking = bc.banking || { clabe: '', bankName: '', accountHolder: '', acceptsTransfer: true, acceptsCash: false, acceptsOxxo: false, referenceFormat: 'apartment', notes: '' }
 
   const update = (patch: Partial<BankingConfig>) =>
@@ -40,50 +38,58 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
   const clabeFormatted = banking.clabe.replace(/(\d{4})(?=\d)/g, '$1 ')
 
   return (
-    <div className="animate-in fade-in duration-500 space-y-10">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-8">
+      <SectionHeader label="Cuentas y Bancos" icon="account_balance" />
 
       {/* ── Datos Bancarios ── */}
-      <div className="space-y-5">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Datos Bancarios</h4>
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-5">
-          {/* CLABE */}
-          <div>
-            <label className={labelClass}>CLABE Interbancaria</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={clabeFormatted}
-                onChange={e => update({ clabe: formatClabe(e.target.value) })}
-                placeholder="0000 0000 0000 0000 00"
-                maxLength={22} // 18 digits + 4 spaces
-                className={`${inputClass} font-mono tracking-widest pr-14`}
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                {banking.clabe.length === 18 ? (
-                  <span className="material-symbols-outlined text-emerald-500 text-[18px]">check_circle</span>
-                ) : (
-                  <span className="text-[9px] font-black text-slate-300">{banking.clabe.length}/18</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className={labelClass}>Banco</label>
-              <input type="text" value={banking.bankName} onChange={e => update({ bankName: e.target.value })} placeholder="BBVA, Santander, HSBC…" className={inputClass} />
-            </div>
-            <div>
-              <label className={labelClass}>Nombre del Titular</label>
-              <input type="text" value={banking.accountHolder} onChange={e => update({ accountHolder: e.target.value })} placeholder="Razón social o nombre" className={inputClass} />
+      <FieldGroup icon="credit_card" title="Datos Bancarios">
+        {/* CLABE */}
+        <div>
+          <label className="block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1.5 ml-1">
+            CLABE Interbancaria
+          </label>
+          <div className="relative group">
+            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+              <span className="material-symbols-outlined text-slate-300 text-lg group-focus-within:text-slate-600 transition-colors">pin</span>
+            </span>
+            <input
+              type="text"
+              value={clabeFormatted}
+              onChange={e => update({ clabe: formatClabe(e.target.value) })}
+              placeholder="0000 0000 0000 0000 00"
+              maxLength={22}
+              className="block w-full pl-11 pr-14 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 font-mono text-sm tracking-widest transition-all hover:border-slate-300"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              {banking.clabe.length === 18 ? (
+                <span className="material-symbols-outlined text-emerald-500 text-[18px]">check_circle</span>
+              ) : (
+                <span className="text-[9px] font-black text-slate-300">{banking.clabe.length}/18</span>
+              )}
             </div>
           </div>
         </div>
-      </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormInput
+            label="Banco"
+            icon="account_balance"
+            value={banking.bankName}
+            onChange={e => update({ bankName: e.target.value })}
+            placeholder="BBVA, Santander, HSBC…"
+          />
+          <FormInput
+            label="Nombre del Titular"
+            icon="person"
+            value={banking.accountHolder}
+            onChange={e => update({ accountHolder: e.target.value })}
+            placeholder="Razón social o nombre"
+          />
+        </div>
+      </FieldGroup>
 
       {/* ── Métodos de Pago ── */}
-      <div className="space-y-4">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Métodos Aceptados</h4>
+      <FieldGroup icon="payments" title="Métodos Aceptados">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {PAYMENT_METHODS.map(method => {
             const isActive = banking[method.key as keyof BankingConfig] as boolean
@@ -91,9 +97,9 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
               <button
                 key={method.key}
                 onClick={() => update({ [method.key]: !isActive })}
-                className={`flex items-center gap-4 p-5 rounded-3xl border-2 transition-all text-left ${isActive ? 'border-slate-900 bg-white shadow-lg shadow-slate-100' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left ${isActive ? 'border-slate-900 bg-white shadow-lg shadow-slate-100' : 'border-slate-100 bg-white/50 hover:border-slate-200'}`}
               >
-                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${isActive ? method.color : 'bg-slate-100'}`}>
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${isActive ? method.color : 'bg-slate-100'}`}>
                   <span className={`material-symbols-outlined text-[22px] ${isActive ? '' : 'text-slate-300'}`}>{method.icon}</span>
                 </div>
                 <div>
@@ -106,11 +112,10 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
             )
           })}
         </div>
-      </div>
+      </FieldGroup>
 
       {/* ── Formato de Referencia ── */}
-      <div className="space-y-4">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Referencia de Pago</h4>
+      <FieldGroup icon="tag" title="Referencia de Pago">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             { v: 'apartment', label: 'Número de Departamento', desc: 'El residente usa su depto. como referencia (e.g. "A101")' },
@@ -119,7 +124,7 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
             <button
               key={opt.v}
               onClick={() => update({ referenceFormat: opt.v as 'apartment' | 'custom' })}
-              className={`p-5 text-left rounded-3xl border-2 transition-all ${banking.referenceFormat === opt.v ? 'border-slate-900 bg-white shadow-md' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+              className={`p-5 text-left rounded-2xl border-2 transition-all duration-300 ${banking.referenceFormat === opt.v ? 'border-slate-900 bg-white shadow-md' : 'border-slate-100 bg-white/50 hover:border-slate-200'}`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${banking.referenceFormat === opt.v ? 'border-slate-900 bg-slate-900' : 'border-slate-300'}`}>
@@ -133,24 +138,28 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
         </div>
         {banking.referenceFormat === 'custom' && (
           <div className="animate-in fade-in slide-in-from-top-1 duration-200">
-            <label className={labelClass}>Nota de referencia personalizada</label>
-            <input type="text" value={banking.customReferenceNote || ''} onChange={e => update({ customReferenceNote: e.target.value })} placeholder="Ej: LOTE-[DEPTO]-MANT" className={inputClass} />
+            <FormInput
+              label="Nota de referencia personalizada"
+              icon="edit_note"
+              value={banking.customReferenceNote || ''}
+              onChange={e => update({ customReferenceNote: e.target.value })}
+              placeholder="Ej: LOTE-[DEPTO]-MANT"
+            />
           </div>
         )}
-      </div>
+      </FieldGroup>
 
       {/* ── Instrucciones adicionales ── */}
-      <div className="space-y-3">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Notas para Residentes</h4>
-        <p className="text-[10px] text-slate-400 font-medium ml-1 -mt-2">Se muestra en el recibo de pago y en las instrucciones de cobro.</p>
+      <FieldGroup icon="description" title="Notas para Residentes">
+        <p className="text-[10px] text-slate-400 font-medium -mt-2">Se muestra en el recibo de pago y en las instrucciones de cobro.</p>
         <textarea
           value={banking.notes || ''}
           onChange={e => update({ notes: e.target.value })}
           rows={3}
           placeholder="Instrucciones especiales para residentes al momento de pagar…"
-          className={`${inputClass} resize-none`}
+          className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 font-medium text-sm transition-all hover:border-slate-300 resize-none"
         />
-      </div>
+      </FieldGroup>
 
       {/* Preview card */}
       {banking.clabe && (
@@ -185,7 +194,7 @@ function CuentasTab({ bc, dispatch, handleSave, saved, labelClass, inputClass }:
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export default function FinanceSettings({ bc, dispatch, handleSave, saved, labelClass, inputClass }: Props) {
+export default function FinanceSettings({ bc, dispatch, handleSave, saved }: Props) {
   const [activeTab, setActiveTab] = useState('catalogo')
 
   return (
@@ -194,8 +203,7 @@ export default function FinanceSettings({ bc, dispatch, handleSave, saved, label
 
       {activeTab === 'catalogo' && <CatalogoTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} />}
 
-      {activeTab === 'cuentas' && <CuentasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />}
+      {activeTab === 'cuentas' && <CuentasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} />}
     </div>
   )
 }
-

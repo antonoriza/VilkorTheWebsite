@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS, InventoryItem, InventoryCategory, Resident, StaffMember } from '../../../types'
-import { SettingsTabBar, SaveFooter } from '../../../core/components/SettingsShell'
+import { SettingsTabBar, SaveFooter, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
+
+const selectClass = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 font-medium text-sm transition-all hover:border-slate-300 cursor-pointer"
+const labelCls = "block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1.5 ml-1"
+const inputCls = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 font-medium text-sm transition-all hover:border-slate-300"
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -16,14 +20,14 @@ const TABS = [
 
 // ─── Tab: Paquetes ────────────────────────────────────────────────────────────
 
-function PaquetesTab({ handleSave, saved, labelClass, inputClass }: { handleSave: () => void; saved: boolean; labelClass: string; inputClass: string }) {
+function PaquetesTab({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
   const [retention, setRetention] = useState('7')
   const [alertDays, setAlertDays] = useState('3')
   const [alertOnArrival, setAlertOnArrival] = useState(true)
   const [requireSignature, setRequireSignature] = useState(true)
 
   const Toggle = ({ value, onChange, label }: { value: boolean; onChange: (v: boolean) => void; label: string }) => (
-    <div className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-2xl hover:border-slate-200 transition-all">
+    <div className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-2xl hover:border-slate-200 transition-all duration-300">
       <span className="text-[11px] font-bold text-slate-700">{label}</span>
       <button
         onClick={() => onChange(!value)}
@@ -35,13 +39,14 @@ function PaquetesTab({ handleSave, saved, labelClass, inputClass }: { handleSave
   )
 
   return (
-    <div className="animate-in fade-in duration-500 space-y-10">
-      <div className="space-y-4">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Tiempos de Almacenaje</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-8">
+      <SectionHeader label="Paquetería" icon="package_2" />
+
+      <FieldGroup icon="schedule" title="Tiempos de Almacenaje">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className={labelClass}>Días máximos de retención</label>
-            <select value={retention} onChange={(e) => setRetention(e.target.value)} className={inputClass}>
+            <label className={labelCls}>Días máximos de retención</label>
+            <select value={retention} onChange={(e) => setRetention(e.target.value)} className={selectClass}>
               <option value="3">3 días</option>
               <option value="5">5 días</option>
               <option value="7">7 días (recomendado)</option>
@@ -50,8 +55,8 @@ function PaquetesTab({ handleSave, saved, labelClass, inputClass }: { handleSave
             </select>
           </div>
           <div>
-            <label className={labelClass}>Alertar residente si no retira en…</label>
-            <select value={alertDays} onChange={(e) => setAlertDays(e.target.value)} className={inputClass}>
+            <label className={labelCls}>Alertar residente si no retira en…</label>
+            <select value={alertDays} onChange={(e) => setAlertDays(e.target.value)} className={selectClass}>
               <option value="1">1 día</option>
               <option value="2">2 días</option>
               <option value="3">3 días</option>
@@ -59,22 +64,18 @@ function PaquetesTab({ handleSave, saved, labelClass, inputClass }: { handleSave
             </select>
           </div>
         </div>
-      </div>
+      </FieldGroup>
 
-      <div className="space-y-4">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Reglas Operativas</h4>
+      <FieldGroup icon="rule" title="Reglas Operativas">
         <div className="space-y-2">
           <Toggle value={alertOnArrival} onChange={setAlertOnArrival} label="Notificar al residente al registrar arribo del paquete" />
           <Toggle value={requireSignature} onChange={setRequireSignature} label="Requerir firma digital al recoger el paquete" />
         </div>
-      </div>
+      </FieldGroup>
 
-      <div className="p-5 bg-slate-50 border border-slate-100 rounded-3xl flex items-start gap-4">
-        <span className="material-symbols-outlined text-slate-400 text-xl">info</span>
-        <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
-          Estas reglas se aplican automáticamente al módulo de Paquetería. El agente escalará al administrador si un paquete supera el tiempo de retención.
-        </p>
-      </div>
+      <InfoBanner icon="info">
+        Estas reglas se aplican automáticamente al módulo de Paquetería. El agente escalará al administrador si un paquete supera el tiempo de retención.
+      </InfoBanner>
 
       <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
@@ -111,14 +112,12 @@ const EMPTY_VENDOR: Omit<Vendor, 'id'> = {
 }
 
 function DirectorioTab({
-  vendors, dispatch, handleSave, saved, labelClass, inputClass,
+  vendors, dispatch, handleSave, saved,
 }: {
   vendors: Vendor[]
   dispatch: React.Dispatch<any>
   handleSave: () => void
   saved: boolean
-  labelClass: string
-  inputClass: string
 }) {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState<Omit<Vendor, 'id'>>(EMPTY_VENDOR)
@@ -203,48 +202,48 @@ function DirectorioTab({
           Agregar Proveedor
         </button>
       ) : (
-        <div className="space-y-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="space-y-4 p-6 bg-slate-50/50 border border-slate-200 rounded-3xl animate-in fade-in slide-in-from-top-2 duration-300">
           <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Nuevo Proveedor</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Servicio *</label>
-              <input type="text" value={form.service} onChange={(e) => setForm({ ...form, service: e.target.value })} placeholder="Ej: Plomería (Urgencias)" className={inputClass} />
+              <label className={labelCls}>Servicio *</label>
+              <input type="text" value={form.service} onChange={(e) => setForm({ ...form, service: e.target.value })} placeholder="Ej: Plomería (Urgencias)" className={inputCls} />
             </div>
             <div>
-              <label className={labelClass}>Empresa / Nombre *</label>
-              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ej: Fontanería Rápida 24h" className={inputClass} />
+              <label className={labelCls}>Empresa / Nombre *</label>
+              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ej: Fontanería Rápida 24h" className={inputCls} />
             </div>
             <div>
-              <label className={labelClass}>Categoría</label>
-              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as VendorCategory })} className={inputClass}>
+              <label className={labelCls}>Categoría</label>
+              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as VendorCategory })} className={selectClass}>
                 {(Object.entries(VENDOR_CATEGORY_LABELS) as [VendorCategory, string][]).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className={labelClass}>Tipo</label>
-              <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as Vendor['type'] })} className={inputClass}>
+              <label className={labelCls}>Tipo</label>
+              <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as Vendor['type'] })} className={selectClass}>
                 <option value="urgencias">Urgencias (llamar inmediatamente)</option>
                 <option value="mantenimiento">Mantenimiento (programado)</option>
                 <option value="recurrente">Recurrente (visita fija)</option>
               </select>
             </div>
             <div>
-              <label className={labelClass}>Teléfono *</label>
-              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="55 0000 0000" className={inputClass} />
+              <label className={labelCls}>Teléfono *</label>
+              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="55 0000 0000" className={inputCls} />
             </div>
             <div>
-              <label className={labelClass}>Email</label>
-              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="contacto@empresa.com" className={inputClass} />
+              <label className={labelCls}>Email</label>
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="contacto@empresa.com" className={inputCls} />
             </div>
             <div>
-              <label className={labelClass}>Horario</label>
-              <input type="text" value={form.schedule} onChange={(e) => setForm({ ...form, schedule: e.target.value })} placeholder="L-V 8:00-17:00" className={inputClass} />
+              <label className={labelCls}>Horario</label>
+              <input type="text" value={form.schedule} onChange={(e) => setForm({ ...form, schedule: e.target.value })} placeholder="L-V 8:00-17:00" className={inputCls} />
             </div>
             <div>
-              <label className={labelClass}>Notas</label>
-              <input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notas para el agente…" className={inputClass} />
+              <label className={labelCls}>Notas</label>
+              <input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notas para el agente…" className={inputCls} />
             </div>
           </div>
           <div className="flex gap-3 pt-2">
@@ -291,7 +290,7 @@ const EMPTY_INVENTORY: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
 }
 
 function InventarioTab({
-  inventory, residents, staff, dispatch, handleSave, saved, labelClass, inputClass,
+  inventory, residents, staff, dispatch, handleSave, saved,
 }: {
   inventory: InventoryItem[]
   residents: Resident[]
@@ -299,8 +298,6 @@ function InventarioTab({
   dispatch: React.Dispatch<any>
   handleSave: () => void
   saved: boolean
-  labelClass: string
-  inputClass: string
 }) {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -450,15 +447,15 @@ function InventarioTab({
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className={labelClass}>Nombre del Artefacto / Equipo *</label>
-              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ej: Camioneta de Mantenimiento, Aspiradora Industrial..." className={inputClass} />
+              <label className={labelCls}>Nombre del Artefacto / Equipo *</label>
+              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ej: Camioneta de Mantenimiento, Aspiradora Industrial..." className={inputCls} />
             </div>
             
             <div>
-              <label className={labelClass}>Categoría Responsable</label>
-              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as InventoryCategory })} className={inputClass}>
+              <label className={labelCls}>Categoría Responsable</label>
+              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as InventoryCategory })} className={selectClass}>
                  <option value="Propiedad">Propiedad (General)</option>
                  <option value="Guardia">Guardia / Seguridad</option>
                  <option value="Jardinero">Jardinero / Áreas Verdes</option>
@@ -468,7 +465,7 @@ function InventarioTab({
             </div>
 
             <div>
-              <label className={labelClass}>Dueño (Owner) *</label>
+              <label className={labelCls}>Dueño (Owner) *</label>
               <select 
                 value={form.ownerId} 
                 onChange={(e) => {
@@ -476,7 +473,7 @@ function InventarioTab({
                   const res = residents.find(r => r.id === id)
                   setForm({ ...form, ownerId: id, owner: id === 'building' ? 'Lote Alemania' : (res?.name || '') })
                 }} 
-                className={inputClass}
+                className={selectClass}
               >
                 <option value="building">Edificio (Lote Alemania)</option>
                 <optgroup label="Residentes">
@@ -486,7 +483,7 @@ function InventarioTab({
             </div>
 
             <div>
-              <label className={labelClass}>Quien lo usa (User) *</label>
+              <label className={labelCls}>Quien lo usa (User) *</label>
               <select 
                 value={form.currentUserId || ''} 
                 onChange={(e) => {
@@ -494,7 +491,7 @@ function InventarioTab({
                   const s = staff.find(st => st.id === id)
                   setForm({ ...form, currentUserId: id || null, currentUser: s?.name || 'Bodega Central' })
                 }} 
-                className={inputClass}
+                className={selectClass}
               >
                 <option value="">Bodega Central / Sin asignar</option>
                 <optgroup label="Staff en Turno">
@@ -504,8 +501,8 @@ function InventarioTab({
             </div>
 
             <div>
-              <label className={labelClass}>Notas o Ubicación</label>
-              <input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Ej: Pasillo C, requiere batería..." className={inputClass} />
+              <label className={labelCls}>Notas o Ubicación</label>
+              <input type="text" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Ej: Pasillo C, requiere batería..." className={inputCls} />
             </div>
           </div>
 
@@ -547,8 +544,6 @@ export default function LogisticaSettings({
   dispatch,
   handleSave,
   saved,
-  labelClass,
-  inputClass,
 }: {
   bc: BuildingConfig
   inventory: InventoryItem[]
@@ -557,8 +552,6 @@ export default function LogisticaSettings({
   dispatch: React.Dispatch<any>
   handleSave: () => void
   saved: boolean
-  labelClass: string
-  inputClass: string
 }) {
   const [activeTab, setActiveTab] = useState('paquetes')
 
@@ -566,15 +559,13 @@ export default function LogisticaSettings({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'paquetes'   && <PaquetesTab handleSave={handleSave} saved={saved} labelClass={labelClass} inputClass={inputClass} />}
+      {activeTab === 'paquetes'   && <PaquetesTab handleSave={handleSave} saved={saved} />}
       {activeTab === 'directorio' && (
         <DirectorioTab
           vendors={bc.vendors || []}
           dispatch={dispatch}
           handleSave={handleSave}
           saved={saved}
-          labelClass={labelClass}
-          inputClass={inputClass}
         />
       )}
       {activeTab === 'inventario' && (
@@ -585,8 +576,6 @@ export default function LogisticaSettings({
           dispatch={dispatch}
           handleSave={handleSave}
           saved={saved}
-          labelClass={labelClass}
-          inputClass={inputClass}
         />
       )}
     </div>

@@ -88,7 +88,6 @@ export default function AdminConfiguracion() {
   }
 
   const inputClass = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm transition-all shadow-inner"
-  const labelClass = "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2"
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -126,8 +125,6 @@ export default function AdminConfiguracion() {
             handleDeleteAmenity={(id, name) => setConfirmTarget({ action: 'deleteAmenity', id, name })}
             handleSave={handleSave}
             saved={saved}
-            labelClass={labelClass}
-            inputClass={inputClass}
           />
         )}
 
@@ -137,8 +134,6 @@ export default function AdminConfiguracion() {
             dispatch={dispatch}
             handleSave={handleSave}
             saved={saved}
-            labelClass={labelClass}
-            inputClass={inputClass}
           />
         )}
 
@@ -158,8 +153,6 @@ export default function AdminConfiguracion() {
             dispatch={dispatch}
             handleSave={handleSave}
             saved={saved}
-            labelClass={labelClass}
-            inputClass={inputClass}
           />
         )}
 

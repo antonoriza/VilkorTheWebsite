@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { BuildingConfig, Amenity } from '../../../types'
-import { SettingsTabBar, SectionHeader, SaveFooter, SettingsCard } from '../../../core/components/SettingsShell'
+import {
+  SettingsTabBar, SectionHeader, SaveFooter, SettingsCard,
+  FieldGroup, FormInput, StatBar, TopologyCard, InfoBanner,
+} from '../../../core/components/SettingsShell'
 import AmenidadesTab from './AmenidadesTab'
 import EquipamientoTab from './EquipamientoTab'
 
@@ -14,8 +17,6 @@ interface Props {
   onRequestGroupingModeChange: (mode: 'vertical' | 'horizontal') => void
   handleSave: () => void
   saved: boolean
-  labelClass: string
-  inputClass: string
 }
 
 export default function ArchitectureSettings({ 
@@ -27,8 +28,6 @@ export default function ArchitectureSettings({
   onRequestGroupingModeChange,
   handleSave,
   saved,
-  labelClass, 
-  inputClass 
 }: Props) {
   // Read subtab from URL so setup checklist can deep-link (e.g. ?tab=perfil&subtab=identidad)
   const [searchParams] = useSearchParams()
@@ -50,192 +49,250 @@ export default function ArchitectureSettings({
     { id: 'amenidades', label: 'Amenidades', icon: 'outdoor_grill' },
   ]
 
+  // ── Computed topology stats for the StatBar ──
+  const topoStats = useMemo(() => {
+    const containers = bc.topology?.containers || []
+    return {
+      totalUnits: containers.reduce((s, c) => s + (c.unitsCount || 0), 0),
+      totalParking: containers.reduce((s, c) => s + (c.parkingCount || 0), 0),
+      totalStorage: containers.reduce((s, c) => s + (c.storageCount || 0), 0),
+      containerCount: containers.length,
+    }
+  }, [bc.topology?.containers])
+
+  const containerLabel = bc.groupingMode === 'vertical' ? 'Torre' : 'Privada'
+  const containerLabelPlural = bc.groupingMode === 'vertical' ? 'Torres' : 'Privadas'
+  const unitLabel = bc.groupingMode === 'vertical' ? 'Departamentos' : 'Viviendas'
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SettingsTabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <SettingsCard className="flex flex-col min-h-[600px]">
-        {activeTab === 'categoria' && (
-          <div className="animate-in fade-in duration-500">
-            <SectionHeader label="Categoría de inmueble" icon="account_tree" />
-            <div className="space-y-8">
-              <div className="p-6 bg-slate-900 rounded-3xl text-white flex items-center justify-between shadow-2xl shadow-slate-200">
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md">
-                    <span className="material-symbols-outlined text-3xl">home_work</span>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 mb-1">Categoría de Inmueble</p>
-                    <h4 className="text-xl font-headline font-black uppercase tracking-tight">Residencial</h4>
-                  </div>
-                </div>
-                <div className="px-5 py-2 bg-white/10 rounded-full border border-white/10">
-                  <span className="text-[10px] font-black uppercase tracking-widest">Activo</span>
-                </div>
-              </div>
 
-              <div className="space-y-6">
-                <label className={labelClass}>Agrupación</label>
-                <div className="flex gap-4">
-                  {[
-                    { id: 'vertical', label: 'Estructura Vertical', icon: 'apartment' },
-                    { id: 'horizontal', label: 'Estructura Horizontal', icon: 'holiday_village' }
-                  ].map(mode => (
-                    <button
-                      key={mode.id}
-                      onClick={() => {
-                        if (bc.groupingMode === mode.id) return;
-                        onRequestGroupingModeChange(mode.id as 'vertical' | 'horizontal');
-                      }}
-                      className={`flex-1 flex items-center gap-4 p-6 rounded-3xl border-2 transition-all ${
-                        bc.groupingMode === mode.id 
-                          ? 'border-slate-900 bg-white text-slate-900 shadow-xl' 
-                          : 'border-slate-100 bg-slate-50 text-slate-400 grayscale'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-3xl">{mode.icon}</span>
-                      <p className="text-[11px] font-black uppercase tracking-tight text-left">{mode.label}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* IDENTIDAD TAB                                                  */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'identidad' && (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-400">
+            <SectionHeader label="Datos del inmueble" icon="branding_watermark" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+              {/* Administración Group */}
+              <FieldGroup icon="admin_panel_settings" title="Administración">
+                <FormInput
+                  label="Responsable"
+                  icon="person"
+                  value={bc.adminName}
+                  onChange={e => update('adminName', e.target.value)}
+                  placeholder="Nombre del administrador"
+                />
+                <FormInput
+                  label="Teléfono"
+                  icon="call"
+                  type="tel"
+                  value={bc.adminPhone}
+                  onChange={e => update('adminPhone', e.target.value)}
+                  placeholder="+52 55 1234 5678"
+                />
+                <FormInput
+                  label="Email"
+                  icon="mail"
+                  type="email"
+                  value={bc.adminEmail}
+                  onChange={e => update('adminEmail', e.target.value)}
+                  placeholder="admin@condominio.com"
+                />
+              </FieldGroup>
 
-              <div className="space-y-8 py-6">
-                <div className="flex items-center justify-between mt-4 mb-6 first:mt-0">
-                  <div>
-                    <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">
-                      Topología
-                    </h4>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Configuración de {bc.groupingMode === 'vertical' ? 'Torres' : 'Privadas'} y Unidades</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cantidad</span>
-                    <select 
-                      value={bc.topology?.containers?.length || 1}
-                      onChange={(e) => {
-                        const count = Number(e.target.value);
-                        const currentContainers = bc.topology?.containers || [];
-                        const newContainers = [...currentContainers];
-                        if (count > newContainers.length) {
-                          for (let i = newContainers.length; i < count; i++) {
-                            newContainers.push({ 
-                              id: `top-${Date.now()}-${i}`, 
-                              name: `${bc.groupingMode === 'vertical' ? 'Torre' : 'Privada'} ${String.fromCharCode(65 + i)}`, 
-                              unitsCount: 10,
-                              parkingCount: 0,
-                              storageCount: 0
-                            });
-                          }
-                        } else {
-                          newContainers.splice(count);
-                        }
-                        update('topology', { ...bc.topology, containers: newContainers });
-                      }}
-                      className="h-10 bg-slate-50 border border-slate-100 rounded-xl px-4 text-[11px] font-black shadow-sm focus:ring-1 focus:ring-slate-900 outline-none cursor-pointer"
-                    >
-                      {[1, 2, 3, 4].map(num => (
-                        <option key={num} value={num}>{num} {bc.groupingMode === 'vertical' ? (num === 1 ? 'Torre' : 'Torres') : (num === 1 ? 'Privada' : 'Privadas')}</option>
-                      ))}
-                    </select>
-                  </div>
+              {/* Inmueble Group */}
+              <FieldGroup icon="apartment" title="Inmueble">
+                <FormInput
+                  label="Nombre Comercial"
+                  icon="badge"
+                  value={bc.buildingName}
+                  onChange={e => update('buildingName', e.target.value)}
+                  placeholder="Ej: Residencial Las Lomas"
+                />
+                <FormInput
+                  label="Dirección"
+                  icon="location_on"
+                  value={bc.buildingAddress}
+                  onChange={e => update('buildingAddress', e.target.value)}
+                  placeholder="Calle, número, colonia"
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <FormInput
+                    label="Código Postal"
+                    value={bc.zipCode || ''}
+                    onChange={e => update('zipCode', e.target.value)}
+                    placeholder="00000"
+                  />
+                  <FormInput
+                    label="Ciudad"
+                    icon="map"
+                    value={bc.city || ''}
+                    onChange={e => update('city', e.target.value)}
+                    placeholder="CDMX"
+                  />
                 </div>
- 
-                <div className="space-y-2">
-                  <div className="grid grid-cols-12 gap-4 px-2 mb-4">
-                    <div className="col-span-2 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">
-                      {bc.groupingMode === 'vertical' ? 'Número de Torre' : 'Número de Privada'}
-                    </div>
-                    <div className="col-span-4 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">
-                      {bc.groupingMode === 'vertical' ? 'Nombre de Torre' : 'Nombre de Privada'}
-                    </div>
-                    <div className="col-span-2 text-right text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">
-                      {bc.groupingMode === 'vertical' ? 'Departamentos' : 'Viviendas'}
-                    </div>
-                    <div className="col-span-2 text-right text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Estacionamientos</div>
-                    <div className="col-span-2 text-right text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Bodegas</div>
-                  </div>
+              </FieldGroup>
+            </div>
 
-                  <div className="space-y-1">
-                    {bc.topology?.containers?.map((container, idx) => (
-                      <div key={container.id} className="grid grid-cols-12 gap-4 items-center group py-3 px-2 hover:bg-slate-50 rounded-xl transition-all duration-300">
-                        <div className="col-span-2">
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
-                            {bc.groupingMode === 'vertical' ? 'Torre' : 'Privada'} {idx + 1}
-                          </span>
-                        </div>
-                        <div className="col-span-4">
-                          <input 
-                            type="text" 
-                            maxLength={30}
-                            value={container.name}
-                            placeholder="Sin nombre..."
-                            onChange={(e) => {
-                              const newContainers = [...(bc.topology?.containers || [])];
-                              newContainers[idx].name = e.target.value;
-                              update('topology', { ...bc.topology, containers: newContainers });
-                            }}
-                            className="w-full bg-transparent border-b border-transparent group-hover:border-slate-200 py-1 text-[12px] font-bold text-slate-900 placeholder:text-slate-200 focus:border-slate-900 transition-all outline-none"
-                          />
-                        </div>
-                        <div className="col-span-2 flex items-center justify-end">
-                          <input 
-                            type="number" 
-                            max={200}
-                            value={container.unitsCount || ''}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/^0+/, '') || '0';
-                              const num = Math.min(parseInt(val, 10) || 0, 200);
-                              const newContainers = [...(bc.topology?.containers || [])];
-                              newContainers[idx].unitsCount = num;
-                              update('topology', { ...bc.topology, containers: newContainers });
-                            }}
-                            onBlur={(e) => { e.target.value = String(container.unitsCount); }}
-                            className="w-12 bg-transparent border-none p-0 text-[12px] font-black text-right focus:ring-0 outline-none text-slate-900"
-                          />
-                        </div>
-                        <div className="col-span-2 flex items-center justify-end">
-                          <input 
-                            type="number" 
-                            max={1000}
-                            value={container.parkingCount || ''}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/^0+/, '') || '0';
-                              const num = Math.min(parseInt(val, 10) || 0, 1000);
-                              const newContainers = [...(bc.topology?.containers || [])];
-                              newContainers[idx].parkingCount = num;
-                              update('topology', { ...bc.topology, containers: newContainers });
-                            }}
-                            onBlur={(e) => { e.target.value = String(container.parkingCount); }}
-                            className="w-12 bg-transparent border-none p-0 text-[12px] font-black text-right focus:ring-0 outline-none text-slate-900"
-                          />
-                        </div>
-                        <div className="col-span-2 flex items-center justify-end">
-                          <input 
-                            type="number" 
-                            max={200}
-                            value={container.storageCount || ''}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/^0+/, '') || '0';
-                              const num = Math.min(parseInt(val, 10) || 0, 200);
-                              const newContainers = [...(bc.topology?.containers || [])];
-                              newContainers[idx].storageCount = num;
-                              update('topology', { ...bc.topology, containers: newContainers });
-                            }}
-                            onBlur={(e) => { e.target.value = String(container.storageCount); }}
-                            className="w-12 bg-transparent border-none p-0 text-[12px] font-black text-right focus:ring-0 outline-none text-slate-900"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            <div className="mt-6">
+              <InfoBanner icon="gavel">
+                <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest mb-1">Nota Legal</p>
+                <p>Estos datos se utilizan para la generación de avisos de cobro, recibos fiscales y actas de asamblea.</p>
+              </InfoBanner>
+            </div>
 
-              </div>
             <SaveFooter handleSave={handleSave} saved={saved} />
           </div>
         )}
 
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* CATEGORÍA TAB                                                  */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {activeTab === 'categoria' && (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-400">
+            <SectionHeader label="Categoría de inmueble" icon="account_tree" />
+
+            {/* Category hero card */}
+            <div className="p-6 bg-slate-900 rounded-3xl text-white flex items-center justify-between shadow-2xl shadow-slate-200 mb-8">
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                  <span className="material-symbols-outlined text-3xl">home_work</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 mb-1">Categoría de Inmueble</p>
+                  <h4 className="text-xl font-headline font-black uppercase tracking-tight">Residencial</h4>
+                </div>
+              </div>
+              <div className="px-5 py-2 bg-white/10 rounded-full border border-white/10">
+                <span className="text-[10px] font-black uppercase tracking-widest">Activo</span>
+              </div>
+            </div>
+
+            {/* Grouping mode selector */}
+            <FieldGroup icon="view_in_ar" title="Agrupación Arquitectónica">
+              <div className="flex gap-4">
+                {[
+                  { id: 'vertical', label: 'Estructura Vertical', desc: 'Torres · Departamentos', icon: 'apartment' },
+                  { id: 'horizontal', label: 'Estructura Horizontal', desc: 'Privadas · Casas', icon: 'holiday_village' }
+                ].map(mode => (
+                  <button
+                    key={mode.id}
+                    onClick={() => {
+                      if (bc.groupingMode === mode.id) return;
+                      onRequestGroupingModeChange(mode.id as 'vertical' | 'horizontal');
+                    }}
+                    className={`flex-1 flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 ${
+                      bc.groupingMode === mode.id 
+                        ? 'border-slate-900 bg-white text-slate-900 shadow-xl' 
+                        : 'border-slate-100 bg-slate-50/50 text-slate-400 hover:border-slate-200'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-3xl">{mode.icon}</span>
+                    <div className="text-left">
+                      <p className="text-[11px] font-black uppercase tracking-tight">{mode.label}</p>
+                      <p className="text-[9px] font-medium mt-0.5 opacity-60">{mode.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </FieldGroup>
+
+            {/* Digital Twin Summary — StatBar */}
+            <div className="mt-6">
+              <StatBar stats={[
+                { label: containerLabelPlural, value: topoStats.containerCount, icon: bc.groupingMode === 'vertical' ? 'apartment' : 'holiday_village', color: 'bg-slate-100 text-slate-600' },
+                { label: unitLabel, value: topoStats.totalUnits, icon: 'door_front', color: 'bg-emerald-50 text-emerald-600' },
+                { label: 'Estacionamientos', value: topoStats.totalParking, icon: 'local_parking', color: 'bg-blue-50 text-blue-600' },
+                { label: 'Bodegas', value: topoStats.totalStorage, icon: 'warehouse', color: 'bg-amber-50 text-amber-600' },
+              ]} />
+            </div>
+
+            {/* Topology section header + container count */}
+            <div className="flex items-center justify-between mt-8 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-slate-500 border border-slate-100 shadow-sm">
+                  <span className="material-symbols-outlined text-lg">domain_add</span>
+                </div>
+                <div>
+                  <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Topología</h4>
+                  <p className="text-[9px] text-slate-400 font-medium mt-0.5">Configuración de {containerLabelPlural} y {unitLabel}</p>
+                </div>
+              </div>
+              <select 
+                value={bc.topology?.containers?.length || 1}
+                onChange={(e) => {
+                  const count = Number(e.target.value);
+                  const currentContainers = bc.topology?.containers || [];
+                  const newContainers = [...currentContainers];
+                  if (count > newContainers.length) {
+                    for (let i = newContainers.length; i < count; i++) {
+                      newContainers.push({ 
+                        id: `top-${Date.now()}-${i}`, 
+                        name: `${containerLabel} ${String.fromCharCode(65 + i)}`, 
+                        unitsCount: 10,
+                        parkingCount: 0,
+                        storageCount: 0
+                      });
+                    }
+                  } else {
+                    newContainers.splice(count);
+                  }
+                  update('topology', { ...bc.topology, containers: newContainers });
+                }}
+                className="h-10 bg-white border border-slate-200 rounded-xl px-4 text-[11px] font-black shadow-sm focus:ring-1 focus:ring-slate-900 outline-none cursor-pointer hover:border-slate-300 transition-colors"
+              >
+                {[1, 2, 3, 4].map(num => (
+                  <option key={num} value={num}>{num} {num === 1 ? containerLabel : containerLabelPlural}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Topology Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {bc.topology?.containers?.map((container, idx) => (
+                <TopologyCard
+                  key={container.id}
+                  index={idx}
+                  label={containerLabel}
+                  name={container.name}
+                  units={container.unitsCount}
+                  parking={container.parkingCount}
+                  storage={container.storageCount}
+                  onNameChange={(v) => {
+                    const updated = [...(bc.topology?.containers || [])];
+                    updated[idx] = { ...updated[idx], name: v };
+                    update('topology', { ...bc.topology, containers: updated });
+                  }}
+                  onUnitsChange={(v) => {
+                    const updated = [...(bc.topology?.containers || [])];
+                    updated[idx] = { ...updated[idx], unitsCount: v };
+                    update('topology', { ...bc.topology, containers: updated });
+                  }}
+                  onParkingChange={(v) => {
+                    const updated = [...(bc.topology?.containers || [])];
+                    updated[idx] = { ...updated[idx], parkingCount: v };
+                    update('topology', { ...bc.topology, containers: updated });
+                  }}
+                  onStorageChange={(v) => {
+                    const updated = [...(bc.topology?.containers || [])];
+                    updated[idx] = { ...updated[idx], storageCount: v };
+                    update('topology', { ...bc.topology, containers: updated });
+                  }}
+                />
+              ))}
+            </div>
+
+            <SaveFooter handleSave={handleSave} saved={saved} />
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* AMENIDADES TAB                                                 */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'amenidades' && (
           <AmenidadesTab
             amenities={amenities}
@@ -246,6 +303,9 @@ export default function ArchitectureSettings({
           />
         )}
 
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* EQUIPAMIENTO TAB                                               */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'equipamiento' && (
           <EquipamientoTab
             equipment={bc.equipment}
@@ -255,64 +315,6 @@ export default function ArchitectureSettings({
             handleSave={handleSave}
             saved={saved}
           />
-        )}
-
-        {activeTab === 'identidad' && (
-          <div className="animate-in fade-in duration-500">
-            <SectionHeader label="Datos del inmueble" icon="branding_watermark" />
-            <div className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-6">
-                  <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Administración</h4>
-                  <div className="space-y-4">
-                    <div>
-                      <label className={labelClass}>Responsable</label>
-                      <input type="text" value={bc.adminName} onChange={(e) => update('adminName', e.target.value)} className={inputClass} />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Teléfono</label>
-                      <input type="tel" value={bc.adminPhone} onChange={(e) => update('adminPhone', e.target.value)} className={inputClass} />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Email</label>
-                      <input type="email" value={bc.adminEmail} onChange={(e) => update('adminEmail', e.target.value)} className={inputClass} />
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Inmueble</h4>
-                  <div className="space-y-4">
-                    <div>
-                      <label className={labelClass}>Nombre Comercial</label>
-                      <input type="text" value={bc.buildingName} onChange={(e) => update('buildingName', e.target.value)} className={inputClass} />
-                    </div>
-                    <div>
-                      <label className={labelClass}>Dirección</label>
-                      <input type="text" value={bc.buildingAddress} onChange={(e) => update('buildingAddress', e.target.value)} className={inputClass} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className={labelClass}>CP</label>
-                        <input type="text" value={bc.zipCode || ''} onChange={(e) => update('zipCode', e.target.value)} className={inputClass} />
-                      </div>
-                      <div>
-                        <label className={labelClass}>Ciudad</label>
-                        <input type="text" value={bc.city || ''} onChange={(e) => update('city', e.target.value)} className={inputClass} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl flex gap-6 items-start">
-                <span className="material-symbols-outlined text-slate-400 text-3xl">info</span>
-                <div>
-                  <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest mb-1">Nota Legal</p>
-                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed">Estos datos se utilizan para la generación de avisos de cobro y recibos fiscales.</p>
-                </div>
-              </div>
-            </div>
-            <SaveFooter handleSave={handleSave} saved={saved} />
-          </div>
         )}
       </SettingsCard>
     </div>

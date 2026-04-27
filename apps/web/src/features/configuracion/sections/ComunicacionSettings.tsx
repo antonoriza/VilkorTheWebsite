@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SettingsTabBar, SaveFooter, ComingSoon } from '../../../core/components/SettingsShell'
+import { SettingsTabBar, SaveFooter, ComingSoon, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -15,39 +15,38 @@ const TABS = [
 // ─── Channel config ───────────────────────────────────────────────────────────
 
 const CHANNELS = [
-  { id: 'push',      label: 'Push App',   icon: 'smartphone',      color: 'bg-violet-50 text-violet-700 border-violet-100' },
-  { id: 'email',     label: 'Email',      icon: 'mail',            color: 'bg-blue-50 text-blue-700 border-blue-100' },
-  { id: 'sms',       label: 'SMS',        icon: 'sms',             color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
-  { id: 'whatsapp',  label: 'WhatsApp',   icon: 'chat',            color: 'bg-green-50 text-green-700 border-green-100' },
+  { id: 'push',      label: 'Push App',   desc: 'Notificaciones en tiempo real', icon: 'smartphone',      color: 'bg-violet-50 text-violet-700 border-violet-100' },
+  { id: 'email',     label: 'Email',      desc: 'Correo electrónico SMTP',       icon: 'mail',            color: 'bg-blue-50 text-blue-700 border-blue-100' },
+  { id: 'sms',       label: 'SMS',        desc: 'Mensajes de texto directo',     icon: 'sms',             color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+  { id: 'whatsapp',  label: 'WhatsApp',   desc: 'API de WhatsApp Business',      icon: 'chat',            color: 'bg-green-50 text-green-700 border-green-100' },
 ]
 
 function CanalesTab({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
   const [enabled, setEnabled] = useState<Record<string, boolean>>({ push: true, email: true, sms: false, whatsapp: false })
 
   return (
-    <div className="animate-in fade-in duration-500 space-y-8">
-      <div className="space-y-4">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Canales Activos</h4>
-        <p className="text-[11px] text-slate-400 font-medium ml-1">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-8">
+      <SectionHeader label="Canales de Comunicación" icon="cell_tower" />
+
+      <FieldGroup icon="settings_input_antenna" title="Canales Activos">
+        <p className="text-[10px] text-slate-400 font-medium -mt-2">
           Define qué canales puede usar el motor de avisos del agente para contactar a residentes y staff.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {CHANNELS.map((ch) => (
             <div
               key={ch.id}
-              className={`flex items-center justify-between p-6 rounded-3xl border-2 transition-all ${
-                enabled[ch.id] ? 'border-slate-900 bg-white shadow-lg shadow-slate-100' : 'border-slate-100 bg-slate-50'
+              className={`flex items-center justify-between p-5 rounded-2xl border-2 transition-all duration-300 ${
+                enabled[ch.id] ? 'border-slate-900 bg-white shadow-lg shadow-slate-100' : 'border-slate-100 bg-white/50'
               }`}
             >
               <div className="flex items-center gap-4">
-                <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center ${ch.color}`}>
+                <div className={`w-11 h-11 rounded-xl border flex items-center justify-center ${ch.color}`}>
                   <span className="material-symbols-outlined text-[22px]">{ch.icon}</span>
                 </div>
                 <div>
                   <p className="text-[12px] font-black text-slate-900 uppercase tracking-tight">{ch.label}</p>
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">
-                    {enabled[ch.id] ? 'Activo' : 'Inactivo'}
-                  </p>
+                  <p className="text-[9px] font-medium text-slate-400 mt-0.5">{ch.desc}</p>
                 </div>
               </div>
               <button
@@ -59,7 +58,8 @@ function CanalesTab({ handleSave, saved }: { handleSave: () => void; saved: bool
             </div>
           ))}
         </div>
-      </div>
+      </FieldGroup>
+
       <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
@@ -83,43 +83,46 @@ const CHANNEL_BADGE: Record<string, string> = {
 
 function PlantillasTab({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
   return (
-    <div className="animate-in fade-in duration-500 space-y-6">
-      <div className="space-y-3">
-        {DEFAULT_TEMPLATES.map((tpl) => (
-          <div key={tpl.id} className="group flex items-start justify-between p-5 bg-white border border-slate-100 rounded-3xl hover:border-slate-300 hover:shadow-md transition-all">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-[18px] text-slate-400">article</span>
-              </div>
-              <div>
-                <p className="text-[12px] font-black text-slate-900 uppercase tracking-tight">{tpl.title}</p>
-                <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                  <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${CHANNEL_BADGE[tpl.channel] || 'bg-slate-50 text-slate-500'} border-transparent`}>
-                    {tpl.channel}
-                  </span>
-                  <span className="text-[9px] text-slate-400 font-bold flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[10px]">schedule</span>
-                    {tpl.trigger}
-                  </span>
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-6">
+      <SectionHeader label="Plantillas de Envío" icon="article" />
+
+      <FieldGroup icon="auto_awesome" title="Automatizaciones">
+        <div className="space-y-3">
+          {DEFAULT_TEMPLATES.map((tpl) => (
+            <div key={tpl.id} className="group flex items-start justify-between p-5 bg-white border border-slate-100 rounded-2xl hover:border-slate-300 hover:shadow-md transition-all duration-300">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[18px] text-slate-400">article</span>
                 </div>
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[10px]">groups</span>
-                  {tpl.audience}
-                </p>
+                <div>
+                  <p className="text-[12px] font-black text-slate-900 uppercase tracking-tight">{tpl.title}</p>
+                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${CHANNEL_BADGE[tpl.channel] || 'bg-slate-50 text-slate-500'} border-transparent`}>
+                      {tpl.channel}
+                    </span>
+                    <span className="text-[9px] text-slate-400 font-bold flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[10px]">schedule</span>
+                      {tpl.trigger}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[10px]">groups</span>
+                    {tpl.audience}
+                  </p>
+                </div>
               </div>
+              <button className="text-slate-200 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-all mt-1">
+                <span className="material-symbols-outlined text-[18px]">edit</span>
+              </button>
             </div>
-            <button className="text-slate-200 hover:text-slate-500 opacity-0 group-hover:opacity-100 transition-all mt-1">
-              <span className="material-symbols-outlined text-[18px]">edit</span>
-            </button>
-          </div>
-        ))}
-      </div>
-      <div className="p-5 bg-amber-50 border border-amber-100 rounded-3xl flex items-start gap-4">
-        <span className="material-symbols-outlined text-amber-600 text-xl">info</span>
-        <p className="text-[11px] text-amber-800 font-medium leading-relaxed">
-          El motor de avisos del agente usa estas plantillas para envíos automáticos. Editar el contenido estará disponible en el siguiente release.
-        </p>
-      </div>
+          ))}
+        </div>
+      </FieldGroup>
+
+      <InfoBanner icon="info" variant="warning">
+        El motor de avisos del agente usa estas plantillas para envíos automáticos. Editar el contenido estará disponible en el siguiente release.
+      </InfoBanner>
+
       <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
