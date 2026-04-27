@@ -14,6 +14,7 @@
  * Resident sees ledger tab only + adeudo summary card.
  */
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 
@@ -71,16 +72,22 @@ export default function PagosPage() {
     autoAdeudos.forEach(a => dispatch({ type: 'DELETE_ADEUDO', payload: a.id }))
   }, [isAdmin, state.adeudos.length, dispatch]) // Runs if length changes, ensuring all are purged
 
-  const [lFilterMonth, setLFilterMonth]   = useState('') // Default to Historic (All months)
+  const [searchParams] = useSearchParams()
+  const initMonth = searchParams.get('month') || ''
+  const initStatus = searchParams.get('status') || ''
+  const initConcepto = searchParams.get('concepto') || ''
+  const initShowFilters = !!initMonth || !!initStatus || !!initConcepto
+
+  const [lFilterMonth, setLFilterMonth]   = useState(initMonth)
   const [lFilterTower, setLFilterTower]   = useState('')
   const [lFilterUnit, setLFilterUnit]     = useState('')
-  const [lFilterStatus, setLFilterStatus] = useState('')
-  const [lFilterConcepto, setLFilterConcepto] = useState('')
+  const [lFilterStatus, setLFilterStatus] = useState(initStatus)
+  const [lFilterConcepto, setLFilterConcepto] = useState(initConcepto)
   const [lSortKey, setLSortKey]           = useState<LedgerSortKey>('apartment')
   const [lSortDir, setLSortDir]           = useState<SortDir>('asc')
   const [ledgerSubTab, setLedgerSubTab]   = useState<'ingresos' | 'egresos'>('ingresos')
   const [unitDetailView, setUnitDetailView] = useState<'pagos' | 'adeudos' | 'balance' | null>(null)
-  const [showFilters, setShowFilters]     = useState(false)
+  const [showFilters, setShowFilters]     = useState(initShowFilters)
   const [egresoFilterStatus, setEgresoFilterStatus] = useState('')
 
   // ── Auto-process maturity on mount ──

@@ -328,7 +328,7 @@ export default function AdminDashboard() {
         {/* KPI cards — 3×2 compact grid */}
         <div className="xl:col-span-8 grid grid-cols-3 grid-rows-2 gap-4">
           {/* ── Row 1 ── */}
-          <Link to="/pagos" className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-emerald-200 transition-colors flex flex-col items-center text-center">
+          <Link to={`/pagos?month=${todayISO.slice(0, 7)}&status=Pagado&concepto=Mantenimiento`} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-emerald-200 transition-colors flex flex-col items-center text-center">
             <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
               <span className="material-symbols-outlined text-xl">payments</span>
             </div>
