@@ -68,16 +68,19 @@ export default function AdminDashboard() {
   }, [state.avisos, todayISO])
 
   // ── KPI Calculations ──
-  const totalPagos = state.pagos.length
-  const paidPagos = state.pagos.filter(p => p.status === 'Pagado').length
-  const recaudacionPct = totalPagos > 0 ? Math.round((paidPagos / totalPagos) * 100) : 0
+  const todayMk = todayISO.slice(0, 7) // YYYY-MM
+  const currentMonthPagos = state.pagos.filter(p => (p.monthKey || '') === todayMk)
+  const maintenancePagos = currentMonthPagos.filter(p => (p.concepto || '').split(/[:—]/)[0].trim() === 'Mantenimiento')
+  const paidMaintenance = maintenancePagos.filter(p => p.status === 'Pagado').length
+  const totalMaintenance = maintenancePagos.length
+  const recaudacionPct = totalMaintenance > 0 ? Math.round((paidMaintenance / totalMaintenance) * 100) : 0
   const pendingPaquetes = state.paquetes.filter(p => p.status === 'Pendiente').length
   const totalUnits = bc.totalUnits
   const occupiedUnits = new Set(state.residents.map(r => r.apartment)).size
   const occupancyPct = totalUnits > 0 ? Math.round((occupiedUnits / totalUnits) * 100) : 0
   // Composite health score: 50% payment, 30% occupancy, 20% package delivery
   // Guard: if there are no residents and no pagos, the system has no data to measure — return 0
-  const hasOperationalData = totalPagos > 0 || occupiedUnits > 0
+  const hasOperationalData = totalMaintenance > 0 || occupiedUnits > 0
   const healthPct = !hasOperationalData
     ? 0
     : Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
@@ -335,7 +338,7 @@ export default function AdminDashboard() {
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Recaudación mensual</p>
             <div className="flex items-baseline space-x-1.5">
               <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{recaudacionPct}%</span>
-              <span className="text-[10px] font-bold text-emerald-600">{paidPagos}/{totalPagos}</span>
+              <span className="text-[10px] font-bold text-emerald-600">{paidMaintenance}/{totalMaintenance}</span>
             </div>
             <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
               <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: `${recaudacionPct}%` }}></div>

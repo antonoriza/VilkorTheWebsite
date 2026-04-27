@@ -29,13 +29,13 @@ export interface EgresoKpiStripProps {
   lFilterMonth: string
   lFilterStatus: string
   showFilters: boolean
-  ledgerSubTab: string
+
   onStatusFilter: (filterKey: string) => void
 }
 
 export default function EgresoKpiStrip({
   egresoKpis, ledgerEgresos,
-  lFilterMonth, lFilterStatus, showFilters, ledgerSubTab,
+  lFilterMonth, lFilterStatus, showFilters,
   onStatusFilter,
 }: EgresoKpiStripProps) {
   // Build totals per category once
@@ -148,8 +148,8 @@ export default function EgresoKpiStrip({
               )}
 
               {k.label === 'Facturas Pendientes' && (
-                <span className="text-[9px] font-black mt-1 tabular-nums text-slate-300 uppercase tracking-widest">
-                  {ledgerSubTab}
+                <span className="text-[9px] font-black mt-1 tabular-nums text-slate-400">
+                  {k.value} {k.value === 1 ? 'factura' : 'facturas'} por liquidar
                 </span>
               )}
             </button>

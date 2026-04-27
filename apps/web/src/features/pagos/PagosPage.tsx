@@ -515,8 +515,9 @@ export default function PagosPage() {
           {isAdmin && ledgerSubTab === 'ingresos' && (
             <IngresoKpiStrip
               kpiItems={[
-                { label: 'Recaudación Mantenimiento', value: ledgerKpis.paidCount, amount: ledgerKpis.paidTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: 'Pagado', showInGlobal: false },
+                { label: 'Recaudación Mantenimiento', value: ledgerKpis.paidMantenimientoCount, amount: ledgerKpis.paidMantenimientoTotal, icon: 'trending_up', color: 'bg-emerald-500', iconColor: 'text-emerald-600', filterKey: 'Pagado', showInGlobal: false },
                 { label: 'Deuda Efectiva', value: ledgerKpis.overdueCount, amount: ledgerKpis.overdueTotal, icon: 'gavel', color: 'bg-rose-500', iconColor: 'text-rose-600', filterKey: 'Vencido', showInGlobal: true },
+                { label: 'En Revisión', value: ledgerKpis.porValidarCount, amount: ledgerKpis.porValidarTotal, icon: 'hourglass_top', color: 'bg-violet-500', iconColor: 'text-violet-600', filterKey: 'Por validar', showInGlobal: false },
                 { label: 'Próximos Cargos', value: ledgerKpis.upcomingCount, amount: ledgerKpis.upcomingTotal, icon: 'schedule', color: 'bg-amber-500', iconColor: 'text-amber-600', filterKey: 'Pendiente', showInGlobal: true },
               ]}
               ledgerKpis={ledgerKpis}
@@ -538,7 +539,6 @@ export default function PagosPage() {
               lFilterMonth={lFilterMonth}
               lFilterStatus={egresoFilterStatus}
               showFilters={showFilters}
-              ledgerSubTab={ledgerSubTab}
               onStatusFilter={(fk) => setEgresoFilterStatus(fk)}
             />
           )}

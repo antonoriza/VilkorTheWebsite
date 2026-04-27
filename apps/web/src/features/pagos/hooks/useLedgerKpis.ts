@@ -19,6 +19,7 @@ export interface LedgerKpiValues {
   totalPortfolioAmount: number
   expectedMantenimientoTotal: number
   paidMantenimientoTotal: number
+  paidMantenimientoCount: number
 }
 
 export interface EgresoKpiValues {
@@ -48,8 +49,10 @@ function computeKpis(
   const adeudosTotal = myAdeudos.reduce((s, a) => s + a.amount, 0)
 
   const maintenancePagos = pagos.filter(isMaintenance)
+  const paidMaintenancePagos = maintenancePagos.filter(p => p.status === 'Pagado')
   const expectedMantenimientoTotal = maintenancePagos.reduce((s, p) => s + p.amount, 0)
-  const paidMantenimientoTotal = maintenancePagos.filter(p => p.status === 'Pagado').reduce((s, p) => s + p.amount, 0)
+  const paidMantenimientoTotal = paidMaintenancePagos.reduce((s, p) => s + p.amount, 0)
+  const paidMantenimientoCount = paidMaintenancePagos.length
 
   return {
     paidTotal: paid.reduce((s, p) => s + p.amount, 0),
@@ -63,6 +66,7 @@ function computeKpis(
     totalPortfolioAmount: paid.reduce((s, p) => s + p.amount, 0) + overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal + upcoming.reduce((s, p) => s + p.amount, 0) + porValidar.reduce((s, p) => s + p.amount, 0),
     expectedMantenimientoTotal,
     paidMantenimientoTotal,
+    paidMantenimientoCount,
   }
 }
 

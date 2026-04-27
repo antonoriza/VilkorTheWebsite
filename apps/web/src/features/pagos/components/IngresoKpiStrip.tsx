@@ -88,16 +88,10 @@ export default function IngresoKpiStrip({
           const isClickable = !!k.filterKey
           const isActive = isClickable && lFilterStatus === k.filterKey
 
-          let progress = 0
-          if (k.label === 'Recaudación Mantenimiento') {
-            progress = ledgerKpis.expectedMantenimientoTotal > 0
-              ? (ledgerKpis.paidMantenimientoTotal / ledgerKpis.expectedMantenimientoTotal) * 100
-              : 0
-          } else {
-            progress = ledgerKpis.totalPortfolioAmount > 0
-              ? (k.amount / ledgerKpis.totalPortfolioAmount) * 100
-              : 0
-          }
+          // Progress bar percentage — only used for Recaudación Mantenimiento
+          const progress = k.label === 'Recaudación Mantenimiento' && ledgerKpis.expectedMantenimientoTotal > 0
+            ? (ledgerKpis.paidMantenimientoTotal / ledgerKpis.expectedMantenimientoTotal) * 100
+            : 0
 
           const isZeroDebt = k.filterKey === 'Vencido' && k.amount === 0
 
@@ -147,15 +141,25 @@ export default function IngresoKpiStrip({
                 </div>
               )}
 
-              {/* Secondary info */}
-              {!isZeroDebt && k.label !== 'Recaudación Mantenimiento' && (
-                <span className={`text-[9px] font-black mt-1 tabular-nums ${isActive ? 'text-slate-600' : 'text-slate-400'}`}>
-                  {progress.toFixed(1)}% del total
-                </span>
-              )}
+              {/* Secondary info — contextual per card */}
               {k.label === 'Recaudación Mantenimiento' && (
                 <span className={`text-[9px] font-black mt-1 tabular-nums ${progress >= 100 ? 'text-emerald-600' : 'text-slate-400'}`}>
                   {progress.toFixed(1)}% recolectado
+                </span>
+              )}
+              {!isZeroDebt && k.label === 'Deuda Efectiva' && (
+                <span className={`text-[9px] font-black mt-1 tabular-nums ${isActive ? 'text-slate-600' : 'text-slate-400'}`}>
+                  {k.value} {k.value === 1 ? 'unidad' : 'unidades'} con adeudo
+                </span>
+              )}
+              {k.label === 'En Revisión' && (
+                <span className={`text-[9px] font-black mt-1 tabular-nums ${isActive ? 'text-slate-600' : 'text-slate-400'}`}>
+                  {k.value} {k.value === 1 ? 'comprobante' : 'comprobantes'} por aprobar
+                </span>
+              )}
+              {k.label === 'Próximos Cargos' && (
+                <span className={`text-[9px] font-black mt-1 tabular-nums ${isActive ? 'text-slate-600' : 'text-slate-400'}`}>
+                  {k.value} {k.value === 1 ? 'cobro' : 'cobros'} por vencer
                 </span>
               )}
             </button>
