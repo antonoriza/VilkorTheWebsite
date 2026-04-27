@@ -64,6 +64,8 @@ export function generateResidents(): DemoResident[] {
 
   let nameIdx = 0
 
+  const emailCounts = new Map<string, number>()
+
   for (const tower of towers) {
     for (let floor = 1; floor <= 15; floor++) {
       const unitsOnFloor = floor === 15 ? 2 : 4
@@ -75,11 +77,17 @@ export function generateResidents(): DemoResident[] {
         const firstName = namePool[Math.floor(nameIdx / 2) % namePool.length]
         const surname = SURNAMES[nameIdx % SURNAMES.length]
 
+        // Generate realistic email with dedup suffix
+        const baseEmail = `${firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}.${surname.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`
+        const count = emailCounts.get(baseEmail) || 0
+        emailCounts.set(baseEmail, count + 1)
+        const email = count === 0 ? `${baseEmail}@correo.com` : `${baseEmail}${count + 1}@correo.com`
+
         residents.push({
           name: `${firstName} ${surname}`,
           apartment: apt,
           tower: tower.name,
-          email: `${apt}@gmail.com`,
+          email,
         })
         nameIdx++
       }

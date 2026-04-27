@@ -47,8 +47,22 @@ export const buildingConfig = {
     { id: 're-5', concepto: 'Recibo de Luz',               categoria: 'servicios',      amount: 5800,  description: 'Servicio de energía eléctrica áreas comunes.' },
     { id: 're-6', concepto: 'Honorarios Administración',   categoria: 'administracion', amount: 15000, description: 'Cuota mensual de la empresa administradora.' },
   ],
+  conceptosFinancieros: [
+    {
+      id: 'mensualidad',
+      concepto: 'Mensualidad',
+      monto: 1800,
+      categoria: 'ingreso',
+      descripcion: 'Cuota de mantenimiento mensual',
+      vencimiento: { tipo: 'ultimo_dia_mes' },
+      diasGracia: 10,
+      recargoPct: null,
+      recargoMonto: null,
+      sistema: true,
+    },
+  ],
   maturityRules: {
-    mantenimiento: 'next_month_01',
+    mantenimiento: 'current_month_end',
     amenidad: 'day_of_event',
     multaOtros: 'immediate',
   },

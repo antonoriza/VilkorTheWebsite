@@ -4,6 +4,16 @@
  * Populates the tenant database with demo data (Phase 2).
  * Called from db/seed.ts only when APP_MODE=demo.
  *
+ * Design principles:
+ *   1. Building config is seeded FIRST — it's the source of truth
+ *      for financial rules and amounts.
+ *   2. The seed NEVER assigns "Vencido" status — all unpaid records
+ *      are seeded as "Pendiente". The frontend's PROCESS_MATURITY
+ *      engine handles the Pendiente → Vencido transition at runtime
+ *      using the Catálogo de Conceptos rules.
+ *   3. Amounts are read from buildingConfig, never hardcoded.
+ *   4. Timestamps are offset to create a realistic timeline.
+ *
  * Idempotent: skips all inserts if the residents table already has data.
  */
 import { tenantDB } from '../db/tenant'
@@ -14,11 +24,20 @@ import { auth } from '../auth'
 import { generateResidents } from './fixtures/residents'
 import { staffMembers } from './fixtures/staff'
 import { amenitiesList } from './fixtures/amenities'
-import { PAGO_STATUSES, PAGO_CONCEPTO, PAGO_AMOUNT, PAGO_MONTH, PAGO_MONTH_KEY, PAGO_PAYMENT_DATE } from './fixtures/pagos'
+import { PAYMENT_PROFILES, PAGO_MONTH, PAGO_MONTH_KEY, PAGO_PAYMENT_DATE, PAGO_PREV_MONTH, PAGO_PREV_MONTH_KEY } from './fixtures/pagos'
 import { ticketData } from './fixtures/tickets'
 import { avisoData } from './fixtures/avisos'
 import { buildingConfig } from './fixtures/building-config'
 import { DEMO_ACCOUNT_APARTMENTS, DEMO_ACCOUNT_PASSWORD, DEMO_ACCOUNT_ROLE } from './fixtures/accounts'
+
+// ── Helpers ──────────────────────────────────────────────────────────
+
+/** ISO string for N days ago */
+function daysAgoISO(n: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() - n)
+  return d.toISOString()
+}
 
 export async function seedDemo(tenantId: string): Promise<void> {
   console.log('[demo] Phase 2: Demo data...')
@@ -33,7 +52,11 @@ export async function seedDemo(tenantId: string): Promise<void> {
     return
   }
 
-  // ── Residents (116) ──────────────────────────────────────────────────
+  // ── 1. Building Config (FIRST — source of truth for financial rules) ─
+  raw.exec(`INSERT OR REPLACE INTO building_config (id, data) VALUES (1, '${JSON.stringify(buildingConfig).replace(/'/g, "''")}')`  )
+  console.log('[demo]   ✓ Building config')
+
+  // ── 2. Residents (116) ────────────────────────────────────────────────
   const residents = generateResidents()
   const insertResident = raw.prepare(
     'INSERT INTO residents (id, name, apartment, tower, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
@@ -43,7 +66,7 @@ export async function seedDemo(tenantId: string): Promise<void> {
   }
   console.log(`[demo]   ✓ ${residents.length} residents`)
 
-  // ── Staff (4) ────────────────────────────────────────────────────────
+  // ── 3. Staff (4) ─────────────────────────────────────────────────────
   const insertStaff = raw.prepare(
     'INSERT INTO staff (id, name, role, shift_start, shift_end, work_days, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
   )
@@ -52,7 +75,7 @@ export async function seedDemo(tenantId: string): Promise<void> {
   }
   console.log(`[demo]   ✓ ${staffMembers.length} staff members`)
 
-  // ── Amenities (3) ────────────────────────────────────────────────────
+  // ── 4. Amenities (3) ─────────────────────────────────────────────────
   const insertAmenity = raw.prepare(
     'INSERT INTO amenities (id, name, icon, created_at, updated_at) VALUES (?, ?, ?, ?, ?)'
   )
@@ -61,27 +84,105 @@ export async function seedDemo(tenantId: string): Promise<void> {
   }
   console.log(`[demo]   ✓ ${amenitiesList.length} amenities`)
 
-  // ── Pagos (one per resident, current month) ───────────────────────────
+  // ── 5. Pagos — profile-based, no Vencido assignment ──────────────────
+  //    Amount read from buildingConfig (single source of truth)
+  const monthlyFee = buildingConfig.monthlyFee
   const insertPago = raw.prepare(`
     INSERT INTO pagos
       (id, resident_id, apartment, resident, month, month_key, concepto, amount, status, payment_date, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
-  let pagoCount = 0
-  for (const r of residents) {
-    const status = PAGO_STATUSES[pagoCount % PAGO_STATUSES.length]
-    insertPago.run(
-      nanoid(), `res-${r.apartment}`, r.apartment, r.name,
-      PAGO_MONTH, PAGO_MONTH_KEY, PAGO_CONCEPTO, PAGO_AMOUNT,
-      status,
-      status === 'Pagado' ? PAGO_PAYMENT_DATE : null,
-      NOW, NOW,
-    )
-    pagoCount++
-  }
-  console.log(`[demo]   ✓ ${pagoCount} pagos`)
 
-  // ── Tickets (4) ──────────────────────────────────────────────────────
+  let pagoCount = 0
+  for (let i = 0; i < residents.length; i++) {
+    const r = residents[i]
+    const profile = PAYMENT_PROFILES[i % PAYMENT_PROFILES.length]
+
+    switch (profile) {
+      case 'paid':
+        insertPago.run(
+          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
+          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
+          'Pagado', PAGO_PAYMENT_DATE, NOW, NOW,
+        )
+        pagoCount++
+        break
+
+      case 'pending':
+        insertPago.run(
+          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
+          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
+          'Pendiente', null, NOW, NOW,
+        )
+        pagoCount++
+        break
+
+      case 'validating':
+        insertPago.run(
+          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
+          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
+          'Por validar', null, NOW, NOW,
+        )
+        pagoCount++
+        break
+
+      case 'debtor':
+        // Previous month — Pendiente (PROCESS_MATURITY will flip to Vencido)
+        insertPago.run(
+          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
+          PAGO_PREV_MONTH, PAGO_PREV_MONTH_KEY, 'Mantenimiento', monthlyFee,
+          'Pendiente', null, NOW, NOW,
+        )
+        // Current month — also Pendiente
+        insertPago.run(
+          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
+          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
+          'Pendiente', null, NOW, NOW,
+        )
+        pagoCount++
+        break
+    }
+  }
+
+  // ── 5b. Sprinkle non-Mantenimiento charges for variety ───────────────
+  //    A multa (immediate maturity) and a reservation charge
+  const multaResident = residents[3]   // 4th resident
+  insertPago.run(
+    nanoid(), `res-${multaResident.apartment}`, multaResident.apartment, multaResident.name,
+    PAGO_MONTH, PAGO_MONTH_KEY, 'Multa', 500,
+    'Pendiente', null, NOW, NOW,
+  )
+
+  const amenidadResident = residents[8] // 9th resident
+  insertPago.run(
+    nanoid(), `res-${amenidadResident.apartment}`, amenidadResident.apartment, amenidadResident.name,
+    PAGO_MONTH, PAGO_MONTH_KEY, 'Reserva Amenidad', 350,
+    'Pagado', PAGO_PAYMENT_DATE, NOW, NOW,
+  )
+
+  console.log(`[demo]   ✓ ${pagoCount} residents processed + 2 extra charges (Multa, Reserva Amenidad)`)
+
+  // ── 6. Egresos from recurringEgresos ─────────────────────────────────
+  //    Generate current-month expense records. Most are already paid
+  //    (nómina, servicios); administration fee is still pending.
+  const insertEgreso = raw.prepare(`
+    INSERT INTO egresos
+      (id, categoria, concepto, description, amount, month_key, date, registered_by, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `)
+  const egresoDate = `${PAGO_MONTH_KEY}-01`
+  for (const re of buildingConfig.recurringEgresos) {
+    // Administration fee is pending (hasn't been disbursed yet)
+    const status = re.categoria === 'administracion' ? 'Pendiente' : 'Pagado'
+    insertEgreso.run(
+      nanoid(), re.categoria, re.concepto, re.description || '',
+      re.amount, PAGO_MONTH_KEY, egresoDate,
+      buildingConfig.adminName, status, NOW, NOW,
+    )
+  }
+  console.log(`[demo]   ✓ ${buildingConfig.recurringEgresos.length} egresos (current month)`)
+
+  // ── 7. Tickets with realistic timeline ───────────────────────────────
   const insertTicket = raw.prepare(`
     INSERT INTO tickets
       (id, number, subject, description, category, priority, status, created_by, resident_id, apartment, created_at, updated_at, resolved_at)
@@ -90,17 +191,19 @@ export async function seedDemo(tenantId: string): Promise<void> {
   for (let i = 0; i < ticketData.length; i++) {
     const t = ticketData[i]
     const r = residents[t.residentIndex]
+    const createdAt = daysAgoISO(t.daysAgo)
+    const resolvedAt = t.resolvedDaysAgo != null ? daysAgoISO(t.resolvedDaysAgo) : null
     insertTicket.run(
       nanoid(), i + 1, t.subject, t.description, t.category, t.priority, t.status,
       r.name, `res-${r.apartment}`, r.apartment,
-      NOW, NOW,
-      t.status === 'Resuelto' ? NOW : null,
+      createdAt, resolvedAt ?? createdAt,
+      resolvedAt,
     )
   }
   raw.exec(`INSERT OR REPLACE INTO counters (key, value) VALUES ('ticket_number', ${ticketData.length})`)
   console.log(`[demo]   ✓ ${ticketData.length} tickets`)
 
-  // ── Avisos (2) ───────────────────────────────────────────────────────
+  // ── 8. Avisos ────────────────────────────────────────────────────────
   const insertAviso = raw.prepare(`
     INSERT INTO avisos
       (id, title, category, description, attachment, date, pinned, created_at, updated_at)
@@ -111,11 +214,7 @@ export async function seedDemo(tenantId: string): Promise<void> {
   }
   console.log(`[demo]   ✓ ${avisoData.length} avisos`)
 
-  // ── Building Config ───────────────────────────────────────────────────
-  raw.exec(`INSERT OR REPLACE INTO building_config (id, data) VALUES (1, '${JSON.stringify(buildingConfig).replace(/'/g, "''")}')`)
-  console.log('[demo]   ✓ Building config')
-
-  // ── Demo resident auth accounts ───────────────────────────────────────
+  // ── 9. Demo resident auth accounts ───────────────────────────────────
   // Look up by apartment code — stable regardless of generation order
   const demoAccounts = DEMO_ACCOUNT_APARTMENTS.map(apt => {
     const r = residents.find(res => res.apartment === apt)

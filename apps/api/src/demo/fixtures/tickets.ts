@@ -5,6 +5,8 @@
  * categories, priorities, and statuses.
  *
  * Resident indices reference the array returned by generateResidents().
+ * Each ticket includes a daysAgo offset so timestamps form a
+ * realistic timeline instead of all sharing the same instant.
  */
 
 export interface DemoTicket {
@@ -15,6 +17,10 @@ export interface DemoTicket {
   status: string
   /** Index into the residents array for created_by / apartment */
   residentIndex: number
+  /** Days ago the ticket was created (older → larger number) */
+  daysAgo: number
+  /** Days ago the ticket was resolved — only for resolved/closed tickets */
+  resolvedDaysAgo?: number
 }
 
 export const ticketData: DemoTicket[] = [
@@ -25,6 +31,7 @@ export const ticketData: DemoTicket[] = [
     priority: 'Alta',
     status: 'Nuevo',
     residentIndex: 0,
+    daysAgo: 1,
   },
   {
     subject: 'Foco fundido en pasillo piso 3',
@@ -33,6 +40,8 @@ export const ticketData: DemoTicket[] = [
     priority: 'Baja',
     status: 'Resuelto',
     residentIndex: 1,
+    daysAgo: 7,
+    resolvedDaysAgo: 3,
   },
   {
     subject: 'Elevador tarda en abrir',
@@ -41,6 +50,7 @@ export const ticketData: DemoTicket[] = [
     priority: 'Media',
     status: 'En Proceso',
     residentIndex: 5,
+    daysAgo: 4,
   },
   {
     subject: 'Ruido excesivo en depto vecino',
@@ -49,5 +59,6 @@ export const ticketData: DemoTicket[] = [
     priority: 'Media',
     status: 'Asignado',
     residentIndex: 10,
+    daysAgo: 2,
   },
 ]
