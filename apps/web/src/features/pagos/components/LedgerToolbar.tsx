@@ -1,5 +1,5 @@
 /**
- * LedgerToolbar — Sub-tab switcher, add button, filter toggle,
+ * LedgerToolbar — Sub-tab switcher, add button, search, filter toggle,
  * active filter chips, and collapsible month-picker + dropdown grid.
  * Extracted from PagosPage.
  */
@@ -31,6 +31,7 @@ interface LedgerToolbarProps {
   lFilterUnit: string
   lFilterConcepto: string
   lFilterStatus: string
+  searchQuery: string
   // Options
   towers: string[]
   filteredUnits: string[]
@@ -46,6 +47,7 @@ interface LedgerToolbarProps {
   onUnitChange: (v: string) => void
   onConceptoChange: (v: string) => void
   onStatusChange: (v: string) => void
+  onSearchChange: (v: string) => void
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -56,9 +58,11 @@ export default function LedgerToolbar({
   isAdmin, ledgerSubTab, ingresoCount, egresoCount,
   activeFilters, showFilters,
   lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, lFilterStatus,
+  searchQuery,
   towers, filteredUnits, conceptoOptions,
   onSubTabChange, onAddClick, onToggleFilters, clearAllFilters,
   onMonthChange, onTowerChange, onUnitChange, onConceptoChange, onStatusChange,
+  onSearchChange,
 }: LedgerToolbarProps) {
 
   // ── Month picker local state ──
@@ -77,6 +81,7 @@ export default function LedgerToolbar({
   const pickerYears = useMemo(() => Object.keys(monthsByYear).map(Number).sort((a,b) => b-a), [monthsByYear])
 
   const count = ledgerSubTab === 'ingresos' ? ingresoCount : egresoCount
+  const isEgresos = ledgerSubTab === 'egresos'
 
   return (
     <div className="px-6 py-4 border-b border-slate-100 bg-white sticky top-0 z-10">
@@ -110,6 +115,26 @@ export default function LedgerToolbar({
 
         {isAdmin && (
           <div className="flex items-center gap-2">
+            {/* ── Search Input ── */}
+            <div className="relative hidden sm:block">
+              <span className="material-symbols-outlined text-[16px] text-slate-400 absolute left-3 top-1/2 -translate-y-1/2">search</span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => onSearchChange(e.target.value)}
+                placeholder="Buscar unidad, residente…"
+                className="pl-9 pr-8 py-2 w-52 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder:text-slate-300"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => onSearchChange('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[12px] text-slate-500">close</span>
+                </button>
+              )}
+            </div>
+
             <button
               onClick={onAddClick}
               className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10 text-[10px] tracking-widest uppercase"
@@ -171,7 +196,11 @@ export default function LedgerToolbar({
 
       {/* Collapsible Dropdown Grid */}
       {isAdmin && showFilters && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl animate-[fadeIn_0.15s_ease-out]">
+        <div className={`grid gap-3 mt-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl animate-[fadeIn_0.15s_ease-out] ${
+          isEgresos ? 'grid-cols-2 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-5'
+        }`}>
+
+          {/* ── Month picker (both tabs) ── */}
           <div className="relative">
             <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Mes / Año</label>
             <button
@@ -228,8 +257,7 @@ export default function LedgerToolbar({
                               ? 'bg-slate-900 text-white shadow-lg'
                               : exists
                                 ? 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                                : 'text-slate-200 cursor-not-allowed'}
-                          `}
+                                : 'text-slate-200 cursor-not-allowed'}`}
                         >
                           {MONTH_ABBR_ES[i]}
                         </button>
@@ -255,40 +283,60 @@ export default function LedgerToolbar({
               </>
             )}
           </div>
-          <div>
-            <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
-            <select value={lFilterTower} onChange={e => { onTowerChange(e.target.value); onUnitChange('') }}
-              className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-              <option value="">Todas</option>
-              {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Unidad</label>
-            <select value={lFilterUnit} onChange={e => onUnitChange(e.target.value)}
-              className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-              <option value="">Todas</option>
-              {filteredUnits.map(u => <option key={u} value={u}>{u}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Concepto</label>
-            <select value={lFilterConcepto} onChange={e => onConceptoChange(e.target.value)}
-              className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-              <option value="">Todos</option>
-              {conceptoOptions.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
-            <select value={lFilterStatus} onChange={e => onStatusChange(e.target.value)}
-              className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
-              <option value="">Todos</option>
-              <option value="Pendiente">Adeudos</option>
-              <option value="Por validar">En Revisión</option>
-              <option value="Pagado">Pagados</option>
-            </select>
-          </div>
+
+          {/* ── Egreso-specific: only status filter ── */}
+          {isEgresos && (
+            <div>
+              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
+              <select value={lFilterStatus} onChange={e => onStatusChange(e.target.value)}
+                className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                <option value="">Todos</option>
+                <option value="Pendiente">Pendientes</option>
+                <option value="Pagado">Pagados</option>
+              </select>
+            </div>
+          )}
+
+          {/* ── Ingreso-specific filters ── */}
+          {!isEgresos && (
+            <>
+              <div>
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Torre</label>
+                <select value={lFilterTower} onChange={e => { onTowerChange(e.target.value); onUnitChange('') }}
+                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                  <option value="">Todas</option>
+                  {towers.map(t => <option key={t} value={t}>Torre {t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Unidad</label>
+                <select value={lFilterUnit} onChange={e => onUnitChange(e.target.value)}
+                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                  <option value="">Todas</option>
+                  {filteredUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Concepto</label>
+                <select value={lFilterConcepto} onChange={e => onConceptoChange(e.target.value)}
+                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                  <option value="">Todos</option>
+                  {conceptoOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Estado</label>
+                <select value={lFilterStatus} onChange={e => onStatusChange(e.target.value)}
+                  className="block w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 font-medium text-sm">
+                  <option value="">Todos</option>
+                  <option value="Pendiente">Pendientes</option>
+                  <option value="Vencido">Vencidos</option>
+                  <option value="Por validar">En Revisión</option>
+                  <option value="Pagado">Pagados</option>
+                </select>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

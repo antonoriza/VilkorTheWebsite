@@ -356,10 +356,11 @@ export function reducer(state: StoreState, action: Action): StoreState {
       const nowDate = new Date(now)
       const rules = state.buildingConfig.maturityRules
       const surcharge = state.buildingConfig.surcharge
+      const catalog = state.buildingConfig.conceptosFinancieros
 
       // 1. Mark as 'Vencido'
       const updatedPagos = state.pagos.map(p => {
-        if (p.status === 'Pendiente' && isEffectiveDebt(p, now, rules)) {
+        if (p.status === 'Pendiente' && isEffectiveDebt(p, now, rules, catalog)) {
           return { ...p, status: 'Vencido' as const }
         }
         return p
@@ -370,7 +371,7 @@ export function reducer(state: StoreState, action: Action): StoreState {
       if (surcharge && surcharge.enabled) {
         updatedPagos.forEach(p => {
           if (p.status === 'Vencido' && !p.concepto.startsWith('Recargo Moratorio')) {
-            const target = getMaturityTargetDate(p, rules, now)
+            const target = getMaturityTargetDate(p, rules, now, catalog)
             if (target) {
               const graceTarget = new Date(target)
               graceTarget.setDate(graceTarget.getDate() + surcharge.graceDays)

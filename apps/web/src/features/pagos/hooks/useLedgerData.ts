@@ -50,6 +50,7 @@ export function useFilteredPagos(
   lFilterConcepto: string,
   lSortKey: LedgerSortKey,
   lSortDir: SortDir,
+  searchQuery: string = '',
 ) {
   return useMemo(() => {
     let data = isAdmin ? unifiedPagos : unifiedPagos.filter(p => p.apartment === myApartment)
@@ -63,6 +64,17 @@ export function useFilteredPagos(
     if (isAdmin && lFilterUnit) data = data.filter(p => p.apartment === lFilterUnit)
     if (isAdmin && lFilterStatus) data = data.filter(p => p.status === lFilterStatus)
     if (isAdmin && lFilterConcepto) data = data.filter(p => (p.concepto || 'Mantenimiento') === lFilterConcepto)
+    // Freetext search
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      data = data.filter(p =>
+        p.apartment.toLowerCase().includes(q) ||
+        (p.resident || '').toLowerCase().includes(q) ||
+        (p.concepto || '').toLowerCase().includes(q) ||
+        (p.notes || '').toLowerCase().includes(q) ||
+        (p.month || '').toLowerCase().includes(q)
+      )
+    }
     return [...data].sort((a, b) => {
       let va: string | number, vb: string | number
       switch (lSortKey) {
@@ -78,7 +90,7 @@ export function useFilteredPagos(
       if (va > vb) return lSortDir === 'asc' ? 1 : -1
       return 0
     })
-  }, [unifiedPagos, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lFilterConcepto, lSortKey, lSortDir, residents])
+  }, [unifiedPagos, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lFilterConcepto, lSortKey, lSortDir, residents, searchQuery])
 }
 
 /** Unique concepto values for filter dropdown */

@@ -22,7 +22,7 @@ import { useStore } from '../../core/store/store'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import EmptyState from '../../core/components/EmptyState'
-import { type Pago, type AdeudoType, type EgresoCategoria } from '../../types'
+import { type AdeudoType, type EgresoCategoria } from '../../types'
 import { pdf } from '@react-pdf/renderer'
 import FinancialReportPDF from './FinancialReportPDF'
 import { monthKeyToLabel, generateMonthRange, todayMonthKey, todayIso } from '../../lib/month-utils'
@@ -65,12 +65,13 @@ export default function PagosPage() {
   // ── Tab ──
   const [activeTab, setActiveTab] = useState<ActiveTab>('ledger')
 
-  // ── State Sanitizer: Purge redundant auto-summary records on mount ──
+  // ── State Sanitizer: Purge redundant auto-summary records (mount only) ──
   useEffect(() => {
     if (!isAdmin) return
     const autoAdeudos = state.adeudos.filter(a => a.id.startsWith('ad-auto-'))
     autoAdeudos.forEach(a => dispatch({ type: 'DELETE_ADEUDO', payload: a.id }))
-  }, [isAdmin, state.adeudos.length, dispatch]) // Runs if length changes, ensuring all are purged
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Run once on mount — not on every adeudo length change
 
   const [searchParams] = useSearchParams()
   const initMonth = searchParams.get('month') || ''
@@ -89,6 +90,7 @@ export default function PagosPage() {
   const [unitDetailView, setUnitDetailView] = useState<'pagos' | 'adeudos' | 'balance' | null>(null)
   const [showFilters, setShowFilters]     = useState(initShowFilters)
   const [egresoFilterStatus, setEgresoFilterStatus] = useState('')
+  const [searchQuery, setSearchQuery]     = useState('')
 
   // ── Auto-process maturity on mount ──
   useEffect(() => {
@@ -119,6 +121,7 @@ export default function PagosPage() {
     setLFilterStatus('')
     setEgresoFilterStatus('')
     setUnitDetailView(null)
+    setSearchQuery('')
   }, [])
 
   // ── Unified modal ──
@@ -139,7 +142,7 @@ export default function PagosPage() {
   const [mReceiptError, setMReceiptError]     = useState('')
 
   // ── Receipt preview ──
-  const [previewPago, setPreviewPago] = useState<Pago | null>(null)
+  const [previewPago, setPreviewPago] = useState<{ apartment?: string; month?: string; amount: number; paymentDate?: string | null; receiptData?: string; receiptType?: 'image' | 'pdf'; receiptName?: string } | null>(null)
 
   // ── Resident Payment Modal ──
   const [residentPayTarget, setResidentPayTarget] = useState<string | null>(null)
@@ -163,6 +166,9 @@ export default function PagosPage() {
   // ── Egreso delete confirm ──
   const [deleteEgresoId, setDeleteEgresoId] = useState<string | null>(null)
 
+  // ── Egreso revert confirm ──
+  const [revertEgresoTarget, setRevertEgresoTarget] = useState<{ id: string; concepto: string } | null>(null)
+
   // ── Topology & Ledger Data (extracted hooks) ──
   const towers = bc.towers.sort()
   const allUnits = useAllUnits(state.residents, state.pagos, state.adeudos)
@@ -177,14 +183,15 @@ export default function PagosPage() {
     return allUnits.filter(u => state.residents.some(r => r.apartment === u && r.tower === mTower))
   }, [allUnits, mTower, state.residents])
 
+  const catalog = bc.conceptosFinancieros
   const unifiedPagos = useUnifiedPagos(state.pagos, state.adeudos, state.residents)
-  const filteredPagos = useFilteredPagos(unifiedPagos, state.residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lFilterConcepto, lSortKey, lSortDir)
+  const filteredPagos = useFilteredPagos(unifiedPagos, state.residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterStatus, lFilterConcepto, lSortKey, lSortDir, searchQuery)
   const conceptoOptions = useConceptoOptions(unifiedPagos)
   const ledgerEgresos = useLedgerEgresos(state.egresos, lFilterMonth)
 
   // ── KPIs (extracted hooks) ──
-  const globalKpis = useGlobalKpis(state.pagos, state.adeudos, state.buildingConfig.maturityRules, isAdmin, myApartment, TODAY_ISO)
-  const contextualKpis = useContextualKpis(state.pagos, state.adeudos, state.residents, state.buildingConfig.maturityRules, isAdmin, myApartment, TODAY_ISO, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, TODAY_KEY)
+  const globalKpis = useGlobalKpis(state.pagos, state.adeudos, state.buildingConfig.maturityRules, isAdmin, myApartment, TODAY_ISO, catalog)
+  const contextualKpis = useContextualKpis(state.pagos, state.adeudos, state.residents, state.buildingConfig.maturityRules, isAdmin, myApartment, TODAY_ISO, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, TODAY_KEY, catalog)
   const ledgerKpis = showFilters ? contextualKpis : globalKpis
   const egresoKpis = useEgresoKpis(ledgerEgresos)
 
@@ -271,8 +278,18 @@ export default function PagosPage() {
   const handleToggleEgresoStatus = (id: string) => {
     const egreso = state.egresos.find(e => e.id === id)
     if (!egreso) return
-    const newStatus = egreso.status === 'Pendiente' ? 'Pagado' : 'Pendiente'
-    dispatch({ type: 'UPDATE_EGRESO', payload: { ...egreso, status: newStatus } })
+    if (egreso.status === 'Pagado') {
+      // Revert requires confirmation
+      setRevertEgresoTarget({ id: egreso.id, concepto: egreso.concepto })
+      return
+    }
+    dispatch({ type: 'UPDATE_EGRESO', payload: { ...egreso, status: 'Pagado' } })
+  }
+
+  const confirmRevertEgreso = () => {
+    if (!revertEgresoTarget) return
+    const egreso = state.egresos.find(e => e.id === revertEgresoTarget.id)
+    if (egreso) dispatch({ type: 'UPDATE_EGRESO', payload: { ...egreso, status: 'Pendiente' } })
   }
 
   const confirmRevoke = () => {
@@ -625,6 +642,7 @@ export default function PagosPage() {
               lFilterUnit={lFilterUnit}
               lFilterConcepto={lFilterConcepto}
               lFilterStatus={lFilterStatus}
+              searchQuery={searchQuery}
               towers={towers}
               filteredUnits={lFilteredUnits}
               conceptoOptions={conceptoOptions}
@@ -647,6 +665,7 @@ export default function PagosPage() {
               onUnitChange={(v) => { setLFilterUnit(v); setUnitDetailView(null) }}
               onConceptoChange={setLFilterConcepto}
               onStatusChange={setLFilterStatus}
+              onSearchChange={setSearchQuery}
             />
 
             {/* ── INGRESOS TABLE ── */}
@@ -658,6 +677,7 @@ export default function PagosPage() {
                 sortDir={lSortDir}
                 todayIso={TODAY_ISO}
                 maturityRules={state.buildingConfig.maturityRules}
+                catalog={catalog}
                 onSort={handleLSort}
                 onToggleStatus={handleToggleStatus}
                 onRejectPago={handleRejectPago}
@@ -671,7 +691,7 @@ export default function PagosPage() {
               <EgresosTable
                 ledgerEgresos={egresoFilterStatus ? ledgerEgresos.filter(e => e.status === egresoFilterStatus) : ledgerEgresos}
                 onToggleStatus={handleToggleEgresoStatus}
-                onPreview={(eg) => setPreviewPago(eg as any)}
+                onPreview={setPreviewPago}
                 onDelete={(id) => setDeleteEgresoId(id)}
               />
             )}
@@ -823,6 +843,13 @@ export default function PagosPage() {
         onConfirm={() => { if (deleteEgresoId) dispatch({ type: 'DELETE_EGRESO', payload: deleteEgresoId }) }}
         title="Eliminar Egreso" confirmLabel="Eliminar" variant="danger">
         ¿Eliminar permanentemente este registro de egreso?
+      </ConfirmDialog>
+
+      {/* ═══ Egreso revert confirm ═══ */}
+      <ConfirmDialog open={!!revertEgresoTarget} onClose={() => setRevertEgresoTarget(null)}
+        onConfirm={confirmRevertEgreso}
+        title="Revertir Egreso" confirmLabel="Revertir" variant="danger">
+        {revertEgresoTarget ? `¿Revertir el egreso "${revertEgresoTarget.concepto}" a estado Pendiente?` : ''}
       </ConfirmDialog>
 
     </div>

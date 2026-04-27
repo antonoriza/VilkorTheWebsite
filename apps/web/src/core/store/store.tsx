@@ -19,7 +19,7 @@ import { loadStateFromAPI } from './api-loader'
 
 // ─── Re-exports for backward compatibility ───────────────────────────
 // Consumers can continue importing these from 'store' until migrated.
-export { getMaturityTargetDate, isEffectiveDebt } from './maturity'
+export { getMaturityTargetDate, isEffectiveDebt, baseConcepto, resolveVencimiento } from './maturity'
 export { hasPermission } from './permissions'
 export type { StoreState, Action } from './reducer'
 

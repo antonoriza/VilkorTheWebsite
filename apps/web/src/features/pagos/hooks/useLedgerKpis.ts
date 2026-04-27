@@ -5,7 +5,7 @@
  */
 import { useMemo } from 'react'
 import { isEffectiveDebt } from '../../../core/store/maturity'
-import type { Pago, Adeudo, Egreso, FinancialMaturityRules } from '../../../types/financial'
+import type { Pago, Adeudo, Egreso, FinancialMaturityRules, ConceptoFinanciero } from '../../../types/financial'
 
 export interface LedgerKpiValues {
   paidTotal: number
@@ -16,7 +16,6 @@ export interface LedgerKpiValues {
   overdueCount: number
   upcomingCount: number
   porValidarCount: number
-  totalPortfolioAmount: number
   expectedMantenimientoTotal: number
   paidMantenimientoTotal: number
   paidMantenimientoCount: number
@@ -39,10 +38,11 @@ function computeKpis(
   rules: FinancialMaturityRules,
   isAdmin: boolean,
   myApartment: string,
+  catalog?: ConceptoFinanciero[],
 ): LedgerKpiValues {
   const paid = pagos.filter(p => p.status === 'Pagado')
-  const overdue = pagos.filter(p => p.status === 'Vencido' || isEffectiveDebt(p, nowIso, rules))
-  const upcoming = pagos.filter(p => p.status === 'Pendiente' && !isEffectiveDebt(p, nowIso, rules))
+  const overdue = pagos.filter(p => p.status === 'Vencido' || isEffectiveDebt(p, nowIso, rules, catalog))
+  const upcoming = pagos.filter(p => p.status === 'Pendiente' && !isEffectiveDebt(p, nowIso, rules, catalog))
   const porValidar = pagos.filter(p => p.status === 'Por validar')
 
   const myAdeudos = adeudos.filter(a => a.status === 'Activo' && (isAdmin || a.apartment === myApartment))
@@ -63,7 +63,6 @@ function computeKpis(
     overdueCount: overdue.length + myAdeudos.length,
     upcomingCount: upcoming.length,
     porValidarCount: porValidar.length,
-    totalPortfolioAmount: paid.reduce((s, p) => s + p.amount, 0) + overdue.reduce((s, p) => s + p.amount, 0) + adeudosTotal + upcoming.reduce((s, p) => s + p.amount, 0) + porValidar.reduce((s, p) => s + p.amount, 0),
     expectedMantenimientoTotal,
     paidMantenimientoTotal,
     paidMantenimientoCount,
@@ -74,11 +73,12 @@ function computeKpis(
 export function useGlobalKpis(
   pagos: Pago[], adeudos: Adeudo[], rules: FinancialMaturityRules,
   isAdmin: boolean, myApartment: string, nowIso: string,
+  catalog?: ConceptoFinanciero[],
 ): LedgerKpiValues {
   return useMemo(() => {
     const scope = isAdmin ? pagos : pagos.filter(p => p.apartment === myApartment)
-    return computeKpis(scope, adeudos, nowIso, rules, isAdmin, myApartment)
-  }, [pagos, adeudos, isAdmin, myApartment, rules, nowIso])
+    return computeKpis(scope, adeudos, nowIso, rules, isAdmin, myApartment, catalog)
+  }, [pagos, adeudos, isAdmin, myApartment, rules, nowIso, catalog])
 }
 
 /** Contextual KPIs — filtered by dropdowns (month/tower/unit/concepto), NOT by status */
@@ -87,6 +87,7 @@ export function useContextualKpis(
   rules: FinancialMaturityRules, isAdmin: boolean, myApartment: string, nowIso: string,
   lFilterMonth: string, lFilterTower: string, lFilterUnit: string, lFilterConcepto: string,
   todayKey: string,
+  catalog?: ConceptoFinanciero[],
 ): LedgerKpiValues {
   return useMemo(() => {
     let data = isAdmin ? pagos : pagos.filter(p => p.apartment === myApartment)
@@ -104,8 +105,8 @@ export function useContextualKpis(
     const showAdeudos = !lFilterMonth || lFilterMonth === todayKey
     const scopedAdeudos = showAdeudos ? adeudos : []
 
-    return computeKpis(data, scopedAdeudos, nowIso, rules, isAdmin, myApartment)
-  }, [pagos, adeudos, residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, rules, nowIso, todayKey])
+    return computeKpis(data, scopedAdeudos, nowIso, rules, isAdmin, myApartment, catalog)
+  }, [pagos, adeudos, residents, isAdmin, myApartment, lFilterMonth, lFilterTower, lFilterUnit, lFilterConcepto, rules, nowIso, todayKey, catalog])
 }
 
 /** Egreso KPIs — derived from filtered egresos */

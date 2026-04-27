@@ -20,7 +20,6 @@ export interface IngresoKpiStripProps {
   ledgerKpis: {
     expectedMantenimientoTotal: number
     paidMantenimientoTotal: number
-    totalPortfolioAmount: number
     paidTotal: number
   }
   totalEgresosPaid: number
