@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BuildingConfig, BankingConfig } from '../../../types'
+import { SettingsTabBar, SaveFooter } from '../../../core/components/SettingsShell'
 import CatalogoTab from './_CatalogoTab'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
@@ -16,24 +17,6 @@ interface Props {
   saved: boolean
   labelClass: string
   inputClass: string
-}
-
-// ─── Save Footer ──────────────────────────────────────────────────────────────
-
-function SaveFooter({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
-  return (
-    <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end">
-      <button
-        onClick={handleSave}
-        className={`flex items-center space-x-3 px-8 py-3 font-black rounded-2xl transition-all shadow-2xl text-[10px] tracking-widest uppercase ${
-          saved ? 'bg-emerald-600 text-white shadow-emerald-100' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-300'
-        }`}
-      >
-        <span className="material-symbols-outlined text-[18px]">{saved ? 'check_circle' : 'save_as'}</span>
-        <span>{saved ? 'Ajustes Aplicados' : 'Guardar Cambios'}</span>
-      </button>
-    </div>
-  )
 }
 
 // ─── Constants for CuentasTab ─────────────────────────────────────────────────
@@ -207,20 +190,7 @@ export default function FinanceSettings({ bc, dispatch, handleSave, saved, label
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex gap-1 mb-10 border-b border-slate-100 pb-0 overflow-x-auto">
-        {TABS.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTab(t.id)}
-            className={`flex items-center gap-2 px-5 py-3.5 rounded-t-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-b-2 -mb-px ${
-              activeTab === t.id ? 'bg-slate-900 text-white border-slate-900' : 'text-slate-400 border-transparent hover:text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px]">{t.icon}</span>
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'catalogo' && <CatalogoTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} />}
 

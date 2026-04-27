@@ -3,6 +3,7 @@ import {
   BuildingConfig, ConceptoFinanciero, ConceptoCategoria, CONCEPTO_CATEGORIA_LABELS,
   VencimientoRule, VencimientoTipo, VENCIMIENTO_TIPO_LABELS, vencimientoLabel, parseVencimiento,
 } from '../../../types'
+import { SaveFooter } from '../../../core/components/SettingsShell'
 
 interface Props {
   bc: BuildingConfig
@@ -149,17 +150,19 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
   return (
     <div>
       {/* ─── Nested sub-tabs ─── */}
-      <div className="flex gap-1 mb-8 border-b border-slate-100 overflow-x-auto">
+      <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-1 scrollbar-hide">
         {SUB_TABS.map(t => (
           <button
             key={t.id}
             onClick={() => setSubTab(t.id)}
-            className={`flex items-center gap-2 px-4 py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-b-2 -mb-px ${
-              subTab === t.id ? 'text-slate-900 border-slate-900' : 'text-slate-300 border-transparent hover:text-slate-500'
+            className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl border transition-all shrink-0 ${
+              subTab === t.id
+                ? 'bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-200'
+                : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-700'
             }`}
           >
-            <span className="material-symbols-outlined text-[14px]">{t.icon}</span>
-            {t.label}
+            <span className="material-symbols-outlined text-lg">{t.icon}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">{t.label}</span>
           </button>
         ))}
       </div>
@@ -368,12 +371,7 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
           </div>
 
           {/* Save */}
-          <div className="flex justify-end pt-4">
-            <button onClick={handleSave} className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-bold tracking-wide transition-all duration-500 ${saved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-200'}`}>
-              <span className="material-symbols-outlined text-sm">{saved ? 'check_circle' : 'save'}</span>
-              {saved ? 'Guardado' : 'Guardar Cambios'}
-            </button>
-          </div>
+          <SaveFooter handleSave={handleSave} saved={saved} />
         </div>
       )}
 
@@ -385,7 +383,7 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
           onClick={() => { setAdding(false); setDraft({ ...EMPTY_ROW }) }}
         >
           <div
-            className="bg-white rounded-[2rem] shadow-2xl w-full max-w-xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
+            className="bg-white rounded-3xl shadow-2xl w-full max-w-xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-300"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}

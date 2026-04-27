@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SettingsTabBar, SaveFooter, ComingSoon } from '../../../core/components/SettingsShell'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -9,33 +10,7 @@ const TABS = [
   { id: 'historial',  label: 'Historial',  icon: 'history' },
 ]
 
-function SaveFooter({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
-  return (
-    <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end">
-      <button
-        onClick={handleSave}
-        className={`flex items-center space-x-3 px-8 py-3 font-black rounded-2xl transition-all shadow-2xl text-[10px] tracking-widest uppercase ${
-          saved ? 'bg-emerald-600 text-white shadow-emerald-100' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-300'
-        }`}
-      >
-        <span className="material-symbols-outlined text-[18px]">{saved ? 'check_circle' : 'save_as'}</span>
-        <span>{saved ? 'Ajustes Aplicados' : 'Guardar Cambios'}</span>
-      </button>
-    </div>
-  )
-}
 
-function ComingSoon({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-      <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center">
-        <span className="material-symbols-outlined text-slate-300 text-3xl">construction</span>
-      </div>
-      <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">{label}</p>
-      <p className="text-[11px] text-slate-400 font-medium">Módulo en construcción para el próximo release.</p>
-    </div>
-  )
-}
 
 // ─── Channel config ───────────────────────────────────────────────────────────
 
@@ -163,23 +138,7 @@ export default function ComunicacionSettings({
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Tab Bar */}
-      <div className="flex gap-1 mb-10 border-b border-slate-100 pb-0 overflow-x-auto">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTab(t.id)}
-            className={`flex items-center gap-2 px-5 py-3.5 rounded-t-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-b-2 -mb-px ${
-              activeTab === t.id
-                ? 'bg-slate-900 text-white border-slate-900'
-                : 'text-slate-400 border-transparent hover:text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px]">{t.icon}</span>
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'canales'    && <CanalesTab handleSave={handleSave} saved={saved} />}
       {activeTab === 'plantillas' && <PlantillasTab handleSave={handleSave} saved={saved} />}

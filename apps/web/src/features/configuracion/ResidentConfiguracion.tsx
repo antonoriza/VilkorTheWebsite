@@ -73,7 +73,7 @@ export default function ResidentConfiguracion() {
 
       <div className="grid grid-cols-1 gap-10">
         {/* Profile Management Section */}
-        <section className="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-sm relative overflow-hidden group">
+        <section className="bg-white border border-slate-200 rounded-3xl p-10 shadow-sm relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -mr-32 -mt-32 border border-slate-100 z-0" />
           
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 mb-12 border-b border-slate-50 pb-10">
@@ -132,7 +132,7 @@ export default function ResidentConfiguracion() {
         </section>
 
         {/* Property Context (Read-only) */}
-        <section className="bg-slate-50 border border-slate-200 rounded-[2.5rem] p-10 shadow-sm space-y-10">
+        <section className="bg-slate-50 border border-slate-200 rounded-3xl p-10 shadow-sm space-y-10">
           <div className="flex items-center justify-between border-b border-slate-200 pb-6">
             <div className="flex items-center space-x-4">
               <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 border border-slate-200">

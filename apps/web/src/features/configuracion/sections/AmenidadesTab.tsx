@@ -4,6 +4,7 @@
  */
 import { useState } from 'react'
 import type { Amenity } from '../../../types'
+import { SaveFooter } from '../../../core/components/SettingsShell'
 
 const AMENITY_TEMPLATES = [
   { label: 'Asador', icon: 'outdoor_grill' },
@@ -46,19 +47,7 @@ export default function AmenidadesTab({ amenities, handleDeleteAmenity, handleAd
     setIdentifier('')
   }
 
-  const ContextualSaveFooter = () => (
-    <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end">
-      <button
-        onClick={handleSave}
-        className={`flex items-center space-x-3 px-8 py-3 font-black rounded-2xl transition-all shadow-2xl text-[10px] tracking-widest uppercase ${
-          saved ? 'bg-emerald-600 text-white shadow-emerald-100' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-300'
-        }`}
-      >
-        <span className="material-symbols-outlined text-[18px]">{saved ? 'check_circle' : 'save_as'}</span>
-        <span>{saved ? 'Ajustes Aplicados' : 'Guardar Cambios'}</span>
-      </button>
-    </div>
-  )
+
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -141,7 +130,7 @@ export default function AmenidadesTab({ amenities, handleDeleteAmenity, handleAd
           )}
         </div>
       </div>
-      <ContextualSaveFooter />
+      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }

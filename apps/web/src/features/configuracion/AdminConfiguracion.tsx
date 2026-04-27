@@ -6,6 +6,7 @@ import { systemApi } from '../../lib/api'
 import { useDemoMode } from '../../core/hooks/useDemoMode'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import DemoResetModal from '../../core/components/DemoResetModal'
+import { ComingSoon } from '../../core/components/SettingsShell'
 
 // Sections
 import ArchitectureSettings from './sections/ArchitectureSettings'
@@ -91,10 +92,10 @@ export default function AdminConfiguracion() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-headline font-black text-slate-900 tracking-tight capitalize">
+      {/* Header — Enterprise-grade, matching main dashboard */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-100">
+        <div>
+          <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
             {activeTab === 'perfil'      ? 'Perfil del Inmueble' :
              activeTab === 'finanzas'    ? 'Contabilidad y Finanzas' :
              activeTab === 'comunicacion'? 'Avisos/Notificaciones' :
@@ -102,6 +103,14 @@ export default function AdminConfiguracion() {
              activeTab === 'permisos'    ? 'Directorio y Permisos' :
              activeTab === 'auditoria'   ? 'Auditoría y Trazabilidad' : 'Resiliencia del Sistema'}
           </h1>
+          <p className="text-slate-500 font-medium text-sm mt-1">
+            {activeTab === 'perfil'      ? 'Identidad legal, topología y Digital Twin' :
+             activeTab === 'finanzas'    ? 'Catálogo financiero y cuentas bancarias' :
+             activeTab === 'comunicacion'? 'Canales, plantillas y automatizaciones' :
+             activeTab === 'servicios'   ? 'Paquetería, proveedores e inventario' :
+             activeTab === 'permisos'    ? 'Control de acceso y matriz de roles' :
+             activeTab === 'auditoria'   ? 'Registros de actividad y trazabilidad' : 'Backups, restauración y resiliencia'}
+          </p>
         </div>
       </div>
 
@@ -164,14 +173,8 @@ export default function AdminConfiguracion() {
         )}
 
         {activeTab === 'auditoria' && (
-          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-12 text-center space-y-4">
-             <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto text-slate-300">
-               <span className="material-symbols-outlined text-4xl">construction</span>
-             </div>
-             <h3 className="text-xl font-headline font-black text-slate-900 uppercase tracking-widest">Módulo en Desarrollo</h3>
-             <p className="text-sm text-slate-500 font-medium max-w-sm mx-auto">
-               Estamos trabajando en la infraestructura de este componente para el siguiente release de Canton Alfa.
-             </p>
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+            <ComingSoon label="Auditoría y Trazabilidad" />
           </div>
         )}
 

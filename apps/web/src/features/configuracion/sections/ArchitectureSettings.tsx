@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { BuildingConfig, Amenity } from '../../../types'
+import { SettingsTabBar, SectionHeader, SaveFooter, SettingsCard } from '../../../core/components/SettingsShell'
 import AmenidadesTab from './AmenidadesTab'
 import EquipamientoTab from './EquipamientoTab'
 
@@ -49,60 +50,16 @@ export default function ArchitectureSettings({
     { id: 'amenidades', label: 'Amenidades', icon: 'outdoor_grill' },
   ]
 
-  const SectionHeader = ({ label, icon }: { label: string, icon: string }) => (
-    <div className="flex items-center justify-between mt-4 mb-6 first:mt-0">
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
-           <span className="material-symbols-outlined text-xl">{icon}</span>
-        </div>
-        <div>
-           <h3 className="text-lg font-headline font-black text-slate-900 uppercase tracking-tight">
-             {label}
-           </h3>
-        </div>
-      </div>
-    </div>
-  )
-
-  const ContextualSaveFooter = ({ label: _label }: { label: string }) => (
-    <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end">
-      <button 
-        onClick={handleSave}
-        className={`flex items-center space-x-3 px-8 py-3 font-black rounded-2xl transition-all shadow-2xl text-[10px] tracking-widest uppercase ${
-          saved ? 'bg-emerald-600 text-white shadow-emerald-100' : 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-300'
-        }`}
-      >
-        <span className="material-symbols-outlined text-[18px]">{saved ? 'check_circle' : 'save_as'}</span>
-        <span>{saved ? 'Ajustes Aplicados' : 'Guardar Cambios'}</span>
-      </button>
-    </div>
-  )
-
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-4 scrollbar-hide">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-3 px-5 py-3 rounded-2xl border transition-all shrink-0 ${
-              activeTab === tab.id 
-                ? 'bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-200' 
-                : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300'
-            }`}
-          >
-            <span className="material-symbols-outlined text-lg">{tab.icon}</span>
-            <span className="text-[10px] font-black uppercase tracking-widest">{tab.label}</span>
-          </button>
-        ))}
-      </div>
+      <SettingsTabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <div className="bg-white border border-slate-200 rounded-[3rem] p-8 shadow-sm flex flex-col min-h-[600px]">
+      <SettingsCard className="flex flex-col min-h-[600px]">
         {activeTab === 'categoria' && (
           <div className="animate-in fade-in duration-500">
             <SectionHeader label="Categoría de inmueble" icon="account_tree" />
             <div className="space-y-8">
-              <div className="p-6 bg-slate-900 rounded-[2.5rem] text-white flex items-center justify-between shadow-2xl shadow-slate-200">
+              <div className="p-6 bg-slate-900 rounded-3xl text-white flex items-center justify-between shadow-2xl shadow-slate-200">
                 <div className="flex items-center gap-6">
                   <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md">
                     <span className="material-symbols-outlined text-3xl">home_work</span>
@@ -275,7 +232,7 @@ export default function ArchitectureSettings({
               </div>
 
               </div>
-            <ContextualSaveFooter label="Categoría" />
+            <SaveFooter handleSave={handleSave} saved={saved} />
           </div>
         )}
 
@@ -346,7 +303,7 @@ export default function ArchitectureSettings({
                   </div>
                 </div>
               </div>
-              <div className="p-6 bg-slate-50 border border-slate-100 rounded-[2.5rem] flex gap-6 items-start">
+              <div className="p-6 bg-slate-50 border border-slate-100 rounded-3xl flex gap-6 items-start">
                 <span className="material-symbols-outlined text-slate-400 text-3xl">info</span>
                 <div>
                   <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest mb-1">Nota Legal</p>
@@ -354,10 +311,10 @@ export default function ArchitectureSettings({
                 </div>
               </div>
             </div>
-            <ContextualSaveFooter label="Identidad" />
+            <SaveFooter handleSave={handleSave} saved={saved} />
           </div>
         )}
-      </div>
+      </SettingsCard>
     </div>
   )
 }

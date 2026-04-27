@@ -4,6 +4,7 @@ import { useStore } from '../../../core/store/store'
 import { useAuth } from '../../../core/auth/AuthContext'
 import ConfirmDialog from '../../../core/components/ConfirmDialog'
 import SortableTh from '../../../core/components/SortableTh'
+import { SettingsTabBar } from '../../../core/components/SettingsShell'
 
 // ─── Types & Shared ──────────────────────────────────────────────────────────
 
@@ -325,7 +326,7 @@ function RolesMatrixTab({ bc }: { bc: BuildingConfig }) {
       </div>
 
       {/* The Matrix Grid */}
-      <div className="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/40">
+      <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/40">
         {/* Table Header */}
         <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-100 divide-x divide-slate-100">
           <div className="col-span-4 p-5 flex flex-col gap-1">
@@ -401,7 +402,7 @@ function RolesMatrixTab({ bc }: { bc: BuildingConfig }) {
       </div>
 
       {/* Safety Alert */}
-      <div className="p-8 bg-amber-50 border border-amber-100 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-6">
+      <div className="p-8 bg-amber-50 border border-amber-100 rounded-3xl flex flex-col md:flex-row items-center gap-6">
         <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shrink-0 shadow-sm shadow-amber-200">
            <span className="material-symbols-outlined text-amber-500 text-3xl">verified_user</span>
         </div>
@@ -466,23 +467,7 @@ export default function PermisosSettings({
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Tab Bar */}
-      <div className="flex gap-1 mb-10 border-b border-slate-100 pb-0 overflow-x-auto overflow-y-hidden">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTab(t.id)}
-            className={`flex items-center gap-2 px-5 py-3.5 rounded-t-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-b-2 -mb-px ${
-              activeTab === t.id
-                ? 'bg-slate-900 text-white border-slate-900'
-                : 'text-slate-400 border-transparent hover:text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px]">{t.icon}</span>
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'acceso' && (
         <ControlAccesoTab 
