@@ -92,7 +92,7 @@ export default function AdminConfiguracion() {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Header — Enterprise-grade, matching main dashboard */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-100">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
           <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
             {activeTab === 'perfil'      ? 'Perfil del Inmueble' :

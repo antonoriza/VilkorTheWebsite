@@ -25,19 +25,19 @@ export function SettingsTabBar({
   onTabChange: (id: string) => void
 }) {
   return (
-    <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-1 scrollbar-hide">
+    <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
       {tabs.map(tab => (
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
-          className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl border transition-all shrink-0 ${
+          className={`flex items-center gap-2.5 px-5 py-3 rounded-xl border transition-all shrink-0 ${
             activeTab === tab.id
-              ? 'bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-200'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm shadow-emerald-100/50'
               : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-700'
           }`}
         >
           <span className="material-symbols-outlined text-lg">{tab.icon}</span>
-          <span className="text-[10px] font-black uppercase tracking-widest">{tab.label}</span>
+          <span className="text-[11px] font-bold uppercase tracking-widest">{tab.label}</span>
         </button>
       ))}
     </div>
@@ -47,19 +47,15 @@ export function SettingsTabBar({
 // ─── Section Header ─────────────────────────────────────────────────────────
 // Consistent section title with icon badge — matches dashboard card headers.
 
-export function SectionHeader({ label, icon }: { label: string; icon: string }) {
+export function SectionHeader({ label, icon, color = 'bg-emerald-50 text-emerald-600' }: { label: string; icon: string; color?: string }) {
   return (
-    <div className="flex items-center justify-between mt-4 mb-6 first:mt-0">
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
-          <span className="material-symbols-outlined text-xl">{icon}</span>
-        </div>
-        <div>
-          <h3 className="text-lg font-headline font-black text-slate-900 uppercase tracking-tight">
-            {label}
-          </h3>
-        </div>
+    <div className="flex items-center gap-4 mb-4 first:mt-0">
+      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-sm ${color}`}>
+        <span className="material-symbols-outlined text-xl">{icon}</span>
       </div>
+      <h3 className="text-xl font-headline font-extrabold text-slate-900 tracking-tight">
+        {label}
+      </h3>
     </div>
   )
 }
@@ -91,7 +87,7 @@ export function SaveFooter({
   saved: boolean
 }) {
   return (
-    <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-end">
+    <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-end">
       <button
         onClick={handleSave}
         className={`flex items-center space-x-3 px-8 py-3 font-black rounded-2xl transition-all shadow-2xl text-[10px] tracking-widest uppercase ${
@@ -120,7 +116,7 @@ export function SettingsCard({
   className?: string
 }) {
   return (
-    <div className={`bg-white border border-slate-200 rounded-3xl p-8 shadow-sm ${className}`}>
+    <div className={`bg-white border border-slate-200 rounded-2xl p-6 shadow-sm ${className}`}>
       {children}
     </div>
   )
@@ -186,19 +182,21 @@ export function FieldGroup({
   title,
   children,
   className = '',
+  iconColor = 'bg-slate-50 text-slate-500',
 }: {
   icon: string
   title: string
   children: React.ReactNode
   className?: string
+  iconColor?: string
 }) {
   return (
-    <div className={`rounded-2xl border border-slate-100 bg-slate-50/30 p-6 space-y-5 ${className}`}>
+    <div className={`bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-5 ${className}`}>
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-slate-500 border border-slate-100 shadow-sm">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconColor}`}>
           <span className="material-symbols-outlined text-lg">{icon}</span>
         </div>
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">{title}</h4>
+        <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-widest">{title}</h4>
       </div>
       <div className="space-y-4">{children}</div>
     </div>
@@ -310,7 +308,7 @@ export function TopologyCard({
   return (
     <div className="group rounded-2xl border border-slate-100 bg-white hover:border-slate-200 hover:shadow-md transition-all duration-300 p-5">
       <div className="flex items-center gap-4 mb-4">
-        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white text-sm font-black shrink-0">
+        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 text-sm font-black shrink-0">
           {index + 1}
         </div>
         <input

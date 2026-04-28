@@ -161,14 +161,14 @@ export default function DashboardLayout() {
                   <button
                     key={item.id}
                     onClick={() => navigate(`/configuracion?tab=${item.id}`)}
-                    className={`w-full flex items-center px-4 py-3.5 rounded-2xl transition-all text-left group ${
+                    className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 text-left group ${
                       isActive 
-                        ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
-                        : 'text-slate-500 hover:bg-slate-100/50 hover:text-slate-800'
+                        ? 'text-emerald-700 font-bold bg-emerald-50 shadow-sm shadow-emerald-100/50' 
+                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                   >
-                    <span className={`material-symbols-outlined mr-3 text-[20px] ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`}>{item.icon}</span>
-                    <p className={`text-[11px] font-bold uppercase tracking-widest leading-none ${isActive ? 'text-white' : 'text-slate-700'}`}>{item.label}</p>
+                    <span className={`material-symbols-outlined mr-3 text-xl ${isActive ? 'text-emerald-600' : 'text-slate-400 group-hover:text-slate-600'}`}>{item.icon}</span>
+                    <span className="font-label text-sm">{item.label}</span>
                   </button>
                 )
               })}
