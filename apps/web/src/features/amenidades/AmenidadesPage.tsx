@@ -27,6 +27,10 @@ export default function AmenidadesPage() {
   const [searchParams] = useSearchParams()
 
   const [filterDept, setFilterDept] = useState('')
+  const [filterAmenity, setFilterAmenity] = useState('')
+  const [filterDay, setFilterDay] = useState('')
+  const [filterFrom, setFilterFrom] = useState('')
+  const [filterTo, setFilterTo] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>(
     () => searchParams.get('status') || ''
   )
@@ -74,12 +78,65 @@ export default function AmenidadesPage() {
   /**
    * Memoized list of reservations based on role and filters
    */
+  // Parse grill field "AmenityName (HH:MM – HH:MM)" into parts
+  const parseGrill = (grill: string) => {
+    const match = grill.match(/^(.+?)\s*\(([^)]+)\)$/)
+    return match ? { amenity: match[1].trim(), time: match[2].trim() } : { amenity: grill, time: '' }
+  }
+
+  // Parse "HH:MM" string to minutes for range comparison
+  const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + (m || 0) }
+
+  // Parse slot "HH:MM – HH:MM" into [startMins, endMins]
+  const slotRange = (time: string): [number, number] | null => {
+    const parts = time.split(/\s*[–-]\s*/)
+    if (parts.length !== 2) return null
+    return [toMins(parts[0].trim()), toMins(parts[1].trim())]
+  }
+
   const filteredReservaciones = useMemo(() => {
     let data = isAdmin ? state.reservaciones : state.reservaciones.filter(r => r.apartment === apartment)
     if (filterDept) data = data.filter(r => r.apartment === filterDept)
     if (filterStatus) data = data.filter(r => r.status === filterStatus)
-    return data
-  }, [state.reservaciones, isAdmin, apartment, filterDept, filterStatus])
+    if (filterAmenity) data = data.filter(r => parseGrill(r.grill).amenity === filterAmenity)
+    if (filterDay) data = data.filter(r => r.date === filterDay)
+    if (filterFrom || filterTo) {
+      data = data.filter(r => {
+        const range = slotRange(parseGrill(r.grill).time)
+        if (!range) return true
+        const [sStart, sEnd] = range
+        const from = filterFrom ? toMins(filterFrom) : 0
+        const to = filterTo ? toMins(filterTo) : 24 * 60
+        // Overlap: slot starts before filter ends AND slot ends after filter starts
+        return sStart < to && sEnd > from
+      })
+    }
+    return [...data].sort((a, b) => a.date.localeCompare(b.date))
+  }, [state.reservaciones, isAdmin, apartment, filterDept, filterStatus, filterAmenity, filterDay, filterFrom, filterTo])
+
+  // Unique amenity names from all reservations for the filter dropdown
+  const amenityNames = [...new Set(state.reservaciones.map(r => parseGrill(r.grill).amenity))].sort()
+
+  // All unique hour values appearing in any slot boundary (for from/to selects)
+  const hourOptions = [...new Set(state.reservaciones.flatMap(r => {
+    const t = parseGrill(r.grill).time
+    if (!t) return []
+    return t.split(/\s*[–-]\s*/).map(s => s.trim()).filter(Boolean)
+  }))].sort()
+
+  // Color palette for amenity pills
+  const amenityColor = (name: string): string => {
+    const palette: Record<string, string> = {
+      'Asador':          'bg-orange-100 text-orange-700',
+      'Alberca':         'bg-blue-100 text-blue-700',
+      'Cancha de Tenis': 'bg-lime-100 text-lime-700',
+      'Cancha de Fútbol':'bg-green-100 text-green-700',
+      'Gimnasio':        'bg-violet-100 text-violet-700',
+      'Ludoteca':        'bg-pink-100 text-pink-700',
+      'Salón de Eventos':'bg-amber-100 text-amber-700',
+    }
+    return palette[name] ?? 'bg-slate-100 text-slate-700'
+  }
 
   const departments = [...new Set(state.reservaciones.map(r => r.apartment))].sort()
 
@@ -272,48 +329,140 @@ export default function AmenidadesPage() {
 
       {/* Reservations Table Card */}
       <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between p-8 pb-4">
-          <div>
-            <h2 className="text-xl font-headline font-extrabold text-slate-900">
-              {isAdmin ? 'Calendario General' : 'Mis Reservaciones'}
-            </h2>
-            <p className="text-sm text-slate-500 font-medium mt-1">
-              {isAdmin ? 'Resumen de todas las solicitudes activas' : `Registros del Depto. ${apartment}`}
-            </p>
+        <div className="p-8 pb-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-headline font-extrabold text-slate-900">
+                {isAdmin ? 'Calendario General' : 'Mis Reservaciones'}
+              </h2>
+              <div className="flex items-center gap-3 mt-1">
+                <p className="text-sm text-slate-500 font-medium">
+                  {isAdmin ? 'Resumen de todas las solicitudes activas' : `Registros del Depto. ${apartment}`}
+                </p>
+                <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
+                  {filteredReservaciones.length} de {(isAdmin ? state.reservaciones : state.reservaciones.filter(r => r.apartment === apartment)).length}
+                </span>
+              </div>
+            </div>
+            {(filterAmenity || filterDay || filterFrom || filterTo || filterDept || filterStatus) && (
+              <button
+                onClick={() => { setFilterAmenity(''); setFilterDay(''); setFilterFrom(''); setFilterTo(''); setFilterDept(''); setFilterStatus('') }}
+                className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-sm">filter_alt_off</span>
+                Limpiar filtros
+              </button>
+            )}
           </div>
-          {isAdmin && (
-            <select
-              value={filterDept}
-              onChange={(e) => setFilterDept(e.target.value)}
-              className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all"
-            >
-              <option value="">Todos los Deptos.</option>
-              {departments.map(d => <option key={d} value={d}>{d}</option>)}
-            </select>
-          )}
+
+          {/* Filter Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="space-y-1">
+              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Amenidad</label>
+              <select
+                value={filterAmenity}
+                onChange={e => setFilterAmenity(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+              >
+                <option value="">Todas</option>
+                {amenityNames.map(a => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Día</label>
+              <input
+                type="date"
+                value={filterDay}
+                onChange={e => setFilterDay(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Desde hora</label>
+              <select
+                value={filterFrom}
+                onChange={e => setFilterFrom(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+              >
+                <option value="">Cualquiera</option>
+                {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Hasta hora</label>
+              <select
+                value={filterTo}
+                onChange={e => setFilterTo(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+              >
+                <option value="">Cualquiera</option>
+                {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estado</label>
+              <select
+                value={filterStatus}
+                onChange={e => setFilterStatus(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+              >
+                <option value="">Todos</option>
+                <option value="Reservado">Reservado</option>
+                <option value="Por confirmar">Por confirmar</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </div>
+            {isAdmin && (
+              <div className="space-y-1">
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Apartamento</label>
+                <select
+                  value={filterDept}
+                  onChange={e => setFilterDept(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                >
+                  <option value="">Todos</option>
+                  {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-t border-slate-100 bg-slate-50/30">
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Amenidad / Horario</th>
-                {isAdmin && <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Residente</th>}
-                {isAdmin && <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Depto.</th>}
-                <th className="px-8 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
-                <th className="px-8 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
+                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
+                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Amenidad</th>
+                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Horario</th>
+                {isAdmin && <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Residente</th>}
+                {isAdmin && <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Depto.</th>}
+                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
+                <th className="px-6 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {filteredReservaciones.map((res) => (
+              {filteredReservaciones.map((res) => {
+                const { amenity: resAmenity, time: resTime } = parseGrill(res.grill)
+                return (
                 <tr key={res.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
-                  <td className="px-8 py-5 text-sm font-bold text-slate-900">{res.date}</td>
-                  <td className="px-8 py-5 text-sm font-medium text-slate-700">{res.grill}</td>
-                  {isAdmin && <td className="px-8 py-5 text-sm font-medium text-slate-700">{res.resident}</td>}
-                  {isAdmin && <td className="px-8 py-5 text-sm font-bold text-slate-900">{res.apartment}</td>}
-                  <td className="px-8 py-5"><StatusBadge status={res.status} /></td>
-                  <td className="px-8 py-5 text-right space-x-2">
+                  <td className="px-6 py-4 text-sm font-bold text-slate-900 whitespace-nowrap">{res.date}</td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-lg ${amenityColor(resAmenity)}`}>
+                      <span className="material-symbols-outlined text-sm">outdoor_grill</span>
+                      {resAmenity}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 whitespace-nowrap">
+                      <span className="material-symbols-outlined text-base text-slate-300">schedule</span>
+                      {resTime || '—'}
+                    </span>
+                  </td>
+                  {isAdmin && <td className="px-6 py-4 text-sm font-medium text-slate-700">{res.resident}</td>}
+                  {isAdmin && <td className="px-6 py-4"><span className="text-xs font-bold bg-slate-900 text-white px-2 py-1 rounded-md">{res.apartment}</span></td>}
+                  <td className="px-6 py-4"><StatusBadge status={res.status} /></td>
+                  <td className="px-6 py-4 text-right space-x-2">
                     {isAdmin && res.status === 'Por confirmar' && (
                       <>
                         <button onClick={() => handleApprove(res.id)}
@@ -339,10 +488,11 @@ export default function AmenidadesPage() {
                     </button>
                   </td>
                 </tr>
-              ))}
+                )
+              })}
               {filteredReservaciones.length === 0 && (
                 <tr>
-                  <td colSpan={isAdmin ? 6 : 4} className="px-8 py-10">
+                  <td colSpan={isAdmin ? 7 : 5} className="px-8 py-10">
                     <EmptyState
                       icon="event_busy"
                       title="Sin reservaciones activas"
