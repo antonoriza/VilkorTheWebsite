@@ -55,6 +55,13 @@ export default function AdminConfiguracion() {
     dispatch({ type: 'ADD_AMENITY', payload: { id: `amen-${Date.now()}`, name: name.trim(), icon } })
   }
 
+  const handleUpdateAmenity = (amenity: any) => {
+    dispatch({ type: 'UPDATE_AMENITY', payload: amenity })
+    setSaved(false)
+  }
+
+  const departments = (state.residents || []).map((r: any) => r.apartment).filter(Boolean).filter((v: string, i: number, a: string[]) => a.indexOf(v) === i).sort()
+
 
   const executeConfirm = async () => {
     if (!confirmTarget) return
@@ -119,10 +126,12 @@ export default function AdminConfiguracion() {
           <ArchitectureSettings
             bc={bc}
             amenities={state.amenities}
+            departments={departments}
             update={update}
             onRequestGroupingModeChange={(mode) => setConfirmTarget({ action: 'changeGroupingMode', mode })}
             handleAddAmenity={handleAddAmenity}
             handleDeleteAmenity={(id, name) => setConfirmTarget({ action: 'deleteAmenity', id, name })}
+            handleUpdateAmenity={handleUpdateAmenity}
             handleSave={handleSave}
             saved={saved}
           />

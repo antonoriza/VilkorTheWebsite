@@ -11,8 +11,10 @@ import EquipamientoTab from './EquipamientoTab'
 interface Props {
   bc: BuildingConfig
   amenities: Amenity[]
+  departments: string[]
   handleAddAmenity: (name: string, icon: string) => void
   handleDeleteAmenity: (id: string, name: string) => void
+  handleUpdateAmenity: (amenity: Amenity) => void
   update: (key: string, value: any) => void
   onRequestGroupingModeChange: (mode: 'vertical' | 'horizontal') => void
   handleSave: () => void
@@ -22,8 +24,10 @@ interface Props {
 export default function ArchitectureSettings({ 
   bc, 
   amenities,
+  departments,
   handleAddAmenity,
   handleDeleteAmenity,
+  handleUpdateAmenity,
   update,
   onRequestGroupingModeChange,
   handleSave,
@@ -296,8 +300,12 @@ export default function ArchitectureSettings({
         {activeTab === 'amenidades' && (
           <AmenidadesTab
             amenities={amenities}
+            buildingConfig={bc}
+            departments={departments}
             handleDeleteAmenity={handleDeleteAmenity}
             handleAddAmenity={handleAddAmenity}
+            handleUpdateAmenity={handleUpdateAmenity}
+            handleUpdateConfig={(partial) => Object.entries(partial).forEach(([k, v]) => update(k, v))}
             handleSave={handleSave}
             saved={saved}
           />
