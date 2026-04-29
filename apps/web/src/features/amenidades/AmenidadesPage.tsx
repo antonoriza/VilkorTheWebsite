@@ -34,6 +34,8 @@ export default function AmenidadesPage() {
   const [filterStatus, setFilterStatus] = useState<string>(
     () => searchParams.get('status') || ''
   )
+  const [sortKey, setSortKey] = useState<'date' | 'amenity' | 'time' | 'apartment' | 'status'>('date')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
     setFilterStatus(searchParams.get('status') || '')
@@ -111,8 +113,18 @@ export default function AmenidadesPage() {
         return sStart < to && sEnd > from
       })
     }
-    return [...data].sort((a, b) => a.date.localeCompare(b.date))
-  }, [state.reservaciones, isAdmin, apartment, filterDept, filterStatus, filterAmenity, filterDay, filterFrom, filterTo])
+    const dir = sortDir === 'asc' ? 1 : -1
+    return [...data].sort((a, b) => {
+      const pa = parseGrill(a.grill), pb = parseGrill(b.grill)
+      switch (sortKey) {
+        case 'amenity':    return dir * pa.amenity.localeCompare(pb.amenity)
+        case 'time':       return dir * pa.time.localeCompare(pb.time)
+        case 'apartment':  return dir * a.apartment.localeCompare(b.apartment)
+        case 'status':     return dir * a.status.localeCompare(b.status)
+        default:           return dir * a.date.localeCompare(b.date)
+      }
+    })
+  }, [state.reservaciones, isAdmin, apartment, filterDept, filterStatus, filterAmenity, filterDay, filterFrom, filterTo, sortKey, sortDir])
 
   // Unique amenity names from all reservations for the filter dropdown
   const amenityNames = [...new Set(state.reservaciones.map(r => parseGrill(r.grill).amenity))].sort()
@@ -139,6 +151,42 @@ export default function AmenidadesPage() {
   }
 
   const departments = [...new Set(state.reservaciones.map(r => r.apartment))].sort()
+
+  // Sortable column click handler
+  const handleSort = (key: typeof sortKey) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir('asc') }
+  }
+  const SortIcon = ({ col }: { col: typeof sortKey }) => (
+    <span className={`material-symbols-outlined text-[12px] ml-1 transition-colors ${
+      sortKey === col ? 'text-slate-600' : 'text-slate-300'
+    }`}>
+      {sortKey === col ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+    </span>
+  )
+
+  // Stats derived from full (unfiltered) dataset for current role scope
+  const allScoped = isAdmin ? state.reservaciones : state.reservaciones.filter(r => r.apartment === apartment)
+  const stats = {
+    confirmed: allScoped.filter(r => r.status === 'Reservado').length,
+    pending:   allScoped.filter(r => r.status === 'Por confirmar').length,
+    cancelled: allScoped.filter(r => r.status === 'Cancelado').length,
+  }
+
+  // CSV Export
+  const exportCSV = () => {
+    const headers = ['Fecha', 'Amenidad', 'Horario', 'Residente', 'Depto.', 'Estado']
+    const rows = filteredReservaciones.map(r => {
+      const { amenity, time } = parseGrill(r.grill)
+      return [r.date, amenity, time, r.resident, r.apartment, r.status]
+    })
+    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = `reservaciones_${new Date().toISOString().split('T')[0]}.csv`
+    a.click(); URL.revokeObjectURL(url)
+  }
 
   /**
    * Opens confirmation dialog for cancellation
@@ -318,13 +366,46 @@ export default function AmenidadesPage() {
             Reserva y gestiona el uso de áreas comunes.
           </p>
         </div>
-        <button
-          onClick={() => { setConflictError(''); setShowModal(true) }}
-          className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
-        >
-          <span className="material-symbols-outlined text-lg">add_circle</span>
-          <span>Nueva reservación</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {isAdmin && (
+            <button
+              onClick={exportCSV}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase shadow-sm"
+              title="Exportar tabla actual a CSV"
+            >
+              <span className="material-symbols-outlined text-base">download</span>
+              Exportar
+            </button>
+          )}
+          <button
+            onClick={() => { setConflictError(''); setShowModal(true) }}
+            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
+          >
+            <span className="material-symbols-outlined text-lg">add_circle</span>
+            <span>Nueva reservación</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Stats strip */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: 'Confirmadas', count: stats.confirmed, status: 'Reservado',     bg: 'bg-emerald-50 border-emerald-100 hover:bg-emerald-100', text: 'text-emerald-700', icon: 'check_circle' },
+          { label: 'Por confirmar', count: stats.pending, status: 'Por confirmar', bg: 'bg-amber-50 border-amber-100 hover:bg-amber-100',     text: 'text-amber-700',   icon: 'pending' },
+          { label: 'Canceladas',  count: stats.cancelled, status: 'Cancelado',     bg: 'bg-rose-50 border-rose-100 hover:bg-rose-100',         text: 'text-rose-700',    icon: 'cancel' },
+        ].map(s => (
+          <button
+            key={s.status}
+            onClick={() => setFilterStatus(filterStatus === s.status ? '' : s.status)}
+            className={`flex items-center gap-4 p-5 rounded-2xl border transition-all cursor-pointer text-left ${s.bg} ${filterStatus === s.status ? 'ring-2 ring-offset-1 ring-current' : ''}`}
+          >
+            <span className={`material-symbols-outlined text-3xl ${s.text}`}>{s.icon}</span>
+            <div>
+              <p className={`text-2xl font-extrabold ${s.text}`}>{s.count}</p>
+              <p className={`text-[11px] font-bold uppercase tracking-widest ${s.text} opacity-70`}>{s.label}</p>
+            </div>
+          </button>
+        ))}
       </div>
 
       {/* Reservations Table Card */}
@@ -432,12 +513,26 @@ export default function AmenidadesPage() {
           <table className="w-full">
             <thead>
               <tr className="border-t border-slate-100 bg-slate-50/30">
-                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fecha</th>
-                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Amenidad</th>
-                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Horario</th>
-                {isAdmin && <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Residente</th>}
-                {isAdmin && <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Depto.</th>}
-                <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
+                {(['date','amenity','time'] as const).map((col, i) => (
+                  <th key={col} onClick={() => handleSort(col)}
+                    className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 select-none transition-colors">
+                    <span className="inline-flex items-center">
+                      {['Fecha','Amenidad','Horario'][i]}<SortIcon col={col} />
+                    </span>
+                  </th>
+                ))}
+                {isAdmin && <th onClick={() => handleSort('apartment')}
+                  className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 select-none transition-colors">
+                  <span className="inline-flex items-center">Residente</span>
+                </th>}
+                {isAdmin && <th onClick={() => handleSort('apartment')}
+                  className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 select-none transition-colors">
+                  <span className="inline-flex items-center">Depto.<SortIcon col="apartment" /></span>
+                </th>}
+                <th onClick={() => handleSort('status')}
+                  className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 select-none transition-colors">
+                  <span className="inline-flex items-center">Estado<SortIcon col="status" /></span>
+                </th>
                 <th className="px-6 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
               </tr>
             </thead>
