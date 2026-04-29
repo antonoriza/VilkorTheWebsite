@@ -11,7 +11,8 @@
  * Usage:
  *   const { user, role, tenantId, login, logout, isLoading } = useAuth()
  */
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { useState, useEffect, createContext, useContext, useCallback, type ReactNode } from 'react'
+import { setTenantId as setApiTenantId } from '../../lib/api'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
@@ -78,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setImage(data.user.image || null)
       setRole(data.tenant.role as Role)
       setTenantId(data.tenant.id)
+      setApiTenantId(data.tenant.id)
       setApartment(data.tenant.apartment || '')
       setIsAuthenticated(true)
       return true
@@ -133,6 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setImage(null)
     setRole('residente')
     setTenantId(null)
+    setApiTenantId('demo')
     setApartment('')
     setIsAuthenticated(false)
   }, [])

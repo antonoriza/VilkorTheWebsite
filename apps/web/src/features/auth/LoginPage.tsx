@@ -66,15 +66,11 @@ export default function LoginPage() {
 
     const result = await login(email, password)
 
-    if (result.ok) {
-      // Auth state updated — trigger re-render which will redirect via <Navigate>
-      setTimeout(() => {
-        window.location.reload()
-      }, 100)
-    } else {
+    if (!result.ok) {
       setError(result.error || 'Credenciales inválidas')
       setIsLoading(false)
     }
+    // On success: isAuthenticated flips → re-render → <Navigate> redirects
   }
 
   /** Quick-fill a demo credential */
