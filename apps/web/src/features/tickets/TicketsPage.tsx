@@ -51,6 +51,7 @@ export default function TicketsPage() {
   const [formLocation, setFormLocation] = useState('')
   const [formIsPublic, setFormIsPublic] = useState(false)
   const [formProxyApartment, setFormProxyApartment] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
 
   // Smart default: Public for common areas / security
   useEffect(() => {
@@ -216,6 +217,29 @@ export default function TicketsPage() {
     })
   }
 
+  const handleExportCSV = () => {
+    const headers = ['#', 'Fecha', 'Asunto', 'Categoría', 'Prioridad', 'Estado', 'Residente', 'Depto', 'Ubicación']
+    const rows = allTickets.map(t => [
+      t.number,
+      new Date(t.createdAt).toLocaleDateString(),
+      `"${t.subject.replace(/"/g, '""')}"`,
+      t.category,
+      t.priority,
+      t.status,
+      t.createdBy,
+      t.apartment,
+      t.location || 'N/A'
+    ])
+    
+    const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `tickets_${new Date().toISOString().split('T')[0]}.csv`)
+    link.click()
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
@@ -228,13 +252,26 @@ export default function TicketsPage() {
             Recepción y seguimiento de mantenimiento
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
-        >
-          <span className="material-symbols-outlined text-lg">add</span>
-          <span>Nuevo Ticket</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center space-x-2 px-5 py-2.5 font-bold rounded-xl transition-all text-[11px] tracking-widest uppercase border ${
+              showFilters 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <span className="material-symbols-outlined text-lg">tune</span>
+            <span>Filtros</span>
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
+          >
+            <span className="material-symbols-outlined text-lg">add</span>
+            <span>Nuevo Ticket</span>
+          </button>
+        </div>
       </div>
 
       {/* Admin KPI & Filters */}
@@ -251,39 +288,64 @@ export default function TicketsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <select value={filterStatus} onChange={(e) => {
-              const val = e.target.value
-              setFilterStatus(val)
-              setSearchParams(val ? { status: val } : {})
-            }}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
-            >
-              <option value="">Todos los Estados</option>
-              {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
-            >
-              <option value="">Todas las Categorías</option>
-              {categories.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
-            >
-              <option value="">Todas las Prioridades</option>
-              {PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-            <div className="relative">
-              <input type="text" list="dept-options-tickets" value={filterDept} onChange={(e) => setFilterDept(e.target.value)}
-                placeholder="Departamento"
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
-              />
-              <datalist id="dept-options-tickets">
-                {availableDepts.map(d => <option key={d} value={d} />)}
-              </datalist>
+          {showFilters && (
+            <div className="space-y-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl animate-in slide-in-from-top-4 duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <select value={filterStatus} onChange={(e) => {
+                  const val = e.target.value
+                  setFilterStatus(val)
+                  setSearchParams(val ? { status: val } : {})
+                }}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
+                >
+                  <option value="">Todos los Estados</option>
+                  {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
+                >
+                  <option value="">Todas las Categorías</option>
+                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
+                >
+                  <option value="">Todas las Prioridades</option>
+                  {PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+                <div className="relative">
+                  <input type="text" list="dept-options-tickets" value={filterDept} onChange={(e) => setFilterDept(e.target.value)}
+                    placeholder="Departamento"
+                    className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
+                  />
+                  <datalist id="dept-options-tickets">
+                    {availableDepts.map(d => <option key={d} value={d} />)}
+                  </datalist>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-200/50">
+                <div className="flex items-center gap-4">
+                   <button onClick={() => {
+                     setFilterStatus('')
+                     setFilterCategory('')
+                     setFilterPriority('')
+                     setFilterDept('')
+                     setSearchParams({})
+                   }} className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors">
+                     Limpiar Filtros
+                   </button>
+                </div>
+                <button
+                  onClick={handleExportCSV}
+                  className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[10px] tracking-widest uppercase"
+                >
+                  <span className="material-symbols-outlined text-base">download</span>
+                  <span>Exportar CSV</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Sort selector */}
           <div className="flex items-center gap-3">

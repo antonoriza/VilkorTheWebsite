@@ -87,6 +87,7 @@ export default function UsuariosPage() {
   const [typeFilter, setTypeFilter] = useState<PersonType | 'all'>('all')
   const [towerFilter, setTowerFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
 
   // ── Sort state (applied after filters) ──
   type PersonSortKey = 'name' | 'type' | 'role' | 'location'
@@ -289,6 +290,24 @@ export default function UsuariosPage() {
     setTypeFilter('all'); setTowerFilter('all'); setSearch('')
   }
 
+  const handleExportCSV = () => {
+    const headers = ['Nombre', 'Tipo', 'Rol/Puesto', 'Ubicación/Torre', 'Email']
+    const rows = filtered.map(p => [
+      p.name,
+      p.type,
+      p.role,
+      p.location,
+      p.email || 'N/A'
+    ])
+    const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `directorio_${new Date().toISOString().split('T')[0]}.csv`)
+    link.click()
+  }
+
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -304,71 +323,105 @@ export default function UsuariosPage() {
             {towers.length > 0 && ` — ${towers.length} ${bc.type === 'towers' ? 'torres' : 'secciones'}`}
           </p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
-        >
-          <span className="material-symbols-outlined text-lg">person_add</span>
-          <span>Nuevo Usuario</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center space-x-2 px-5 py-2.5 font-bold rounded-xl transition-all text-[11px] tracking-widest uppercase border ${
+              showFilters 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <span className="material-symbols-outlined text-lg">tune</span>
+            <span>Filtros</span>
+          </button>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
+          >
+            <span className="material-symbols-outlined text-lg">person_add</span>
+            <span>Nuevo Usuario</span>
+          </button>
+        </div>
       </div>
 
       {/* ── Filter Bar ── */}
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        {/* Type chips */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {TYPE_FILTERS.map(f => (
-            <button
-              key={f.id}
-              onClick={() => setTypeFilter(f.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                typeFilter === f.id
-                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
-                  : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300'
-              }`}
-            >
-              <span className="material-symbols-outlined text-sm">{f.icon}</span>
-              {f.label}
-              <span className={`ml-0.5 text-[9px] ${typeFilter === f.id ? 'text-white/60' : 'text-slate-300'}`}>
-                {typeCounts[f.id]}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Tower filter + search */}
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          {towers.length > 1 && (
-            <select
-              value={towerFilter}
-              onChange={e => setTowerFilter(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-bold text-slate-600 uppercase tracking-widest outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="all">Todas las torres</option>
-              {towers.map(t => (
-                <option key={t} value={t}>{bc.type === 'towers' ? `Torre ${t}` : `Sección ${t}`}</option>
+      {showFilters && (
+        <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 space-y-6 animate-in slide-in-from-top-4 duration-300">
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            {/* Type chips */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {TYPE_FILTERS.map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setTypeFilter(f.id)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                    typeFilter === f.id
+                      ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                      : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">{f.icon}</span>
+                  {f.label}
+                  <span className={`ml-0.5 text-[9px] ${typeFilter === f.id ? 'text-white/60' : 'text-slate-300'}`}>
+                    {typeCounts[f.id]}
+                  </span>
+                </button>
               ))}
-            </select>
-          )}
-          <div className="relative flex-1 md:w-72">
-            <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-              <span className="material-symbols-outlined text-lg">search</span>
-            </span>
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="block w-full pl-11 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
-              placeholder="Buscar nombre, rol, ubicación..."
-            />
-            {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors">
-                <span className="material-symbols-outlined text-[18px]">cancel</span>
-              </button>
-            )}
+            </div>
+
+            {/* Tower filter + search */}
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              {towers.length > 1 && (
+                <select
+                  value={towerFilter}
+                  onChange={e => setTowerFilter(e.target.value)}
+                  className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-bold text-slate-600 uppercase tracking-widest outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="all">Todas las torres</option>
+                  {towers.map(t => (
+                    <option key={t} value={t}>{bc.type === 'towers' ? `Torre ${t}` : `Sección ${t}`}</option>
+                  ))}
+                </select>
+              )}
+              <div className="relative flex-1 md:w-72">
+                <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
+                  <span className="material-symbols-outlined text-lg">search</span>
+                </span>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="block w-full pl-11 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-300 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
+                  placeholder="Buscar nombre, rol, ubicación..."
+                />
+                {search && (
+                  <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors">
+                    <span className="material-symbols-outlined text-[18px]">cancel</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+            <button 
+              onClick={clearFilters}
+              className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined text-sm">filter_alt_off</span>
+              Limpiar filtros
+            </button>
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[10px] tracking-widest uppercase shadow-sm"
+            >
+              <span className="material-symbols-outlined text-base">download</span>
+              Exportar CSV
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── Active Filters Summary ── */}
       {hasActiveFilters && (

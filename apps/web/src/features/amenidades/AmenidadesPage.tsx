@@ -63,6 +63,7 @@ export default function AmenidadesPage() {
   const [multaReason, setMultaReason] = useState(multaReasonsList[0] || 'Otro')
   const [multaCustomReason, setMultaCustomReason] = useState('')
   const [multaNotes, setMultaNotes] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
 
   // Toast
   const [toasts, setToasts] = useState<{ id: string; msg: string; type: 'ok' | 'warn' }[]>([])
@@ -380,16 +381,17 @@ export default function AmenidadesPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {isAdmin && (
-            <button
-              onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase shadow-sm"
-              title="Exportar tabla actual a CSV"
-            >
-              <span className="material-symbols-outlined text-base">download</span>
-              Exportar
-            </button>
-          )}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center space-x-2 px-5 py-2.5 font-bold rounded-xl transition-all text-[11px] tracking-widest uppercase border ${
+              showFilters 
+                ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <span className="material-symbols-outlined text-lg">tune</span>
+            <span>Filtros</span>
+          </button>
           <button
             onClick={() => { setConflictError(''); setFormProxyApartment(''); setShowModal(true) }}
             className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
@@ -439,88 +441,103 @@ export default function AmenidadesPage() {
                 </span>
               </div>
             </div>
-            {(filterAmenity || filterDay || filterFrom || filterTo || filterDept || filterStatus) && (
-              <button
-                onClick={() => { setFilterAmenity(''); setFilterDay(''); setFilterFrom(''); setFilterTo(''); setFilterDept(''); setFilterStatus('') }}
-                className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors flex items-center gap-1"
-              >
-                <span className="material-symbols-outlined text-sm">filter_alt_off</span>
-                Limpiar filtros
-              </button>
-            )}
           </div>
 
-          {/* Filter Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="space-y-1">
-              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Amenidad</label>
-              <select
-                value={filterAmenity}
-                onChange={e => setFilterAmenity(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
-              >
-                <option value="">Todas</option>
-                {amenityNames.map(a => <option key={a} value={a}>{a}</option>)}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Día</label>
-              <input
-                type="date"
-                value={filterDay}
-                onChange={e => setFilterDay(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Desde hora</label>
-              <select
-                value={filterFrom}
-                onChange={e => setFilterFrom(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
-              >
-                <option value="">Cualquiera</option>
-                {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Hasta hora</label>
-              <select
-                value={filterTo}
-                onChange={e => setFilterTo(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
-              >
-                <option value="">Cualquiera</option>
-                {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estado</label>
-              <select
-                value={filterStatus}
-                onChange={e => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
-              >
-                <option value="">Todos</option>
-                <option value="Reservado">Reservado</option>
-                <option value="Por confirmar">Por confirmar</option>
-                <option value="Cancelado">Cancelado</option>
-              </select>
-            </div>
-            {isAdmin && (
-              <div className="space-y-1">
-                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Apartamento</label>
-                <select
-                  value={filterDept}
-                  onChange={e => setFilterDept(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
-                >
-                  <option value="">Todos</option>
-                  {departments.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
+          {showFilters && (
+            <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Amenidad</label>
+                  <select
+                    value={filterAmenity}
+                    onChange={e => setFilterAmenity(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                  >
+                    <option value="">Todas</option>
+                    {amenityNames.map(a => <option key={a} value={a}>{a}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Día</label>
+                  <input
+                    type="date"
+                    value={filterDay}
+                    onChange={e => setFilterDay(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Desde hora</label>
+                  <select
+                    value={filterFrom}
+                    onChange={e => setFilterFrom(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                  >
+                    <option value="">Cualquiera</option>
+                    {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Hasta hora</label>
+                  <select
+                    value={filterTo}
+                    onChange={e => setFilterTo(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                  >
+                    <option value="">Cualquiera</option>
+                    {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Estado</label>
+                  <select
+                    value={filterStatus}
+                    onChange={e => setFilterStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                  >
+                    <option value="">Todos</option>
+                    <option value="Reservado">Reservado</option>
+                    <option value="Por confirmar">Por confirmar</option>
+                    <option value="Cancelado">Cancelado</option>
+                  </select>
+                </div>
+                {isAdmin && (
+                  <div className="space-y-1">
+                    <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-widest ml-1">Depto</label>
+                    <select
+                      value={filterDept}
+                      onChange={e => setFilterDept(e.target.value)}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all"
+                    >
+                      <option value="">Todos</option>
+                      {departments.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+              
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                <button 
+                  onClick={() => { setFilterAmenity(''); setFilterDay(''); setFilterFrom(''); setFilterTo(''); setFilterDept(''); setFilterStatus('') }}
+                  className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">filter_alt_off</span>
+                  Limpiar filtros
+                </button>
+                
+                {isAdmin && (
+                  <button
+                    onClick={exportCSV}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[10px] tracking-widest uppercase shadow-sm"
+                  >
+                    <span className="material-symbols-outlined text-base">download</span>
+                    Exportar CSV
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
         </div>
 
         <div className="overflow-x-auto">

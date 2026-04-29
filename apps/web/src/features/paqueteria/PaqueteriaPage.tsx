@@ -133,6 +133,24 @@ export default function PaqueteriaPage() {
     setShowModal(false)
   }
 
+  const handleExportCSV = () => {
+    const headers = ['Fecha Recibido', 'Destinatario', 'Departamento', 'Estado', 'Ubicación']
+    const rows = filteredPaquetes.map(p => [
+      p.receivedDate,
+      p.recipient,
+      p.apartment,
+      p.status,
+      p.location || 'N/A'
+    ])
+    const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `paquetes_${new Date().toISOString().split('T')[0]}.csv`)
+    link.click()
+  }
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
@@ -241,6 +259,16 @@ export default function PaqueteriaPage() {
                 className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors whitespace-nowrap"
               >
                 Limpiar
+              </button>
+            )}
+
+            {showFilters && (
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[10px] tracking-widest uppercase shadow-sm"
+              >
+                <span className="material-symbols-outlined text-base">download</span>
+                <span>Exportar CSV</span>
               </button>
             )}
           </div>
