@@ -45,6 +45,7 @@ export default function AmenidadesPage() {
   const [formDate, setFormDate] = useState('')
   const [formGrill, setFormGrill] = useState('')
   const [formTimeSlot, setFormTimeSlot] = useState('')
+  const [formProxyApartment, setFormProxyApartment] = useState('')  // admin: reserve on behalf of
   const [conflictError, setConflictError] = useState('')
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null)
 
@@ -209,9 +210,15 @@ export default function AmenidadesPage() {
    */
   const handleAdd = () => {
     if (!formDate || !selectedGrill || !formTimeSlot) return
+    if (isAdmin && !formProxyApartment) return  // admin must pick a resident first
 
-    // Reglamento check — if amenity has one and user hasn't accepted yet
-    if (selectedAmenity && selectedAmenity.reglamentoType !== 'none') {
+    // Resolve who this reservation is for
+    const proxyResident = state.residents.find(r => r.apartment === formProxyApartment)
+    const targetApartment = isAdmin ? formProxyApartment : apartment
+    const targetResident  = isAdmin ? (proxyResident?.name || formProxyApartment) : user
+
+    // Reglamento check — skip for admin proxy bookings
+    if (!isAdmin && selectedAmenity && selectedAmenity.reglamentoType !== 'none') {
       const key = `pp_reglamento_accepted_${selectedAmenity.id}`
       if (localStorage.getItem(key) !== 'true' && !reglamentoAccepted) {
         setShowReglamento(true)
@@ -228,27 +235,29 @@ export default function AmenidadesPage() {
       return
     }
 
-    // Determine status based on approval mode
+    // Admin proxy bookings are always auto-confirmed
     let status: 'Reservado' | 'Por confirmar' = 'Reservado'
-    if (approvalMode === 'manual_approval') {
-      status = 'Por confirmar'
-    } else if (approvalMode === 'auto_with_exceptions' && exceptionApts.includes(apartment)) {
-      status = 'Por confirmar'
+    if (!isAdmin) {
+      if (approvalMode === 'manual_approval') {
+        status = 'Por confirmar'
+      } else if (approvalMode === 'auto_with_exceptions' && exceptionApts.includes(apartment)) {
+        status = 'Por confirmar'
+      }
     }
 
     const resId = `res-${Date.now()}`
     dispatch({
       type: 'ADD_RESERVACION',
-      payload: { id: resId, date: formDate, grill: `${selectedGrill} (${formTimeSlot})`, resident: user, apartment, status },
+      payload: { id: resId, date: formDate, grill: `${selectedGrill} (${formTimeSlot})`, resident: targetResident, apartment: targetApartment, status },
     })
-    
+
     // Financial charge using per-amenity deposit
     const deposit = selectedAmenity?.depositAmount ?? 500
     if (deposit > 0) {
       dispatch({
         type: 'ADD_PAGO',
         payload: {
-          id: `pg-res-${resId}`, apartment, resident: user,
+          id: `pg-res-${resId}`, apartment: targetApartment, resident: targetResident,
           month: dateToMonthLabel(formDate), monthKey: formDate,
           concepto: `Reserva Amenidad: ${selectedGrill} (${formTimeSlot})`,
           amount: deposit, status: 'Pendiente', paymentDate: null,
@@ -256,21 +265,22 @@ export default function AmenidadesPage() {
       })
     }
 
-    // Save "don't show again" if checked
-    if (dontShowAgain && selectedAmenity) {
+    // Save "don't show again" if checked (resident only)
+    if (!isAdmin && dontShowAgain && selectedAmenity) {
       localStorage.setItem(`pp_reglamento_accepted_${selectedAmenity.id}`, 'true')
     }
 
-    // Toast feedback
     addToast(
-      status === 'Reservado'
-        ? 'Reservación confirmada ✓'
-        : 'Solicitud enviada — pendiente de aprobación',
-      status === 'Reservado' ? 'ok' : 'warn'
+      isAdmin
+        ? `Reservación registrada para ${targetApartment} ✓`
+        : status === 'Reservado'
+          ? 'Reservación confirmada ✓'
+          : 'Solicitud enviada — pendiente de aprobación',
+      'ok'
     )
 
     // Reset
-    setFormDate(''); setFormGrill(''); setFormTimeSlot('')
+    setFormDate(''); setFormGrill(''); setFormTimeSlot(''); setFormProxyApartment('')
     setConflictError(''); setShowModal(false)
     setReglamentoAccepted(false); setDontShowAgain(false); setShowReglamento(false)
   }
@@ -379,11 +389,12 @@ export default function AmenidadesPage() {
             </button>
           )}
           <button
-            onClick={() => { setConflictError(''); setShowModal(true) }}
+            onClick={() => { setConflictError(''); setFormProxyApartment(''); setShowModal(true) }}
             className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
+            title={isAdmin ? 'Registrar reservación a nombre de un residente' : undefined}
           >
-            <span className="material-symbols-outlined text-lg">add_circle</span>
-            <span>Nueva reservación</span>
+            <span className="material-symbols-outlined text-lg">{isAdmin ? 'person_add' : 'add_circle'}</span>
+            <span>{isAdmin ? 'Reservar para residente' : 'Nueva reservación'}</span>
           </button>
         </div>
       </div>
@@ -603,8 +614,36 @@ export default function AmenidadesPage() {
       </div>
 
       {/* Reservation Modal */}
-      <Modal open={showModal} onClose={() => setShowModal(false)} title="Nueva Reservación">
+      <Modal open={showModal} onClose={() => setShowModal(false)} title={isAdmin ? 'Reservar a nombre de residente' : 'Nueva Reservación'}>
         <div className="space-y-6">
+          {/* Admin context banner */}
+          {isAdmin && (
+            <div className="flex items-start gap-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+              <span className="material-symbols-outlined text-amber-500 text-lg mt-0.5">info</span>
+              <p className="text-xs font-bold text-amber-800 leading-relaxed">
+                Estás registrando esta reservación <span className="underline">a nombre de un residente</span>. El residente, la amenidad y el horario quedarán asociados a su departamento.
+              </p>
+            </div>
+          )}
+
+          {/* Admin: resident selector */}
+          {isAdmin && (
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Residente / Departamento</label>
+              <select
+                value={formProxyApartment}
+                onChange={e => { setFormProxyApartment(e.target.value); setConflictError('') }}
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              >
+                <option value="">Seleccionar residente...</option>
+                {[...state.residents]
+                  .sort((a, b) => a.apartment.localeCompare(b.apartment))
+                  .map(r => (
+                    <option key={r.id} value={r.apartment}>{r.apartment} — {r.name}</option>
+                  ))}
+              </select>
+            </div>
+          )}
           {conflictError && (
             <div className="flex items-start space-x-3 p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-700 animate-in slide-in-from-top-2">
               <span className="material-symbols-outlined text-lg mt-0.5">error_outline</span>
@@ -691,10 +730,10 @@ export default function AmenidadesPage() {
 
           <button
             onClick={handleAdd}
-            disabled={!formDate || !formTimeSlot}
+            disabled={!formDate || !formTimeSlot || (isAdmin && !formProxyApartment)}
             className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px] shadow-lg shadow-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Confirmar Solicitud
+            {isAdmin ? 'Confirmar reservación para residente' : 'Confirmar Solicitud'}
           </button>
         </div>
       </Modal>
