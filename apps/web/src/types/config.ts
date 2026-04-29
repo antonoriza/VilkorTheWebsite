@@ -136,4 +136,7 @@ export interface BuildingConfig {
   // Amenity reservation settings
   reservationApprovalMode: ReservationApprovalMode
   reservationExceptionApartments: string[]
+
+  // Paquetería storage location catalog
+  packageLocations: string[]
 }

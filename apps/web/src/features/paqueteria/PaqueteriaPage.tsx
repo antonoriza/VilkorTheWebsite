@@ -21,6 +21,7 @@ import SortableTh from '../../core/components/SortableTh'
 export default function PaqueteriaPage() {
   const { role, apartment } = useAuth()
   const { state, dispatch } = useStore()
+  const bc = state.buildingConfig
 
   // ── Form state ──
   const [showModal, setShowModal] = useState(false)
@@ -94,12 +95,15 @@ export default function PaqueteriaPage() {
     setFilterLocation('')
   }
 
-  /** Derive unique location options from existing package data */
+  /** Derive unique location options — prefer bc catalog, fallback to existing package data */
   const knownLocations = useMemo(() => {
+    const catalogLocs = bc.packageLocations || []
+    if (catalogLocs.length > 0) return catalogLocs
+    // Fallback: derive from existing packages
     const locs = new Set<string>()
     state.paquetes.forEach(p => { if (p.location && p.location !== 'N/A') locs.add(p.location) })
     return [...locs].sort()
-  }, [state.paquetes])
+  }, [bc.packageLocations, state.paquetes])
 
   const knownApartments = useMemo(() =>
     [...new Set(state.paquetes.map(p => p.apartment))].sort(),
@@ -460,18 +464,33 @@ export default function PaqueteriaPage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Ubicación de Almacenamiento</label>
-            <input
-              type="text"
-              list="pkg-location-options"
-              value={formLocation}
-              onChange={(e) => setFormLocation(e.target.value)}
-              placeholder="Ubicación donde se almacena el paquete"
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
-            />
-            <datalist id="pkg-location-options">
-              {knownLocations.map(loc => <option key={loc} value={loc} />)}
-            </datalist>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+              Ubicación de Almacenamiento
+            </label>
+            {knownLocations.length > 0 ? (
+              <select
+                value={formLocation}
+                onChange={e => setFormLocation(e.target.value)}
+                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+              >
+                <option value="">Seleccionar zona...</option>
+                {knownLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+              </select>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  list="pkg-location-options"
+                  value={formLocation}
+                  onChange={e => setFormLocation(e.target.value)}
+                  placeholder="Ubicación donde se almacena el paquete"
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-300 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+                />
+                <p className="text-[9px] text-slate-300 ml-1">
+                  Tip: Configura ubicaciones fijas en Configuración → Logística → Paquetes.
+                </p>
+              </>
+            )}
           </div>
           <button
             onClick={handleAdd}

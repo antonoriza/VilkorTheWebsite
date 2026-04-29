@@ -20,11 +20,32 @@ const TABS = [
 
 // ─── Tab: Paquetes ────────────────────────────────────────────────────────────
 
-function PaquetesTab({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
+function PaquetesTab({
+  bc, dispatch, handleSave, saved,
+}: {
+  bc: BuildingConfig
+  dispatch: React.Dispatch<any>
+  handleSave: () => void
+  saved: boolean
+}) {
   const [retention, setRetention] = useState('7')
   const [alertDays, setAlertDays] = useState('3')
   const [alertOnArrival, setAlertOnArrival] = useState(true)
   const [requireSignature, setRequireSignature] = useState(true)
+
+  // Locations catalog
+  const locations = bc.packageLocations || []
+  const [newLocation, setNewLocation] = useState('')
+
+  const addLocation = () => {
+    const val = newLocation.trim()
+    if (!val || locations.includes(val)) return
+    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { packageLocations: [...locations, val] } })
+    setNewLocation('')
+  }
+  const removeLocation = (loc: string) => {
+    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { packageLocations: locations.filter(l => l !== loc) } })
+  }
 
   const Toggle = ({ value, onChange, label }: { value: boolean; onChange: (v: boolean) => void; label: string }) => (
     <div className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-2xl hover:border-slate-200 transition-all duration-300">
@@ -41,6 +62,56 @@ function PaquetesTab({ handleSave, saved }: { handleSave: () => void; saved: boo
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-8">
       <SectionHeader label="Paquetería" icon="package_2" />
+
+      {/* Ubicaciones de Almacenaje */}
+      <FieldGroup icon="shelves" title="Ubicaciones de Almacenaje">
+        <p className="text-[11px] text-slate-500 font-medium -mt-1 mb-3">
+          Define las zonas donde se guardan los paquetes. Estas opciones aparecen como catálogo al registrar un paquete y como filtro en la vista de Paquetería.
+        </p>
+
+        {/* Existing locations */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {locations.length === 0 && (
+            <p className="text-[10px] text-slate-300 italic">Sin ubicaciones configuradas. Agrega la primera zona.</p>
+          )}
+          {locations.map(loc => (
+            <span
+              key={loc}
+              className="group flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200 hover:border-rose-200 hover:bg-rose-50 transition-all"
+            >
+              <span className="material-symbols-outlined text-[13px] text-slate-400 group-hover:hidden">location_on</span>
+              <span className="material-symbols-outlined text-[13px] text-rose-400 hidden group-hover:block">remove_circle</span>
+              {loc}
+              <button
+                onClick={() => removeLocation(loc)}
+                className="ml-1 text-slate-300 hover:text-rose-500 transition-colors"
+                title="Eliminar"
+              >
+                <span className="material-symbols-outlined text-[12px]">close</span>
+              </button>
+            </span>
+          ))}
+        </div>
+
+        {/* Add new location */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newLocation}
+            onChange={e => setNewLocation(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addLocation()}
+            placeholder="Ej: Recepción, Bodega A, Caseta de Seguridad..."
+            className={inputCls + ' flex-1'}
+          />
+          <button
+            onClick={addLocation}
+            disabled={!newLocation.trim() || locations.includes(newLocation.trim())}
+            className="h-12 px-5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            + Agregar
+          </button>
+        </div>
+      </FieldGroup>
 
       <FieldGroup icon="schedule" title="Tiempos de Almacenaje">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -559,7 +630,7 @@ export default function LogisticaSettings({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'paquetes'   && <PaquetesTab handleSave={handleSave} saved={saved} />}
+      {activeTab === 'paquetes'   && <PaquetesTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} />}
       {activeTab === 'directorio' && (
         <DirectorioTab
           vendors={bc.vendors || []}
