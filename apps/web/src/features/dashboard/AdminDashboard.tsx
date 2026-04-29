@@ -208,9 +208,20 @@ export default function AdminDashboard() {
     const item = approvals.find(a => a.id === id)
     if (!item) return
     
+    const newStatus = action === 'approve' ? 'Reservado' : 'Cancelado'
     dispatch({
       type: 'UPDATE_RESERVACION',
-      payload: { ...item.original, status: action === 'approve' ? 'Reservado' : 'Cancelado' }
+      payload: { ...item.original, status: newStatus }
+    })
+    
+    dispatch({
+      type: 'ADD_NOTIFICACION',
+      payload: {
+        id: `notif-${Date.now()}`, userId: item.original.resident,
+        title: action === 'approve' ? 'Reservación Aprobada' : 'Reservación Rechazada',
+        message: `Tu reservación de ${item.original.grill} para el ${item.original.date} ha sido ${action === 'approve' ? 'aprobada' : 'rechazada'}.`,
+        date: new Date().toLocaleDateString(), read: false
+      }
     })
     
     const msg = action === 'approve' ? `${item.type} aprobado: ${item.detail}` : `${item.type} rechazado: ${item.detail}`

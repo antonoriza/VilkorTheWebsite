@@ -16,10 +16,7 @@ import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import EmptyState from '../../core/components/EmptyState'
-
-/** Pre-defined time slots for reservations */
-const TIME_SLOTS = ['10:00 – 14:00', '14:00 – 18:00', '18:00 – 22:00']
-
+import { generateSlots, getMaxDate, withDefaults } from './slotUtils'
 import { dateToMonthLabel } from '../../lib/month-utils'
 
 
@@ -29,13 +26,11 @@ export default function AmenidadesPage() {
   
   const [searchParams] = useSearchParams()
 
-  // Local state for filtering and modals
   const [filterDept, setFilterDept] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>(
     () => searchParams.get('status') || ''
   )
 
-  // Sync status filter when URL changes (e.g. navigating from dashboard)
   useEffect(() => {
     setFilterStatus(searchParams.get('status') || '')
   }, [searchParams])
@@ -43,16 +38,37 @@ export default function AmenidadesPage() {
   const [showModal, setShowModal] = useState(false)
   const [formDate, setFormDate] = useState('')
   const [formGrill, setFormGrill] = useState('')
-  const [formTimeSlot, setFormTimeSlot] = useState(TIME_SLOTS[0])
+  const [formTimeSlot, setFormTimeSlot] = useState('')
   const [conflictError, setConflictError] = useState('')
-  
-  // Confirm dialog for cancellation
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null)
 
-  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
-  const amenities = state.amenities || []
+  // Reglamento
+  const [showReglamento, setShowReglamento] = useState(false)
+  const [reglamentoAccepted, setReglamentoAccepted] = useState(false)
+  const [dontShowAgain, setDontShowAgain] = useState(false)
 
-  /** Default selection for the first available amenity */
+  // Multa modal
+  const [multaResId, setMultaResId] = useState<string | null>(null)
+  const [multaAmount, setMultaAmount] = useState(500)
+  const [multaReason, setMultaReason] = useState('Daño a las instalaciones')
+  const [multaCustomReason, setMultaCustomReason] = useState('')
+  const [multaNotes, setMultaNotes] = useState('')
+
+  // Toast
+  const [toasts, setToasts] = useState<{ id: string; msg: string; type: 'ok' | 'warn' }[]>([])
+  const addToast = (msg: string, type: 'ok' | 'warn' = 'ok') => {
+    const id = `t-${Date.now()}`
+    setToasts(p => [...p, { id, msg, type }])
+    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 3000)
+  }
+
+  const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
+  const amenities = (state.amenities || []).map(withDefaults)
+  const bc = state.buildingConfig
+  const approvalMode = bc.reservationApprovalMode || 'auto_approve'
+  const exceptionApts = bc.reservationExceptionApartments || []
+
+  const selectedAmenity = amenities.find(a => a.name === (formGrill || amenities[0]?.name))
   const selectedGrill = formGrill || (amenities.length > 0 ? amenities[0].name : '')
 
   /**
@@ -83,77 +99,139 @@ export default function AmenidadesPage() {
   }
 
   /**
-   * Handles new reservation creation with collision detection
+   * Handles new reservation creation with collision detection + approval mode
    */
   const handleAdd = () => {
-    if (!formDate || !selectedGrill) return
+    if (!formDate || !selectedGrill || !formTimeSlot) return
 
-    // Prevent double booking for the same amenity on the same date
+    // Reglamento check — if amenity has one and user hasn't accepted yet
+    if (selectedAmenity && selectedAmenity.reglamentoType !== 'none') {
+      const key = `pp_reglamento_accepted_${selectedAmenity.id}`
+      if (localStorage.getItem(key) !== 'true' && !reglamentoAccepted) {
+        setShowReglamento(true)
+        return
+      }
+    }
+
+    // Prevent double booking for the same amenity + date + slot
     const existing = state.reservaciones.find(
-      r => r.date === formDate && r.grill.startsWith(selectedGrill) && r.status !== 'Cancelado'
+      r => r.date === formDate && r.grill === `${selectedGrill} (${formTimeSlot})` && r.status !== 'Cancelado'
     )
     if (existing) {
-      setConflictError(`${selectedGrill} ya está reservado el ${formDate} por ${existing.resident} (${existing.apartment}).`)
+      setConflictError(`${selectedGrill} ya está reservado el ${formDate} (${formTimeSlot}) por ${existing.resident} (${existing.apartment}).`)
       return
+    }
+
+    // Determine status based on approval mode
+    let status: 'Reservado' | 'Por confirmar' = 'Reservado'
+    if (approvalMode === 'manual_approval') {
+      status = 'Por confirmar'
+    } else if (approvalMode === 'auto_with_exceptions' && exceptionApts.includes(apartment)) {
+      status = 'Por confirmar'
     }
 
     const resId = `res-${Date.now()}`
     dispatch({
       type: 'ADD_RESERVACION',
-      payload: {
-        id: resId,
-        date: formDate,
-        grill: `${selectedGrill} (${formTimeSlot})`,
-        resident: user,
-        apartment,
-        status: 'Reservado',
-      },
+      payload: { id: resId, date: formDate, grill: `${selectedGrill} (${formTimeSlot})`, resident: user, apartment, status },
     })
     
-    // 3. Create linked financial charge (Pago)
-    dispatch({
-      type: 'ADD_PAGO',
-      payload: {
-        id: `pg-res-${resId}`,
-        apartment,
-        resident: user,
-        month: dateToMonthLabel(formDate),
-        monthKey: formDate, // Use YYYY-MM-DD for high-resolution maturity check
-        concepto: `Reserva Amenidad: ${selectedGrill} (${formTimeSlot})`,
-        amount: 500, // Standard fee for amenities
-        status: 'Pendiente',
-        paymentDate: null,
-      }
-    })
+    // Financial charge using per-amenity deposit
+    const deposit = selectedAmenity?.depositAmount ?? 500
+    if (deposit > 0) {
+      dispatch({
+        type: 'ADD_PAGO',
+        payload: {
+          id: `pg-res-${resId}`, apartment, resident: user,
+          month: dateToMonthLabel(formDate), monthKey: formDate,
+          concepto: `Reserva Amenidad: ${selectedGrill} (${formTimeSlot})`,
+          amount: deposit, status: 'Pendiente', paymentDate: null,
+        }
+      })
+    }
 
-    // Reset form
-    setFormDate('')
-    setFormGrill('')
-    setFormTimeSlot(TIME_SLOTS[0])
-    setConflictError('')
-    setShowModal(false)
+    // Save "don't show again" if checked
+    if (dontShowAgain && selectedAmenity) {
+      localStorage.setItem(`pp_reglamento_accepted_${selectedAmenity.id}`, 'true')
+    }
+
+    // Toast feedback
+    addToast(
+      status === 'Reservado'
+        ? 'Reservación confirmada ✓'
+        : 'Solicitud enviada — pendiente de aprobación',
+      status === 'Reservado' ? 'ok' : 'warn'
+    )
+
+    // Reset
+    setFormDate(''); setFormGrill(''); setFormTimeSlot('')
+    setConflictError(''); setShowModal(false)
+    setReglamentoAccepted(false); setDontShowAgain(false); setShowReglamento(false)
   }
 
-  /**
-   * Admin-only: Toggles reservation status and notifies the resident
-   */
-  const handleUpdateStatus = (id: string) => {
+  /** Admin: Approve a pending reservation */
+  const handleApprove = (id: string) => {
     const res = state.reservaciones.find(r => r.id === id)
     if (!res) return
-    const newStatus = res.status === 'Por confirmar' ? 'Reservado' : 'Por confirmar'
-    dispatch({ type: 'UPDATE_RESERVACION', payload: { ...res, status: newStatus } })
-    
+    dispatch({ type: 'UPDATE_RESERVACION', payload: { ...res, status: 'Reservado' } })
     dispatch({
       type: 'ADD_NOTIFICACION',
       payload: {
-        id: `notif-${Date.now()}`,
-        userId: res.resident,
-        title: 'Estado de Reservación Actualizado',
-        message: `Tu reservación de ${res.grill} para el ${res.date} ha cambiado a: ${newStatus}.`,
-        date: new Date().toLocaleDateString(),
-        read: false
+        id: `notif-${Date.now()}`, userId: res.resident,
+        title: 'Reservación Aprobada',
+        message: `Tu reservación de ${res.grill} para el ${res.date} ha sido aprobada.`,
+        date: new Date().toLocaleDateString(), read: false
       }
     })
+    addToast(`Reservación aprobada: ${res.grill}`)
+  }
+
+  /** Admin: Reject a pending reservation */
+  const handleReject = (id: string) => {
+    const res = state.reservaciones.find(r => r.id === id)
+    if (!res) return
+    dispatch({ type: 'UPDATE_RESERVACION', payload: { ...res, status: 'Cancelado' } })
+    dispatch({
+      type: 'ADD_NOTIFICACION',
+      payload: {
+        id: `notif-${Date.now()}`, userId: res.resident,
+        title: 'Reservación Rechazada',
+        message: `Tu reservación de ${res.grill} para el ${res.date} ha sido rechazada por la administración.`,
+        date: new Date().toLocaleDateString(), read: false
+      }
+    })
+    addToast(`Reservación rechazada`, 'warn')
+  }
+
+  /** Admin: Apply a fine (multa) to a reservation */
+  const handleMultaSubmit = () => {
+    if (!multaResId) return
+    const res = state.reservaciones.find(r => r.id === multaResId)
+    if (!res) return
+    const reason = multaReason === 'Otro' ? multaCustomReason : multaReason
+    dispatch({
+      type: 'ADD_PAGO',
+      payload: {
+        id: `pg-multa-${Date.now()}`, apartment: res.apartment, resident: res.resident,
+        month: dateToMonthLabel(new Date().toISOString().split('T')[0]),
+        monthKey: new Date().toISOString().slice(0, 7),
+        concepto: `Multa: ${reason} — ${res.grill.split(' (')[0]}`,
+        amount: multaAmount, status: 'Pendiente', paymentDate: null,
+        notes: multaNotes || undefined,
+      }
+    })
+    dispatch({
+      type: 'ADD_NOTIFICACION',
+      payload: {
+        id: `notif-multa-${Date.now()}`, userId: res.resident,
+        title: 'Multa Aplicada',
+        message: `Se ha aplicado una multa de $${multaAmount} por: ${reason} (${res.grill}).`,
+        date: new Date().toLocaleDateString(), read: false
+      }
+    })
+    addToast(`Multa de $${multaAmount} aplicada a ${res.apartment}`, 'warn')
+    setMultaResId(null); setMultaAmount(500); setMultaReason('Daño a las instalaciones')
+    setMultaCustomReason(''); setMultaNotes('')
   }
 
   // Early return if no amenities are defined (module hidden logic)
@@ -236,13 +314,21 @@ export default function AmenidadesPage() {
                   {isAdmin && <td className="px-8 py-5 text-sm font-bold text-slate-900">{res.apartment}</td>}
                   <td className="px-8 py-5"><StatusBadge status={res.status} /></td>
                   <td className="px-8 py-5 text-right space-x-2">
-                    {isAdmin && (
-                      <button
-                        onClick={() => handleUpdateStatus(res.id)}
-                        className="text-[10px] font-bold text-primary hover:text-white hover:bg-primary px-3 py-1.5 rounded-lg border border-primary-dim uppercase tracking-widest transition-all"
-                      >
-                        Validar
-                      </button>
+                    {isAdmin && res.status === 'Por confirmar' && (
+                      <>
+                        <button onClick={() => handleApprove(res.id)}
+                          className="text-[10px] font-bold text-emerald-600 hover:text-white hover:bg-emerald-600 px-3 py-1.5 rounded-lg border border-emerald-200 uppercase tracking-widest transition-all"
+                        >Aprobar</button>
+                        <button onClick={() => handleReject(res.id)}
+                          className="text-[10px] font-bold text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg border border-rose-200 uppercase tracking-widest transition-all"
+                        >Rechazar</button>
+                      </>
+                    )}
+                    {isAdmin && res.status === 'Reservado' && (
+                      <button onClick={() => setMultaResId(res.id)}
+                        className="text-[10px] font-bold text-amber-600 hover:text-white hover:bg-amber-600 px-3 py-1.5 rounded-lg border border-amber-200 uppercase tracking-widest transition-all"
+                        title="Aplicar multa"
+                      >⚠ Multa</button>
                     )}
                     <button
                       onClick={() => handleRequestCancel(res.id)}
@@ -279,48 +365,169 @@ export default function AmenidadesPage() {
               <p className="text-xs font-bold leading-relaxed">{conflictError}</p>
             </div>
           )}
-          
+
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Amenidad</label>
+            <select
+              value={selectedGrill}
+              onChange={(e) => { setFormGrill(e.target.value); setFormTimeSlot(''); setConflictError('') }}
+              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
+            >
+              {amenities.map(a => <option key={a.id} value={a.name}>{a.name}</option>)}
+            </select>
+          </div>
+
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Fecha de Uso</label>
             <input
               type="date"
               value={formDate}
-              onChange={(e) => { setFormDate(e.target.value); setConflictError('') }}
+              onChange={(e) => { setFormDate(e.target.value); setFormTimeSlot(''); setConflictError('') }}
               min={new Date().toISOString().split('T')[0]}
+              max={selectedAmenity ? getMaxDate(selectedAmenity) : undefined}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Amenidad</label>
-              <select
-                value={selectedGrill}
-                onChange={(e) => { setFormGrill(e.target.value); setConflictError('') }}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
-              >
-                {amenities.map(a => <option key={a.id} value={a.name}>{a.name}</option>)}
-              </select>
+          {/* Dynamic time slots */}
+          {selectedAmenity && formDate && (() => {
+            const slots = generateSlots(selectedAmenity, formDate, state.reservaciones)
+            return (
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                  Bloque Horario <span className="text-slate-300">({slots.filter(s => s.available).length} disponibles)</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {slots.map(slot => (
+                    <button
+                      key={slot.label}
+                      type="button"
+                      disabled={!slot.available}
+                      onClick={() => setFormTimeSlot(slot.label)}
+                      className={`px-4 py-3 rounded-xl text-sm font-bold transition-all border ${
+                        formTimeSlot === slot.label
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
+                          : slot.available
+                            ? 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
+                            : 'bg-slate-100 text-slate-300 border-slate-100 cursor-not-allowed line-through'
+                      }`}
+                    >
+                      {slot.label}
+                    </button>
+                  ))}
+                </div>
+                {slots.length === 0 && (
+                  <p className="text-xs text-slate-400 text-center py-2">No hay horarios configurados para esta amenidad.</p>
+                )}
+              </div>
+            )
+          })()}
+
+          {/* Reglamento link */}
+          {selectedAmenity && selectedAmenity.reglamentoType !== 'none' && (
+            <button
+              type="button"
+              onClick={() => setShowReglamento(true)}
+              className="flex items-center gap-2 text-[11px] font-bold text-primary hover:text-primary/80 uppercase tracking-widest transition-colors"
+            >
+              <span className="material-symbols-outlined text-base">description</span>
+              Ver Reglamento de {selectedAmenity.name}
+            </button>
+          )}
+
+          {/* Deposit info */}
+          {selectedAmenity && (selectedAmenity.depositAmount ?? 0) > 0 && (
+            <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+              <span className="material-symbols-outlined text-blue-500 text-base">info</span>
+              <span className="text-xs font-bold text-blue-700">Depósito: ${selectedAmenity.depositAmount?.toLocaleString()} MXN</span>
             </div>
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Bloque Horario</label>
-              <select
-                value={formTimeSlot}
-                onChange={(e) => setFormTimeSlot(e.target.value)}
-                className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium"
-              >
-                {TIME_SLOTS.map(slot => <option key={slot} value={slot}>{slot}</option>)}
-              </select>
-            </div>
-          </div>
+          )}
 
           <button
             onClick={handleAdd}
-            className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px] shadow-lg shadow-slate-200"
+            disabled={!formDate || !formTimeSlot}
+            className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px] shadow-lg shadow-slate-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Confirmar Solicitud
           </button>
         </div>
+      </Modal>
+
+      {/* Reglamento Modal */}
+      <Modal open={showReglamento} onClose={() => setShowReglamento(false)} title={`Reglamento — ${selectedAmenity?.name || ''}`}>
+        <div className="space-y-5">
+          {selectedAmenity?.reglamentoType === 'text' && (
+            <div className="prose prose-sm max-w-none max-h-64 overflow-y-auto p-4 bg-slate-50 rounded-2xl border border-slate-100 text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
+              {selectedAmenity.reglamentoText || 'Sin reglamento configurado.'}
+            </div>
+          )}
+          {selectedAmenity?.reglamentoType === 'pdf' && selectedAmenity.reglamentoPdfUrl && (
+            <iframe src={selectedAmenity.reglamentoPdfUrl} className="w-full h-80 rounded-2xl border border-slate-200" title="Reglamento PDF" />
+          )}
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" checked={reglamentoAccepted} onChange={e => setReglamentoAccepted(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+            <span className="text-xs font-bold text-slate-700">He leído y acepto el reglamento</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" checked={dontShowAgain} onChange={e => setDontShowAgain(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-300 text-slate-400 focus:ring-slate-300" />
+            <span className="text-xs font-medium text-slate-400">No mostrar de nuevo para esta amenidad</span>
+          </label>
+          <button
+            disabled={!reglamentoAccepted}
+            onClick={() => { setShowReglamento(false); handleAdd() }}
+            className="w-full py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest text-[11px] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Aceptar y Continuar
+          </button>
+        </div>
+      </Modal>
+
+      {/* Multa Modal */}
+      <Modal open={!!multaResId} onClose={() => setMultaResId(null)} title="Aplicar Multa">
+        {(() => {
+          const res = state.reservaciones.find(r => r.id === multaResId)
+          if (!res) return null
+          return (
+            <div className="space-y-5">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reservación</p>
+                <p className="text-sm font-bold text-slate-900">{res.grill} — {res.date}</p>
+                <p className="text-xs text-slate-500">{res.resident} ({res.apartment})</p>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Motivo</label>
+                <select value={multaReason} onChange={e => setMultaReason(e.target.value)}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 font-medium outline-none focus:ring-4 focus:ring-primary/5">
+                  <option>Daño a las instalaciones</option>
+                  <option>Limpieza no realizada</option>
+                  <option>Exceso de ruido / horario</option>
+                  <option>Capacidad excedida</option>
+                  <option>Otro</option>
+                </select>
+                {multaReason === 'Otro' && (
+                  <input value={multaCustomReason} onChange={e => setMultaCustomReason(e.target.value)}
+                    placeholder="Describir motivo..." className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 font-medium outline-none focus:ring-4 focus:ring-primary/5 mt-2" />
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Monto (MXN)</label>
+                <input type="number" value={multaAmount} onChange={e => setMultaAmount(Number(e.target.value))} min={0}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 font-bold outline-none focus:ring-4 focus:ring-primary/5" />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Notas (opcional)</label>
+                <textarea value={multaNotes} onChange={e => setMultaNotes(e.target.value)} rows={2}
+                  className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 font-medium outline-none focus:ring-4 focus:ring-primary/5 resize-none" />
+              </div>
+              <button onClick={handleMultaSubmit}
+                className="w-full py-4 bg-amber-600 text-white font-bold rounded-2xl hover:bg-amber-700 transition-all uppercase tracking-widest text-[11px] shadow-lg shadow-amber-100">
+                Aplicar Multa — ${multaAmount.toLocaleString()} MXN
+              </button>
+            </div>
+          )
+        })()}
       </Modal>
 
       {/* Cancellation Confirmation */}
@@ -334,6 +541,17 @@ export default function AmenidadesPage() {
       >
         ¿Estás seguro de que deseas cancelar esta reservación? Esta acción liberará el espacio para otros residentes.
       </ConfirmDialog>
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-6 right-6 z-50 space-y-2">
+        {toasts.map(t => (
+          <div key={t.id} className={`px-5 py-3 rounded-2xl shadow-xl text-sm font-bold animate-in slide-in-from-bottom-3 ${
+            t.type === 'ok' ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'
+          }`}>
+            {t.msg}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
