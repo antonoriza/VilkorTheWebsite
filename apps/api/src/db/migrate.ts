@@ -367,6 +367,29 @@ export const TENANT_DDL = `
   CREATE INDEX IF NOT EXISTS idx_audit_log_resource ON audit_log(resource);
 `
 
+// ─── Incremental Migrations ──────────────────────────────────────────
+// Safely add columns that may be missing in pre-existing databases.
+// Each entry is a raw SQL statement; failures (column already exists) are silently ignored.
+
+const TENANT_MIGRATIONS: string[] = [
+  // Amenity scheduling & policy columns (added 2026-04-29)
+  `ALTER TABLE amenities ADD COLUMN open_time TEXT NOT NULL DEFAULT '10:00'`,
+  `ALTER TABLE amenities ADD COLUMN close_time TEXT NOT NULL DEFAULT '22:00'`,
+  `ALTER TABLE amenities ADD COLUMN slot_duration_minutes INTEGER NOT NULL DEFAULT 240`,
+  `ALTER TABLE amenities ADD COLUMN cleaning_buffer_minutes INTEGER NOT NULL DEFAULT 0`,
+  `ALTER TABLE amenities ADD COLUMN max_advance_days INTEGER NOT NULL DEFAULT 30`,
+  `ALTER TABLE amenities ADD COLUMN deposit_amount REAL NOT NULL DEFAULT 500`,
+  `ALTER TABLE amenities ADD COLUMN reglamento_type TEXT NOT NULL DEFAULT 'none'`,
+  `ALTER TABLE amenities ADD COLUMN reglamento_text TEXT NOT NULL DEFAULT ''`,
+  `ALTER TABLE amenities ADD COLUMN reglamento_pdf_url TEXT NOT NULL DEFAULT ''`,
+]
+
+function applyMigrations(raw: ReturnType<typeof tenantDB.getRaw>) {
+  for (const sql of TENANT_MIGRATIONS) {
+    try { raw.exec(sql) } catch { /* column already exists — safe to ignore */ }
+  }
+}
+
 // ─── Runner ──────────────────────────────────────────────────────────
 
 function migrateMaster() {
@@ -379,6 +402,7 @@ function migrateTenant(tenantId: string) {
   console.log(`[migrate] Applying tenant schema: ${tenantId}...`)
   const raw = tenantDB.getRaw(tenantId)
   raw.exec(TENANT_DDL)
+  applyMigrations(raw)
   console.log(`[migrate] ✓ tenant_${tenantId}.db ready`)
 }
 

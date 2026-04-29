@@ -178,6 +178,12 @@ app.notFound((c) => c.json({ error: 'Not Found', path: c.req.path }, 404))
 
 // ─── Start Server ────────────────────────────────────────────────────
 
+import { migrateMaster, migrateAllTenants } from './db/migrate'
+
+// Apply schema migrations on boot (ensures new columns exist in all tenant DBs)
+migrateMaster()
+migrateAllTenants()
+
 const port = Number(process.env.PORT) || 3000
 
 console.log(`
