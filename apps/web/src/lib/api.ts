@@ -171,6 +171,73 @@ export const dashboardApi = {
   getKPIs: () => request<any>('/api/dashboard'),
 }
 
+export const profileApi = {
+  /** Get full profile (auth user + resident data + avatar) */
+  getMe: () => request<{
+    user: { id: string; name: string; email: string; image: string | null; createdAt: number }
+    tenant: { role: string; apartment: string | null }
+    resident: any | null
+    activeSessions: number
+  }>('/api/profile/me'),
+
+  /** Self-edit profile fields (email, phone, image) */
+  updateMe: (data: { email?: string; phone?: string; image?: string }) =>
+    request<{ ok: boolean; message: string }>('/api/profile/me', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  /** Upload avatar (base64 data URL) */
+  uploadAvatar: (image: string) =>
+    request<{ ok: boolean }>('/api/profile/me/avatar', {
+      method: 'POST',
+      body: JSON.stringify({ image }),
+    }),
+
+  /** Remove avatar */
+  removeAvatar: () =>
+    request<{ ok: boolean }>('/api/profile/me/avatar', {
+      method: 'DELETE',
+    }),
+
+  /** Change own password */
+  changePassword: (currentPassword: string, newPassword: string) =>
+    request<{ ok: boolean; message: string }>('/api/profile/me/password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    }),
+
+  /** List active sessions */
+  getSessions: () =>
+    request<Array<{
+      id: string; isCurrent: boolean; createdAt: number
+      lastActive: number; ipAddress: string | null; userAgent: string | null
+    }>>('/api/profile/me/sessions'),
+
+  /** Revoke a specific session */
+  revokeSession: (sessionId: string) =>
+    request<{ ok: boolean }>(`/api/profile/me/sessions/${sessionId}`, {
+      method: 'DELETE',
+    }),
+
+  /** Admin: edit another user's profile */
+  adminUpdateUser: (userId: string, data: {
+    name?: string; email?: string; phone?: string
+    apartment?: string; tower?: string; image?: string
+  }) =>
+    request<{ ok: boolean }>(`/api/profile/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  /** Admin: reset another user's password */
+  adminResetPassword: (userId: string, newPassword: string) =>
+    request<{ ok: boolean; message: string }>(`/api/profile/${userId}/reset-password`, {
+      method: 'POST',
+      body: JSON.stringify({ newPassword }),
+    }),
+}
+
 export const systemApi = {
   factoryReset: () => request<{ ok: boolean; message: string }>('/api/system/factory-reset', {
     method: 'POST',

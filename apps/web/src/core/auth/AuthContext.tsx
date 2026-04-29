@@ -20,12 +20,16 @@ export type Role = 'residente' | 'operador' | 'administracion' | 'super_admin'
 
 /** Shape of the authentication state exposed via context */
 interface AuthState {
+  /** Better Auth user ID */
+  userId: string
   /** Display name of the current user */
   user: string
   /** Apartment identifier (e.g. "A101") — empty for admins */
   apartment: string
   /** Email address */
   email: string
+  /** Profile image (base64 data URL or null) */
+  image: string | null
   /** User role from backend */
   role: Role
   /** Tenant ID from backend */
@@ -38,6 +42,8 @@ interface AuthState {
   login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>
   /** Signs out and clears state */
   logout: () => Promise<void>
+  /** Refresh profile data from API (e.g. after avatar change) */
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -47,9 +53,11 @@ const AuthContext = createContext<AuthState | null>(null)
  * Checks for existing session on mount, manages login/logout lifecycle.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const [userId, setUserId] = useState('')
   const [user, setUser] = useState('')
   const [apartment, setApartment] = useState('')
   const [email, setEmail] = useState('')
+  const [image, setImage] = useState<string | null>(null)
   const [role, setRole] = useState<Role>('residente')
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -64,8 +72,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await res.json()
       if (!data.user || !data.tenant) return false
 
+      setUserId(data.user.id)
       setUser(data.user.name)
       setEmail(data.user.email)
+      setImage(data.user.image || null)
       setRole(data.tenant.role as Role)
       setTenantId(data.tenant.id)
       setApartment(data.tenant.apartment || '')
@@ -117,16 +127,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
     } catch { /* ignore */ }
 
+    setUserId('')
     setUser('')
     setEmail('')
+    setImage(null)
     setRole('residente')
     setTenantId(null)
     setApartment('')
     setIsAuthenticated(false)
   }, [])
 
+  /** Refresh profile data (e.g. after avatar change) */
+  const refreshProfile = useCallback(async () => {
+    await loadSession()
+  }, [loadSession])
+
   return (
-    <AuthContext.Provider value={{ user, apartment, email, role, tenantId, isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ userId, user, apartment, email, image, role, tenantId, isAuthenticated, isLoading, login, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )

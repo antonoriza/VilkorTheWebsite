@@ -11,7 +11,7 @@ import VotacionesPage from './features/votaciones/VotacionesPage'
 import UsuariosPage from './features/usuarios/UsuariosPage'
 import TicketsPage from './features/tickets/TicketsPage'
 import AdminConfiguracion from './features/configuracion/AdminConfiguracion'
-import ResidentConfiguracion from './features/configuracion/ResidentConfiguracion'
+import ProfilePage from './features/profile/ProfilePage'
 import DashboardLayout from './layouts/DashboardLayout'
 
 import type { Role } from './core/auth/AuthContext'
@@ -47,10 +47,10 @@ function App() {
         <Route path="/configuracion" element={
           <RequireRole allowed={['super_admin', 'administracion']}><AdminConfiguracion /></RequireRole>
         } />
-        {/* Resident settings */}
-        <Route path="/mi-configuracion" element={
-          <RequireRole allowed={['residente']}><ResidentConfiguracion /></RequireRole>
-        } />
+        {/* Unified profile (all roles) */}
+        <Route path="/mi-perfil" element={<ProfilePage />} />
+        {/* Legacy resident settings redirect */}
+        <Route path="/mi-configuracion" element={<Navigate to="/mi-perfil" replace />} />
         {/* Shared modules */}
         <Route path="/avisos" element={<AvisosPage />} />
         <Route path="/pagos" element={<PagosPage />} />

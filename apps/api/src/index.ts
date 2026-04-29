@@ -26,6 +26,7 @@ import configRoutes from './routes/config'
 import dashboardRoutes from './routes/dashboard'
 import auditRoutes from './routes/audit'
 import systemRoutes from './routes/system'
+import profileRoutes from './routes/profile'
 
 const app = new Hono()
 
@@ -130,6 +131,7 @@ app.get('/api/me', async (c) => {
       id: session.user.id,
       name: session.user.name,
       email: session.user.email,
+      image: session.user.image || null,
     },
     tenant: tenantRow ? {
       id: tenantRow.tenant_id,
@@ -158,6 +160,7 @@ api.route('/config', configRoutes)
 api.route('/dashboard', dashboardRoutes)
 api.route('/audit', auditRoutes)
 api.route('/system', systemRoutes)
+api.route('/profile', profileRoutes)
 
 app.route('/api', api)
 

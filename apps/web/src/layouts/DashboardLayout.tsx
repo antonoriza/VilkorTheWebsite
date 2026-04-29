@@ -35,7 +35,7 @@ const settingsItems = [
 ]
 
 export default function DashboardLayout() {
-  const { user, apartment, role, isAuthenticated, logout } = useAuth()
+  const { user, apartment, role, image, isAuthenticated, logout } = useAuth()
   const isDemo = useDemoMode()
   const { state, dispatch } = useStore()
   const navigate = useNavigate()
@@ -180,8 +180,12 @@ export default function DashboardLayout() {
           {!isConfigRoute ? (
             <>
               <div className="flex items-center space-x-3 p-3 rounded-2xl bg-slate-50 border border-slate-100 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-xs">
-                  {user.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-xs overflow-hidden">
+                  {image ? (
+                    <img src={image} alt={user} className="w-full h-full object-cover" />
+                  ) : (
+                    user.split(' ').map(n => n[0]).join('').slice(0, 2)
+                  )}
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-slate-900 truncate">{user}</p>
@@ -192,7 +196,13 @@ export default function DashboardLayout() {
               </div>
               <div className="space-y-1">
                 <Link
-                  to={(role === 'super_admin' || role === 'administracion') ? '/configuracion' : '/mi-configuracion'}
+                  to="/mi-perfil"
+                  className="flex items-center px-4 py-2.5 text-slate-500 hover:text-slate-900 text-[13px] font-bold transition-all rounded-xl hover:bg-slate-100/50"
+                >
+                  <span className="material-symbols-outlined text-lg mr-3">person</span> Mi Perfil
+                </Link>
+                <Link
+                  to={(role === 'super_admin' || role === 'administracion') ? '/configuracion' : '/mi-perfil'}
                   className="flex items-center px-4 py-2.5 text-slate-500 hover:text-slate-900 text-[13px] font-bold transition-all rounded-xl hover:bg-slate-100/50"
                 >
                   <span className="material-symbols-outlined text-lg mr-3">settings</span> Configuración
@@ -277,16 +287,26 @@ export default function DashboardLayout() {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg overflow-hidden border border-slate-100 hover:border-slate-200 bg-white transition-all group"
               >
-                <div className="w-full h-full bg-slate-900 flex items-center justify-center text-white text-[10px] font-black tracking-tight group-hover:scale-110 transition-transform">
-                  {user.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                <div className="w-full h-full bg-slate-900 flex items-center justify-center text-white text-[10px] font-black tracking-tight group-hover:scale-110 transition-transform overflow-hidden">
+                  {image ? (
+                    <img src={image} alt={user} className="w-full h-full object-cover" />
+                  ) : (
+                    user.split(' ').map(n => n[0]).join('').slice(0, 2)
+                  )}
                 </div>
               </button>
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 p-4 animate-in fade-in zoom-in-95 duration-200">
+                  <button onClick={() => { setShowProfileMenu(false) }} className="sr-only">close</button>
                   <div className="pb-3 mb-3 border-b border-slate-100">
                     <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight truncate">{user}</p>
                     <p className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-0.5 opacity-60">{role.replace('_', ' ')}</p>
                   </div>
+                  <Link to="/mi-perfil" onClick={() => setShowProfileMenu(false)}
+                    className="flex items-center w-full px-3 py-2.5 text-[9px] text-slate-600 hover:bg-slate-50 font-black uppercase tracking-widest rounded-xl transition-all mb-1">
+                    <span className="material-symbols-outlined text-base mr-2.5">person</span>
+                    Mi Perfil
+                  </Link>
                   <button onClick={logout} className="flex items-center w-full px-3 py-2.5 text-[9px] text-rose-600 hover:bg-rose-50 font-black uppercase tracking-widest rounded-xl transition-all">
                     <span className="material-symbols-outlined text-base mr-2.5">logout</span>
                     Cerrar Sesión
