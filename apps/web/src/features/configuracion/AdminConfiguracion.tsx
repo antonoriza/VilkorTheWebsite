@@ -52,7 +52,16 @@ export default function AdminConfiguracion() {
 
   const handleAddAmenity = (name: string, icon: string) => {
     if (!name.trim()) return
-    dispatch({ type: 'ADD_AMENITY', payload: { id: `amen-${Date.now()}`, name: name.trim(), icon } })
+    dispatch({
+      type: 'ADD_AMENITY',
+      payload: {
+        id: `amen-${Date.now()}`, name: name.trim(), icon,
+        openTime: '10:00', closeTime: '22:00',
+        slotDurationMinutes: 240, cleaningBufferMinutes: 0,
+        maxAdvanceDays: 30, depositAmount: 500,
+        reglamentoType: 'none', reglamentoText: '', reglamentoPdfUrl: '',
+      }
+    })
   }
 
   const handleUpdateAmenity = (amenity: any) => {

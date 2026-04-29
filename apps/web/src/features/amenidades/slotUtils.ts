@@ -67,16 +67,16 @@ export function getMaxDate(amenity: Amenity): string {
 
 /** Amenity defaults for backward compat with legacy amenities missing new fields */
 export function withDefaults(amenity: Amenity): Amenity {
-  return {
+  const defaults = {
     openTime: '10:00',
     closeTime: '22:00',
     slotDurationMinutes: 240,
     cleaningBufferMinutes: 0,
     maxAdvanceDays: 30,
     depositAmount: 500,
-    reglamentoType: 'none',
+    reglamentoType: 'none' as const,
     reglamentoText: '',
     reglamentoPdfUrl: '',
-    ...amenity,
   }
+  return { ...defaults, ...amenity }
 }
