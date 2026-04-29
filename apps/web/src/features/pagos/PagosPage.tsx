@@ -213,6 +213,37 @@ export default function PagosPage() {
     if (lSortKey === key) setLSortDir(d => d === 'asc' ? 'desc' : 'asc')
     else { setLSortKey(key); setLSortDir('asc') }
   }
+
+  // ── CSV Export helpers ──
+  const exportIngresosCSV = () => {
+    const headers = ['Unidad', 'Residente', 'Mes', 'Concepto', 'Monto', 'Estado', 'Fecha de Pago']
+    const rows = filteredPagos.map(p => [
+      p.apartment, p.resident, p.month, p.concepto,
+      p.amount.toFixed(2), p.status, p.paymentDate ?? ''
+    ])
+    triggerCSVDownload(headers, rows, `ingresos_${new Date().toISOString().split('T')[0]}.csv`)
+  }
+
+  const exportEgresosCSV = () => {
+    const visibleEgresos = egresoFilterStatus
+      ? ledgerEgresos.filter(e => e.status === egresoFilterStatus)
+      : ledgerEgresos
+    const headers = ['Fecha', 'Categoría', 'Concepto', 'Descripción', 'Monto', 'Estado', 'Registrado por']
+    const rows = visibleEgresos.map(e => [
+      e.date, e.categoria, e.concepto, e.description ?? '',
+      e.amount.toFixed(2), e.status, e.registeredBy
+    ])
+    triggerCSVDownload(headers, rows, `egresos_${new Date().toISOString().split('T')[0]}.csv`)
+  }
+
+  const triggerCSVDownload = (headers: string[], rows: string[][], filename: string) => {
+    const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = filename; a.click()
+    URL.revokeObjectURL(url)
+  }
   // ═════════════════════════════════════════════════════════════════════
   // ACTIONS
   // ═════════════════════════════════════════════════════════════════════
@@ -651,6 +682,7 @@ export default function PagosPage() {
                 setShowModal(true)
                 setChargeType(ledgerSubTab === 'ingresos' ? 'ingreso' : 'egreso')
               }}
+              onExportCSV={ledgerSubTab === 'ingresos' ? exportIngresosCSV : exportEgresosCSV}
               onToggleFilters={() => {
                 if (showFilters) {
                   clearAllFilters()
