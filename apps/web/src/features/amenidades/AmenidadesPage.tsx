@@ -34,7 +34,7 @@ export default function AmenidadesPage() {
   const [filterStatus, setFilterStatus] = useState<string>(
     () => searchParams.get('status') || ''
   )
-  const [sortKey, setSortKey] = useState<'date' | 'amenity' | 'time' | 'apartment' | 'status'>('date')
+  const [sortKey, setSortKey] = useState<'date' | 'amenity' | 'time' | 'resident' | 'apartment' | 'status'>('date')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
@@ -119,6 +119,7 @@ export default function AmenidadesPage() {
       switch (sortKey) {
         case 'amenity':    return dir * pa.amenity.localeCompare(pb.amenity)
         case 'time':       return dir * pa.time.localeCompare(pb.time)
+        case 'resident':   return dir * a.resident.localeCompare(b.resident)
         case 'apartment':  return dir * a.apartment.localeCompare(b.apartment)
         case 'status':     return dir * a.status.localeCompare(b.status)
         default:           return dir * a.date.localeCompare(b.date)
@@ -521,9 +522,9 @@ export default function AmenidadesPage() {
                     </span>
                   </th>
                 ))}
-                {isAdmin && <th onClick={() => handleSort('apartment')}
+                {isAdmin && <th onClick={() => handleSort('resident')}
                   className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 select-none transition-colors">
-                  <span className="inline-flex items-center">Residente</span>
+                  <span className="inline-flex items-center">Residente<SortIcon col="resident" /></span>
                 </th>}
                 {isAdmin && <th onClick={() => handleSort('apartment')}
                   className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest cursor-pointer hover:text-slate-600 select-none transition-colors">
