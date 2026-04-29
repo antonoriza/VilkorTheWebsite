@@ -87,10 +87,27 @@ export default function AdminDashboard() {
 
   // Open ticket count — derived from real ticket state
   const openTicketsCount = state.tickets.filter(t => t.status !== 'Cerrado' && t.status !== 'Resuelto').length
-  const totalTickets = state.tickets.length
-  const ticketResolutionPct = totalTickets > 0
-    ? Math.round(state.tickets.filter(t => t.status === 'Cerrado' || t.status === 'Resuelto').length / totalTickets * 100)
-    : 0
+
+  // ── Ticket KPI carousel ──
+  const ticketKpi = useMemo(() => {
+    const counts = { nuevo: 0, asignado: 0, enProceso: 0, resuelto: 0 }
+    state.tickets.forEach(t => {
+      if (t.status === 'Nuevo') counts.nuevo++
+      else if (t.status === 'Asignado') counts.asignado++
+      else if (t.status === 'En Proceso') counts.enProceso++
+      else if (t.status === 'Resuelto' || t.status === 'Cerrado') counts.resuelto++
+    })
+    return counts
+  }, [state.tickets])
+
+  // ── Recaudación KPI carousel (totals across ALL months) ──
+  const recaudacionKpi = useMemo(() => {
+    const allAdeudos = state.pagos.filter(p => p.status === 'Pendiente' || p.status === 'Vencido')
+    const allPorValidar = state.pagos.filter(p => p.status === 'Por validar')
+    const totalAdeudo = allAdeudos.reduce((s, p) => s + p.amount, 0)
+    const totalPorValidar = allPorValidar.reduce((s, p) => s + p.amount, 0)
+    return { adeudoCount: allAdeudos.length, adeudoAmount: totalAdeudo, porValidarCount: allPorValidar.length, porValidarAmount: totalPorValidar }
+  }, [state.pagos])
 
   // Avisos KPI — derived from date ranges and status field
   const avisosKpi = useMemo(() => {
@@ -241,6 +258,35 @@ export default function AdminDashboard() {
     return () => clearInterval(timer)
   }, [nextAvisoSlide])
 
+  // ── Tickets KPI carousel ──
+  const [ticketSlide, setTicketSlide] = useState(0)
+  const ticketSlides = useMemo(() => [
+    { value: openTicketsCount, label: 'Abiertos', color: 'amber', icon: 'confirmation_number' },
+    { value: ticketKpi.nuevo, label: 'Nuevos', color: 'rose', icon: 'fiber_new' },
+    { value: ticketKpi.asignado, label: 'Asignados', color: 'blue', icon: 'person_pin' },
+    { value: ticketKpi.enProceso, label: 'En Proceso', color: 'amber', icon: 'engineering' },
+    { value: ticketKpi.resuelto, label: 'Resueltos', color: 'emerald', icon: 'check_circle' },
+  ], [openTicketsCount, ticketKpi])
+  const nextTicketSlide = useCallback(() => setTicketSlide(i => (i + 1) % ticketSlides.length), [ticketSlides.length])
+  useEffect(() => {
+    const timer = setInterval(nextTicketSlide, 4500)
+    return () => clearInterval(timer)
+  }, [nextTicketSlide])
+
+  // ── Recaudación KPI carousel ──
+  const [recaudacionSlide, setRecaudacionSlide] = useState(0)
+  const fmtMXN = (n: number) => n >= 1000 ? `$${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : `$${n.toLocaleString()}`
+  const recaudacionSlides = useMemo(() => [
+    { value: `${recaudacionPct}%`, sub: `${paidMaintenance}/${totalMaintenance}`, label: 'Recaudado', color: 'emerald', icon: 'payments' },
+    { value: recaudacionKpi.adeudoCount.toString(), sub: fmtMXN(recaudacionKpi.adeudoAmount), label: 'Adeudos', color: 'rose', icon: 'warning' },
+    { value: recaudacionKpi.porValidarCount.toString(), sub: fmtMXN(recaudacionKpi.porValidarAmount), label: 'Por Validar', color: 'amber', icon: 'hourglass_top' },
+  ], [recaudacionPct, paidMaintenance, totalMaintenance, recaudacionKpi])
+  const nextRecaudacionSlide = useCallback(() => setRecaudacionSlide(i => (i + 1) % 3), [])
+  useEffect(() => {
+    const timer = setInterval(nextRecaudacionSlide, 5500)
+    return () => clearInterval(timer)
+  }, [nextRecaudacionSlide])
+
   return (
     <>
       {/* ── Toast Notifications (fixed, outside layout flow) ── */}
@@ -331,35 +377,121 @@ export default function AdminDashboard() {
         {/* KPI cards — 3×2 compact grid */}
         <div className="xl:col-span-8 grid grid-cols-3 grid-rows-2 gap-4">
           {/* ── Row 1 ── */}
-          <Link to={`/pagos?month=${todayISO.slice(0, 7)}&status=Pagado&concepto=Mantenimiento`} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-emerald-200 transition-colors flex flex-col items-center text-center">
-            <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-              <span className="material-symbols-outlined text-xl">payments</span>
+          {/* ── Finanzas Carousel ── */}
+          <Link 
+            to={`/pagos?month=${todayISO.slice(0, 7)}&status=Pagado&concepto=Mantenimiento`} 
+            className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
+              recaudacionSlide === 0 ? 'hover:border-emerald-200 shadow-lg shadow-emerald-500/5' :
+              recaudacionSlide === 1 ? 'hover:border-rose-200 shadow-lg shadow-rose-500/5' :
+              'hover:border-amber-200 shadow-lg shadow-amber-500/5'
+            }`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-500 ${
+              recaudacionSlide === 0 ? 'bg-emerald-50 text-emerald-600' :
+              recaudacionSlide === 1 ? 'bg-rose-50 text-rose-600' :
+              'bg-amber-50 text-amber-600'
+            }`}>
+              <span className="material-symbols-outlined text-xl">{recaudacionSlides[recaudacionSlide].icon}</span>
             </div>
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Recaudación mensual</p>
-            <div className="flex items-baseline space-x-1.5">
-              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{recaudacionPct}%</span>
-              <span className="text-[10px] font-bold text-emerald-600">{paidMaintenance}/{totalMaintenance}</span>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Finanzas</p>
+            <div className="flex flex-col items-center">
+              <span key={recaudacionSlide} className="text-2xl font-headline font-black text-slate-900 tracking-tight leading-none animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {recaudacionSlides[recaudacionSlide].value}
+              </span>
+              <span key={`sub-${recaudacionSlide}`} className={`text-[10px] font-black uppercase tracking-[0.15em] mt-1.5 animate-in fade-in duration-300 ${
+                recaudacionSlide === 0 ? 'text-emerald-500' :
+                recaudacionSlide === 1 ? 'text-rose-500' :
+                'text-amber-500'
+              }`}>
+                {recaudacionSlides[recaudacionSlide].label}
+              </span>
             </div>
-            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: `${recaudacionPct}%` }}></div>
+            {/* Hover arrows */}
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setRecaudacionSlide(i => (i - 1 + 3) % 3) }}
+              className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/90 shadow border border-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-slate-50"
+            >
+              <span className="material-symbols-outlined text-sm text-slate-500">chevron_left</span>
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setRecaudacionSlide(i => (i + 1) % 3) }}
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/90 shadow border border-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-slate-50"
+            >
+              <span className="material-symbols-outlined text-sm text-slate-500">chevron_right</span>
+            </button>
+            {/* Slide indicator dots */}
+            <div className="flex items-center space-x-1 opacity-20 group-hover:opacity-100 transition-opacity duration-300">
+              {recaudacionSlides.map((_, i) => (
+                <span key={i} className={`rounded-full transition-all duration-300 ${
+                  i === recaudacionSlide ? 'w-1.5 h-1.5 bg-slate-400' : 'w-1 h-1 bg-slate-200'
+                }`} />
+              ))}
             </div>
           </Link>
 
-          <Link to="/tickets" className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-amber-200 transition-colors flex flex-col items-center text-center">
-            <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
-              <span className="material-symbols-outlined text-xl">confirmation_number</span>
+          {/* ── Tickets Carousel ── */}
+          <Link 
+            to="/tickets" 
+            className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
+              ticketSlides[ticketSlide].color === 'amber' ? 'hover:border-amber-200 shadow-lg shadow-amber-500/5' :
+              ticketSlides[ticketSlide].color === 'rose' ? 'hover:border-rose-200 shadow-lg shadow-rose-500/5' :
+              ticketSlides[ticketSlide].color === 'blue' ? 'hover:border-blue-200 shadow-lg shadow-blue-500/5' :
+              'hover:border-emerald-200 shadow-lg shadow-emerald-500/5'
+            }`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-500 ${
+              ticketSlides[ticketSlide].color === 'amber' ? 'bg-amber-50 text-amber-600' :
+              ticketSlides[ticketSlide].color === 'rose' ? 'bg-rose-50 text-rose-600' :
+              ticketSlides[ticketSlide].color === 'blue' ? 'bg-blue-50 text-blue-600' :
+              'bg-emerald-50 text-emerald-600'
+            }`}>
+              <span className="material-symbols-outlined text-xl">{ticketSlides[ticketSlide].icon}</span>
             </div>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Tickets</p>
-            <div className="flex items-baseline space-x-1.5">
-              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{openTicketsCount}</span>
-              <span className="text-[10px] font-bold text-slate-400">Pendientes</span>
+            <div className="flex flex-col items-center">
+              <span key={ticketSlide} className="text-2xl font-headline font-black text-slate-900 tracking-tight leading-none animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {ticketSlides[ticketSlide].value}
+              </span>
+              <span key={`tlabel-${ticketSlide}`} className={`text-[10px] font-black uppercase tracking-[0.15em] mt-1.5 animate-in fade-in duration-300 ${
+                ticketSlides[ticketSlide].color === 'amber' ? 'text-amber-500' :
+                ticketSlides[ticketSlide].color === 'rose' ? 'text-rose-500' :
+                ticketSlides[ticketSlide].color === 'blue' ? 'text-blue-500' :
+                'text-emerald-600'
+              }`}>
+                {ticketSlides[ticketSlide].label}
+              </span>
             </div>
-            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full transition-all duration-700" style={{ width: `${ticketResolutionPct}%` }}></div>
+            {/* Hover arrows */}
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTicketSlide(i => (i - 1 + ticketSlides.length) % ticketSlides.length) }}
+              className="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/90 shadow border border-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-slate-50"
+            >
+              <span className="material-symbols-outlined text-sm text-slate-500">chevron_left</span>
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTicketSlide(i => (i + 1) % ticketSlides.length) }}
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-white/90 shadow border border-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-slate-50"
+            >
+              <span className="material-symbols-outlined text-sm text-slate-500">chevron_right</span>
+            </button>
+            {/* Slide indicator dots */}
+            <div className="flex items-center space-x-1 opacity-20 group-hover:opacity-100 transition-opacity duration-300">
+              {ticketSlides.map((_, i) => (
+                <span key={i} className={`rounded-full transition-all duration-300 ${
+                  i === ticketSlide ? 'w-1.5 h-1.5 bg-slate-400' : 'w-1 h-1 bg-slate-200'
+                }`} />
+              ))}
             </div>
           </Link>
 
-          <Link to="/avisos" className="group bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 hover:border-indigo-200 transition-colors flex flex-col items-center text-center relative overflow-hidden">
+          <Link 
+            to="/avisos" 
+            className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
+              avisoSlide === 0 ? 'hover:border-emerald-200 shadow-lg shadow-emerald-500/5' :
+              avisoSlide === 1 ? 'hover:border-blue-200 shadow-lg shadow-blue-500/5' :
+              'hover:border-slate-200 shadow-lg shadow-slate-500/5'
+            }`}
+          >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-500 ${
               avisoSlide === 0 ? 'bg-emerald-50 text-emerald-600' :
               avisoSlide === 1 ? 'bg-blue-50 text-blue-600' :
@@ -368,12 +500,12 @@ export default function AdminDashboard() {
               <span className="material-symbols-outlined text-xl">{avisoSlides[avisoSlide].icon}</span>
             </div>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Avisos</p>
-            <div className="flex items-baseline space-x-1.5">
-              <span key={avisoSlide} className="text-2xl font-headline font-black text-slate-900 tracking-tight animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex flex-col items-center">
+              <span key={avisoSlide} className="text-2xl font-headline font-black text-slate-900 tracking-tight leading-none animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {avisoSlides[avisoSlide].value}
               </span>
-              <span key={`label-${avisoSlide}`} className={`text-[10px] font-bold animate-in fade-in duration-300 ${
-                avisoSlide === 0 ? 'text-emerald-600' :
+              <span key={`label-${avisoSlide}`} className={`text-[10px] font-black uppercase tracking-[0.15em] mt-1.5 animate-in fade-in duration-300 ${
+                avisoSlide === 0 ? 'text-emerald-500' :
                 avisoSlide === 1 ? 'text-blue-500' :
                 'text-slate-400'
               }`}>
@@ -393,8 +525,8 @@ export default function AdminDashboard() {
             >
               <span className="material-symbols-outlined text-sm text-slate-500">chevron_right</span>
             </button>
-            {/* Slide indicator — tiny dots, only visible on hover */}
-            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {/* Slide indicator dots */}
+            <div className="flex items-center space-x-1 opacity-20 group-hover:opacity-100 transition-opacity duration-300">
               {avisoSlides.map((_, i) => (
                 <span key={i} className={`rounded-full transition-all duration-300 ${
                   i === avisoSlide ? 'w-1.5 h-1.5 bg-slate-400' : 'w-1 h-1 bg-slate-200'
