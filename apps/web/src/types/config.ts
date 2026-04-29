@@ -139,4 +139,13 @@ export interface BuildingConfig {
 
   // Paquetería storage location catalog
   packageLocations: string[]
+
+  // Ticket management catalog
+  ticketCategories: string[]
+  
+  // Building-wide common locations (Lobby, Parking, etc.)
+  commonLocations: string[]
+
+  // Penalty / Fine reasons catalog
+  multaReasons: string[]
 }

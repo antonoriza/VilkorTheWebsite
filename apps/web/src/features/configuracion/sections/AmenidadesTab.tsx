@@ -83,105 +83,105 @@ export default function AmenidadesTab({
     <div className="animate-in fade-in duration-500">
       <div className="space-y-10">
 
-      {/* ── Approval Mode ─────────────────────────────────── */}
-      <div className="space-y-4">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Modo de Aprobación</h4>
-        <div className="space-y-3">
-          {APPROVAL_MODES.map(mode => (
-            <label key={mode.value}
-              className={`flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${
-                approvalMode === mode.value
-                  ? 'border-slate-900 bg-slate-50 shadow-sm'
-                  : 'border-slate-100 bg-white hover:border-slate-200'
-              }`}
-            >
-              <input type="radio" name="approvalMode" value={mode.value}
-                checked={approvalMode === mode.value}
-                onChange={() => handleUpdateConfig({ reservationApprovalMode: mode.value })}
-                className="mt-0.5 w-4 h-4 text-slate-900 focus:ring-slate-900 border-slate-300"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-base text-slate-500">{mode.icon}</span>
-                  <span className="text-sm font-bold text-slate-900">{mode.label}</span>
-                </div>
-                <p className="text-xs text-slate-400 mt-1">{mode.desc}</p>
-              </div>
-            </label>
-          ))}
-        </div>
-
-        {/* Exception apartments */}
-        {approvalMode === 'auto_with_exceptions' && (
-          <div className="space-y-3 p-5 bg-slate-50 rounded-2xl border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Departamentos que requieren aprobación</label>
-            <div className="flex flex-wrap gap-2 min-h-[32px]">
-              {exceptionApts.map(apt => (
-                <span key={apt} className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700">
-                  {apt}
-                  <button onClick={() => removeException(apt)} className="text-slate-300 hover:text-rose-500 transition-colors">
-                    <span className="material-symbols-outlined text-sm">close</span>
-                  </button>
-                </span>
-              ))}
-              {exceptionApts.length === 0 && (
-                <span className="text-xs text-slate-300 italic">Sin excepciones configuradas</span>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <select value={exceptionInput} onChange={e => setExceptionInput(e.target.value)}
-                className="flex-1 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900/10">
-                <option value="">Seleccionar departamento...</option>
-                {departments.filter(d => !exceptionApts.includes(d)).map(d => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
-              <button onClick={addException} disabled={!exceptionInput}
-                className="px-4 py-2.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-                Agregar
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── Active Amenities ──────────────────────────────── */}
-      <div className="space-y-4">
-        <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Áreas Comunes</h4>
-        {amenities.length === 0 ? (
-          <div className="p-6 bg-amber-50 border border-amber-100 rounded-3xl flex items-start gap-4">
-            <span className="material-symbols-outlined text-amber-600 text-2xl">warning</span>
-            <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
-              Sin áreas comunes habilitadas. Selecciona una plantilla para activar el motor de reservaciones.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {amenities.map(a => (
-              <div key={a.id} className="flex items-center justify-between p-5 bg-slate-50 border border-slate-100 rounded-3xl group hover:border-slate-300 hover:bg-white transition-all">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-slate-500 shadow-sm">
-                    <span className="material-symbols-outlined text-[18px]">{a.icon || 'deck'}</span>
+        {/* ── Approval Mode ─────────────────────────────────── */}
+        <div className="space-y-4">
+          <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Modo de Aprobación</h4>
+          <div className="space-y-3">
+            {APPROVAL_MODES.map(mode => (
+              <label key={mode.value}
+                className={`flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${
+                  approvalMode === mode.value
+                    ? 'border-slate-900 bg-slate-50 shadow-sm'
+                    : 'border-slate-100 bg-white hover:border-slate-200'
+                }`}
+              >
+                <input type="radio" name="approvalMode" value={mode.value}
+                  checked={approvalMode === mode.value}
+                  onChange={() => handleUpdateConfig({ reservationApprovalMode: mode.value })}
+                  className="mt-0.5 w-4 h-4 text-slate-900 focus:ring-slate-900 border-slate-300"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base text-slate-500">{mode.icon}</span>
+                    <span className="text-sm font-bold text-slate-900">{mode.label}</span>
                   </div>
-                  <div>
-                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-tight block">{a.name}</span>
-                    <span className="text-[9px] text-slate-400">{a.openTime || '10:00'} – {a.closeTime || '22:00'} · {(a.slotDurationMinutes || 240) / 60}h</span>
-                  </div>
+                  <p className="text-xs text-slate-400 mt-1">{mode.desc}</p>
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                  <button onClick={() => setEditAmenity({ ...a, openTime: a.openTime || '10:00', closeTime: a.closeTime || '22:00', slotDurationMinutes: a.slotDurationMinutes || 240, cleaningBufferMinutes: a.cleaningBufferMinutes || 0, maxAdvanceDays: a.maxAdvanceDays || 30, depositAmount: a.depositAmount ?? 500, reglamentoType: a.reglamentoType || 'none', reglamentoText: a.reglamentoText || '', reglamentoPdfUrl: a.reglamentoPdfUrl || '' })}
-                    className="text-slate-300 hover:text-slate-600 transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">settings</span>
-                  </button>
-                  <button onClick={() => handleDeleteAmenity(a.id, a.name)} className="text-slate-200 hover:text-rose-500 transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">delete</span>
-                  </button>
-                </div>
-              </div>
+              </label>
             ))}
           </div>
-        )}
-      </div>
+
+          {/* Exception apartments */}
+          {approvalMode === 'auto_with_exceptions' && (
+            <div className="space-y-3 p-5 bg-slate-50 rounded-2xl border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Departamentos que requieren aprobación</label>
+              <div className="flex flex-wrap gap-2 min-h-[32px]">
+                {exceptionApts.map(apt => (
+                  <span key={apt} className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700">
+                    {apt}
+                    <button onClick={() => removeException(apt)} className="text-slate-300 hover:text-rose-500 transition-colors">
+                      <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  </span>
+                ))}
+                {exceptionApts.length === 0 && (
+                  <span className="text-xs text-slate-300 italic">Sin excepciones configuradas</span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <select value={exceptionInput} onChange={e => setExceptionInput(e.target.value)}
+                  className="flex-1 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-slate-900/10">
+                  <option value="">Seleccionar departamento...</option>
+                  {departments.filter(d => !exceptionApts.includes(d)).map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+                <button onClick={addException} disabled={!exceptionInput}
+                  className="px-4 py-2.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                  Agregar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Active Amenities ──────────────────────────────── */}
+        <div className="space-y-4">
+          <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Áreas Comunes</h4>
+          {amenities.length === 0 ? (
+            <div className="p-6 bg-amber-50 border border-amber-100 rounded-3xl flex items-start gap-4">
+              <span className="material-symbols-outlined text-amber-600 text-2xl">warning</span>
+              <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
+                Sin áreas comunes habilitadas. Selecciona una plantilla para activar el motor de reservaciones.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {amenities.map(a => (
+                <div key={a.id} className="flex items-center justify-between p-5 bg-slate-50 border border-slate-100 rounded-3xl group hover:border-slate-300 hover:bg-white transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center text-slate-500 shadow-sm">
+                      <span className="material-symbols-outlined text-[18px]">{a.icon || 'deck'}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black text-slate-900 uppercase tracking-tight block">{a.name}</span>
+                      <span className="text-[9px] text-slate-400">{a.openTime || '10:00'} – {a.closeTime || '22:00'} · {(a.slotDurationMinutes || 240) / 60}h</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    <button onClick={() => setEditAmenity({ ...a, openTime: a.openTime || '10:00', closeTime: a.closeTime || '22:00', slotDurationMinutes: a.slotDurationMinutes || 240, cleaningBufferMinutes: a.cleaningBufferMinutes || 0, maxAdvanceDays: a.maxAdvanceDays || 30, depositAmount: a.depositAmount ?? 500, reglamentoType: a.reglamentoType || 'none', reglamentoText: a.reglamentoText || '', reglamentoPdfUrl: a.reglamentoPdfUrl || '' })}
+                      className="text-slate-300 hover:text-slate-600 transition-colors">
+                      <span className="material-symbols-outlined text-[18px]">settings</span>
+                    </button>
+                    <button onClick={() => handleDeleteAmenity(a.id, a.name)} className="text-slate-200 hover:text-rose-500 transition-colors">
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Template picker */}
         <div className="space-y-4">
@@ -231,8 +231,47 @@ export default function AmenidadesTab({
             </div>
           )}
         </div>
+
+        {/* ── Penalty Reasons ─────────────────────────────────── */}
+        <div className="space-y-4 pt-6 border-t border-slate-100">
+          <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest border-l-4 border-slate-900 pl-4">Motivos de Multa</h4>
+          <p className="text-[11px] text-slate-500 font-medium px-1">
+            Configura las razones predefinidas que aparecen al aplicar una multa por mal uso de amenidades.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(buildingConfig.multaReasons || []).map(reason => (
+              <span key={reason} className="group flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200 hover:border-rose-200 hover:bg-rose-50 transition-all">
+                {reason}
+                <button 
+                  onClick={() => handleUpdateConfig({ multaReasons: (buildingConfig.multaReasons || []).filter(r => r !== reason) })}
+                  className="ml-1 text-slate-300 hover:text-rose-500 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[12px]">close</span>
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2 max-w-md">
+            <input 
+              type="text" 
+              placeholder="Nuevo motivo..."
+              className="block w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-slate-100 font-medium text-sm transition-all"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const val = (e.target as HTMLInputElement).value.trim()
+                  if (val && !(buildingConfig.multaReasons || []).includes(val)) {
+                    handleUpdateConfig({ multaReasons: [...(buildingConfig.multaReasons || []), val] })
+                    ;(e.target as HTMLInputElement).value = ''
+                  }
+                }
+              }}
+            />
+          </div>
+        </div>
+
       </div>
-      <SaveFooter handleSave={handleSave} saved={saved} />
+
+      <SaveFooter saved={saved} handleSave={handleSave} />
 
       {/* ── Per-Amenity Config Modal ──────────────────────── */}
       <Modal open={!!editAmenity} onClose={() => setEditAmenity(null)} title={`Configurar — ${editAmenity?.name || ''}`}>

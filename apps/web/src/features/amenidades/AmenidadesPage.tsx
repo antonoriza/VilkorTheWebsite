@@ -54,10 +54,13 @@ export default function AmenidadesPage() {
   const [reglamentoAccepted, setReglamentoAccepted] = useState(false)
   const [dontShowAgain, setDontShowAgain] = useState(false)
 
+  const bc = state.buildingConfig
+  const multaReasonsList = useMemo(() => bc.multaReasons || ['Daño a las instalaciones', 'Limpieza no realizada', 'Exceso de ruido / horario', 'Capacidad excedida'], [bc.multaReasons])
+
   // Multa modal
   const [multaResId, setMultaResId] = useState<string | null>(null)
   const [multaAmount, setMultaAmount] = useState(500)
-  const [multaReason, setMultaReason] = useState('Daño a las instalaciones')
+  const [multaReason, setMultaReason] = useState(multaReasonsList[0] || 'Otro')
   const [multaCustomReason, setMultaCustomReason] = useState('')
   const [multaNotes, setMultaNotes] = useState('')
 
@@ -71,7 +74,6 @@ export default function AmenidadesPage() {
 
   const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
   const amenities = (state.amenities || []).map(withDefaults)
-  const bc = state.buildingConfig
   const approvalMode = bc.reservationApprovalMode || 'auto_approve'
   const exceptionApts = bc.reservationExceptionApartments || []
 
@@ -346,7 +348,7 @@ export default function AmenidadesPage() {
       }
     })
     addToast(`Multa de $${multaAmount} aplicada a ${res.apartment}`, 'warn')
-    setMultaResId(null); setMultaAmount(500); setMultaReason('Daño a las instalaciones')
+    setMultaResId(null); setMultaAmount(500); setMultaReason(multaReasonsList[0] || 'Otro')
     setMultaCustomReason(''); setMultaNotes('')
   }
 
@@ -785,11 +787,8 @@ export default function AmenidadesPage() {
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Motivo</label>
                 <select value={multaReason} onChange={e => setMultaReason(e.target.value)}
                   className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 font-medium outline-none focus:ring-4 focus:ring-primary/5">
-                  <option>Daño a las instalaciones</option>
-                  <option>Limpieza no realizada</option>
-                  <option>Exceso de ruido / horario</option>
-                  <option>Capacidad excedida</option>
-                  <option>Otro</option>
+                  {multaReasonsList.map(r => <option key={r} value={r}>{r}</option>)}
+                  <option value="Otro">Otro</option>
                 </select>
                 {multaReason === 'Otro' && (
                   <input value={multaCustomReason} onChange={e => setMultaCustomReason(e.target.value)}

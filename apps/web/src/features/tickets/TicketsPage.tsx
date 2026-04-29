@@ -13,13 +13,6 @@ import {
   type TicketCategory
 } from '../../types'
 
-const PRIORITY_COLORS = {
-  Alta: 'text-rose-600 bg-rose-50 border-rose-200',
-  Media: 'text-amber-600 bg-amber-50 border-amber-200',
-  Baja: 'text-emerald-600 bg-emerald-50 border-emerald-200',
-}
-
-const CATEGORIES: TicketCategory[] = ['Plomería', 'Electricidad', 'Áreas Comunes', 'Seguridad', 'Limpieza', 'Otro']
 const PRIORITIES: TicketPriority[] = ['Alta', 'Media', 'Baja']
 const STATUSES: TicketStatus[] = ['Nuevo', 'Asignado', 'En Proceso', 'Resuelto', 'Cerrado']
 
@@ -29,6 +22,10 @@ export default function TicketsPage() {
   
   const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
   const isResident = role === 'residente'
+  const bc = state.buildingConfig
+
+  const categories = useMemo(() => bc.ticketCategories || ['Plomería', 'Electricidad', 'Áreas Comunes', 'Seguridad', 'Limpieza', 'Otro'], [bc.ticketCategories])
+  const commonLocations = useMemo(() => bc.commonLocations || [], [bc.commonLocations])
 
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -123,7 +120,7 @@ export default function TicketsPage() {
     // Reset form
     setFormSubject('')
     setFormDescription('')
-    setFormCategory('Otro')
+    setFormCategory(categories[0] || 'Otro')
     setFormPriority('Media')
     setFormLocation('')
     setShowCreateModal(false)
@@ -248,7 +245,7 @@ export default function TicketsPage() {
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
             >
               <option value="">Todas las Categorías</option>
-              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              {categories.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
             <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
@@ -314,7 +311,7 @@ export default function TicketsPage() {
                     #{ticket.number}
                   </span>
                   <StatusBadge status={ticket.status} />
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md border ${PRIORITY_COLORS[ticket.priority]}`}>
+                  <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-slate-200 bg-white text-slate-600`}>
                     {ticket.priority}
                   </span>
                 </div>
@@ -383,7 +380,7 @@ export default function TicketsPage() {
               <select value={formCategory} onChange={(e) => setFormCategory(e.target.value as TicketCategory)}
                 className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
               >
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div className="space-y-2">
@@ -398,10 +395,13 @@ export default function TicketsPage() {
 
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Ubicación (Opcional)</label>
-            <input type="text" value={formLocation} onChange={(e) => setFormLocation(e.target.value)}
+            <input type="text" list="common-loc-options-tickets" value={formLocation} onChange={(e) => setFormLocation(e.target.value)}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
               placeholder="Ej. Baño de recámara principal"
             />
+            <datalist id="common-loc-options-tickets">
+              {commonLocations.map(loc => <option key={loc} value={loc} />)}
+            </datalist>
           </div>
 
           <div className="space-y-2">

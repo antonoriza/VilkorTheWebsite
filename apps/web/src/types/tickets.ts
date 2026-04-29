@@ -5,7 +5,7 @@
  */
 
 /** Allowed service categories for tickets */
-export type TicketCategory = 'Plomería' | 'Electricidad' | 'Áreas Comunes' | 'Seguridad' | 'Limpieza' | 'Otro'
+export type TicketCategory = string
 
 /** Priority levels affecting visual urgency indicators */
 export type TicketPriority = 'Alta' | 'Media' | 'Baja'

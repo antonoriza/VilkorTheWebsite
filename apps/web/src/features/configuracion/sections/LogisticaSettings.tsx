@@ -12,6 +12,7 @@ const TABS = [
   { id: 'paquetes',   label: 'Paquetes',              icon: 'package_2' },
   { id: 'directorio', label: 'Directorio Proveedores', icon: 'contact_phone' },
   { id: 'inventario', label: 'Inventario',             icon: 'inventory_2' },
+  { id: 'mantenimiento', label: 'Mantenimiento',       icon: 'handyman' },
 ]
 
 
@@ -149,6 +150,93 @@ function PaquetesTab({
       </InfoBanner>
 
       <SaveFooter handleSave={handleSave} saved={saved} />
+    </div>
+  )
+}
+
+// ─── Tab: Mantenimiento ────────────────────────────────────────────────────────
+
+function MantenimientoTab({
+  bc, dispatch,
+}: {
+  bc: BuildingConfig
+  dispatch: React.Dispatch<any>
+}) {
+  const [newCategory, setNewCategory] = useState('')
+  const [newLocation, setNewLocation] = useState('')
+
+  const categories = bc.ticketCategories || []
+  const locations = bc.commonLocations || []
+
+  const addCategory = () => {
+    const val = newCategory.trim()
+    if (!val || categories.includes(val)) return
+    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { ticketCategories: [...categories, val] } })
+    setNewCategory('')
+  }
+  const removeCategory = (cat: string) => {
+    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { ticketCategories: categories.filter(c => c !== cat) } })
+  }
+
+  const addLocation = () => {
+    const val = newLocation.trim()
+    if (!val || locations.includes(val)) return
+    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { commonLocations: [...locations, val] } })
+    setNewLocation('')
+  }
+  const removeLocation = (loc: string) => {
+    dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { commonLocations: locations.filter(l => l !== loc) } })
+  }
+
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-8">
+      <SectionHeader label="Mantenimiento y Zonas" icon="handyman" />
+
+      {/* Ticket Categories */}
+      <FieldGroup icon="category" title="Categorías de Tickets">
+        <p className="text-[11px] text-slate-500 font-medium -mt-1 mb-3">
+          Configura las categorías de servicio disponibles para que los residentes levanten tickets (ej. Plomería, Electricidad).
+        </p>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {categories.map(cat => (
+            <span key={cat} className="group flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200 hover:border-rose-200 hover:bg-rose-50 transition-all">
+              {cat}
+              <button onClick={() => removeCategory(cat)} className="ml-1 text-slate-300 hover:text-rose-500 transition-colors">
+                <span className="material-symbols-outlined text-[12px]">close</span>
+              </button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input type="text" value={newCategory} onChange={e => setNewCategory(e.target.value)} onKeyDown={e => e.key === 'Enter' && addCategory()} placeholder="Nueva categoría..." className={inputCls} />
+          <button onClick={addCategory} className="px-4 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+            <span className="material-symbols-outlined text-[20px]">add</span>
+          </button>
+        </div>
+      </FieldGroup>
+
+      {/* Common Locations */}
+      <FieldGroup icon="location_on" title="Catálogo de Zonas Comunes">
+        <p className="text-[11px] text-slate-500 font-medium -mt-1 mb-3">
+          Ubicaciones frecuentes del edificio (Lobby, Roof Garden, Estacionamientos). Estas aparecen como sugerencias en tickets.
+        </p>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {locations.map(loc => (
+            <span key={loc} className="group flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-[11px] font-bold border border-slate-200 hover:border-rose-200 hover:bg-rose-50 transition-all">
+              {loc}
+              <button onClick={() => removeLocation(loc)} className="ml-1 text-slate-300 hover:text-rose-500 transition-colors">
+                <span className="material-symbols-outlined text-[12px]">close</span>
+              </button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input type="text" value={newLocation} onChange={e => setNewLocation(e.target.value)} onKeyDown={e => e.key === 'Enter' && addLocation()} placeholder="Nueva zona..." className={inputCls} />
+          <button onClick={addLocation} className="px-4 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+            <span className="material-symbols-outlined text-[20px]">add</span>
+          </button>
+        </div>
+      </FieldGroup>
     </div>
   )
 }
@@ -350,19 +438,20 @@ const INVENTORY_CATEGORY_ICONS: Record<InventoryCategory, string> = {
   Propiedad: 'corporate_fare',
 }
 
-const EMPTY_INVENTORY: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> = {
+const getEmptyInventory = (buildingName: string): Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'> => ({
   name: '', 
   category: 'Propiedad', 
   ownerId: 'building',
-  owner: 'Lote Alemania', 
+  owner: buildingName, 
   currentUserId: null,
   currentUser: '', 
   notes: '',
-}
+})
 
 function InventarioTab({
-  inventory, residents, staff, dispatch, handleSave, saved,
+  bc, inventory, residents, staff, dispatch, handleSave, saved,
 }: {
+  bc: BuildingConfig
   inventory: InventoryItem[]
   residents: Resident[]
   staff: StaffMember[]
@@ -372,7 +461,7 @@ function InventarioTab({
 }) {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState<Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>>(EMPTY_INVENTORY)
+  const [form, setForm] = useState<Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>>(getEmptyInventory(bc.buildingName))
 
   const handleAdd = () => {
     if (!form.name.trim()) return
@@ -382,7 +471,7 @@ function InventarioTab({
     let finalOwner = form.owner
     let finalUser = form.currentUser
 
-    if (form.ownerId === 'building') finalOwner = 'Lote Alemania'
+    if (form.ownerId === 'building') finalOwner = bc.buildingName
     else {
       const res = residents.find(r => r.id === form.ownerId)
       if (res) finalOwner = res.name
@@ -407,7 +496,7 @@ function InventarioTab({
       dispatch({ type: 'ADD_INVENTORY', payload: { id: `inv-${Date.now()}`, ...payload } })
     }
     
-    setForm(EMPTY_INVENTORY)
+    setForm(getEmptyInventory(bc.buildingName))
     setEditingId(null)
     setShowForm(false)
   }
@@ -513,7 +602,7 @@ function InventarioTab({
             <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">
                {editingId ? 'Editar Item de Inventario' : 'Nuevo Registro de Inventario'}
             </h4>
-            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY_INVENTORY) }} className="text-slate-400 hover:text-slate-900">
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(getEmptyInventory(bc.buildingName)) }} className="text-slate-400 hover:text-slate-900">
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>
@@ -542,11 +631,11 @@ function InventarioTab({
                 onChange={(e) => {
                   const id = e.target.value
                   const res = residents.find(r => r.id === id)
-                  setForm({ ...form, ownerId: id, owner: id === 'building' ? 'Lote Alemania' : (res?.name || '') })
+                  setForm({ ...form, ownerId: id, owner: id === 'building' ? bc.buildingName : (res?.name || '') })
                 }} 
                 className={selectClass}
               >
-                <option value="building">Edificio (Lote Alemania)</option>
+                <option value="building">Edificio ({bc.buildingName})</option>
                 <optgroup label="Residentes">
                   {residents.map(r => <option key={r.id} value={r.id}>{r.name} ({r.apartment})</option>)}
                 </optgroup>
@@ -581,7 +670,7 @@ function InventarioTab({
             <button onClick={handleAdd} className="h-12 px-8 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
               {editingId ? 'Actualizar' : 'Registrar'}
             </button>
-            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(EMPTY_INVENTORY) }} className="h-12 px-6 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-100 transition-all">
+            <button onClick={() => { setShowForm(false); setEditingId(null); setForm(getEmptyInventory(bc.buildingName)) }} className="h-12 px-6 text-slate-500 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-100 transition-all">
               Cancelar
             </button>
           </div>
@@ -641,12 +730,19 @@ export default function LogisticaSettings({
       )}
       {activeTab === 'inventario' && (
         <InventarioTab 
+          bc={bc}
           inventory={inventory} 
           residents={residents} 
           staff={staff}
           dispatch={dispatch}
           handleSave={handleSave}
           saved={saved}
+        />
+      )}
+      {activeTab === 'mantenimiento' && (
+        <MantenimientoTab 
+          bc={bc} 
+          dispatch={dispatch} 
         />
       )}
     </div>

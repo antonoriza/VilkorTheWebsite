@@ -126,4 +126,14 @@ export const buildingConfig = {
     directorio:   { ver: ['super_admin', 'administracion', 'operador'],                   crear: ['super_admin', 'administracion'], editar: ['super_admin', 'administracion'],               eliminar: ['super_admin'] },
     configuracion:{ ver: ['super_admin'],                                                 editar: ['super_admin'] },
   },
+  packageLocations: [
+    'Recepción — Casillero A1',
+    'Recepción — Casillero A2',
+    'Recepción — Casillero B1',
+    'Recepción — Casillero B2',
+    'Cuarto de Paquetes',
+  ],
+  ticketCategories: ['Plomería', 'Electricidad', 'Áreas Comunes', 'Seguridad', 'Limpieza', 'Otro'],
+  commonLocations: ['Lobby', 'Estacionamiento P1', 'Estacionamiento P2', 'Roof Garden', 'Gimnasio', 'Alberca'],
+  multaReasons: ['Daño a las instalaciones', 'Limpieza no realizada', 'Exceso de ruido / horario', 'Capacidad excedida'],
 }
