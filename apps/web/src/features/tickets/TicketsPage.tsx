@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
@@ -29,8 +30,17 @@ export default function TicketsPage() {
   const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
   const isResident = role === 'residente'
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
   // Admin Filters
-  const [filterStatus, setFilterStatus] = useState<string>('')
+  const [filterStatus, setFilterStatus] = useState<string>(
+    () => searchParams.get('status') || ''
+  )
+
+  // Sync state when URL changes (e.g. navigating from dashboard)
+  useEffect(() => {
+    setFilterStatus(searchParams.get('status') || '')
+  }, [searchParams])
   const [filterCategory, setFilterCategory] = useState<string>('')
   const [filterPriority, setFilterPriority] = useState<string>('')
   const [filterDept, setFilterDept] = useState<string>('')
@@ -224,7 +234,11 @@ export default function TicketsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
+            <select value={filterStatus} onChange={(e) => {
+              const val = e.target.value
+              setFilterStatus(val)
+              setSearchParams(val ? { status: val } : {})
+            }}
               className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all font-medium text-sm"
             >
               <option value="">Todos los Estados</option>

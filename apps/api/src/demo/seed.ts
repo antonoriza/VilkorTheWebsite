@@ -29,6 +29,9 @@ import { ticketData } from './fixtures/tickets'
 import { avisoData } from './fixtures/avisos'
 import { buildingConfig } from './fixtures/building-config'
 import { DEMO_ACCOUNT_APARTMENTS, DEMO_ACCOUNT_PASSWORD, DEMO_ACCOUNT_ROLE } from './fixtures/accounts'
+import { paqueteData } from './fixtures/paquetes'
+import { votacionData } from './fixtures/votaciones'
+import { reservacionData } from './fixtures/reservaciones'
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -75,7 +78,7 @@ export async function seedDemo(tenantId: string): Promise<void> {
   }
   console.log(`[demo]   ✓ ${staffMembers.length} staff members`)
 
-  // ── 4. Amenities (3) ─────────────────────────────────────────────────
+  // ── 4. Amenities (6) ─────────────────────────────────────────────────
   const insertAmenity = raw.prepare(
     'INSERT INTO amenities (id, name, icon, created_at, updated_at) VALUES (?, ?, ?, ?, ?)'
   )
@@ -213,6 +216,96 @@ export async function seedDemo(tenantId: string): Promise<void> {
     insertAviso.run(nanoid(), a.title, a.category, a.description, '', a.date, a.pinned, NOW, NOW)
   }
   console.log(`[demo]   ✓ ${avisoData.length} avisos`)
+
+  // ── 10. Paquetes ─────────────────────────────────────────────────────
+  const insertPaquete = raw.prepare(`
+    INSERT INTO paquetes
+      (id, resident_id, recipient, apartment, received_date, status, location, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `)
+  for (const p of paqueteData) {
+    const r = residents[p.residentIndex]
+    const d = new Date()
+    d.setDate(d.getDate() - p.daysAgo)
+    const receivedDate = d.toISOString().split('T')[0]
+    insertPaquete.run(
+      nanoid(), `res-${r.apartment}`, r.name, r.apartment,
+      receivedDate, p.status, p.location, NOW, NOW
+    )
+  }
+  console.log(`[demo]   ✓ ${paqueteData.length} paquetes`)
+
+  // ── 11. Votaciones ───────────────────────────────────────────────────
+  const insertVotacion = raw.prepare(`
+    INSERT INTO votaciones (id, title, description, period_start, period_end, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `)
+  const insertOption = raw.prepare(`
+    INSERT INTO poll_options (id, poll_id, label, sort_order)
+    VALUES (?, ?, ?, ?)
+  `)
+  const insertVote = raw.prepare(`
+    INSERT INTO poll_votes (id, poll_id, option_id, name, apartment, voted_at)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `)
+
+  for (const v of votacionData) {
+    const pollId = nanoid()
+    const start = new Date()
+    start.setDate(start.getDate() - v.periodStartDaysAgo)
+    const end = new Date()
+    end.setDate(end.getDate() + v.periodEndDaysFromNow)
+
+    insertVotacion.run(
+      pollId, v.title, v.description,
+      start.toISOString().split('T')[0],
+      end.toISOString().split('T')[0],
+      v.status,
+      NOW, NOW
+    )
+
+    // Insert options and keep track of IDs for votes
+    const optionIds: Record<string, string> = {}
+    v.options.forEach((opt, idx) => {
+      const optId = nanoid()
+      optionIds[opt.label] = optId
+      insertOption.run(optId, pollId, opt.label, idx)
+    })
+
+    // Insert votes
+    v.voterResidents.forEach(vr => {
+      const r = residents[vr.residentIndex]
+      const optLabel = v.options[vr.optionIndex].label
+      const optId = optionIds[optLabel]
+      if (optId) {
+        insertVote.run(
+          nanoid(), pollId, optId, r.name, r.apartment,
+          daysAgoISO(v.periodStartDaysAgo - 1)
+        )
+      }
+    })
+  }
+  console.log(`[demo]   ✓ ${votacionData.length} votaciones (normalized)`)
+
+  // ── 12. Reservaciones ────────────────────────────────────────────────
+  const insertReservacion = raw.prepare(`
+    INSERT INTO reservaciones
+      (id, date, grill, resident, resident_id, apartment, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `)
+  for (const res of reservacionData) {
+    const r = residents[res.residentIndex]
+    const d = new Date()
+    d.setDate(d.getDate() + res.daysFromNow)
+    const reservDate = d.toISOString().split('T')[0]
+    insertReservacion.run(
+      nanoid(), reservDate,
+      `${res.amenityName} (${res.timeSlot})`,
+      r.name, `res-${r.apartment}`, r.apartment,
+      res.status, NOW, NOW
+    )
+  }
+  console.log(`[demo]   ✓ ${reservacionData.length} reservaciones`)
 
   // ── 9. Demo resident auth accounts ───────────────────────────────────
   // Look up by apartment code — stable regardless of generation order

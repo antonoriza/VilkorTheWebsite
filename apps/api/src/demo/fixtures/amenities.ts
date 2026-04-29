@@ -1,7 +1,7 @@
 /**
  * Demo Fixture — Amenities
  *
- * 3 outdoor grill amenities available for reservation.
+ * 6 amenities representing the full recreational offering of the complex.
  */
 
 export interface DemoAmenity {
@@ -10,7 +10,10 @@ export interface DemoAmenity {
 }
 
 export const amenitiesList: DemoAmenity[] = [
-  { name: 'Asador 1', icon: 'outdoor_grill' },
-  { name: 'Asador 2', icon: 'outdoor_grill' },
-  { name: 'Asador 3', icon: 'outdoor_grill' },
+  { name: 'Asador',             icon: 'outdoor_grill' },
+  { name: 'Alberca',            icon: 'pool' },
+  { name: 'Gimnasio',           icon: 'fitness_center' },
+  { name: 'Ludoteca',           icon: 'toys' },
+  { name: 'Cancha de Fútbol',   icon: 'sports_soccer' },
+  { name: 'Cancha de Tenis',    icon: 'sports_tennis' },
 ]

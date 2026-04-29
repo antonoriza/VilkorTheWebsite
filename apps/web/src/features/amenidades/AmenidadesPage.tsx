@@ -8,7 +8,8 @@
  * Integrated with the notification system to alert admins of new bookings
  * and residents of status changes.
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
@@ -26,8 +27,19 @@ export default function AmenidadesPage() {
   const { role, apartment, user } = useAuth()
   const { state, dispatch } = useStore()
   
+  const [searchParams] = useSearchParams()
+
   // Local state for filtering and modals
   const [filterDept, setFilterDept] = useState('')
+  const [filterStatus, setFilterStatus] = useState<string>(
+    () => searchParams.get('status') || ''
+  )
+
+  // Sync status filter when URL changes (e.g. navigating from dashboard)
+  useEffect(() => {
+    setFilterStatus(searchParams.get('status') || '')
+  }, [searchParams])
+
   const [showModal, setShowModal] = useState(false)
   const [formDate, setFormDate] = useState('')
   const [formGrill, setFormGrill] = useState('')
@@ -49,8 +61,9 @@ export default function AmenidadesPage() {
   const filteredReservaciones = useMemo(() => {
     let data = isAdmin ? state.reservaciones : state.reservaciones.filter(r => r.apartment === apartment)
     if (filterDept) data = data.filter(r => r.apartment === filterDept)
+    if (filterStatus) data = data.filter(r => r.status === filterStatus)
     return data
-  }, [state.reservaciones, isAdmin, apartment, filterDept])
+  }, [state.reservaciones, isAdmin, apartment, filterDept, filterStatus])
 
   const departments = [...new Set(state.reservaciones.map(r => r.apartment))].sort()
 

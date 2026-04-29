@@ -11,7 +11,8 @@
  *   - Read receipts and confirmation tracking
  *   - Full audit modal with search/filter
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../core/auth/AuthContext'
 import { useStore } from '../../core/store/store'
 import AvisoFormModal from '../../core/components/AvisoFormModal'
@@ -28,10 +29,19 @@ export default function Avisos() {
   const [editingAviso, setEditingAviso] = useState<Aviso | null>(null)
   const [activeAviso, setActiveAviso] = useState<Aviso | null>(null)
   const [showAuditModal, setShowAuditModal] = useState(false)
-  /** ID of aviso pending delete confirmation (quick-delete from card) */
   const [confirmDeleteAvisoId, setConfirmDeleteAvisoId] = useState<string | null>(null)
-  /** Active status filter driven by metric card clicks. null = show all */
-  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'expired' | 'scheduled'>('all')
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  /** Active status filter driven by metric card clicks or URL param. */
+  const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'expired' | 'scheduled' | 'draft'>(
+    () => (searchParams.get('filter') as 'all' | 'active' | 'expired' | 'scheduled' | 'draft') || 'all'
+  )
+
+  // Sync state when URL changes (e.g. navigating from dashboard)
+  useEffect(() => {
+    const param = (searchParams.get('filter') as 'all' | 'active' | 'expired' | 'scheduled' | 'draft') || 'all'
+    setActiveFilter(param)
+  }, [searchParams])
 
   const isAdmin = role === 'super_admin' || role === 'administracion' || role === 'operador'
   const bc = state.buildingConfig
@@ -48,9 +58,11 @@ export default function Avisos() {
   // ── Analytics ──
   const analytics = useMemo(() => {
     const total = state.avisos.length
-    let active = 0, expired = 0, scheduled = 0
+    let active = 0, expired = 0, scheduled = 0, draft = 0
     state.avisos.forEach(a => {
-      if (a.startDate && a.startDate > todayStr) {
+      if (a.status === 'draft') {
+        draft++
+      } else if (a.startDate && a.startDate > todayStr) {
         scheduled++
       } else if (a.endDate && a.endDate < todayStr) {
         expired++
@@ -58,7 +70,7 @@ export default function Avisos() {
         active++
       }
     })
-    return { total, active, expired, scheduled }
+    return { total, active, expired, scheduled, draft }
   }, [state.avisos, todayStr])
 
   /** Sort: pinned first → date descending. Applies status filter when set. */
@@ -71,10 +83,13 @@ export default function Avisos() {
       }
       // Status filter (admin only — residents always see "active" view)
       if (isAdmin && activeFilter !== 'all') {
-        if (activeFilter === 'scheduled') return !!(a.startDate && a.startDate > todayStr)
-        if (activeFilter === 'expired')   return !!(a.endDate && a.endDate < todayStr)
-        if (activeFilter === 'active')    return !(a.startDate && a.startDate > todayStr) && !(a.endDate && a.endDate < todayStr)
+        if (activeFilter === 'scheduled') return a.status !== 'draft' && !!(a.startDate && a.startDate > todayStr)
+        if (activeFilter === 'expired')   return a.status !== 'draft' && !!(a.endDate && a.endDate < todayStr)
+        if (activeFilter === 'active')    return a.status !== 'draft' && !(a.startDate && a.startDate > todayStr) && !(a.endDate && a.endDate < todayStr)
+        if (activeFilter === 'draft')     return a.status === 'draft'
       }
+      // Hide drafts from general list if not explicitly filtered for them
+      if (isAdmin && activeFilter === 'all' && a.status === 'draft') return false
       return true
     })
     return [...filtered].sort((a, b) => {
@@ -152,8 +167,8 @@ export default function Avisos() {
   const metricCards = [
     { key: 'all'       as const, label: 'Total Avisos', value: analytics.total,     icon: 'campaign',    color: 'text-slate-900 bg-slate-100 border-slate-200',   activeColor: 'ring-2 ring-slate-900' },
     { key: 'active'    as const, label: 'Activos',      value: analytics.active,    icon: 'check_circle', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', activeColor: 'ring-2 ring-emerald-500' },
-    { key: 'expired'   as const, label: 'Expirados',    value: analytics.expired,   icon: 'event_busy',  color: 'text-slate-500 bg-slate-50 border-slate-200',    activeColor: 'ring-2 ring-slate-400' },
     { key: 'scheduled' as const, label: 'Programados',  value: analytics.scheduled, icon: 'schedule',    color: 'text-amber-700 bg-amber-50 border-amber-200',    activeColor: 'ring-2 ring-amber-500' },
+    { key: 'draft'     as const, label: 'Borradores',   value: analytics.draft,     icon: 'edit_note',   color: 'text-slate-500 bg-slate-50 border-slate-200',    activeColor: 'ring-2 ring-slate-400' },
   ]
 
   return (
@@ -185,7 +200,11 @@ export default function Avisos() {
               <button
                 key={card.key}
                 type="button"
-                onClick={() => setActiveFilter(prev => prev === card.key ? 'all' : card.key)}
+                onClick={() => {
+                  const next = activeFilter === card.key ? 'all' : card.key
+                  setActiveFilter(next)
+                  setSearchParams({ filter: next })
+                }}
                 className={[
                   'flex items-center gap-3 p-4 rounded-2xl border transition-all text-left w-full',
                   'hover:shadow-md hover:-translate-y-px',
@@ -220,7 +239,7 @@ export default function Avisos() {
             {metricCards.find(c => c.key === activeFilter)?.label}
           </span>
           <button
-            onClick={() => setActiveFilter('all')}
+            onClick={() => { setActiveFilter('all'); setSearchParams({}) }}
             className="text-[11px] font-bold text-slate-400 hover:text-slate-700 underline underline-offset-2 transition-colors"
           >
             Ver todos

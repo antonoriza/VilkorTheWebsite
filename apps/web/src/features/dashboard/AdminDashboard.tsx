@@ -85,9 +85,6 @@ export default function AdminDashboard() {
     ? 0
     : Math.round((recaudacionPct * 0.5 + occupancyPct * 0.3 + (pendingPaquetes < 5 ? 100 : 60) * 0.2))
 
-  // Open ticket count — derived from real ticket state
-  const openTicketsCount = state.tickets.filter(t => t.status !== 'Cerrado' && t.status !== 'Resuelto').length
-
   // ── Ticket KPI carousel ──
   const ticketKpi = useMemo(() => {
     const counts = { nuevo: 0, asignado: 0, enProceso: 0, resuelto: 0 }
@@ -123,6 +120,29 @@ export default function AdminDashboard() {
     })
     return { activos, programados, borradores, total: state.avisos.length }
   }, [state.avisos, todayISO])
+
+  // Paquetería KPI
+  const paqueteriaKpi = useMemo(() => {
+    const pendiente = state.paquetes.filter(p => p.status === 'Pendiente').length
+    const entregado = state.paquetes.filter(p => p.status === 'Entregado').length
+    return { pendiente, entregado }
+  }, [state.paquetes])
+
+  // Votaciones KPI
+  const votacionesKpi = useMemo(() => {
+    const activas = state.votaciones.filter(v => v.status === 'Activa').length
+    const cerradas = state.votaciones.filter(v => v.status === 'Cerrada').length
+    const totalVotos = state.votaciones.reduce((s, v) =>
+      s + v.options.reduce((ov, o) => ov + o.votes, 0), 0)
+    return { activas, cerradas, totalVotos }
+  }, [state.votaciones])
+
+  // Amenidades KPI
+  const amenidadesKpi = useMemo(() => {
+    const porConfirmar = state.reservaciones.filter(r => r.status === 'Por confirmar').length
+    const reservado    = state.reservaciones.filter(r => r.status === 'Reservado').length
+    return { porConfirmar, reservado }
+  }, [state.reservaciones])
 
   // ── Setup checklist — visible only when system is unconfigured ─────
   const setupSteps = [
@@ -248,9 +268,9 @@ export default function AdminDashboard() {
   // ── Avisos KPI carousel ──
   const [avisoSlide, setAvisoSlide] = useState(0)
   const avisoSlides = useMemo(() => [
-    { value: avisosKpi.activos, label: 'Activos', color: 'emerald', icon: 'campaign' },
-    { value: avisosKpi.programados, label: 'Programados', color: 'blue', icon: 'schedule' },
-    { value: avisosKpi.borradores, label: 'Borradores', color: 'slate', icon: 'edit_note' },
+    { value: avisosKpi.activos, label: 'Activos', color: 'emerald', icon: 'campaign', path: '/avisos?filter=active' },
+    { value: avisosKpi.programados, label: 'Programados', color: 'blue', icon: 'schedule', path: '/avisos?filter=scheduled' },
+    { value: avisosKpi.borradores, label: 'Borradores', color: 'slate', icon: 'edit_note', path: '/avisos?filter=draft' },
   ], [avisosKpi])
   const nextAvisoSlide = useCallback(() => setAvisoSlide(i => (i + 1) % 3), [])
   useEffect(() => {
@@ -261,12 +281,11 @@ export default function AdminDashboard() {
   // ── Tickets KPI carousel ──
   const [ticketSlide, setTicketSlide] = useState(0)
   const ticketSlides = useMemo(() => [
-    { value: openTicketsCount, label: 'Abiertos', color: 'amber', icon: 'confirmation_number' },
-    { value: ticketKpi.nuevo, label: 'Nuevos', color: 'rose', icon: 'fiber_new' },
-    { value: ticketKpi.asignado, label: 'Asignados', color: 'blue', icon: 'person_pin' },
-    { value: ticketKpi.enProceso, label: 'En Proceso', color: 'amber', icon: 'engineering' },
-    { value: ticketKpi.resuelto, label: 'Resueltos', color: 'emerald', icon: 'check_circle' },
-  ], [openTicketsCount, ticketKpi])
+    { value: ticketKpi.nuevo, label: 'Nuevos', color: 'rose', icon: 'fiber_new', path: '/tickets?status=Nuevo' },
+    { value: ticketKpi.asignado, label: 'Asignados', color: 'blue', icon: 'person_pin', path: '/tickets?status=Asignado' },
+    { value: ticketKpi.enProceso, label: 'En Proceso', color: 'amber', icon: 'engineering', path: '/tickets?status=En Proceso' },
+    { value: ticketKpi.resuelto, label: 'Resueltos', color: 'emerald', icon: 'check_circle', path: '/tickets?status=Resuelto' },
+  ], [ticketKpi])
   const nextTicketSlide = useCallback(() => setTicketSlide(i => (i + 1) % ticketSlides.length), [ticketSlides.length])
   useEffect(() => {
     const timer = setInterval(nextTicketSlide, 4500)
@@ -277,9 +296,9 @@ export default function AdminDashboard() {
   const [recaudacionSlide, setRecaudacionSlide] = useState(0)
   const fmtMXN = (n: number) => n >= 1000 ? `$${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : `$${n.toLocaleString()}`
   const recaudacionSlides = useMemo(() => [
-    { value: `${recaudacionPct}%`, sub: `${paidMaintenance}/${totalMaintenance}`, label: 'Recaudado', color: 'emerald', icon: 'payments' },
-    { value: recaudacionKpi.adeudoCount.toString(), sub: fmtMXN(recaudacionKpi.adeudoAmount), label: 'Adeudos', color: 'rose', icon: 'warning' },
-    { value: recaudacionKpi.porValidarCount.toString(), sub: fmtMXN(recaudacionKpi.porValidarAmount), label: 'Por Validar', color: 'amber', icon: 'hourglass_top' },
+    { value: `${recaudacionPct}%`, sub: `${paidMaintenance}/${totalMaintenance}`, label: 'Recaudado', color: 'emerald', icon: 'payments', path: '/pagos?status=Pagado' },
+    { value: recaudacionKpi.adeudoCount.toString(), sub: fmtMXN(recaudacionKpi.adeudoAmount), label: 'Vencidos', color: 'rose', icon: 'warning', path: '/pagos?status=Vencido' },
+    { value: recaudacionKpi.porValidarCount.toString(), sub: fmtMXN(recaudacionKpi.porValidarAmount), label: 'Por Validar', color: 'amber', icon: 'hourglass_top', path: '/pagos?status=Por validar' },
   ], [recaudacionPct, paidMaintenance, totalMaintenance, recaudacionKpi])
   const nextRecaudacionSlide = useCallback(() => setRecaudacionSlide(i => (i + 1) % 3), [])
   useEffect(() => {
@@ -379,7 +398,7 @@ export default function AdminDashboard() {
           {/* ── Row 1 ── */}
           {/* ── Finanzas Carousel ── */}
           <Link 
-            to={`/pagos?month=${todayISO.slice(0, 7)}&status=Pagado&concepto=Mantenimiento`} 
+            to={recaudacionSlides[recaudacionSlide].path} 
             className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
               recaudacionSlide === 0 ? 'hover:border-emerald-200 shadow-lg shadow-emerald-500/5' :
               recaudacionSlide === 1 ? 'hover:border-rose-200 shadow-lg shadow-rose-500/5' :
@@ -431,7 +450,7 @@ export default function AdminDashboard() {
 
           {/* ── Tickets Carousel ── */}
           <Link 
-            to="/tickets" 
+            to={ticketSlides[ticketSlide].path} 
             className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
               ticketSlides[ticketSlide].color === 'amber' ? 'hover:border-amber-200 shadow-lg shadow-amber-500/5' :
               ticketSlides[ticketSlide].color === 'rose' ? 'hover:border-rose-200 shadow-lg shadow-rose-500/5' :
@@ -485,7 +504,7 @@ export default function AdminDashboard() {
           </Link>
 
           <Link 
-            to="/avisos" 
+            to={avisoSlides[avisoSlide].path} 
             className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
               avisoSlide === 0 ? 'hover:border-emerald-200 shadow-lg shadow-emerald-500/5' :
               avisoSlide === 1 ? 'hover:border-blue-200 shadow-lg shadow-blue-500/5' :
@@ -535,45 +554,83 @@ export default function AdminDashboard() {
             </div>
           </Link>
 
-          {/* ── Row 2 — TBD KPIs ── */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 flex flex-col items-center text-center">
-            <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-500">
+          {/* ── Row 2: Paquetería, Votaciones, Amenidades ── */}
+          <Link
+            to="/paqueteria"
+            className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden hover:border-violet-200 shadow-lg shadow-violet-500/5`}
+          >
+            <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center text-violet-500 group-hover:scale-110 transition-transform">
               <span className="material-symbols-outlined text-xl">package_2</span>
             </div>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Paquetería</p>
             <div className="flex items-baseline space-x-1.5">
-              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{pendingPaquetes}</span>
+              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{paqueteriaKpi.pendiente}</span>
               <span className="text-[10px] font-bold text-slate-400">Pendientes</span>
             </div>
             <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
-              <div className="h-full bg-violet-400 rounded-full transition-all duration-700" style={{ width: `${pendingPaquetes > 0 ? 100 : 0}%` }}></div>
+              <div className="h-full bg-violet-400 rounded-full transition-all duration-700" style={{ width: paqueteriaKpi.pendiente > 0 ? '100%' : '0%' }} />
             </div>
-          </div>
+            {paqueteriaKpi.entregado > 0 && (
+              <p className="text-[9px] text-slate-400 font-medium">{paqueteriaKpi.entregado} entregados</p>
+            )}
+          </Link>
 
-          <div className="bg-white border border-dashed border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 flex flex-col items-center text-center opacity-50">
-            <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+          <Link
+            to="/votaciones"
+            className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
+              votacionesKpi.activas > 0 ? 'hover:border-indigo-200 shadow-lg shadow-indigo-500/5' : 'hover:border-slate-300'
+            }`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform ${
+              votacionesKpi.activas > 0 ? 'bg-indigo-50 text-indigo-500' : 'bg-slate-50 text-slate-400'
+            }`}>
               <span className="material-symbols-outlined text-xl">how_to_vote</span>
             </div>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Votaciones</p>
             <div className="flex items-baseline space-x-1.5">
-              <span className="text-2xl font-headline font-black text-slate-300 tracking-tight">—</span>
-              <span className="text-[10px] font-bold text-slate-300">TBD</span>
+              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">{votacionesKpi.activas}</span>
+              <span className="text-[10px] font-bold text-slate-400">Activas</span>
             </div>
-            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden"></div>
-          </div>
+            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
+              <div className={`h-full rounded-full transition-all duration-700 ${
+                votacionesKpi.activas > 0 ? 'bg-indigo-400' : 'bg-slate-200'
+              }`} style={{ width: votacionesKpi.activas > 0 ? '100%' : '0%' }} />
+            </div>
+            {votacionesKpi.totalVotos > 0 && (
+              <p className="text-[9px] text-slate-400 font-medium">{votacionesKpi.totalVotos} votos registrados</p>
+            )}
+          </Link>
 
-          <div className="bg-white border border-dashed border-slate-200 rounded-2xl p-5 shadow-sm space-y-2 flex flex-col items-center text-center opacity-50">
-            <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
-              <span className="material-symbols-outlined text-xl">outdoor_grill</span>
+          <Link
+            to={amenidadesKpi.porConfirmar > 0 ? '/amenidades?status=Por confirmar' : '/amenidades'}
+            className={`group bg-white border border-slate-200 rounded-2xl p-5 space-y-2 transition-all duration-500 flex flex-col items-center text-center relative overflow-hidden ${
+              amenidadesKpi.porConfirmar > 0 ? 'hover:border-amber-200 shadow-lg shadow-amber-500/5' : 'hover:border-emerald-200 shadow-lg shadow-emerald-500/5'
+            }`}
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform ${
+              amenidadesKpi.porConfirmar > 0 ? 'bg-amber-50 text-amber-500' : 'bg-emerald-50 text-emerald-500'
+            }`}>
+              <span className="material-symbols-outlined text-xl">pool</span>
             </div>
             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Amenidades</p>
             <div className="flex items-baseline space-x-1.5">
-              <span className="text-2xl font-headline font-black text-slate-300 tracking-tight">—</span>
-              <span className="text-[10px] font-bold text-slate-300">TBD</span>
+              <span className="text-2xl font-headline font-black text-slate-900 tracking-tight">
+                {amenidadesKpi.porConfirmar > 0 ? amenidadesKpi.porConfirmar : amenidadesKpi.reservado}
+              </span>
+              <span className="text-[10px] font-bold text-slate-400">
+                {amenidadesKpi.porConfirmar > 0 ? 'Por confirmar' : 'Reservadas'}
+              </span>
             </div>
-            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden"></div>
-          </div>
-        </div>
+            <div className="w-full h-1 bg-slate-50 rounded-full overflow-hidden">
+              <div className={`h-full rounded-full transition-all duration-700 ${
+                amenidadesKpi.porConfirmar > 0 ? 'bg-amber-400' : 'bg-emerald-400'
+              }`} style={{ width: (amenidadesKpi.porConfirmar + amenidadesKpi.reservado) > 0 ? '100%' : '0%' }} />
+            </div>
+            {amenidadesKpi.reservado > 0 && amenidadesKpi.porConfirmar > 0 && (
+              <p className="text-[9px] text-slate-400 font-medium">{amenidadesKpi.reservado} confirmadas</p>
+            )}
+          </Link>
+        </div>{/* end grid */}
       </section>
 
       {/* ── Two-Column Content Grid ── */}
