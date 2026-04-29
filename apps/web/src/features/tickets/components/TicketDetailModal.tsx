@@ -8,6 +8,7 @@ import { useAuth } from '../../../core/auth/AuthContext'
 import Modal from '../../../core/components/Modal'
 import ConfirmDialog from '../../../core/components/ConfirmDialog'
 import StatusBadge from '../../../core/components/StatusBadge'
+import { useStore } from '../../../core/store/store'
 import type { Ticket, TicketStatus } from '../../../types'
 
 const PRIORITY_COLORS = {
@@ -25,19 +26,28 @@ interface TicketDetailModalProps {
   /** Callbacks */
   onStatusChange: (ticket: Ticket, newStatus: TicketStatus) => void
   onAddActivity: (ticketId: string, message: string, visibility: 'internal' | 'public') => void
+  onAssign: (ticket: Ticket, assignee: string) => void
 }
 
 export default function TicketDetailModal({
   ticket, onClose, isAdmin,
-  onStatusChange, onAddActivity,
+  onStatusChange, onAddActivity, onAssign
 }: TicketDetailModalProps) {
   const [activityMsg, setActivityMsg] = useState('')
   const [activityVisibility, setActivityVisibility] = useState<'internal' | 'public'>('public')
   const [closeDialogOpen, setCloseDialogOpen] = useState(false)
 
-  const { apartment } = useAuth()
+  const { apartment, user: currentUser } = useAuth()
+  const { state } = useStore()
   const isOwner = ticket?.apartment === apartment
   const shouldAnonymize = ticket?.isPublic && !isOwner && !isAdmin
+
+  const staffNames = state.staff.map(s => s.name)
+  const assignablePeople = Array.from(new Set([
+    state.buildingConfig.adminName,
+    currentUser,
+    ...staffNames
+  ])).filter(Boolean) as string[]
 
   if (!ticket) return null
 
@@ -86,6 +96,10 @@ export default function TicketDetailModal({
                 </span>
                 <span className="flex items-center"><span className="material-symbols-outlined text-[14px] mr-1 text-slate-400">category</span> {ticket.category}</span>
                 {ticket.location && <span className="flex items-center"><span className="material-symbols-outlined text-[14px] mr-1 text-slate-400">location_on</span> {ticket.location}</span>}
+                <span className="flex items-center text-primary">
+                  <span className="material-symbols-outlined text-[14px] mr-1">assignment_ind</span> 
+                  {ticket.assignedTo ? `Responsable: ${ticket.assignedTo}` : 'Sin asignar'}
+                </span>
               </div>
             </div>
             <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-sm font-medium text-slate-700 whitespace-pre-wrap leading-relaxed">
@@ -95,24 +109,40 @@ export default function TicketDetailModal({
 
           {/* Admin Controls */}
           {isAdmin && ticket.status !== 'Cerrado' && (
-            <div className="p-4 rounded-2xl border border-slate-200 bg-white shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cambiar Estado</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <select
-                  value={ticket.status}
-                  onChange={(e) => onStatusChange(ticket, e.target.value as TicketStatus)}
-                  className="pl-4 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-bold text-sm"
-                >
-                  {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-                <button
-                  onClick={() => setCloseDialogOpen(true)}
-                  className="px-4 py-2 bg-white border border-slate-200 text-rose-600 font-bold rounded-xl hover:bg-rose-50 hover:border-rose-200 transition-all text-xs"
-                >
-                  Forzar Cierre
-                </button>
+            <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 shadow-sm space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Responsable</p>
+                  <select
+                    value={ticket.assignedTo || ''}
+                    onChange={(e) => onAssign(ticket, e.target.value)}
+                    className="w-full md:w-64 pl-4 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-bold text-sm"
+                  >
+                    <option value="">Sin asignar</option>
+                    {assignablePeople.map(name => (
+                      <option key={name} value={name}>{name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estado</p>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={ticket.status}
+                      onChange={(e) => onStatusChange(ticket, e.target.value as TicketStatus)}
+                      className="pl-4 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-bold text-sm"
+                    >
+                      {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <button
+                      onClick={() => setCloseDialogOpen(true)}
+                      className="px-4 py-2 bg-white border border-slate-200 text-rose-600 font-bold rounded-xl hover:bg-rose-50 hover:border-rose-200 transition-all text-xs"
+                    >
+                      Forzar Cierre
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -122,27 +152,65 @@ export default function TicketDetailModal({
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">
               Bitácora de Actividad
             </h4>
-            <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
+            <div className="space-y-6 max-h-96 overflow-y-auto pr-4 relative">
+              {/* Timeline Connector Line */}
+              <div className="absolute left-6 top-2 bottom-8 w-0.5 bg-slate-100 -z-10" />
+
               {visibleActivities.length === 0 ? (
-                <p className="text-xs text-slate-400 font-bold text-center py-4 uppercase tracking-widest">Sin actividad registrada.</p>
+                <div className="py-12 text-center">
+                  <span className="material-symbols-outlined text-4xl text-slate-200 mb-2">history</span>
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Sin actividad registrada.</p>
+                </div>
               ) : (
-                visibleActivities.map(act => (
-                  <div key={act.id} className={`p-4 rounded-2xl border ${act.visibility === 'internal' ? 'bg-amber-50/50 border-amber-100/50' : 'bg-white border-slate-100 shadow-sm'} ${act.author === 'Sistema' ? 'opacity-80' : ''}`}>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-900">{act.author}</span>
-                        {act.visibility === 'internal' && (
-                          <span className="text-[8px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded uppercase font-black tracking-widest">Nota Interna</span>
-                        )}
-                        {act.author === 'Sistema' && (
-                          <span className="text-[8px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded uppercase font-black tracking-widest">Sistema</span>
-                        )}
+                visibleActivities.map((act, idx) => {
+                  const isSystem = act.author === 'Sistema'
+                  const isInternal = act.visibility === 'internal'
+                  
+                  return (
+                    <div key={act.id} className="relative pl-12">
+                      {/* Timeline Dot/Icon */}
+                      <div className={`absolute left-4 top-1 w-4 h-4 rounded-full border-4 border-white shadow-sm ring-4 ring-slate-50 transition-all ${
+                        isSystem ? 'bg-slate-400' : isInternal ? 'bg-amber-500' : 'bg-primary'
+                      }`} />
+
+                      <div className={`p-4 rounded-2xl border transition-all hover:shadow-md ${
+                        isInternal 
+                          ? 'bg-amber-50/50 border-amber-100 shadow-sm shadow-amber-900/5' 
+                          : isSystem 
+                            ? 'bg-slate-50 border-slate-100 opacity-90' 
+                            : 'bg-white border-slate-100 shadow-sm'
+                      }`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${isInternal ? 'text-amber-700' : 'text-slate-900'}`}>
+                              {act.author}
+                            </span>
+                            {isInternal && (
+                              <span className="flex items-center gap-0.5 text-[8px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-black tracking-widest uppercase">
+                                <span className="material-symbols-outlined text-[10px]">lock</span>
+                                Interno
+                              </span>
+                            )}
+                            {isSystem && (
+                              <span className="text-[8px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-black tracking-widest uppercase">Sistema</span>
+                            )}
+                          </div>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                            {new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className={`text-sm leading-relaxed ${
+                          isInternal ? 'text-amber-900/80 font-medium' : 'text-slate-600'
+                        }`}>
+                          {act.message}
+                        </p>
+                        <div className="mt-2 text-[8px] font-bold text-slate-300 uppercase tracking-tighter">
+                           {new Date(act.createdAt).toLocaleDateString()}
+                        </div>
                       </div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{new Date(act.createdAt).toLocaleString()}</span>
                     </div>
-                    <p className={`text-sm tracking-tight ${act.visibility === 'internal' ? 'text-amber-900/80 font-medium' : 'text-slate-600'}`}>{act.message}</p>
-                  </div>
-                ))
+                  )
+                })
               )}
             </div>
 

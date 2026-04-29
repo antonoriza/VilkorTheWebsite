@@ -136,6 +136,20 @@ export default function TicketsPage() {
     }
 
     dispatch({ type: 'ADD_TICKET', payload: newTicket })
+
+    // Notify admin
+    dispatch({
+      type: 'ADD_NOTIFICACION',
+      payload: {
+        id: `notif-tk-new-${Date.now()}`,
+        userId: 'admin',
+        title: 'Nuevo Ticket Recibido',
+        message: `El departamento ${targetApt} ha levantado un nuevo ticket: ${formSubject}`,
+        date: now.split('T')[0],
+        read: false,
+        actionLink: '/tickets'
+      }
+    })
     
     // Reset form
     setFormSubject('')
@@ -183,6 +197,72 @@ export default function TicketsPage() {
       }
     })
 
+    // Notify the creator ONLY
+    if (isAdmin) {
+      dispatch({
+        type: 'ADD_NOTIFICACION',
+        payload: {
+          id: `notif-tk-status-${Date.now()}`,
+          userId: ticket.createdBy, // Targeted to creator
+          title: `Ticket #${ticket.number} Actualizado`,
+          message: `El estado de tu ticket ha cambiado a: ${newStatus}`,
+          date: now.split('T')[0],
+          read: false,
+          actionLink: '/tickets'
+        }
+      })
+    }
+
+    setSelectedTicket(updatedTicket)
+  }
+
+  const handleAssign = (ticket: Ticket, assignee: string) => {
+    if (assignee === ticket.assignedTo) return
+
+    const now = new Date().toISOString()
+    const updatedTicket: Ticket = {
+      ...ticket,
+      assignedTo: assignee,
+      updatedAt: now,
+      // Auto-transition to 'Asignado' if it was 'Nuevo'
+      status: ticket.status === 'Nuevo' ? 'Asignado' : ticket.status
+    }
+
+    dispatch({ type: 'UPDATE_TICKET', payload: updatedTicket })
+
+    // Notify the creator ONLY
+    dispatch({
+      type: 'ADD_NOTIFICACION',
+      payload: {
+        id: `notif-tk-assign-${Date.now()}`,
+        userId: ticket.createdBy,
+        title: `Responsable Asignado`,
+        message: assignee 
+          ? `Tu ticket #${ticket.number} ha sido asignado a: ${assignee}`
+          : `Se ha removido el responsable de tu ticket #${ticket.number}`,
+        date: now.split('T')[0],
+        read: false,
+        actionLink: '/tickets'
+      }
+    })
+
+    // Log the assignment (PUBLIC so resident knows who is helping)
+    dispatch({
+      type: 'ADD_TICKET_ACTIVITY',
+      payload: {
+        ticketId: ticket.id,
+        activity: {
+          id: `act-assign-${Date.now()}`,
+          author: 'Sistema',
+          visibility: 'public',
+          message: assignee 
+            ? `Ticket asignado a: ${assignee}`
+            : 'Ticket marcado como sin asignar',
+          createdAt: now,
+        }
+      }
+    })
+
     setSelectedTicket(updatedTicket)
   }
 
@@ -201,6 +281,40 @@ export default function TicketsPage() {
       }
     })
 
+    // Notification logic
+    const now = new Date().toISOString()
+    const targetTicket = state.tickets.find(t => t.id === ticketId)
+    
+    if (isAdmin && visibility === 'public' && targetTicket) {
+      // Admin responding -> Notify Resident
+      dispatch({
+        type: 'ADD_NOTIFICACION',
+        payload: {
+          id: `notif-tk-msg-res-${Date.now()}`,
+          userId: targetTicket.createdBy,
+          title: `Nueva respuesta en Ticket #${targetTicket.number}`,
+          message: `La administración ha respondido a tu solicitud.`,
+          date: now.split('T')[0],
+          read: false,
+          actionLink: '/tickets'
+        }
+      })
+    } else if (isResident && targetTicket) {
+      // Resident responding -> Notify Admin
+      dispatch({
+        type: 'ADD_NOTIFICACION',
+        payload: {
+          id: `notif-tk-msg-adm-${Date.now()}`,
+          userId: 'admin',
+          title: `Respuesta de Residente`,
+          message: `El residente del ${apartment} ha respondido al ticket #${targetTicket.number}`,
+          date: now.split('T')[0],
+          read: false,
+          actionLink: '/tickets'
+        }
+      })
+    }
+
     // Update local selected ticket reference
     setSelectedTicket(prev => {
       if (!prev) return null
@@ -211,14 +325,14 @@ export default function TicketsPage() {
           author: user,
           visibility,
           message,
-          createdAt: new Date().toISOString(),
+          createdAt: now,
         }]
       }
     })
   }
 
   const handleExportCSV = () => {
-    const headers = ['#', 'Fecha', 'Asunto', 'Categoría', 'Prioridad', 'Estado', 'Residente', 'Depto', 'Ubicación']
+    const headers = ['#', 'Fecha', 'Asunto', 'Categoría', 'Prioridad', 'Estado', 'Residente', 'Depto', 'Ubicación', 'Responsable']
     const rows = allTickets.map(t => [
       t.number,
       new Date(t.createdAt).toLocaleDateString(),
@@ -228,7 +342,8 @@ export default function TicketsPage() {
       t.status,
       t.createdBy,
       t.apartment,
-      t.location || 'N/A'
+      t.location || 'N/A',
+      t.assignedTo || 'Sin asignar'
     ])
     
     const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n')
@@ -243,52 +358,61 @@ export default function TicketsPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
-            Tickets de Servicio
-          </h1>
-          <p className="text-slate-500 font-medium text-sm mt-1">
-            Recepción y seguimiento de mantenimiento
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center space-x-2 px-5 py-2.5 font-bold rounded-xl transition-all text-[11px] tracking-widest uppercase border ${
-              showFilters 
-                ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <span className="material-symbols-outlined text-lg">tune</span>
-            <span>Filtros</span>
-          </button>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
-          >
-            <span className="material-symbols-outlined text-lg">add</span>
-            <span>Nuevo Ticket</span>
-          </button>
-        </div>
+      <div className="pb-2">
+        <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
+          Tickets de Servicio
+        </h1>
+        <p className="text-slate-500 font-medium text-sm mt-1">
+          Recepción y seguimiento de mantenimiento
+        </p>
       </div>
 
-      {/* Admin KPI & Filters */}
-      {isAdmin && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-               <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Tickets Abiertos</span>
-               <span className="text-2xl font-black text-slate-900 mt-1">{openTicketsCount}</span>
-            </div>
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-               <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">En Proceso</span>
-               <span className="text-2xl font-black text-emerald-600 mt-1">{processingCount}</span>
-            </div>
+      {/* Toolbar & Filters */}
+      <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+        <div className="px-8 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-headline font-extrabold text-slate-900">
+              Listado de Tickets
+            </h2>
+            <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
+              {allTickets.length} registros
+            </span>
           </div>
 
-          {showFilters && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 text-[10px] tracking-widest uppercase"
+            >
+              <span className="material-symbols-outlined text-[16px]">add</span>
+              <span className="hidden sm:inline">Nuevo Ticket</span>
+            </button>
+
+            {showFilters && isAdmin && (
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 active:scale-95 transition-all text-[10px] tracking-widest uppercase shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[16px]">download</span>
+                <span className="hidden sm:inline">CSV</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all ${
+                showFilters 
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
+                  : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">tune</span>
+              Filtros
+            </button>
+          </div>
+        </div>
+
+        {showFilters && (
             <div className="space-y-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl animate-in slide-in-from-top-4 duration-300">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <select value={filterStatus} onChange={(e) => {
@@ -324,46 +448,39 @@ export default function TicketsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-slate-200/50">
-                <div className="flex items-center gap-4">
-                   <button onClick={() => {
-                     setFilterStatus('')
-                     setFilterCategory('')
-                     setFilterPriority('')
-                     setFilterDept('')
-                     setSearchParams({})
-                   }} className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors">
-                     Limpiar Filtros
-                   </button>
-                </div>
-                <button
-                  onClick={handleExportCSV}
-                  className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[10px] tracking-widest uppercase"
-                >
-                  <span className="material-symbols-outlined text-base">download</span>
-                  <span>Exportar CSV</span>
-                </button>
-              </div>
             </div>
           )}
+        </div>
 
-          {/* Sort selector */}
-          <div className="flex items-center gap-3">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Ordenar por</span>
-            <div className="flex items-center gap-2">
+      {/* KPIs & Sort (Admin only) */}
+      {isAdmin && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+              <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Tickets Abiertos</span>
+              <span className="text-2xl font-black text-slate-900 mt-1">{openTicketsCount}</span>
+          </div>
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+              <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">En Proceso</span>
+              <span className="text-2xl font-black text-emerald-600 mt-1">{processingCount}</span>
+          </div>
+          
+          {/* Sort selector inside KPIs row for efficiency */}
+          <div className="col-span-2 bg-slate-50 p-5 rounded-2xl border border-slate-200 flex flex-col justify-center">
+            <span className="text-[9px] font-black text-slate-400 tracking-widest uppercase mb-2">Ordenar por</span>
+            <div className="flex items-center gap-2 flex-wrap">
               {([
-                { id: 'newest', label: 'Más recientes' },
-                { id: 'oldest', label: 'Más antiguos' },
+                { id: 'newest', label: 'Recientes' },
+                { id: 'oldest', label: 'Antiguos' },
                 { id: 'priority', label: 'Prioridad' },
                 { id: 'status', label: 'Estado' },
               ] as { id: TicketSortKey; label: string }[]).map(opt => (
                 <button
                   key={opt.id}
                   onClick={() => setTicketSort(opt.id)}
-                  className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                     ticketSort === opt.id
-                      ? 'bg-slate-900 text-white shadow-md shadow-slate-200'
-                      : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300'
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-400 hover:text-slate-700'
                   }`}
                 >
                   {opt.label}
@@ -402,9 +519,18 @@ export default function TicketsPage() {
                       </span>
                     )}
                   </div>
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-slate-200 bg-white text-slate-600`}>
+                  <div className={`flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border shadow-sm ${
+                    ticket.priority === 'Alta' 
+                      ? 'bg-rose-50 text-rose-600 border-rose-100' 
+                      : ticket.priority === 'Media'
+                        ? 'bg-amber-50 text-amber-600 border-amber-100'
+                        : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                  }`}>
+                    <span className="material-symbols-outlined text-[14px]">
+                      {ticket.priority === 'Alta' ? 'priority_high' : ticket.priority === 'Media' ? 'low_priority' : 'check_circle'}
+                    </span>
                     {ticket.priority}
-                  </span>
+                  </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-headline font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
@@ -428,6 +554,12 @@ export default function TicketsPage() {
                      <span>
                        <span className="material-symbols-outlined text-[13px] mr-1 text-slate-300 align-text-bottom">location_on</span>
                        {ticket.location}
+                     </span>
+                   )}
+                   {ticket.assignedTo && (
+                     <span className="flex items-center text-primary font-black">
+                       <span className="material-symbols-outlined text-[13px] mr-1 align-text-bottom">assignment_ind</span>
+                       {ticket.assignedTo}
                      </span>
                    )}
                 </div>
@@ -549,6 +681,7 @@ export default function TicketsPage() {
         isAdmin={isAdmin}
         onStatusChange={handleStatusChange}
         onAddActivity={handleAddActivity}
+        onAssign={handleAssign}
       />
     </div>
   )

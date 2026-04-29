@@ -154,33 +154,13 @@ export default function PaqueteriaPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
-            Control de Paquetería
-          </h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">
-            Gestión y seguimiento de paquetes recibidos en el edificio.
-          </p>
-        </div>
-        {isAdmin && (
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowModal(true)}
-              className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
-            >
-              <span className="material-symbols-outlined text-lg">add</span>
-              <span>Registrar paquete</span>
-            </button>
-            <button
-              onClick={handleCleanDelivered}
-              className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[11px] tracking-widest uppercase"
-            >
-              <span className="material-symbols-outlined text-lg">delete_sweep</span>
-              <span>Limpiar entregados</span>
-            </button>
-          </div>
-        )}
+      <div className="pb-2">
+        <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
+          Control de Paquetería
+        </h1>
+        <p className="text-sm text-slate-500 font-medium mt-1">
+          Gestión y seguimiento de paquetes recibidos en el edificio.
+        </p>
       </div>
 
       {/* Stat Cards */}
@@ -207,41 +187,67 @@ export default function PaqueteriaPage() {
       {/* Packages Table Card */}
       <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
         {/* Toolbar */}
-        <div className="px-6 py-4 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="relative flex-1">
-              <span className="material-symbols-outlined text-[16px] text-slate-400 absolute left-3 top-1/2 -translate-y-1/2">search</span>
+        <div className="px-8 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white sticky top-0 z-10">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="relative flex-1 max-w-md">
+              <span className="material-symbols-outlined text-[18px] text-slate-400 absolute left-3 top-1/2 -translate-y-1/2">search</span>
               <input
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Buscar por destinatario o departamento..."
-                className="pl-9 pr-8 py-2 w-full bg-slate-50 border border-slate-200 rounded-xl text-[12px] font-medium text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900 transition-all placeholder:text-slate-300"
+                className="pl-10 pr-8 py-2.5 w-full bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-slate-900 transition-all placeholder:text-slate-300"
               />
               {search && (
-                <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[11px] text-slate-500">close</span>
+                <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[14px] text-slate-500">close</span>
                 </button>
               )}
             </div>
-
-            {/* Result count */}
-            <span className="text-[11px] font-bold text-slate-400 whitespace-nowrap">
+            <span className="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-50 px-2 py-1 rounded-lg">
               {filteredPaquetes.length} de {scoped.length}
             </span>
+          </div>
 
-            {/* Filter toggle */}
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 text-[10px] tracking-widest uppercase"
+                >
+                  <span className="material-symbols-outlined text-[16px]">add</span>
+                  <span className="hidden sm:inline">Registrar paquete</span>
+                </button>
+                <button
+                  onClick={handleCleanDelivered}
+                  title="Limpiar entregados"
+                  className="flex items-center justify-center w-10 h-10 bg-white border border-slate-200 text-slate-400 hover:text-rose-500 hover:border-rose-200 rounded-xl transition-all shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
+                </button>
+              </>
+            )}
+
+            {showFilters && (
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 active:scale-95 transition-all text-[10px] tracking-widest uppercase shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[16px]">download</span>
+                <span className="hidden sm:inline">CSV</span>
+              </button>
+            )}
+
             <button
               onClick={() => { if (showFilters) clearFilters(); setShowFilters(!showFilters) }}
-              className={[
-                'flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all whitespace-nowrap',
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
                 showFilters
                   ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
                   : activeFilterCount > 0
-                    ? 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200 shadow-sm'
-                    : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:text-slate-700 shadow-sm',
-              ].join(' ')}
+                    ? 'bg-slate-100 text-slate-700 border-slate-300 shadow-sm'
+                    : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 shadow-sm'
+              }`}
             >
               <span className="material-symbols-outlined text-[16px]">tune</span>
               Filtros
@@ -251,27 +257,8 @@ export default function PaqueteriaPage() {
                 </span>
               )}
             </button>
-
-            {/* Clear button (only when filters active) */}
-            {activeFilterCount > 0 && (
-              <button
-                onClick={clearFilters}
-                className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors whitespace-nowrap"
-              >
-                Limpiar
-              </button>
-            )}
-
-            {showFilters && (
-              <button
-                onClick={handleExportCSV}
-                className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[10px] tracking-widest uppercase shadow-sm"
-              >
-                <span className="material-symbols-outlined text-base">download</span>
-                <span>Exportar CSV</span>
-              </button>
-            )}
           </div>
+        </div>
 
           {/* Collapsible filter grid */}
           {showFilters && (
@@ -375,7 +362,7 @@ export default function PaqueteriaPage() {
               )}
             </div>
           )}
-        </div>
+
 
         <div className="overflow-x-auto">
           <table className="w-full">

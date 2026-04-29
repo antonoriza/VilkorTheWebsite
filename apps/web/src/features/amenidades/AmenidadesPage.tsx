@@ -371,36 +371,13 @@ export default function AmenidadesPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
-            Amenidades
-          </h1>
-          <p className="text-sm text-slate-500 font-medium mt-1">
-            Reserva y gestiona el uso de áreas comunes.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center space-x-2 px-5 py-2.5 font-bold rounded-xl transition-all text-[11px] tracking-widest uppercase border ${
-              showFilters 
-                ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <span className="material-symbols-outlined text-lg">tune</span>
-            <span>Filtros</span>
-          </button>
-          <button
-            onClick={() => { setConflictError(''); setFormProxyApartment(''); setShowModal(true) }}
-            className="flex items-center space-x-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 text-[11px] tracking-widest uppercase"
-            title={isAdmin ? 'Registrar reservación a nombre de un residente' : undefined}
-          >
-            <span className="material-symbols-outlined text-lg">{isAdmin ? 'person_add' : 'add_circle'}</span>
-            <span>{isAdmin ? 'Reservar para residente' : 'Nueva reservación'}</span>
-          </button>
-        </div>
+      <div className="pb-2">
+        <h1 className="text-3xl font-headline font-extrabold text-slate-900 tracking-tight">
+          Amenidades
+        </h1>
+        <p className="text-sm text-slate-500 font-medium mt-1">
+          Reserva y gestiona el uso de áreas comunes.
+        </p>
       </div>
 
       {/* Stats strip */}
@@ -426,22 +403,54 @@ export default function AmenidadesPage() {
 
       {/* Reservations Table Card */}
       <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-        <div className="p-8 pb-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-headline font-extrabold text-slate-900">
-                {isAdmin ? 'Calendario General' : 'Mis Reservaciones'}
-              </h2>
-              <div className="flex items-center gap-3 mt-1">
-                <p className="text-sm text-slate-500 font-medium">
-                  {isAdmin ? 'Resumen de todas las solicitudes activas' : `Registros del Depto. ${apartment}`}
-                </p>
-                <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
-                  {filteredReservaciones.length} de {(isAdmin ? state.reservaciones : state.reservaciones.filter(r => r.apartment === apartment)).length}
-                </span>
-              </div>
+        <div className="px-8 py-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white sticky top-0 z-10">
+          <div>
+            <h2 className="text-xl font-headline font-extrabold text-slate-900">
+              {isAdmin ? 'Calendario General' : 'Mis Reservaciones'}
+            </h2>
+            <div className="flex items-center gap-3 mt-1">
+              <p className="text-sm text-slate-500 font-medium">
+                {isAdmin ? 'Resumen de todas las solicitudes activas' : `Registros del Depto. ${apartment}`}
+              </p>
+              <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
+                {filteredReservaciones.length} de {(isAdmin ? state.reservaciones : state.reservaciones.filter(r => r.apartment === apartment)).length}
+              </span>
             </div>
           </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setConflictError(''); setFormProxyApartment(''); setShowModal(true) }}
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 text-[10px] tracking-widest uppercase"
+              title={isAdmin ? 'Registrar reservación a nombre de un residente' : undefined}
+            >
+              <span className="material-symbols-outlined text-[16px]">{isAdmin ? 'person_add' : 'add_circle'}</span>
+              <span className="hidden sm:inline">{isAdmin ? 'Reservar para residente' : 'Nueva reservación'}</span>
+            </button>
+
+            {showFilters && isAdmin && (
+              <button
+                onClick={exportCSV}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 active:scale-95 transition-all text-[10px] tracking-widest uppercase shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[16px]">download</span>
+                <span className="hidden sm:inline">CSV</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-widest transition-all ${
+                showFilters 
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-lg' 
+                  : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[16px]">tune</span>
+              Filtros
+            </button>
+          </div>
+        </div>
 
           {showFilters && (
             <div className="space-y-6 animate-in slide-in-from-top-4 duration-300">
@@ -516,7 +525,7 @@ export default function AmenidadesPage() {
                 )}
               </div>
               
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <div className="flex items-center pt-2 border-t border-slate-100">
                 <button 
                   onClick={() => { setFilterAmenity(''); setFilterDay(''); setFilterFrom(''); setFilterTo(''); setFilterDept(''); setFilterStatus('') }}
                   className="text-[10px] font-bold text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors flex items-center gap-1"
@@ -524,21 +533,11 @@ export default function AmenidadesPage() {
                   <span className="material-symbols-outlined text-sm">filter_alt_off</span>
                   Limpiar filtros
                 </button>
-                
-                {isAdmin && (
-                  <button
-                    onClick={exportCSV}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-all text-[10px] tracking-widest uppercase shadow-sm"
-                  >
-                    <span className="material-symbols-outlined text-base">download</span>
-                    Exportar CSV
-                  </button>
-                )}
               </div>
             </div>
           )}
 
-        </div>
+
 
         <div className="overflow-x-auto">
           <table className="w-full">

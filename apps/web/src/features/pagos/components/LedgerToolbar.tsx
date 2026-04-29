@@ -146,14 +146,16 @@ export default function LedgerToolbar({
               </span>
             </button>
 
-            <button
-              onClick={onExportCSV}
-              title={`Exportar ${ledgerSubTab} a CSV`}
-              className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 active:scale-95 transition-all text-[10px] tracking-widest uppercase shadow-sm"
-            >
-              <span className="material-symbols-outlined text-[16px]">download</span>
-              <span className="hidden sm:inline">CSV</span>
-            </button>
+            {showFilters && (
+              <button
+                onClick={onExportCSV}
+                title={`Exportar ${ledgerSubTab} a CSV`}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 active:scale-95 transition-all text-[10px] tracking-widest uppercase shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[16px]">download</span>
+                <span className="hidden sm:inline">CSV</span>
+              </button>
+            )}
 
             <button
               type="button"

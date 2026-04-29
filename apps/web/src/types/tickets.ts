@@ -60,4 +60,6 @@ export interface Ticket {
   activities: TicketActivity[]
   /** Whether this ticket is visible to all residents for transparency */
   isPublic?: boolean
+  /** Name of the staff member or admin assigned to this ticket */
+  assignedTo?: string
 }
