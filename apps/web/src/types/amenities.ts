@@ -45,4 +45,28 @@ export interface Amenity {
   name: string
   /** Material Symbols icon identifier */
   icon: string
+
+  // Scheduling
+  /** Opening time in HH:MM format, e.g. "08:00" */
+  openTime: string
+  /** Closing time in HH:MM format, e.g. "22:00" */
+  closeTime: string
+  /** Duration of each bookable slot in minutes */
+  slotDurationMinutes: number
+  /** Cleaning/buffer gap between reservations in minutes */
+  cleaningBufferMinutes: number
+  /** Max days in advance a resident can book */
+  maxAdvanceDays: number
+
+  // Financial
+  /** Per-reservation deposit/fee in MXN */
+  depositAmount: number
+
+  // Reglamento
+  /** Type of attached rules document */
+  reglamentoType: 'none' | 'text' | 'pdf'
+  /** Markdown/rich text rules content */
+  reglamentoText: string
+  /** Base64 or URL for a PDF rules document */
+  reglamentoPdfUrl: string
 }

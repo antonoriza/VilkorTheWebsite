@@ -98,6 +98,9 @@ export interface Vendor {
   notes?: string
 }
 
+/** Reservation approval mode — controls how amenity bookings are handled */
+export type ReservationApprovalMode = 'auto_approve' | 'manual_approval' | 'auto_with_exceptions'
+
 export interface BuildingConfig {
   propertyCategory: PropertyCategory
   type: 'towers' | 'houses'
@@ -129,4 +132,8 @@ export interface BuildingConfig {
   vendors: Vendor[]
   permissionsMatrix: PermissionMatrix
   conceptosFinancieros?: ConceptoFinanciero[]
+
+  // Amenity reservation settings
+  reservationApprovalMode: ReservationApprovalMode
+  reservationExceptionApartments: string[]
 }

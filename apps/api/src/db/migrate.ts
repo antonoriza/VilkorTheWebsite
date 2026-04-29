@@ -223,11 +223,20 @@ export const TENANT_DDL = `
   );
 
   CREATE TABLE IF NOT EXISTS amenities (
-    id          TEXT PRIMARY KEY,
-    name        TEXT NOT NULL,
-    icon        TEXT NOT NULL,
-    created_at  TEXT NOT NULL,
-    updated_at  TEXT NOT NULL
+    id                      TEXT PRIMARY KEY,
+    name                    TEXT NOT NULL,
+    icon                    TEXT NOT NULL,
+    open_time               TEXT NOT NULL DEFAULT '10:00',
+    close_time              TEXT NOT NULL DEFAULT '22:00',
+    slot_duration_minutes   INTEGER NOT NULL DEFAULT 240,
+    cleaning_buffer_minutes INTEGER NOT NULL DEFAULT 0,
+    max_advance_days        INTEGER NOT NULL DEFAULT 30,
+    deposit_amount          REAL NOT NULL DEFAULT 500,
+    reglamento_type         TEXT NOT NULL DEFAULT 'none' CHECK (reglamento_type IN ('none', 'text', 'pdf')),
+    reglamento_text         TEXT NOT NULL DEFAULT '',
+    reglamento_pdf_url      TEXT NOT NULL DEFAULT '',
+    created_at              TEXT NOT NULL,
+    updated_at              TEXT NOT NULL
   );
 
   CREATE TABLE IF NOT EXISTS votaciones (

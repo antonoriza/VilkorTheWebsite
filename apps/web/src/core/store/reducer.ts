@@ -79,6 +79,7 @@ export type Action =
   | { type: 'UPDATE_STAFF'; payload: StaffMember }
   | { type: 'DELETE_STAFF'; payload: string }
   | { type: 'ADD_AMENITY'; payload: Amenity }
+  | { type: 'UPDATE_AMENITY'; payload: Amenity }
   | { type: 'DELETE_AMENITY'; payload: string }
   | { type: 'UPDATE_BUILDING_CONFIG'; payload: Partial<BuildingConfig> }
   | { type: 'ADD_TICKET'; payload: Ticket }
@@ -119,6 +120,7 @@ export const EMPTY_BUILDING_CONFIG: BuildingConfig = {
   zoning: [], topology: { containers: [], unitNomenclature: '' },
   defaultUnitDna: { privateArea: 0, totalArea: 0, ownershipCoefficient: 0, usageType: 'propietario' },
   equipment: [], vendors: [], permissionsMatrix: {},
+  reservationApprovalMode: 'auto_approve', reservationExceptionApartments: [],
 } as any
 
 export function emptyState(): StoreState {
@@ -249,6 +251,8 @@ export function reducer(state: StoreState, action: Action): StoreState {
     // Amenities
     case 'ADD_AMENITY':
       return { ...state, amenities: [...state.amenities, action.payload] }
+    case 'UPDATE_AMENITY':
+      return { ...state, amenities: state.amenities.map(a => a.id === action.payload.id ? action.payload : a) }
     case 'DELETE_AMENITY':
       return { ...state, amenities: state.amenities.filter(a => a.id !== action.payload) }
 

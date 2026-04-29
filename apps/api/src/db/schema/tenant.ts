@@ -170,11 +170,20 @@ export const reservaciones = sqliteTable('reservaciones', {
 // ─── Amenities ───────────────────────────────────────────────────────
 
 export const amenities = sqliteTable('amenities', {
-  id:        text('id').primaryKey(),
-  name:      text('name').notNull(),
-  icon:      text('icon').notNull(),
-  createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
-  updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
+  id:                    text('id').primaryKey(),
+  name:                  text('name').notNull(),
+  icon:                  text('icon').notNull(),
+  openTime:              text('open_time').notNull().default('10:00'),
+  closeTime:             text('close_time').notNull().default('22:00'),
+  slotDurationMinutes:   integer('slot_duration_minutes').notNull().default(240),
+  cleaningBufferMinutes: integer('cleaning_buffer_minutes').notNull().default(0),
+  maxAdvanceDays:        integer('max_advance_days').notNull().default(30),
+  depositAmount:         real('deposit_amount').notNull().default(500),
+  reglamentoType:        text('reglamento_type').notNull().default('none'),
+  reglamentoText:        text('reglamento_text').notNull().default(''),
+  reglamentoPdfUrl:      text('reglamento_pdf_url').notNull().default(''),
+  createdAt:             text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt:             text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
 })
 
 // ─── Votaciones (Governance Polls) ───────────────────────────────────

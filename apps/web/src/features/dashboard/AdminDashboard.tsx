@@ -16,7 +16,7 @@ import Modal from '../../core/components/Modal'
 import AvisoFormModal from '../../core/components/AvisoFormModal'
 import SetupChecklist from './components/SetupChecklist'
 import StaffSection from './components/StaffSection'
-import OperationalAlerts from './components/OperationalAlerts'
+import ApprovalQueue from './components/ApprovalQueue'
 import type { Aviso } from '../../types'
 
 
@@ -649,15 +649,9 @@ export default function AdminDashboard() {
 
         {/* Right column: Alerts + Approvals + Assembly */}
         <div className="space-y-10">
-          <OperationalAlerts
-            pagos={state.pagos}
-            tickets={state.tickets}
-            paquetes={state.paquetes}
-            buildingName={bc.buildingName}
-            totalUnits={bc.totalUnits}
-            approvals={approvals}
-            onApproval={handleApproval}
-          />
+          {state.buildingConfig.reservationApprovalMode !== 'auto_approve' && (
+            <ApprovalQueue approvals={approvals} onApproval={handleApproval} />
+          )}
 
           {/* Assembly card */}
           {upcomingAsamblea && (
