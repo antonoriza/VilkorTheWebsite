@@ -4,6 +4,7 @@ import { useStore } from '../../core/store/store'
 import StatusBadge from '../../core/components/StatusBadge'
 import Modal from '../../core/components/Modal'
 import EmptyState from '../../core/components/EmptyState'
+import SortableTh from '../../core/components/SortableTh'
 import { type Votacion } from '../../types'
 
 export default function Votaciones() {
@@ -11,6 +12,12 @@ export default function Votaciones() {
   const { state, dispatch } = useStore()
   const [showModal, setShowModal] = useState(false)
   const [viewAuditModal, setViewAuditModal] = useState<Votacion | null>(null)
+  const [auditSortKey, setAuditSortKey] = useState<'name' | 'apartment' | 'optionLabel' | 'votedAt'>('votedAt')
+  const [auditSortDir, setAuditSortDir] = useState<'asc' | 'desc'>('desc')
+  const handleAuditSort = (key: typeof auditSortKey) => {
+    if (key === auditSortKey) setAuditSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setAuditSortKey(key); setAuditSortDir('asc') }
+  }
   
   const [formTitle, setFormTitle] = useState('')
   const [formDesc, setFormDesc] = useState('')
@@ -297,9 +304,16 @@ export default function Votaciones() {
         </div>
       </Modal>
 
-      {/* Audit Modal — Fixed to read correct voter fields */}
       <Modal open={!!viewAuditModal} onClose={() => setViewAuditModal(null)} title="Auditoría de Votantes">
-        {viewAuditModal && (
+        {viewAuditModal && (() => {
+          const voters = Array.isArray(viewAuditModal.voters) ? [...viewAuditModal.voters] : []
+          const sortedVoters = voters.sort((a, b) => {
+            const av = String(a[auditSortKey] ?? '')
+            const bv = String(b[auditSortKey] ?? '')
+            const cmp = av.localeCompare(bv, 'es', { sensitivity: 'base' })
+            return auditSortDir === 'asc' ? cmp : -cmp
+          })
+          return (
           <div className="space-y-4">
              <p className="text-sm font-medium text-slate-600 mb-4">
                Lista de residentes que han participado en: <strong className="text-slate-900">{viewAuditModal.title}</strong>
@@ -308,14 +322,14 @@ export default function Votaciones() {
                 <table className="w-full text-left">
                   <thead className="bg-slate-50 sticky top-0 border-b border-slate-200">
                      <tr>
-                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Residente</th>
-                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Depto</th>
-                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Elección</th>
-                        <th className="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fecha/Hora</th>
+                        <SortableTh<typeof auditSortKey> col="name" label="Residente" sortKey={auditSortKey} sortDir={auditSortDir} onSort={handleAuditSort} className="px-4 py-3" />
+                        <SortableTh<typeof auditSortKey> col="apartment" label="Depto" sortKey={auditSortKey} sortDir={auditSortDir} onSort={handleAuditSort} className="px-4 py-3" />
+                        <SortableTh<typeof auditSortKey> col="optionLabel" label="Elección" sortKey={auditSortKey} sortDir={auditSortDir} onSort={handleAuditSort} className="px-4 py-3" />
+                        <SortableTh<typeof auditSortKey> col="votedAt" label="Fecha/Hora" sortKey={auditSortKey} sortDir={auditSortDir} onSort={handleAuditSort} className="px-4 py-3" />
                      </tr>
                   </thead>
                   <tbody>
-                     {Array.isArray(viewAuditModal.voters) && viewAuditModal.voters.map((v, idx) => (
+                     {sortedVoters.map((v, idx) => (
                        <tr key={idx} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
                           <td className="px-4 py-3 text-sm font-bold text-slate-900">{v.name}</td>
                           <td className="px-4 py-3 text-sm font-medium text-slate-700">{v.apartment}</td>
@@ -325,7 +339,7 @@ export default function Votaciones() {
                           </td>
                        </tr>
                      ))}
-                     {viewAuditModal.voters.length === 0 && (
+                     {sortedVoters.length === 0 && (
                        <tr>
                          <td colSpan={4} className="px-4 py-6 text-center text-slate-400 font-medium text-sm">Nadie ha votado aún</td>
                        </tr>
@@ -340,7 +354,8 @@ export default function Votaciones() {
                Cerrar
              </button>
           </div>
-        )}
+          )
+        })()}
       </Modal>
     </div>
   )
