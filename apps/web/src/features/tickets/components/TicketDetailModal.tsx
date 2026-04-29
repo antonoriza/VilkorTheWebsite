@@ -4,6 +4,7 @@
  * Consumed by: TicketsPage.
  */
 import { useState } from 'react'
+import { useAuth } from '../../../core/auth/AuthContext'
 import Modal from '../../../core/components/Modal'
 import ConfirmDialog from '../../../core/components/ConfirmDialog'
 import StatusBadge from '../../../core/components/StatusBadge'
@@ -33,6 +34,10 @@ export default function TicketDetailModal({
   const [activityMsg, setActivityMsg] = useState('')
   const [activityVisibility, setActivityVisibility] = useState<'internal' | 'public'>('public')
   const [closeDialogOpen, setCloseDialogOpen] = useState(false)
+
+  const { apartment } = useAuth()
+  const isOwner = ticket?.apartment === apartment
+  const shouldAnonymize = ticket?.isPublic && !isOwner && !isAdmin
 
   if (!ticket) return null
 
@@ -65,11 +70,20 @@ export default function TicketDetailModal({
               <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md border ${PRIORITY_COLORS[ticket.priority]}`}>
                 Impacto {ticket.priority}
               </span>
+              {ticket.isPublic && (
+                <span className="flex items-center gap-1 text-[9px] font-black text-primary border border-primary/20 px-3 py-1 rounded-md uppercase tracking-widest bg-primary/5 shadow-sm">
+                  <span className="material-symbols-outlined text-[12px]">public</span>
+                  Público
+                </span>
+              )}
             </div>
             <div>
               <h3 className="text-2xl font-headline font-black text-slate-900">{ticket.subject}</h3>
               <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
-                <span className="flex items-center"><span className="material-symbols-outlined text-[14px] mr-1 text-slate-400">person</span> {ticket.createdBy} ({ticket.apartment})</span>
+                <span className="flex items-center">
+                  <span className="material-symbols-outlined text-[14px] mr-1 text-slate-400">person</span> 
+                  {shouldAnonymize ? 'Residente Anónimo' : `${ticket.createdBy} (${ticket.apartment})`}
+                </span>
                 <span className="flex items-center"><span className="material-symbols-outlined text-[14px] mr-1 text-slate-400">category</span> {ticket.category}</span>
                 {ticket.location && <span className="flex items-center"><span className="material-symbols-outlined text-[14px] mr-1 text-slate-400">location_on</span> {ticket.location}</span>}
               </div>
@@ -133,7 +147,7 @@ export default function TicketDetailModal({
             </div>
 
             {/* Add Activity Form */}
-            {ticket.status !== 'Cerrado' && (
+            {ticket.status !== 'Cerrado' && (isAdmin || isOwner) && (
               <div className="pt-4 border-t border-slate-100 space-y-3">
                 <textarea
                   value={activityMsg}

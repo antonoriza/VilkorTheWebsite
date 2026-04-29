@@ -49,6 +49,17 @@ export default function TicketsPage() {
   const [formCategory, setFormCategory] = useState<TicketCategory>('Otro')
   const [formPriority, setFormPriority] = useState<TicketPriority>('Media')
   const [formLocation, setFormLocation] = useState('')
+  const [formIsPublic, setFormIsPublic] = useState(false)
+  const [formProxyApartment, setFormProxyApartment] = useState('')
+
+  // Smart default: Public for common areas / security
+  useEffect(() => {
+    if (formCategory === 'Áreas Comunes' || formCategory === 'Seguridad') {
+      setFormIsPublic(true)
+    } else {
+      setFormIsPublic(false)
+    }
+  }, [formCategory])
 
   // Detail Modal State
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
@@ -60,7 +71,9 @@ export default function TicketsPage() {
   // Derived queries
   const allTickets = useMemo(() => {
     let t = state.tickets
-    if (isResident) t = t.filter(ticket => ticket.apartment === apartment)
+    if (isResident) {
+      t = t.filter(ticket => ticket.apartment === apartment || ticket.isPublic)
+    }
     
     if (filterStatus) t = t.filter(ticket => ticket.status === filterStatus)
     if (filterCategory) t = t.filter(ticket => ticket.category === filterCategory)
@@ -90,6 +103,11 @@ export default function TicketsPage() {
     const now = new Date().toISOString()
     const newNumber = state.ticketCounter + 1
 
+    const targetApt = isAdmin ? formProxyApartment : apartment
+    if (!targetApt) return // Enforce selection for admin or ensure resident apt exists
+    const proxyResident = state.residents.find(r => r.apartment === targetApt)
+    const targetUser = isAdmin ? (proxyResident?.name || targetApt) : user
+
     const newTicket: Ticket = {
       id: `tkt-${Date.now()}`,
       number: newNumber,
@@ -98,8 +116,8 @@ export default function TicketsPage() {
       category: formCategory,
       priority: formPriority,
       status: 'Nuevo',
-      createdBy: user,
-      apartment: isResident ? apartment : 'Admin',
+      createdBy: targetUser,
+      apartment: targetApt,
       location: formLocation || undefined,
       createdAt: now,
       updatedAt: now,
@@ -112,7 +130,8 @@ export default function TicketsPage() {
           message: `Ticket creado por ${user}.`,
           createdAt: now,
         }
-      ]
+      ],
+      isPublic: formIsPublic
     }
 
     dispatch({ type: 'ADD_TICKET', payload: newTicket })
@@ -123,6 +142,8 @@ export default function TicketsPage() {
     setFormCategory(categories[0] || 'Otro')
     setFormPriority('Media')
     setFormLocation('')
+    setFormIsPublic(false)
+    setFormProxyApartment('')
     setShowCreateModal(false)
   }
 
@@ -310,7 +331,15 @@ export default function TicketsPage() {
                   <span className="text-[11px] font-black px-3 py-1 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 font-mono tracking-widest">
                     #{ticket.number}
                   </span>
-                  <StatusBadge status={ticket.status} />
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={ticket.status} />
+                    {ticket.isPublic && (
+                      <span className="flex items-center gap-1 text-[9px] font-black text-primary border border-primary/20 px-2 py-0.5 rounded-lg uppercase tracking-widest bg-primary/5">
+                        <span className="material-symbols-outlined text-[12px]">public</span>
+                        Público
+                      </span>
+                    )}
+                  </div>
                   <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-slate-200 bg-white text-slate-600`}>
                     {ticket.priority}
                   </span>
@@ -358,7 +387,7 @@ export default function TicketsPage() {
               ? 'Los residentes pueden enviar solicitudes de mantenimiento desde su portal. Los tickets aparecerán aquí.'
               : 'Levanta una solicitud de servicio y el equipo de administración te responderá.'
             }
-            action={isAdmin ? undefined : { label: 'Nuevo Ticket', onClick: () => setShowCreateModal(true) }}
+            action={{ label: 'Nuevo Ticket', onClick: () => setShowCreateModal(true) }}
           />
         )}
       </div>
@@ -366,6 +395,22 @@ export default function TicketsPage() {
       {/* ── Create Modal ── */}
       <Modal open={showCreateModal} onClose={() => setShowCreateModal(false)} title="Levantar Ticket de Servicio">
         <div className="space-y-4">
+          {/* Admin Proxy Selector */}
+          {isAdmin && (
+            <div className="space-y-1">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Reportar a nombre de:</label>
+              <select 
+                value={formProxyApartment} 
+                onChange={(e) => setFormProxyApartment(e.target.value)}
+                className="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-bold text-sm transition-all"
+              >
+                <option value="">Seleccionar Departamento...</option>
+                {state.residents.map(r => (
+                  <option key={r.id} value={r.apartment}>{r.apartment} — {r.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Asunto *</label>
             <input type="text" value={formSubject} onChange={(e) => setFormSubject(e.target.value)}
@@ -394,14 +439,29 @@ export default function TicketsPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Ubicación (Opcional)</label>
-            <input type="text" list="common-loc-options-tickets" value={formLocation} onChange={(e) => setFormLocation(e.target.value)}
-              className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium"
-              placeholder="Ej. Baño de recámara principal"
-            />
-            <datalist id="common-loc-options-tickets">
-              {commonLocations.map(loc => <option key={loc} value={loc} />)}
-            </datalist>
+             <div className="space-y-1">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Ubicación / Zona</label>
+              <input list="common-locs" type="text" value={formLocation} onChange={e => setFormLocation(e.target.value)} placeholder="Ej. Pasillo Piso 4, Lobby..." className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium" />
+              <datalist id="common-locs">
+                {commonLocations.map(l => <option key={l} value={l} />)}
+              </datalist>
+            </div>
+
+            {/* Public Toggle */}
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200/50 hover:border-slate-300 transition-all cursor-pointer group" onClick={() => setFormIsPublic(!formIsPublic)}>
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all ${formIsPublic ? 'bg-slate-900 text-white' : 'bg-white text-slate-300 shadow-sm'}`}>
+                  <span className="material-symbols-outlined text-[18px]">public</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Publicar en la Comunidad</p>
+                  <p className="text-[9px] text-slate-500 font-medium">Otros residentes podrán ver este ticket (anónimo).</p>
+                </div>
+              </div>
+              <div className={`relative w-10 h-5 rounded-full transition-all duration-300 ${formIsPublic ? 'bg-slate-900' : 'bg-slate-200'}`}>
+                <div className={`absolute top-1 w-3 h-3 rounded-full bg-white shadow-sm transition-all duration-300 ${formIsPublic ? 'left-6' : 'left-1'}`} />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">

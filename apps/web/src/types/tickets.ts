@@ -58,4 +58,6 @@ export interface Ticket {
   resolvedAt: string | null
   /** Chronological activity log — work notes and public responses */
   activities: TicketActivity[]
+  /** Whether this ticket is visible to all residents for transparency */
+  isPublic?: boolean
 }
