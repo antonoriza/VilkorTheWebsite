@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { SettingsTabBar, SaveFooter, ComingSoon, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
+import { useState, useEffect } from 'react'
+import { SettingsTabBar, SaveFooter, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
+import { avisosApi } from '../../../lib/api'
+import type { BuildingConfig, Aviso } from '@vilkor/shared'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -21,8 +23,13 @@ const CHANNELS = [
   { id: 'whatsapp',  label: 'WhatsApp',   desc: 'API de WhatsApp Business',      icon: 'chat',            color: 'bg-green-50 text-green-700 border-green-100' },
 ]
 
-function CanalesTab({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
-  const [enabled, setEnabled] = useState<Record<string, boolean>>({ push: true, email: true, sms: false, whatsapp: false })
+function CanalesTab({ bc, update, handleSave, saved }: { bc: BuildingConfig; update: (key: string, value: any) => void; handleSave: () => void; saved: boolean }) {
+  const comm = bc.communication || { canales: { push: true, email: true, sms: false, whatsapp: false }, asambleas: { quorumRequired: 51, advanceNoticeDays: 15, allowProxies: true, proxyMaxPerResident: 1 } }
+  const enabled = comm.canales
+
+  const toggleChannel = (id: keyof typeof enabled) => {
+    update('communication', { ...comm, canales: { ...enabled, [id]: !enabled[id] } })
+  }
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-8">
@@ -37,7 +44,7 @@ function CanalesTab({ handleSave, saved }: { handleSave: () => void; saved: bool
             <div
               key={ch.id}
               className={`flex items-center justify-between p-5 rounded-2xl border-2 transition-all duration-300 ${
-                enabled[ch.id] ? 'border-slate-900 bg-white shadow-lg shadow-slate-100' : 'border-slate-100 bg-white/50'
+                enabled[ch.id as keyof typeof enabled] ? 'border-slate-900 bg-white shadow-lg shadow-slate-100' : 'border-slate-100 bg-white/50'
               }`}
             >
               <div className="flex items-center gap-4">
@@ -50,10 +57,10 @@ function CanalesTab({ handleSave, saved }: { handleSave: () => void; saved: bool
                 </div>
               </div>
               <button
-                onClick={() => setEnabled({ ...enabled, [ch.id]: !enabled[ch.id] })}
-                className={`relative w-12 h-6 rounded-full transition-all duration-300 ${enabled[ch.id] ? 'bg-slate-900' : 'bg-slate-200'}`}
+                onClick={() => toggleChannel(ch.id as keyof typeof enabled)}
+                className={`relative w-12 h-6 rounded-full transition-all duration-300 ${enabled[ch.id as keyof typeof enabled] ? 'bg-slate-900' : 'bg-slate-200'}`}
               >
-                <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300 ${enabled[ch.id] ? 'left-7' : 'left-1'}`} />
+                <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-300 ${enabled[ch.id as keyof typeof enabled] ? 'left-7' : 'left-1'}`} />
               </button>
             </div>
           ))}
@@ -128,12 +135,173 @@ function PlantillasTab({ handleSave, saved }: { handleSave: () => void; saved: b
   )
 }
 
+// ─── Asambleas Tab ────────────────────────────────────────────────────────────
+
+function AsambleasTab({ bc, update, handleSave, saved }: { bc: BuildingConfig; update: (key: string, value: any) => void; handleSave: () => void; saved: boolean }) {
+  const comm = bc.communication || { canales: { push: true, email: true, sms: false, whatsapp: false }, asambleas: { quorumRequired: 51, advanceNoticeDays: 15, allowProxies: true, proxyMaxPerResident: 1 } }
+  const asambleas = comm.asambleas
+
+  const inputClass = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm transition-all shadow-inner"
+
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-6">
+      <SectionHeader label="Configuración de Asambleas" icon="groups" />
+
+      <FieldGroup icon="gavel" title="Reglas Generales">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Quórum Requerido (%)</label>
+            <input 
+              type="number" 
+              min="1" max="100"
+              value={asambleas.quorumRequired}
+              onChange={(e) => update('communication', { ...comm, asambleas: { ...asambleas, quorumRequired: Number(e.target.value) } })}
+              className={inputClass}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Días de Anticipación para Convocatoria</label>
+            <input 
+              type="number" 
+              min="1"
+              value={asambleas.advanceNoticeDays}
+              onChange={(e) => update('communication', { ...comm, asambleas: { ...asambleas, advanceNoticeDays: Number(e.target.value) } })}
+              className={inputClass}
+            />
+          </div>
+        </div>
+      </FieldGroup>
+
+      <FieldGroup icon="how_to_reg" title="Representación (Cartas Poder)">
+        <div className="space-y-6">
+          <label className="flex items-center gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+            <input 
+              type="checkbox" 
+              checked={asambleas.allowProxies}
+              onChange={(e) => update('communication', { ...comm, asambleas: { ...asambleas, allowProxies: e.target.checked } })}
+              className="w-5 h-5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+            />
+            <div>
+              <p className="text-sm font-bold text-slate-900">Permitir Representación por Carta Poder</p>
+              <p className="text-[10px] font-medium text-slate-500">Un residente puede delegar su voto a otro asistente.</p>
+            </div>
+          </label>
+
+          {asambleas.allowProxies && (
+            <div className="space-y-1.5 animate-in fade-in pl-4 border-l-2 border-slate-200">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest pl-1">Límite de representaciones por residente</label>
+              <input 
+                type="number" 
+                min="1"
+                value={asambleas.proxyMaxPerResident}
+                onChange={(e) => update('communication', { ...comm, asambleas: { ...asambleas, proxyMaxPerResident: Number(e.target.value) } })}
+                className="block w-48 px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-medium text-sm transition-all"
+              />
+              <p className="text-[10px] text-slate-400 mt-1">Máximo número de unidades que un solo asistente puede representar.</p>
+            </div>
+          )}
+        </div>
+      </FieldGroup>
+
+      <SaveFooter handleSave={handleSave} saved={saved} />
+    </div>
+  )
+}
+
+// ─── Historial Tab ────────────────────────────────────────────────────────────
+
+function HistorialTab() {
+  const [avisos, setAvisos] = useState<Aviso[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    avisosApi.list().then(data => {
+      setAvisos(data)
+      setLoading(false)
+    }).catch(err => {
+      console.error(err)
+      setLoading(false)
+    })
+  }, [])
+
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-6">
+      <SectionHeader label="Historial de Comunicados" icon="history" />
+
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-sky-400 text-sm">campaign</span>
+            <h3 className="text-[10px] font-black uppercase tracking-widest">Avisos y Asambleas Enviadas</h3>
+          </div>
+          <span className="text-[9px] font-mono text-slate-400">{avisos.length} ENVÍOS</span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Fecha y Hora</th>
+                <th className="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Tipo</th>
+                <th className="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Asunto</th>
+                <th className="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Alcance</th>
+                <th className="px-4 py-3 text-[9px] font-black text-slate-400 uppercase tracking-widest">Impacto</th>
+              </tr>
+            </thead>
+            <tbody className="font-sans text-xs">
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-slate-400">Cargando historial...</td>
+                </tr>
+              ) : avisos.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-slate-400 font-medium">No se han realizado envíos masivos.</td>
+                </tr>
+              ) : (
+                avisos.map(a => {
+                  const d = new Date(a.date)
+                  return (
+                    <tr key={a.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap text-[11px]">
+                        {d.toLocaleString('es-MX', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-wider ${
+                          a.category === 'asamblea' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-sky-50 text-sky-700 border-sky-200'
+                        }`}>
+                          {a.category}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-bold text-slate-900">{a.title}</td>
+                      <td className="px-4 py-3 text-slate-500 text-[11px]">Todos los residentes</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg w-max">
+                          <span className="material-symbols-outlined text-[14px]">done_all</span>
+                          Entregado
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main: ComunicacionSettings ───────────────────────────────────────────────
 
 export default function ComunicacionSettings({
+  bc,
+  update,
   handleSave,
   saved,
 }: {
+  bc: BuildingConfig
+  update: (key: string, value: any) => void
   handleSave: () => void
   saved: boolean
 }) {
@@ -143,10 +311,10 @@ export default function ComunicacionSettings({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'canales'    && <CanalesTab handleSave={handleSave} saved={saved} />}
+      {activeTab === 'canales'    && <CanalesTab bc={bc} update={update} handleSave={handleSave} saved={saved} />}
       {activeTab === 'plantillas' && <PlantillasTab handleSave={handleSave} saved={saved} />}
-      {activeTab === 'asambleas'  && <ComingSoon label="Asambleas" />}
-      {activeTab === 'historial'  && <ComingSoon label="Historial de Envíos" />}
+      {activeTab === 'asambleas'  && <AsambleasTab bc={bc} update={update} handleSave={handleSave} saved={saved} />}
+      {activeTab === 'historial'  && <HistorialTab />}
     </div>
   )
 }

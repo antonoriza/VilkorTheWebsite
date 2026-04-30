@@ -6,7 +6,6 @@ import { systemApi } from '../../lib/api'
 import { useDemoMode } from '../../core/hooks/useDemoMode'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import DemoResetModal from '../../core/components/DemoResetModal'
-import { ComingSoon } from '../../core/components/SettingsShell'
 
 // Sections
 import ArchitectureSettings from './sections/ArchitectureSettings'
@@ -155,6 +154,8 @@ export default function AdminConfiguracion() {
 
         {activeTab === 'comunicacion' && (
           <ComunicacionSettings
+            bc={bc}
+            update={update}
             handleSave={handleSave}
             saved={saved}
           />

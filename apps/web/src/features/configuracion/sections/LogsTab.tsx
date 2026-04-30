@@ -27,7 +27,6 @@ const mapResourceToCategory = (resource: string): LogCategory => {
 
 export function LogsTab() {
   const [logs, setLogs] = useState<AuditLogEntry[]>([])
-  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<LogCategory[]>([])
   const [selectedSources, setSelectedSources] = useState<LogSourceType[]>([])
@@ -58,8 +57,6 @@ export function LogsTab() {
         setLogs(mapped)
       } catch (err) {
         console.error('Error fetching audit logs:', err)
-      } finally {
-        setLoading(false)
       }
     }
     fetchLogs()

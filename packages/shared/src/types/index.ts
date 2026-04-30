@@ -409,6 +409,16 @@ export interface BankingConfig {
   notes?: string
 }
 
+export interface CommunicationConfig {
+  canales: { push: boolean; email: boolean; sms: boolean; whatsapp: boolean }
+  asambleas: {
+    quorumRequired: number // Percentage, e.g. 51
+    advanceNoticeDays: number
+    allowProxies: boolean
+    proxyMaxPerResident: number
+  }
+}
+
 export interface BuildingConfig {
   /** Property classification (Digital Twin category) */
   propertyCategory: PropertyCategory
@@ -446,6 +456,8 @@ export interface BuildingConfig {
   surcharge: SurchargeConfig
   /** Payment method configuration — shown to residents in their payment ledger */
   banking: BankingConfig
+  /** Communication and notifications settings */
+  communication?: CommunicationConfig
   /** Digital Twin: Spatial zoning mapping */
   zoning: ZoningPoint[]
   /** Digital Twin: Topology hierarchies */
