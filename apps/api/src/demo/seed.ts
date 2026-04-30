@@ -60,8 +60,9 @@ export async function seedDemo(tenantId: string): Promise<void> {
   raw.exec(`INSERT OR REPLACE INTO building_config (id, data) VALUES (1, '${JSON.stringify(buildingConfig).replace(/'/g, "''")}')`  )
   console.log('[demo]   ✓ Building config')
 
+  let residents: any[] = []
   try {
-    const residents = generateResidents()
+    residents = generateResidents()
     const insertResident = raw.prepare(
       'INSERT INTO residents (id, name, apartment, tower, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
     )
@@ -78,8 +79,8 @@ export async function seedDemo(tenantId: string): Promise<void> {
   const insertStaff = raw.prepare(
     'INSERT INTO staff (id, name, role, shift_start, shift_end, work_days, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
   )
+  let staffMap = new Map<string, string>()
   try {
-    const staffMap = new Map<string, string>()
     for (const s of staffMembers) {
       const id = nanoid()
       staffMap.set(s.role, id) // Map by role for easy lookups
