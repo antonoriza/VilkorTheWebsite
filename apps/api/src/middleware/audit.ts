@@ -20,11 +20,20 @@
  * in the master DB (future enhancement if super_admin scope expands).
  */
 import { createMiddleware } from 'hono/factory'
-import { auditLog } from '../db/schema/tenant'
+import { auditLog as dbAuditLog } from '../db/schema/tenant'
 import { nanoid } from '../db/utils'
+import { auditLog as winstonAuditLog, LogCategory, LogSourceType } from '../lib/logger'
 
 const MUTATING_METHODS = new Set(['POST', 'PATCH', 'PUT', 'DELETE'])
 const AUDITABLE_ROLES = new Set(['super_admin', 'administracion'])
+
+// Mapeo de rutas a categorías de ThingWorx
+const getCategoryFromPath = (path: string): LogCategory => {
+  if (path.includes('/auth') || path.includes('/permisos')) return 'Security Log'
+  if (path.includes('/config') || path.includes('/system')) return 'Config Log'
+  if (path.includes('/avisos') || path.includes('/comunicacion')) return 'Communication Log'
+  return 'Application Log'
+}
 
 export const auditMiddleware = createMiddleware(async (c, next) => {
   // Run the actual route handler first
@@ -41,13 +50,16 @@ export const auditMiddleware = createMiddleware(async (c, next) => {
   try {
     const db = c.get('db') as any
     const session = c.get('session') as any
+    const path = c.req.path
+    const userName = session?.user?.name ?? 'Unknown User'
 
-    await db.insert(auditLog).values({
+    // 1. Persistencia en Base de Datos (Relacional/Búsqueda rápida)
+    await db.insert(dbAuditLog).values({
       id: nanoid(),
       actorId: session?.user?.id ?? 'unknown',
       actorRole: role,
       action: method,
-      resource: c.req.path,
+      resource: path,
       statusCode: c.res.status,
       ipAddress: c.req.header('x-forwarded-for')
         ?? c.req.header('x-real-ip')
@@ -55,8 +67,22 @@ export const auditMiddleware = createMiddleware(async (c, next) => {
       userAgent: c.req.header('user-agent') ?? null,
       createdAt: new Date().toISOString(),
     })
+
+    // 2. Persistencia Física en Disco (Winston - Rotación/Auditoría Dura)
+    winstonAuditLog(
+      getCategoryFromPath(path),
+      `${method}_OPERATION`,
+      (role === 'super_admin' ? 'Super Admin' : 'Operador') as LogSourceType,
+      userName,
+      `Operación ${method} en ${path} (Status: ${c.res.status})`,
+      {
+        resource: path,
+        status: c.res.status,
+        ip: c.req.header('x-real-ip') || 'local'
+      }
+    )
+    
   } catch (err) {
-    // Audit failure must never crash the request
     console.error('[audit] Failed to write audit log:', err)
   }
 })

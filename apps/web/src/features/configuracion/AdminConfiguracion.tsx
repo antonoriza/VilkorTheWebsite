@@ -115,16 +115,14 @@ export default function AdminConfiguracion() {
              activeTab === 'finanzas'    ? 'Contabilidad y Finanzas' :
              activeTab === 'comunicacion'? 'Avisos/Notificaciones' :
              activeTab === 'servicios'   ? 'Logística e Inventario' :
-             activeTab === 'permisos'    ? 'Directorio y Permisos' :
-             activeTab === 'auditoria'   ? 'Auditoría y Trazabilidad' : 'Opciones Avanzadas'}
+              activeTab === 'permisos'    ? 'Directorio y Permisos' : 'Opciones Avanzadas'}
           </h1>
           <p className="text-slate-500 font-medium text-sm mt-1">
             {activeTab === 'perfil'      ? 'Identidad legal, topología y Digital Twin' :
              activeTab === 'finanzas'    ? 'Catálogo financiero y cuentas bancarias' :
              activeTab === 'comunicacion'? 'Canales, plantillas y automatizaciones' :
              activeTab === 'servicios'   ? 'Paquetería, proveedores e inventario' :
-             activeTab === 'permisos'    ? 'Control de acceso y matriz de roles' :
-             activeTab === 'auditoria'   ? 'Registros de actividad y trazabilidad' : 'Backups, restauración, logs y resiliencia'}
+             activeTab === 'permisos'    ? 'Control de acceso y matriz de roles' : 'Backups, logs y resiliencia'}
           </p>
         </div>
       </div>
@@ -181,12 +179,6 @@ export default function AdminConfiguracion() {
             staff={state.staff || []}
             inputClass={inputClass}
           />
-        )}
-
-        {activeTab === 'auditoria' && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
-            <ComingSoon label="Auditoría y Trazabilidad" />
-          </div>
         )}
 
         {activeTab === 'resiliencia' && (

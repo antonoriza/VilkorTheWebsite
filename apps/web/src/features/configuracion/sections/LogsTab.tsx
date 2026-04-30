@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { auditApi } from '../../../lib/api'
 
 export type LogCategory = 'Application Log' | 'Communication Log' | 'Config Log' | 'Script Log' | 'Security Log'
 export type LogSourceType = 'System' | 'Super Admin' | 'Operador' | 'Residente'
@@ -13,24 +14,56 @@ export interface AuditLogEntry {
   severity: LogSeverity
   action: string
   description: string
-  metadata: string // JSON stringified, but safe/scrubbed
+  metadata: string 
 }
 
-// Dummy data for prototyping
-const MOCK_LOGS: AuditLogEntry[] = [
-  { id: 'l-001', timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), category: 'Security Log', sourceType: 'Super Admin', sourceName: 'Jorge Oriza', severity: 'security', action: 'LOGIN_SUCCESS', description: 'Autenticación exitosa en consola de administración', metadata: '{"ip": "192.168.1.xxx", "browser": "Chrome", "os": "macOS"}' },
-  { id: 'l-002', timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), category: 'Config Log', sourceType: 'Super Admin', sourceName: 'Jorge Oriza', severity: 'info', action: 'TAG_CREATED', description: 'Se creó la etiqueta "Comité de Vigilancia" con color #6366f1', metadata: '{"tagId": "tag-12345"}' },
-  { id: 'l-003', timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(), category: 'Application Log', sourceType: 'Residente', sourceName: 'Ana Smith (A-102)', severity: 'info', action: 'TICKET_CREATED', description: 'Creación de ticket de mantenimiento (Fuga de agua)', metadata: '{"ticketId": "tk-099"}' },
-  { id: 'l-004', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(), category: 'Communication Log', sourceType: 'Operador', sourceName: 'Recepción Central', severity: 'info', action: 'PACKAGE_LOGGED', description: 'Registro de paquete para B-201', metadata: '{"packageId": "pkg-55", "courier": "Amazon"}' },
-  { id: 'l-005', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), category: 'Script Log', sourceType: 'System', sourceName: 'Cron Engine', severity: 'warn', action: 'BACKUP_COMPLETED', description: 'Respaldo automático completado con advertencias (Storage al 85%)', metadata: '{"durationMs": 4500, "sizeMB": 14.2}' },
-]
+// Mapeo de rutas de la base de datos a las categorías de la interfaz
+const mapResourceToCategory = (resource: string): LogCategory => {
+  if (resource.includes('/auth') || resource.includes('/permisos')) return 'Security Log'
+  if (resource.includes('/config') || resource.includes('/system')) return 'Config Log'
+  if (resource.includes('/avisos') || resource.includes('/comunicacion')) return 'Communication Log'
+  return 'Application Log'
+}
 
 export function LogsTab() {
-  const [logs] = useState<AuditLogEntry[]>(MOCK_LOGS)
+  const [logs, setLogs] = useState<AuditLogEntry[]>([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<LogCategory[]>([])
   const [selectedSources, setSelectedSources] = useState<LogSourceType[]>([])
   const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null)
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const data = await auditApi.list(100)
+        const mapped: AuditLogEntry[] = data.map((item: any) => ({
+          id: item.id,
+          timestamp: item.createdAt,
+          category: mapResourceToCategory(item.resource),
+          sourceType: (item.actorRole === 'super_admin' ? 'Super Admin' : 
+                      item.actorRole === 'administracion' ? 'Operador' : 
+                      'System') as LogSourceType,
+          sourceName: `[${item.actorId}]`, // La DB solo guarda el ID en audit_log, idealmente aquí habría un join con users
+          severity: 'info',
+          action: `${item.action}_OP`,
+          description: `Operación ${item.action} en ${item.resource}`,
+          metadata: JSON.stringify({
+            resource: item.resource,
+            status: item.statusCode,
+            ip: item.ipAddress || 'unknown',
+            userAgent: item.userAgent
+          })
+        }))
+        setLogs(mapped)
+      } catch (err) {
+        console.error('Error fetching audit logs:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchLogs()
+  }, [])
 
   const toggleCategory = (cat: LogCategory) => {
     setSelectedCategories(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])

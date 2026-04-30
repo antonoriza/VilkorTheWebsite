@@ -246,3 +246,7 @@ export const systemApi = {
     method: 'POST',
   }),
 }
+
+export const auditApi = {
+  list: (limit = 100) => request<any[]>(`/api/audit?limit=${limit}`),
+}
