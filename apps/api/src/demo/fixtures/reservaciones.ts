@@ -25,6 +25,10 @@ export interface DemoReservacion {
 }
 
 export const reservacionData: DemoReservacion[] = [
+  // ── Today ──────────────────────────────────────────────────────────
+  { residentIndex: 2,  amenityName: 'Gimnasio',         timeSlot: '07:00 – 09:00', status: 'Reservado',     daysFromNow: 0  },
+  { residentIndex: 12, amenityName: 'Salón de Eventos', timeSlot: '14:00 – 19:00', status: 'Por confirmar', daysFromNow: 0  },
+
   // ── Upcoming — confirmed ──────────────────────────────────────────
   { residentIndex: 4,  amenityName: 'Asador',          timeSlot: '18:00 – 22:00', status: 'Reservado',     daysFromNow: 2  },
   { residentIndex: 14, amenityName: 'Cancha de Tenis',  timeSlot: '08:00 – 10:00', status: 'Reservado',     daysFromNow: 3  },

@@ -24,14 +24,15 @@ import { auth } from '../auth'
 import { generateResidents } from './fixtures/residents'
 import { staffMembers } from './fixtures/staff'
 import { amenitiesList } from './fixtures/amenities'
-import { PAYMENT_PROFILES, PAGO_MONTH, PAGO_MONTH_KEY, PAGO_PAYMENT_DATE, PAGO_PREV_MONTH, PAGO_PREV_MONTH_KEY } from './fixtures/pagos'
+import { PAYMENT_PROFILES, getMonthsUpToNow, getPaymentDate } from './fixtures/pagos'
 import { ticketData } from './fixtures/tickets'
 import { avisoData } from './fixtures/avisos'
 import { buildingConfig } from './fixtures/building-config'
-import { DEMO_ACCOUNT_APARTMENTS, DEMO_ACCOUNT_PASSWORD, DEMO_ACCOUNT_ROLE } from './fixtures/accounts'
+import { DEMO_ACCOUNT_APARTMENTS, DEMO_ACCOUNT_PASSWORD, DEMO_ACCOUNT_ROLE, DEMO_ADMIN_ACCOUNTS, DEMO_STAFF_ACCOUNTS } from './fixtures/accounts'
 import { paqueteData } from './fixtures/paquetes'
 import { votacionData } from './fixtures/votaciones'
 import { reservacionData } from './fixtures/reservaciones'
+import { inventoryData } from './fixtures/inventory'
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -96,71 +97,55 @@ export async function seedDemo(tenantId: string): Promise<void> {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
 
+  const months = getMonthsUpToNow()
   let pagoCount = 0
+  
   for (let i = 0; i < residents.length; i++) {
     const r = residents[i]
     const profile = PAYMENT_PROFILES[i % PAYMENT_PROFILES.length]
 
-    switch (profile) {
-      case 'paid':
-        insertPago.run(
-          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
-          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
-          'Pagado', PAGO_PAYMENT_DATE, NOW, NOW,
-        )
-        pagoCount++
-        break
-
-      case 'pending':
-        insertPago.run(
-          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
-          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
-          'Pendiente', null, NOW, NOW,
-        )
-        pagoCount++
-        break
-
-      case 'validating':
-        insertPago.run(
-          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
-          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
-          'Por validar', null, NOW, NOW,
-        )
-        pagoCount++
-        break
-
-      case 'debtor':
-        // Previous month — Pendiente (PROCESS_MATURITY will flip to Vencido)
-        insertPago.run(
-          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
-          PAGO_PREV_MONTH, PAGO_PREV_MONTH_KEY, 'Mantenimiento', monthlyFee,
-          'Pendiente', null, NOW, NOW,
-        )
-        // Current month — also Pendiente
-        insertPago.run(
-          nanoid(), `res-${r.apartment}`, r.apartment, r.name,
-          PAGO_MONTH, PAGO_MONTH_KEY, 'Mantenimiento', monthlyFee,
-          'Pendiente', null, NOW, NOW,
-        )
-        pagoCount++
-        break
+    for (const month of months) {
+      if (month.isCurrent) {
+        // Current month follows profile
+        switch (profile) {
+          case 'paid':
+            insertPago.run(nanoid(), `res-${r.apartment}`, r.apartment, r.name, month.name, month.key, 'Mantenimiento', monthlyFee, 'Pagado', getPaymentDate(month.key), NOW, NOW)
+            break
+          case 'pending':
+            insertPago.run(nanoid(), `res-${r.apartment}`, r.apartment, r.name, month.name, month.key, 'Mantenimiento', monthlyFee, 'Pendiente', null, NOW, NOW)
+            break
+          case 'validating':
+            insertPago.run(nanoid(), `res-${r.apartment}`, r.apartment, r.name, month.name, month.key, 'Mantenimiento', monthlyFee, 'Por validar', null, NOW, NOW)
+            break
+          case 'debtor':
+            insertPago.run(nanoid(), `res-${r.apartment}`, r.apartment, r.name, month.name, month.key, 'Mantenimiento', monthlyFee, 'Pendiente', null, NOW, NOW)
+            break
+        }
+      } else {
+        // Previous months are all paid unless they are a debtor
+        const status = (profile === 'debtor' && months.indexOf(month) === months.length - 2) ? 'Pendiente' : 'Pagado'
+        const payDate = status === 'Pagado' ? getPaymentDate(month.key) : null
+        insertPago.run(nanoid(), `res-${r.apartment}`, r.apartment, r.name, month.name, month.key, 'Mantenimiento', monthlyFee, status, payDate, NOW, NOW)
+      }
+      pagoCount++
     }
   }
 
   // ── 5b. Sprinkle non-Mantenimiento charges for variety ───────────────
   //    A multa (immediate maturity) and a reservation charge
+  const currentMonth = months[months.length - 1]
   const multaResident = residents[3]   // 4th resident
   insertPago.run(
     nanoid(), `res-${multaResident.apartment}`, multaResident.apartment, multaResident.name,
-    PAGO_MONTH, PAGO_MONTH_KEY, 'Multa', 500,
+    currentMonth.name, currentMonth.key, 'Multa', 500,
     'Pendiente', null, NOW, NOW,
   )
 
   const amenidadResident = residents[8] // 9th resident
   insertPago.run(
     nanoid(), `res-${amenidadResident.apartment}`, amenidadResident.apartment, amenidadResident.name,
-    PAGO_MONTH, PAGO_MONTH_KEY, 'Reserva Amenidad', 350,
-    'Pagado', PAGO_PAYMENT_DATE, NOW, NOW,
+    currentMonth.name, currentMonth.key, 'Reserva Amenidad', 350,
+    'Pagado', getPaymentDate(currentMonth.key), NOW, NOW,
   )
 
   console.log(`[demo]   ✓ ${pagoCount} residents processed + 2 extra charges (Multa, Reserva Amenidad)`)
@@ -173,15 +158,15 @@ export async function seedDemo(tenantId: string): Promise<void> {
       (id, categoria, concepto, description, amount, month_key, date, registered_by, status, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
-  const egresoDate = `${PAGO_MONTH_KEY}-01`
-  for (const re of buildingConfig.recurringEgresos) {
-    // Administration fee is pending (hasn't been disbursed yet)
-    const status = re.categoria === 'administracion' ? 'Pendiente' : 'Pagado'
-    insertEgreso.run(
-      nanoid(), re.categoria, re.concepto, re.description || '',
-      re.amount, PAGO_MONTH_KEY, egresoDate,
-      buildingConfig.adminName, status, NOW, NOW,
-    )
+  for (const month of months) {
+    for (const re of buildingConfig.recurringEgresos) {
+      const status = (re.categoria === 'administracion' && month.isCurrent) ? 'Pendiente' : 'Pagado'
+      insertEgreso.run(
+        nanoid(), re.categoria, re.concepto, re.description || '',
+        re.amount, month.key, `${month.key}-01`,
+        buildingConfig.adminName, status, NOW, NOW,
+      )
+    }
   }
   console.log(`[demo]   ✓ ${buildingConfig.recurringEgresos.length} egresos (current month)`)
 
@@ -307,13 +292,31 @@ export async function seedDemo(tenantId: string): Promise<void> {
   }
   console.log(`[demo]   ✓ ${reservacionData.length} reservaciones`)
 
+  // ── 13. Inventario ───────────────────────────────────────────────────
+  const insertInventory = raw.prepare(`
+    INSERT INTO inventory
+      (id, name, category, owner_id, owner, current_user_id, current_user, notes, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `)
+  for (const item of inventoryData) {
+    insertInventory.run(
+      nanoid(), item.name, item.category, 'admin-1', item.owner,
+      null, item.currentUser, item.notes || '', NOW, NOW
+    )
+  }
+  console.log(`[demo]   ✓ ${inventoryData.length} items de inventario`)
+
   // ── 9. Demo resident auth accounts ───────────────────────────────────
   // Look up by apartment code — stable regardless of generation order
-  const demoAccounts = DEMO_ACCOUNT_APARTMENTS.map(apt => {
-    const r = residents.find(res => res.apartment === apt)
-    if (!r) throw new Error(`[demo] Apartment ${apt} not found in generated residents`)
-    return { name: r.name, email: r.email, apartment: r.apartment }
-  })
+  const demoAccounts = [
+    ...DEMO_ACCOUNT_APARTMENTS.map(apt => {
+      const r = residents.find(res => res.apartment === apt)
+      if (!r) throw new Error(`[demo] Apartment ${apt} not found in generated residents`)
+      return { name: r.name, email: r.email, role: DEMO_ACCOUNT_ROLE, apartment: r.apartment }
+    }),
+    ...DEMO_ADMIN_ACCOUNTS.map(a => ({ ...a, apartment: null })),
+    ...DEMO_STAFF_ACCOUNTS.map(s => ({ ...s, apartment: null }))
+  ]
 
   for (const acct of demoAccounts) {
     try {
@@ -327,14 +330,14 @@ export async function seedDemo(tenantId: string): Promise<void> {
       if (userId) {
         rawMasterDb.exec(`
           INSERT OR IGNORE INTO user_tenants (id, user_id, tenant_id, role, apartment, created_at)
-          VALUES ('${nanoid()}', '${userId}', '${tenantId}', '${DEMO_ACCOUNT_ROLE}', '${acct.apartment}', '${NOW}');
+          VALUES ('${nanoid()}', '${userId}', '${tenantId}', '${acct.role}', ${acct.apartment ? `'${acct.apartment}'` : 'NULL'}, '${NOW}');
         `)
       }
     } catch (e: any) {
       console.log(`[demo]   ⚠ Demo user ${acct.email} skipped:`, e.message || 'exists')
     }
   }
-  console.log(`[demo]   ✓ ${demoAccounts.length} demo resident accounts (password: ${DEMO_ACCOUNT_PASSWORD})`)
+  console.log(`[demo]   ✓ ${demoAccounts.length} demo accounts (password: ${DEMO_ACCOUNT_PASSWORD})`)
 
   console.log('[demo] ✓ Demo seeding complete')
 }

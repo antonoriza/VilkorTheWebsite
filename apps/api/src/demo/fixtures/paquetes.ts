@@ -22,4 +22,7 @@ export const paqueteData: DemoPaquete[] = [
   { residentIndex: 45, status: 'Pendiente',  location: 'Recepción — Casillero B2', daysAgo: 4 },
   { residentIndex: 1,  status: 'Entregado',  location: 'N/A',                      daysAgo: 5 },
   { residentIndex: 8,  status: 'Entregado',  location: 'N/A',                      daysAgo: 6 },
+  { residentIndex: 50, status: 'Pendiente',  location: 'Casillero A3',             daysAgo: 0 },
+  { residentIndex: 60, status: 'Pendiente',  location: 'Casillero A4',             daysAgo: 1 },
+  { residentIndex: 70, status: 'Pendiente',  location: 'Recepción',               daysAgo: 2 },
 ]

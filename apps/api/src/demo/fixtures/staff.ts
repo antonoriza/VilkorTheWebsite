@@ -15,10 +15,17 @@ export interface DemoStaff {
 export const staffMembers: DemoStaff[] = [
   {
     name: 'Ricardo Hernández',
-    role: 'Guardia',
+    role: 'Guardia de Seguridad',
     shiftStart: '07:00',
     shiftEnd: '19:00',
     workDays: ['L', 'M', 'Mi', 'J', 'V', 'S', 'D'],
+  },
+  {
+    name: 'Valentina Sánchez',
+    role: 'Personal de Limpieza',
+    shiftStart: '08:00',
+    shiftEnd: '17:00',
+    workDays: ['L', 'M', 'Mi', 'J', 'V', 'S'],
   },
   {
     name: 'Enrique Martínez',
@@ -28,13 +35,6 @@ export const staffMembers: DemoStaff[] = [
     workDays: ['L', 'Mi', 'V'],
   },
   {
-    name: 'Valentina Sánchez',
-    role: 'Limpieza',
-    shiftStart: '08:00',
-    shiftEnd: '17:00',
-    workDays: ['L', 'M', 'Mi', 'J', 'V', 'S'],
-  },
-  {
     name: 'Samantha Guzmán',
     role: 'Administradora General',
     shiftStart: '09:00',
@@ -42,3 +42,4 @@ export const staffMembers: DemoStaff[] = [
     workDays: ['L', 'M', 'Mi', 'J', 'V'],
   },
 ]
+

@@ -9,60 +9,38 @@
  * transition at runtime based on the Catálogo de Conceptos rules.
  */
 
-/**
- * Resident payment profile — determines what records to generate.
- *   paid       → current month Pagado
- *   pending    → current month Pendiente (not yet overdue)
- *   validating → current month Por validar (receipt uploaded)
- *   debtor     → previous month Pendiente + current month Pendiente
- *               (PROCESS_MATURITY will flip the old one to Vencido)
- */
 export type PaymentProfile = 'paid' | 'pending' | 'validating' | 'debtor'
 
-/**
- * Round-robin distribution (per 8 residents):
- *   4 paid · 2 pending · 1 validating · 1 debtor
- *   → 50% collection rate, 25% open, 12.5% awaiting validation, 12.5% with debt
- */
 export const PAYMENT_PROFILES: PaymentProfile[] = [
   'paid', 'paid', 'paid', 'pending',
   'validating', 'pending', 'paid', 'debtor',
 ]
 
-/** Current month in display format, e.g. "abril de 2026" */
-export const PAGO_MONTH = (() => {
+/**
+ * Generates month metadata for the last N months up to now.
+ * Year-agnostic: always uses the current year.
+ */
+export function getMonthsUpToNow() {
   const now = new Date()
-  return now.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })
-})()
+  const currentMonth = now.getMonth() // 0-11
+  const currentYear = now.getFullYear()
+  
+  const months: { name: string; key: string; isCurrent: boolean }[] = []
+  
+  for (let m = 0; m <= currentMonth; m++) {
+    const d = new Date(currentYear, m, 1)
+    months.push({
+      name: d.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }),
+      key: `${currentYear}-${String(m + 1).padStart(2, '0')}`,
+      isCurrent: m === currentMonth
+    })
+  }
+  
+  return months
+}
 
-/** Current month key for DB queries, e.g. "2026-04" */
-export const PAGO_MONTH_KEY = (() => {
-  const now = new Date()
-  const y = now.getFullYear()
-  const m = String(now.getMonth() + 1).padStart(2, '0')
-  return `${y}-${m}`
-})()
+/** Payment date helper: 5th of the month */
+export function getPaymentDate(monthKey: string) {
+  return `${monthKey}-05`
+}
 
-/** Previous month in display format, e.g. "marzo de 2026" */
-export const PAGO_PREV_MONTH = (() => {
-  const now = new Date()
-  now.setMonth(now.getMonth() - 1)
-  return now.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })
-})()
-
-/** Previous month key for DB queries, e.g. "2026-03" */
-export const PAGO_PREV_MONTH_KEY = (() => {
-  const now = new Date()
-  now.setMonth(now.getMonth() - 1)
-  const y = now.getFullYear()
-  const m = String(now.getMonth() + 1).padStart(2, '0')
-  return `${y}-${m}`
-})()
-
-/** Payment date for records marked as "Pagado" — 5th of current month */
-export const PAGO_PAYMENT_DATE = (() => {
-  const now = new Date()
-  const y = now.getFullYear()
-  const m = String(now.getMonth() + 1).padStart(2, '0')
-  return `${y}-${m}-05`
-})()
