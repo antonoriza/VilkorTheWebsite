@@ -302,6 +302,7 @@ export const TENANT_DDL = `
     owner           TEXT NOT NULL,
     current_user_id TEXT,
     current_user    TEXT NOT NULL,
+    amenity_id      TEXT REFERENCES amenities(id),
     notes           TEXT,
     created_at      TEXT NOT NULL,
     updated_at      TEXT NOT NULL
@@ -382,6 +383,8 @@ const TENANT_MIGRATIONS: string[] = [
   `ALTER TABLE amenities ADD COLUMN reglamento_type TEXT NOT NULL DEFAULT 'none'`,
   `ALTER TABLE amenities ADD COLUMN reglamento_text TEXT NOT NULL DEFAULT ''`,
   `ALTER TABLE amenities ADD COLUMN reglamento_pdf_url TEXT NOT NULL DEFAULT ''`,
+  // Inventory exclusive assignment (added 2026-04-29)
+  `ALTER TABLE inventory ADD COLUMN amenity_id TEXT REFERENCES amenities(id)`,
 ]
 
 function applyMigrations(raw: ReturnType<typeof tenantDB.getRaw>) {

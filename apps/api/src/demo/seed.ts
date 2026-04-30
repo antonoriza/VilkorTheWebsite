@@ -60,27 +60,36 @@ export async function seedDemo(tenantId: string): Promise<void> {
   raw.exec(`INSERT OR REPLACE INTO building_config (id, data) VALUES (1, '${JSON.stringify(buildingConfig).replace(/'/g, "''")}')`  )
   console.log('[demo]   ✓ Building config')
 
-  // ── 2. Residents (116) ────────────────────────────────────────────────
-  const residents = generateResidents()
-  const insertResident = raw.prepare(
-    'INSERT INTO residents (id, name, apartment, tower, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  )
-  for (const r of residents) {
-    insertResident.run(`res-${r.apartment}`, r.name, r.apartment, r.tower, r.email, NOW, NOW)
+  try {
+    const residents = generateResidents()
+    const insertResident = raw.prepare(
+      'INSERT INTO residents (id, name, apartment, tower, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    )
+    for (const r of residents) {
+      insertResident.run(`res-${r.apartment}`, r.name, r.apartment, r.tower, r.email, NOW, NOW)
+    }
+    console.log(`[demo]   ✓ ${residents.length} residents`)
+  } catch (e: any) {
+    console.error('[demo]   ✖ Failed at Phase 2 (Residents):', e.message)
+    throw e
   }
-  console.log(`[demo]   ✓ ${residents.length} residents`)
 
   // ── 3. Staff (4) ─────────────────────────────────────────────────────
   const insertStaff = raw.prepare(
     'INSERT INTO staff (id, name, role, shift_start, shift_end, work_days, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
   )
-  const staffMap = new Map<string, string>()
-  for (const s of staffMembers) {
-    const id = nanoid()
-    staffMap.set(s.role, id) // Map by role for easy lookups
-    insertStaff.run(id, s.name, s.role, s.shiftStart, s.shiftEnd, JSON.stringify(s.workDays), NOW, NOW)
+  try {
+    const staffMap = new Map<string, string>()
+    for (const s of staffMembers) {
+      const id = nanoid()
+      staffMap.set(s.role, id) // Map by role for easy lookups
+      insertStaff.run(id, s.name, s.role, s.shiftStart, s.shiftEnd, JSON.stringify(s.workDays), NOW, NOW)
+    }
+    console.log(`[demo]   ✓ ${staffMembers.length} staff members`)
+  } catch (e: any) {
+    console.error('[demo]   ✖ Failed at Phase 3 (Staff):', e.message)
+    throw e
   }
-  console.log(`[demo]   ✓ ${staffMembers.length} staff members`)
 
   // ── 4. Amenities (6) ─────────────────────────────────────────────────
   const insertAmenity = raw.prepare(
@@ -304,19 +313,24 @@ export async function seedDemo(tenantId: string): Promise<void> {
       (id, name, category, owner_id, owner, current_user_id, current_user, amenity_id, notes, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
-  for (const item of inventoryData) {
-    const amenityId = item.amenityName ? amenityMap.get(item.amenityName) : null
-    const staffId = !amenityId && item.currentUser !== 'Sin asignar' 
-      ? (staffMap.get(item.category) || 'staff-1')
-      : null
-      
-    insertInventory.run(
-      nanoid(), item.name, item.category, 'admin-1', item.owner,
-      staffId, 
-      item.currentUser, amenityId || null, item.notes || '', NOW, NOW
-    )
+  try {
+    for (const item of inventoryData) {
+      const amenityId = item.amenityName ? amenityMap.get(item.amenityName) : null
+      const staffId = !amenityId && item.currentUser !== 'Sin asignar' 
+        ? (staffMap.get(item.category) || 'staff-1')
+        : null
+        
+      insertInventory.run(
+        nanoid(), item.name, item.category, 'admin-1', item.owner,
+        staffId, 
+        item.currentUser, amenityId || null, item.notes || '', NOW, NOW
+      )
+    }
+    console.log(`[demo]   ✓ ${inventoryData.length} items de inventario`)
+  } catch (e: any) {
+    console.error('[demo]   ✖ Failed at Phase 13 (Inventory):', e.message)
+    throw e
   }
-  console.log(`[demo]   ✓ ${inventoryData.length} items de inventario`)
 
   // ── 9. Demo resident auth accounts ───────────────────────────────────
   // Look up by apartment code — stable regardless of generation order
