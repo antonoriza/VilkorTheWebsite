@@ -156,6 +156,8 @@ export interface BankingConfig {
   acceptsTransfer: boolean
   acceptsCash: boolean
   acceptsOxxo: boolean
+  acceptsPaymentLink?: boolean
+  paymentLinkUrl?: string
   /** How resident constructs their payment reference */
   referenceFormat: 'apartment' | 'custom'
   customReferenceNote?: string

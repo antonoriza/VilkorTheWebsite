@@ -214,6 +214,7 @@ export function FormInput({
   onChange,
   placeholder,
   readOnly,
+  error,
 }: {
   label: string
   icon?: string
@@ -222,16 +223,20 @@ export function FormInput({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
   readOnly?: boolean
+  error?: string
 }) {
   return (
     <div>
-      <label className="block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1.5 ml-1">
-        {label}
-      </label>
+      <div className="flex justify-between items-end mb-1.5 ml-1">
+        <label className="block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em]">
+          {label}
+        </label>
+        {error && <span className="text-[8px] font-black text-rose-500 uppercase tracking-widest animate-in fade-in slide-in-from-right-1">{error}</span>}
+      </div>
       <div className="relative group">
         {icon && (
           <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <span className="material-symbols-outlined text-slate-300 text-lg group-focus-within:text-slate-600 transition-colors">
+            <span className={`material-symbols-outlined ${error ? 'text-rose-300' : 'text-slate-300 group-focus-within:text-slate-600'} text-lg transition-colors`}>
               {icon}
             </span>
           </span>
@@ -242,7 +247,7 @@ export function FormInput({
           onChange={onChange}
           readOnly={readOnly}
           placeholder={placeholder}
-          className={`block w-full ${icon ? 'pl-11' : 'px-4'} pr-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 font-medium text-sm transition-all hover:border-slate-300 ${readOnly ? 'bg-slate-50 text-slate-500 cursor-default' : ''}`}
+          className={`block w-full ${icon ? 'pl-11' : 'px-4'} pr-4 py-3 bg-white border ${error ? 'border-rose-200 focus:border-rose-400 focus:ring-rose-50' : 'border-slate-200 focus:border-slate-400 focus:ring-slate-100'} rounded-xl text-slate-900 outline-none font-medium text-sm transition-all hover:border-slate-300 ${readOnly ? 'bg-slate-50 text-slate-500 cursor-default' : ''}`}
         />
       </div>
     </div>

@@ -117,7 +117,7 @@ export const EMPTY_BUILDING_CONFIG: BuildingConfig = {
   conceptosPago: [], monthlyFee: 0, recurringEgresos: [],
   maturityRules: { mantenimiento: 'next_month_01', amenidad: 'day_of_event', multaOtros: 'immediate' },
   surcharge: { enabled: false, type: 'percent', amount: 0, graceDays: 0, frequency: 'monthly' },
-  banking: { clabe: '', bankName: '', accountHolder: '', acceptsTransfer: false, acceptsCash: false, acceptsOxxo: false, referenceFormat: 'apartment' },
+  banking: { clabe: '', bankName: '', accountHolder: '', acceptsTransfer: false, acceptsCash: false, acceptsOxxo: false, acceptsPaymentLink: false, paymentLinkUrl: '', referenceFormat: 'apartment' },
   zoning: [], topology: { containers: [], unitNomenclature: '' },
   defaultUnitDna: { privateArea: 0, totalArea: 0, ownershipCoefficient: 0, usageType: 'propietario' },
   equipment: [], vendors: [], permissionsMatrix: {},

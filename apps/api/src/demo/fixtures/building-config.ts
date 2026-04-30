@@ -80,6 +80,8 @@ export const buildingConfig = {
     acceptsTransfer: true,
     acceptsCash: false,
     acceptsOxxo: false,
+    acceptsPaymentLink: true,
+    paymentLinkUrl: 'https://buy.stripe.com/demo-payment-link',
     referenceFormat: 'apartment',
     notes: 'Indicar número de departamento en referencia del pago.',
   },

@@ -22,7 +22,7 @@ export default function ResidentPaymentModal({
   receiptName, receiptData, receiptError,
   onClose, onSubmit, onReceiptUpload,
 }: ResidentPaymentModalProps) {
-  const b = banking || { acceptsTransfer: false, acceptsCash: false, acceptsOxxo: false }
+  const b = banking || { acceptsTransfer: false, acceptsCash: false, acceptsOxxo: false, acceptsPaymentLink: false }
 
   return (
     <Modal open={!!pago} onClose={onClose} title="Instrucciones de Pago">
@@ -66,17 +66,39 @@ export default function ResidentPaymentModal({
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center justify-center text-rose-600 text-sm font-bold">
-                No hay cuenta bancaria configurada. Contacta a administración.
+            ) : !b.acceptsPaymentLink && (
+              <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center justify-center text-rose-600 text-sm font-bold text-center">
+                No hay métodos de pago configurados. <br/> Contacta a administración.
+              </div>
+            )}
+
+            {b.acceptsPaymentLink && b.paymentLinkUrl && (
+              <div className="space-y-3">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center italic">Paga en línea vía segura</p>
+                <a 
+                  href={b.paymentLinkUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 bg-indigo-50 border border-indigo-100 rounded-xl hover:border-indigo-300 hover:shadow-md transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
+                      <span className="material-symbols-outlined text-[20px]">credit_card</span>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-indigo-900 uppercase tracking-tight">Pagar en Línea</p>
+                      <p className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Tarjeta de Crédito / Débito</p>
+                    </div>
+                  </div>
+                  <span className="material-symbols-outlined text-indigo-300 group-hover:text-indigo-600 transition-colors">open_in_new</span>
+                </a>
               </div>
             )}
 
             {/* Method Pills */}
             <div className="flex gap-2 justify-center">
               {b.acceptsTransfer && <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">SPEI</span>}
-              {b.acceptsCash && <span className="bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Efectivo</span>}
-              {b.acceptsOxxo && <span className="bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">OXXO Pay</span>}
+              {b.acceptsPaymentLink && <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">Online</span>}
             </div>
 
             {b.notes && (
@@ -85,30 +107,34 @@ export default function ResidentPaymentModal({
           </div>
 
           {/* Receipt Upload */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h3 className="text-sm font-black text-slate-900">2. Adjunta Comprobante</h3>
-            <div className="space-y-2">
-              <input type="file" accept=".pdf, image/jpeg, image/png" onChange={onReceiptUpload}
-                className="block w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-slate-900 file:text-white" />
-              {receiptError && <p className="text-xs text-rose-600 font-bold ml-1">{receiptError}</p>}
-              {receiptName && !receiptError && (
-                <div className="flex items-center gap-2 ml-1">
-                  <span className="material-symbols-outlined text-emerald-500 text-[14px]">check_circle</span>
-                  <span className="text-xs text-emerald-600 font-bold max-w-[250px] truncate">{receiptName}</span>
-                </div>
-              )}
+          {pago.status !== 'Pagado' && (
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+              <h3 className="text-sm font-black text-slate-900">2. Adjunta Comprobante</h3>
+              <div className="space-y-2">
+                <input type="file" accept=".pdf, image/jpeg, image/png" onChange={onReceiptUpload}
+                  className="block w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 outline-none text-xs file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-slate-900 file:text-white" />
+                {receiptError && <p className="text-xs text-rose-600 font-bold ml-1">{receiptError}</p>}
+                {receiptName && !receiptError && (
+                  <div className="flex items-center gap-2 ml-1">
+                    <span className="material-symbols-outlined text-emerald-500 text-[14px]">check_circle</span>
+                    <span className="text-xs text-emerald-600 font-bold max-w-[250px] truncate">{receiptName}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Submit */}
-          <div className="pt-2">
-            <button onClick={onSubmit} disabled={!receiptData && b.acceptsTransfer}
-              className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all flex justify-center items-center gap-2 ${
-                !receiptData && b.acceptsTransfer ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.98] hover:shadow-lg'
-              }`}>
-              <span className="material-symbols-outlined text-[16px]">send</span> Enviar Comprobante
-            </button>
-          </div>
+          {pago.status !== 'Pagado' && (
+            <div className="pt-2">
+              <button onClick={onSubmit} disabled={!receiptData}
+                className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all flex justify-center items-center gap-2 ${
+                  !receiptData ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.98] hover:shadow-lg'
+                }`}>
+                <span className="material-symbols-outlined text-[16px]">send</span> {pago.status === 'Por validar' ? 'Actualizar Comprobante' : 'Enviar Comprobante'}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </Modal>

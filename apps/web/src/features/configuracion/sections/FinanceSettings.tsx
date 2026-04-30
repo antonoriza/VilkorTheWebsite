@@ -19,13 +19,14 @@ interface Props {
 
 const PAYMENT_METHODS = [
   { key: 'acceptsTransfer', label: 'Transferencia / SPEI', icon: 'account_balance', color: 'bg-blue-50 text-blue-600' },
-  { key: 'acceptsCash',     label: 'Efectivo',            icon: 'payments',         color: 'bg-emerald-50 text-emerald-600' },
-  { key: 'acceptsOxxo',     label: 'OXXO Pay',            icon: 'store',            color: 'bg-red-50 text-red-600' },
+  { key: 'acceptsPaymentLink', label: 'Link de Pago', icon: 'link', color: 'bg-indigo-50 text-indigo-600' },
 ]
 
 function formatClabe(raw: string) {
   return raw.replace(/\D/g, '').slice(0, 18)
 }
+
+const URL_REGEX = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/
 
 function CuentasTab({ bc, dispatch }: Props) {
   const banking = bc.banking || { clabe: '', bankName: '', accountHolder: '', acceptsTransfer: true, acceptsCash: false, acceptsOxxo: false, referenceFormat: 'apartment', notes: '' }
@@ -34,6 +35,7 @@ function CuentasTab({ bc, dispatch }: Props) {
     dispatch({ type: 'UPDATE_BUILDING_CONFIG', payload: { banking: { ...banking, ...patch } } })
 
   const clabeFormatted = banking.clabe.replace(/(\d{4})(?=\d)/g, '$1 ')
+  const isUrlValid = !banking.paymentLinkUrl || URL_REGEX.test(banking.paymentLinkUrl)
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-8">
@@ -94,7 +96,16 @@ function CuentasTab({ bc, dispatch }: Props) {
             return (
               <button
                 key={method.key}
-                onClick={() => update({ [method.key]: !isActive })}
+                onClick={() => {
+                  const nextActive = !isActive
+                  const patch: any = { [method.key]: nextActive }
+                  if (nextActive) {
+                    PAYMENT_METHODS.forEach(m => {
+                      if (m.key !== method.key) patch[m.key] = false
+                    })
+                  }
+                  update(patch)
+                }}
                 className={`flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left ${isActive ? 'border-slate-900 bg-white shadow-lg shadow-slate-100' : 'border-slate-100 bg-white/50 hover:border-slate-200'}`}
               >
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${isActive ? method.color : 'bg-slate-100'}`}>
@@ -110,6 +121,18 @@ function CuentasTab({ bc, dispatch }: Props) {
             )
           })}
         </div>
+        {banking.acceptsPaymentLink && (
+          <div className="mt-4 animate-in fade-in slide-in-from-top-1 duration-200">
+            <FormInput
+              label="URL del Link de Pago"
+              icon="link"
+              value={banking.paymentLinkUrl || ''}
+              onChange={e => update({ paymentLinkUrl: e.target.value })}
+              error={!isUrlValid ? 'URL Inválida' : undefined}
+              placeholder="https://buy.stripe.com/..."
+            />
+          </div>
+        )}
       </FieldGroup>
 
       {/* ── Formato de Referencia ── */}
