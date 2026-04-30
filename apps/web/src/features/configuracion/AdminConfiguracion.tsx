@@ -6,6 +6,7 @@ import { systemApi } from '../../lib/api'
 import { useDemoMode } from '../../core/hooks/useDemoMode'
 import ConfirmDialog from '../../core/components/ConfirmDialog'
 import DemoResetModal from '../../core/components/DemoResetModal'
+import { SaveFooter } from '../../core/components/SettingsShell'
 
 // Sections
 import ArchitectureSettings from './sections/ArchitectureSettings'
@@ -45,6 +46,7 @@ export default function AdminConfiguracion() {
   }
 
   const handleSave = () => {
+    dispatch({ type: 'SAVE_BUILDING_CONFIG', payload: state.buildingConfig })
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
@@ -138,8 +140,6 @@ export default function AdminConfiguracion() {
             handleAddAmenity={handleAddAmenity}
             handleDeleteAmenity={(id, name) => setConfirmTarget({ action: 'deleteAmenity', id, name })}
             handleUpdateAmenity={handleUpdateAmenity}
-            handleSave={handleSave}
-            saved={saved}
           />
         )}
 
@@ -147,8 +147,6 @@ export default function AdminConfiguracion() {
           <FinanceSettings
             bc={bc}
             dispatch={dispatch}
-            handleSave={handleSave}
-            saved={saved}
           />
         )}
 
@@ -156,8 +154,6 @@ export default function AdminConfiguracion() {
           <ComunicacionSettings
             bc={bc}
             update={update}
-            handleSave={handleSave}
-            saved={saved}
           />
         )}
 
@@ -168,8 +164,6 @@ export default function AdminConfiguracion() {
             residents={state.residents}
             staff={state.staff}
             dispatch={dispatch}
-            handleSave={handleSave}
-            saved={saved}
           />
         )}
 
@@ -189,6 +183,12 @@ export default function AdminConfiguracion() {
           />
         )}
       </div>
+
+      {activeTab !== 'resiliencia' && (
+        <div className="fixed bottom-0 right-0 left-64 bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 z-40 px-12 pb-6">
+          <SaveFooter handleSave={handleSave} saved={saved} />
+        </div>
+      )}
 
       <ConfirmDialog
         open={confirmTarget?.action === 'changeGroupingMode'}

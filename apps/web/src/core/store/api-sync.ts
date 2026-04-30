@@ -37,7 +37,7 @@ export async function syncActionToAPI(action: Action): Promise<void> {
       case 'ADD_INVENTORY':    await inventoryApi.create(action.payload); break
       case 'UPDATE_INVENTORY': await inventoryApi.update(action.payload.id, action.payload); break
       case 'DELETE_INVENTORY': await inventoryApi.delete(action.payload); break
-      case 'UPDATE_BUILDING_CONFIG': await configApi.update(action.payload); break
+      case 'SAVE_BUILDING_CONFIG':   await configApi.update(action.payload); break
       // Local-only actions — no API sync
       default: break
     }

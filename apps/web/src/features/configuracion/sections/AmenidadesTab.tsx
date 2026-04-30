@@ -4,7 +4,7 @@
  */
 import { useState } from 'react'
 import type { Amenity, BuildingConfig, ReservationApprovalMode } from '../../../types'
-import { SaveFooter } from '../../../core/components/SettingsShell'
+
 import Modal from '../../../core/components/Modal'
 
 const AMENITY_TEMPLATES = [
@@ -37,14 +37,11 @@ interface AmenidadesTabProps {
   handleAddAmenity: (name: string, icon: string) => void
   handleUpdateAmenity: (amenity: Amenity) => void
   handleUpdateConfig: (partial: Partial<BuildingConfig>) => void
-  handleSave: () => void
-  saved: boolean
 }
 
 export default function AmenidadesTab({
   amenities, buildingConfig, departments,
-  handleDeleteAmenity, handleAddAmenity, handleUpdateAmenity, handleUpdateConfig,
-  handleSave, saved
+  handleDeleteAmenity, handleAddAmenity, handleUpdateAmenity, handleUpdateConfig
 }: AmenidadesTabProps) {
   const [selected, setSelected] = useState<typeof AMENITY_TEMPLATES[0] | null>(null)
   const [identifier, setIdentifier] = useState('')
@@ -270,8 +267,6 @@ export default function AmenidadesTab({
         </div>
 
       </div>
-
-      <SaveFooter saved={saved} handleSave={handleSave} />
 
       {/* ── Per-Amenity Config Modal ──────────────────────── */}
       <Modal open={!!editAmenity} onClose={() => setEditAmenity(null)} title={`Configurar — ${editAmenity?.name || ''}`}>

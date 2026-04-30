@@ -217,7 +217,6 @@ export default function UsuariosPage() {
 
   const towers = bc.towers || []
   const apartments = [...new Set(residents.map(r => r.apartment))].sort()
-  const hasActiveFilters = typeFilter !== 'all' || towerFilter !== 'all' || search !== ''
 
   // ── CRUD Handlers ──
   const handleAddResident = () => {

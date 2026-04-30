@@ -4,7 +4,7 @@
  */
 import { useState } from 'react'
 import type { CriticalEquipment } from '../../../types'
-import { SaveFooter } from '../../../core/components/SettingsShell'
+
 
 // ═══════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -49,11 +49,9 @@ interface EquipamientoTabProps {
   containers: { name: string }[]
   groupingMode: string
   update: (key: string, value: any) => void
-  handleSave: () => void
-  saved: boolean
 }
 
-export default function EquipamientoTab({ equipment, containers, groupingMode, update, handleSave, saved }: EquipamientoTabProps) {
+export default function EquipamientoTab({ equipment, containers, groupingMode, update }: EquipamientoTabProps) {
   const [selected, setSelected] = useState<typeof EQUIPMENT_TEMPLATES[0] | null>(null)
   const [identifier, setIdentifier] = useState('')
   const [location, setLocation] = useState('*')
@@ -215,7 +213,6 @@ export default function EquipamientoTab({ equipment, containers, groupingMode, u
         )}
       </div>
 
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }

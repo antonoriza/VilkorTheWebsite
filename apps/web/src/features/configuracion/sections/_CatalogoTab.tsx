@@ -3,13 +3,10 @@ import {
   BuildingConfig, ConceptoFinanciero, ConceptoCategoria, CONCEPTO_CATEGORIA_LABELS,
   VencimientoRule, VencimientoTipo, VENCIMIENTO_TIPO_LABELS, vencimientoLabel, parseVencimiento,
 } from '../../../types'
-import { SaveFooter } from '../../../core/components/SettingsShell'
 
 interface Props {
   bc: BuildingConfig
   dispatch: (a: any) => void
-  handleSave: () => void
-  saved: boolean
 }
 
 const DEFAULT_MENSUALIDAD: ConceptoFinanciero = {
@@ -74,7 +71,7 @@ const SUB_TABS = [
   { id: 'conceptos', label: 'Conceptos', icon: 'receipt_long' },
 ]
 
-export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) {
+export default function CatalogoTab({ bc, dispatch }: Props) {
   const [subTab, setSubTab] = useState('resumen')
   const [adding, setAdding] = useState(false)
   const [draft, setDraft] = useState({ ...EMPTY_ROW })
@@ -369,9 +366,6 @@ export default function CatalogoTab({ bc, dispatch, handleSave, saved }: Props) 
               Los campos <strong>Recargo %</strong> y <strong>Recargo $</strong> son mutuamente exclusivos: al llenar uno se desactiva el otro. La <strong>Mensualidad</strong> es un concepto del sistema y no puede eliminarse.
             </p>
           </div>
-
-          {/* Save */}
-          <SaveFooter handleSave={handleSave} saved={saved} />
         </div>
       )}
 

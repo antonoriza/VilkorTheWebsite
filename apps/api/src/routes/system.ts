@@ -15,8 +15,9 @@ import { Hono } from 'hono'
 import { requireRole } from '../middleware/rbac'
 import { tenantDB } from '../db/tenant'
 import { rawMasterDb } from '../db/master'
+import type { AppEnv } from '../types'
 
-const systemRoutes = new Hono()
+const systemRoutes = new Hono<AppEnv>()
 
 /**
  * Tables to truncate during factory reset.

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS, InventoryItem, InventoryCategory, Resident, StaffMember } from '../../../types'
-import { SettingsTabBar, SaveFooter, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
+import { SettingsTabBar, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
 
 const selectClass = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 font-medium text-sm transition-all hover:border-slate-300 cursor-pointer"
 const labelCls = "block text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1.5 ml-1"
@@ -22,12 +22,10 @@ const TABS = [
 // ─── Tab: Paquetes ────────────────────────────────────────────────────────────
 
 function PaquetesTab({
-  bc, dispatch, handleSave, saved,
+  bc, dispatch,
 }: {
   bc: BuildingConfig
   dispatch: React.Dispatch<any>
-  handleSave: () => void
-  saved: boolean
 }) {
   const [retention, setRetention] = useState('7')
   const [alertDays, setAlertDays] = useState('3')
@@ -148,8 +146,6 @@ function PaquetesTab({
       <InfoBanner icon="info">
         Estas reglas se aplican automáticamente al módulo de Paquetería. El agente escalará al administrador si un paquete supera el tiempo de retención.
       </InfoBanner>
-
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
@@ -271,12 +267,10 @@ const EMPTY_VENDOR: Omit<Vendor, 'id'> = {
 }
 
 function DirectorioTab({
-  vendors, dispatch, handleSave, saved,
+  vendors, dispatch,
 }: {
   vendors: Vendor[]
   dispatch: React.Dispatch<any>
-  handleSave: () => void
-  saved: boolean
 }) {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState<Omit<Vendor, 'id'>>(EMPTY_VENDOR)
@@ -422,8 +416,6 @@ function DirectorioTab({
           El agente de resolución usa este directorio para contactar al proveedor adecuado al escalar un incidente. Los de tipo <strong className="text-slate-700">Urgencias</strong> serán contactados de inmediato.
         </p>
       </div>
-
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
@@ -449,15 +441,13 @@ const getEmptyInventory = (buildingName: string): Omit<InventoryItem, 'id' | 'cr
 })
 
 function InventarioTab({
-  bc, inventory, residents, staff, dispatch, handleSave, saved,
+  bc, inventory, residents, staff, dispatch,
 }: {
   bc: BuildingConfig
   inventory: InventoryItem[]
   residents: Resident[]
   staff: StaffMember[]
   dispatch: React.Dispatch<any>
-  handleSave: () => void
-  saved: boolean
 }) {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -688,8 +678,6 @@ function InventarioTab({
            </p>
         </div>
       </div>
-
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
@@ -702,16 +690,12 @@ export default function LogisticaSettings({
   residents,
   staff,
   dispatch,
-  handleSave,
-  saved,
 }: {
   bc: BuildingConfig
   inventory: InventoryItem[]
   residents: Resident[]
   staff: StaffMember[]
   dispatch: React.Dispatch<any>
-  handleSave: () => void
-  saved: boolean
 }) {
   const [activeTab, setActiveTab] = useState('paquetes')
 
@@ -719,13 +703,11 @@ export default function LogisticaSettings({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'paquetes'   && <PaquetesTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} />}
+      {activeTab === 'paquetes'   && <PaquetesTab bc={bc} dispatch={dispatch} />}
       {activeTab === 'directorio' && (
         <DirectorioTab
           vendors={bc.vendors || []}
           dispatch={dispatch}
-          handleSave={handleSave}
-          saved={saved}
         />
       )}
       {activeTab === 'inventario' && (
@@ -735,8 +717,6 @@ export default function LogisticaSettings({
           residents={residents} 
           staff={staff}
           dispatch={dispatch}
-          handleSave={handleSave}
-          saved={saved}
         />
       )}
       {activeTab === 'mantenimiento' && (

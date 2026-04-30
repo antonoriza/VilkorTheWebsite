@@ -87,7 +87,7 @@ export function SaveFooter({
   saved: boolean
 }) {
   return (
-    <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-end">
+    <div className="flex items-center justify-end">
       <button
         onClick={handleSave}
         className={`flex items-center space-x-3 px-8 py-3 font-black rounded-2xl transition-all shadow-2xl text-[10px] tracking-widest uppercase ${

@@ -82,6 +82,7 @@ export type Action =
   | { type: 'UPDATE_AMENITY'; payload: Amenity }
   | { type: 'DELETE_AMENITY'; payload: string }
   | { type: 'UPDATE_BUILDING_CONFIG'; payload: Partial<BuildingConfig> }
+  | { type: 'SAVE_BUILDING_CONFIG'; payload: BuildingConfig }
   | { type: 'ADD_TICKET'; payload: Ticket }
   | { type: 'UPDATE_TICKET'; payload: Ticket }
   | { type: 'ADD_TICKET_ACTIVITY'; payload: { ticketId: string; activity: TicketActivity } }

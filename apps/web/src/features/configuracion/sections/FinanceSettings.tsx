@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { BuildingConfig, BankingConfig } from '../../../types'
-import { SettingsTabBar, SaveFooter, SectionHeader, FieldGroup, FormInput } from '../../../core/components/SettingsShell'
+import { SettingsTabBar, SectionHeader, FieldGroup, FormInput } from '../../../core/components/SettingsShell'
 import CatalogoTab from './_CatalogoTab'
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
@@ -13,8 +13,6 @@ const TABS = [
 interface Props {
   bc: BuildingConfig
   dispatch: React.Dispatch<any>
-  handleSave: () => void
-  saved: boolean
 }
 
 // ─── Constants for CuentasTab ─────────────────────────────────────────────────
@@ -29,7 +27,7 @@ function formatClabe(raw: string) {
   return raw.replace(/\D/g, '').slice(0, 18)
 }
 
-function CuentasTab({ bc, dispatch, handleSave, saved }: Props) {
+function CuentasTab({ bc, dispatch }: Props) {
   const banking = bc.banking || { clabe: '', bankName: '', accountHolder: '', acceptsTransfer: true, acceptsCash: false, acceptsOxxo: false, referenceFormat: 'apartment', notes: '' }
 
   const update = (patch: Partial<BankingConfig>) =>
@@ -186,24 +184,22 @@ function CuentasTab({ bc, dispatch, handleSave, saved }: Props) {
           {banking.notes && <p className="text-[9px] text-slate-400 font-medium border-t border-slate-800 pt-3">{banking.notes}</p>}
         </div>
       )}
-
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export default function FinanceSettings({ bc, dispatch, handleSave, saved }: Props) {
+export default function FinanceSettings({ bc, dispatch }: Props) {
   const [activeTab, setActiveTab] = useState('catalogo')
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'catalogo' && <CatalogoTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} />}
+      {activeTab === 'catalogo' && <CatalogoTab bc={bc} dispatch={dispatch} />}
 
-      {activeTab === 'cuentas' && <CuentasTab bc={bc} dispatch={dispatch} handleSave={handleSave} saved={saved} />}
+      {activeTab === 'cuentas' && <CuentasTab bc={bc} dispatch={dispatch} />}
     </div>
   )
 }

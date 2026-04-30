@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { BuildingConfig, Amenity } from '../../../types'
 import {
-  SettingsTabBar, SectionHeader, SaveFooter, SettingsCard,
+  SettingsTabBar, SectionHeader, SettingsCard,
   FieldGroup, FormInput, StatBar, TopologyCard, InfoBanner,
 } from '../../../core/components/SettingsShell'
 import AmenidadesTab from './AmenidadesTab'
@@ -17,8 +17,6 @@ interface Props {
   handleUpdateAmenity: (amenity: Amenity) => void
   update: (key: string, value: any) => void
   onRequestGroupingModeChange: (mode: 'vertical' | 'horizontal') => void
-  handleSave: () => void
-  saved: boolean
 }
 
 export default function ArchitectureSettings({ 
@@ -30,8 +28,6 @@ export default function ArchitectureSettings({
   handleUpdateAmenity,
   update,
   onRequestGroupingModeChange,
-  handleSave,
-  saved,
 }: Props) {
   // Read subtab from URL so setup checklist can deep-link (e.g. ?tab=perfil&subtab=identidad)
   const [searchParams] = useSearchParams()
@@ -148,8 +144,6 @@ export default function ArchitectureSettings({
                 <p>Estos datos se utilizan para la generación de avisos de cobro, recibos fiscales y actas de asamblea.</p>
               </InfoBanner>
             </div>
-
-            <SaveFooter handleSave={handleSave} saved={saved} />
           </div>
         )}
 
@@ -289,8 +283,6 @@ export default function ArchitectureSettings({
                 />
               ))}
             </div>
-
-            <SaveFooter handleSave={handleSave} saved={saved} />
           </div>
         )}
 
@@ -306,8 +298,6 @@ export default function ArchitectureSettings({
             handleAddAmenity={handleAddAmenity}
             handleUpdateAmenity={handleUpdateAmenity}
             handleUpdateConfig={(partial) => Object.entries(partial).forEach(([k, v]) => update(k, v))}
-            handleSave={handleSave}
-            saved={saved}
           />
         )}
 
@@ -320,8 +310,6 @@ export default function ArchitectureSettings({
             containers={bc.topology?.containers || []}
             groupingMode={bc.groupingMode}
             update={update}
-            handleSave={handleSave}
-            saved={saved}
           />
         )}
       </SettingsCard>

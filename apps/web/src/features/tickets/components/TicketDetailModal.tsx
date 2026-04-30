@@ -162,7 +162,7 @@ export default function TicketDetailModal({
                   <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Sin actividad registrada.</p>
                 </div>
               ) : (
-                visibleActivities.map((act, idx) => {
+                visibleActivities.map((act) => {
                   const isSystem = act.author === 'Sistema'
                   const isInternal = act.visibility === 'internal'
                   

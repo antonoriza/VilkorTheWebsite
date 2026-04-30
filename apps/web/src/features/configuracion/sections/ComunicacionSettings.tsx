@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { SettingsTabBar, SaveFooter, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
+import { SettingsTabBar, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
 import { avisosApi } from '../../../lib/api'
 import type { BuildingConfig, Aviso } from '@vilkor/shared'
 
@@ -23,7 +23,7 @@ const CHANNELS = [
   { id: 'whatsapp',  label: 'WhatsApp',   desc: 'API de WhatsApp Business',      icon: 'chat',            color: 'bg-green-50 text-green-700 border-green-100' },
 ]
 
-function CanalesTab({ bc, update, handleSave, saved }: { bc: BuildingConfig; update: (key: string, value: any) => void; handleSave: () => void; saved: boolean }) {
+function CanalesTab({ bc, update }: { bc: BuildingConfig; update: (key: string, value: any) => void }) {
   const comm = bc.communication || { canales: { push: true, email: true, sms: false, whatsapp: false }, asambleas: { quorumRequired: 51, advanceNoticeDays: 15, allowProxies: true, proxyMaxPerResident: 1 } }
   const enabled = comm.canales
 
@@ -66,8 +66,6 @@ function CanalesTab({ bc, update, handleSave, saved }: { bc: BuildingConfig; upd
           ))}
         </div>
       </FieldGroup>
-
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
@@ -88,7 +86,7 @@ const CHANNEL_BADGE: Record<string, string> = {
   'push + email': 'bg-amber-50 text-amber-700',
 }
 
-function PlantillasTab({ handleSave, saved }: { handleSave: () => void; saved: boolean }) {
+function PlantillasTab() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 space-y-6">
       <SectionHeader label="Plantillas de Envío" icon="article" />
@@ -129,15 +127,13 @@ function PlantillasTab({ handleSave, saved }: { handleSave: () => void; saved: b
       <InfoBanner icon="info" variant="warning">
         El motor de avisos del agente usa estas plantillas para envíos automáticos. Editar el contenido estará disponible en el siguiente release.
       </InfoBanner>
-
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
 
 // ─── Asambleas Tab ────────────────────────────────────────────────────────────
 
-function AsambleasTab({ bc, update, handleSave, saved }: { bc: BuildingConfig; update: (key: string, value: any) => void; handleSave: () => void; saved: boolean }) {
+function AsambleasTab({ bc, update }: { bc: BuildingConfig; update: (key: string, value: any) => void }) {
   const comm = bc.communication || { canales: { push: true, email: true, sms: false, whatsapp: false }, asambleas: { quorumRequired: 51, advanceNoticeDays: 15, allowProxies: true, proxyMaxPerResident: 1 } }
   const asambleas = comm.asambleas
 
@@ -202,8 +198,6 @@ function AsambleasTab({ bc, update, handleSave, saved }: { bc: BuildingConfig; u
           )}
         </div>
       </FieldGroup>
-
-      <SaveFooter handleSave={handleSave} saved={saved} />
     </div>
   )
 }
@@ -297,13 +291,9 @@ function HistorialTab() {
 export default function ComunicacionSettings({
   bc,
   update,
-  handleSave,
-  saved,
 }: {
   bc: BuildingConfig
   update: (key: string, value: any) => void
-  handleSave: () => void
-  saved: boolean
 }) {
   const [activeTab, setActiveTab] = useState('canales')
 
@@ -311,9 +301,9 @@ export default function ComunicacionSettings({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <SettingsTabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'canales'    && <CanalesTab bc={bc} update={update} handleSave={handleSave} saved={saved} />}
-      {activeTab === 'plantillas' && <PlantillasTab handleSave={handleSave} saved={saved} />}
-      {activeTab === 'asambleas'  && <AsambleasTab bc={bc} update={update} handleSave={handleSave} saved={saved} />}
+      {activeTab === 'canales'    && <CanalesTab bc={bc} update={update} />}
+      {activeTab === 'plantillas' && <PlantillasTab />}
+      {activeTab === 'asambleas'  && <AsambleasTab bc={bc} update={update} />}
       {activeTab === 'historial'  && <HistorialTab />}
     </div>
   )
