@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════
-# propertyPulse — Developer CLI for Vilkor monorepo
+# vilkor — Developer CLI for Vilkor monorepo
 # ═══════════════════════════════════════════════════════════════════
 # Usage:
-#   propertyPulse run              Start the full stack (web + api) in dev mode
-#   propertyPulse run -demo        Start in demo mode (seeds demo data)
-#   propertyPulse run -prod        Start in production mode (builds + serves)
-#   propertyPulse run -web         Start only the web frontend
-#   propertyPulse run -api         Start only the API backend
-#   propertyPulse help             Show this help message
+#   vilkor run              Start the full stack (web + api) in dev mode
+#   vilkor run -demo        Start in demo mode (seeds demo data)
+#   vilkor run -prod        Start in production mode (builds + serves)
+#   vilkor run -web         Start only the web frontend
+#   vilkor run -api         Start only the API backend
+#   vilkor help             Show this help message
 # ═══════════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -40,7 +40,7 @@ banner() {
 show_help() {
   banner
   echo -e "  ${BOLD}USAGE${RESET}"
-  echo -e "    ${GREEN}propertyPulse${RESET} ${CYAN}<command>${RESET} [flags]"
+  echo -e "    ${GREEN}vilkor${RESET} ${CYAN}<command>${RESET} [flags]"
   echo ""
   echo -e "  ${BOLD}COMMANDS${RESET}"
   echo -e "    ${CYAN}run${RESET}          Start the application stack"
@@ -52,13 +52,14 @@ show_help() {
   echo -e "    ${YELLOW}-web${RESET}        Start only the web frontend (Vite dev server)"
   echo -e "    ${YELLOW}-api${RESET}        Start only the API backend (Hono + Bun)"
   echo -e "    ${YELLOW}-logs${RESET}       Enable physical audit logs rotation and retention"
+  echo -e "    ${YELLOW}-m, --month${RESET} <n> Limit seed data depth (1-12)"
   echo -e "    ${DIM}(no flag)${RESET}    Start full stack in development mode (default)"
   echo ""
   echo -e "  ${BOLD}EXAMPLES${RESET}"
-  echo -e "    ${DIM}$ propertyPulse run${RESET}           ${DIM}# full stack dev mode${RESET}"
-  echo -e "    ${DIM}$ propertyPulse run -demo${RESET}     ${DIM}# full stack with demo data${RESET}"
-  echo -e "    ${DIM}$ propertyPulse run -prod${RESET}     ${DIM}# production build + serve${RESET}"
-  echo -e "    ${DIM}$ propertyPulse run -web${RESET}      ${DIM}# web only${RESET}"
+  echo -e "    ${DIM}$ vilkor run${RESET}           ${DIM}# full stack dev mode${RESET}"
+  echo -e "    ${DIM}$ vilkor run -demo${RESET}     ${DIM}# full stack with demo data${RESET}"
+  echo -e "    ${DIM}$ vilkor run -prod${RESET}     ${DIM}# production build + serve${RESET}"
+  echo -e "    ${DIM}$ vilkor run -web${RESET}      ${DIM}# web only${RESET}"
   echo ""
 }
 
@@ -141,6 +142,7 @@ run_demo() {
   export DEMO_MODE=true
   export NODE_ENV=development
   export BETTER_AUTH_URL="${BETTER_AUTH_URL:-http://localhost:3000}"
+  export SEED_MONTH_LIMIT="${SEED_MONTH_LIMIT:-}"
 
   # Ensure data directories exist
   mkdir -p "$PROJECT_ROOT/apps/api/data/tenants"
@@ -148,7 +150,8 @@ run_demo() {
   # Seed demo data if API is being started
   if [ "$run_api" = true ]; then
     echo -e "  ${YELLOW}⚙  Seeding demo data...${RESET}"
-    (cd "$PROJECT_ROOT/apps/api" && APP_MODE=demo bun run db:seed 2>&1) || echo -e "  ${DIM}(seed skipped or already seeded)${RESET}"
+    if [ -n "${SEED_MONTH_LIMIT:-}" ]; then echo -e "  ${DIM}▸ Depth limit: Month ${SEED_MONTH_LIMIT}${RESET}"; fi
+    (cd "$PROJECT_ROOT/apps/api" && APP_MODE=demo SEED_MONTH_LIMIT="${SEED_MONTH_LIMIT:-}" bun run db:seed 2>&1) || echo -e "  ${DIM}(seed skipped or already seeded)${RESET}"
     echo ""
   fi
 
@@ -242,16 +245,25 @@ case "$COMMAND" in
         -web|--web)    ONLY_WEB=true ;;
         -api|--api)    ONLY_API=true ;;
         -logs|--logs)  ENABLE_LOGS=true ;;
+        -m|--month)
+          shift
+          if [[ "$1" =~ ^[0-9]+$ ]]; then
+            SEED_MONTH_LIMIT="$1"
+          else
+            echo -e "  ${RED}✖ Error: --month requires a numeric value (1-12)${RESET}"
+            exit 1
+          fi
+          ;;
         *)
           echo -e "  ${RED}✖ Unknown flag: $1${RESET}"
-          echo -e "  Run ${CYAN}propertyPulse help${RESET} for usage."
+          echo -e "  Run ${CYAN}vilkor help${RESET} for usage."
           exit 1
           ;;
       esac
       shift
     done
 
-    export ONLY_WEB ONLY_API ENABLE_LOGS
+    export ONLY_WEB ONLY_API ENABLE_LOGS SEED_MONTH_LIMIT="${SEED_MONTH_LIMIT:-}"
 
     case "$MODE" in
       dev)  run_dev  ;;

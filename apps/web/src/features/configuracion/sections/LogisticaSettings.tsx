@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS, InventoryItem, InventoryCategory, Resident, StaffMember } from '../../../types'
+import { BuildingConfig, Vendor, VendorCategory, VENDOR_CATEGORY_LABELS, InventoryItem, InventoryCategory, Resident, StaffMember, Amenity } from '../../../types'
 import { SettingsTabBar, SectionHeader, FieldGroup, InfoBanner } from '../../../core/components/SettingsShell'
 
 const selectClass = "block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 font-medium text-sm transition-all hover:border-slate-300 cursor-pointer"
@@ -437,16 +437,18 @@ const getEmptyInventory = (buildingName: string): Omit<InventoryItem, 'id' | 'cr
   owner: buildingName, 
   currentUserId: null,
   currentUser: '', 
+  amenityId: null,
   notes: '',
 })
 
 function InventarioTab({
-  bc, inventory, residents, staff, dispatch,
+  bc, inventory, residents, staff, amenities, dispatch,
 }: {
   bc: BuildingConfig
   inventory: InventoryItem[]
   residents: Resident[]
   staff: StaffMember[]
+  amenities: Amenity[]
   dispatch: React.Dispatch<any>
 }) {
   const [showForm, setShowForm] = useState(false)
@@ -475,7 +477,9 @@ function InventarioTab({
     const payload = {
       ...form,
       owner: finalOwner,
-      currentUser: finalUser || 'Sin asignar',
+      currentUser: form.amenityId 
+        ? (amenities.find(a => a.id === form.amenityId)?.name || 'Amenidad')
+        : (finalUser || 'Sin asignar'),
       createdAt: now,
       updatedAt: now
     }
@@ -503,6 +507,7 @@ function InventarioTab({
       owner: item.owner,
       currentUserId: item.currentUserId,
       currentUser: item.currentUser,
+      amenityId: item.amenityId,
       notes: item.notes || '',
     })
     setEditingId(item.id)
@@ -552,12 +557,14 @@ function InventarioTab({
 
             <div className="col-span-3">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
-                  <span className="material-symbols-outlined text-[14px]">person</span>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${item.amenityId ? 'bg-amber-50 text-amber-500' : 'bg-indigo-50 text-indigo-500'}`}>
+                  <span className="material-symbols-outlined text-[14px]">{item.amenityId ? 'home_repair_service' : 'person'}</span>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold text-slate-600 leading-tight">{item.currentUser}</p>
-                  {item.currentUserId && <p className="text-[8px] text-slate-400 font-mono tracking-tighter">{item.currentUserId}</p>}
+                  <p className="text-[8px] text-slate-400 font-mono tracking-tighter">
+                    {item.amenityId ? `Amenidad: ${item.amenityId}` : (item.currentUserId || 'Bodega')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -633,19 +640,31 @@ function InventarioTab({
             </div>
 
             <div>
-              <label className={labelCls}>Quien lo usa (User) *</label>
+              <label className={labelCls}>Asignación (Exclusiva) *</label>
               <select 
-                value={form.currentUserId || ''} 
+                value={form.amenityId ? `amenity:${form.amenityId}` : (form.currentUserId ? `staff:${form.currentUserId}` : '')} 
                 onChange={(e) => {
-                  const id = e.target.value
-                  const s = staff.find(st => st.id === id)
-                  setForm({ ...form, currentUserId: id || null, currentUser: s?.name || 'Bodega Central' })
+                  const val = e.target.value
+                  if (val.startsWith('amenity:')) {
+                    const id = val.split(':')[1]
+                    const a = amenities.find(am => am.id === id)
+                    setForm({ ...form, amenityId: id, currentUserId: null, currentUser: a?.name || '' })
+                  } else if (val.startsWith('staff:')) {
+                    const id = val.split(':')[1]
+                    const s = staff.find(st => st.id === id)
+                    setForm({ ...form, currentUserId: id, amenityId: null, currentUser: s?.name || '' })
+                  } else {
+                    setForm({ ...form, currentUserId: null, amenityId: null, currentUser: 'Bodega Central' })
+                  }
                 }} 
                 className={selectClass}
               >
                 <option value="">Bodega Central / Sin asignar</option>
-                <optgroup label="Staff en Turno">
-                  {staff.map(s => <option key={s.id} value={s.id}>{s.name} — {s.role}</option>)}
+                <optgroup label="Personal (Staff)">
+                  {staff.map(s => <option key={s.id} value={`staff:${s.id}`}>{s.name} — {s.role}</option>)}
+                </optgroup>
+                <optgroup label="Amenidades">
+                  {amenities.map(a => <option key={a.id} value={`amenity:${a.id}`}>{a.name}</option>)}
                 </optgroup>
               </select>
             </div>
@@ -689,12 +708,14 @@ export default function LogisticaSettings({
   inventory,
   residents,
   staff,
+  amenities,
   dispatch,
 }: {
   bc: BuildingConfig
   inventory: InventoryItem[]
   residents: Resident[]
   staff: StaffMember[]
+  amenities: Amenity[]
   dispatch: React.Dispatch<any>
 }) {
   const [activeTab, setActiveTab] = useState('paquetes')
@@ -716,6 +737,7 @@ export default function LogisticaSettings({
           inventory={inventory} 
           residents={residents} 
           staff={staff}
+          amenities={amenities}
           dispatch={dispatch}
         />
       )}

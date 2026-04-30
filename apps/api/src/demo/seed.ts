@@ -74,8 +74,11 @@ export async function seedDemo(tenantId: string): Promise<void> {
   const insertStaff = raw.prepare(
     'INSERT INTO staff (id, name, role, shift_start, shift_end, work_days, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
   )
+  const staffMap = new Map<string, string>()
   for (const s of staffMembers) {
-    insertStaff.run(nanoid(), s.name, s.role, s.shiftStart, s.shiftEnd, JSON.stringify(s.workDays), NOW, NOW)
+    const id = nanoid()
+    staffMap.set(s.role, id) // Map by role for easy lookups
+    insertStaff.run(id, s.name, s.role, s.shiftStart, s.shiftEnd, JSON.stringify(s.workDays), NOW, NOW)
   }
   console.log(`[demo]   ✓ ${staffMembers.length} staff members`)
 
@@ -83,8 +86,11 @@ export async function seedDemo(tenantId: string): Promise<void> {
   const insertAmenity = raw.prepare(
     'INSERT INTO amenities (id, name, icon, created_at, updated_at) VALUES (?, ?, ?, ?, ?)'
   )
+  const amenityMap = new Map<string, string>()
   for (const a of amenitiesList) {
-    insertAmenity.run(nanoid(), a.name, a.icon, NOW, NOW)
+    const id = nanoid()
+    amenityMap.set(a.name, id)
+    insertAmenity.run(id, a.name, a.icon, NOW, NOW)
   }
   console.log(`[demo]   ✓ ${amenitiesList.length} amenities`)
 
@@ -295,13 +301,19 @@ export async function seedDemo(tenantId: string): Promise<void> {
   // ── 13. Inventario ───────────────────────────────────────────────────
   const insertInventory = raw.prepare(`
     INSERT INTO inventory
-      (id, name, category, owner_id, owner, current_user_id, current_user, notes, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (id, name, category, owner_id, owner, current_user_id, current_user, amenity_id, notes, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
   for (const item of inventoryData) {
+    const amenityId = item.amenityName ? amenityMap.get(item.amenityName) : null
+    const staffId = !amenityId && item.currentUser !== 'Sin asignar' 
+      ? (staffMap.get(item.category) || 'staff-1')
+      : null
+      
     insertInventory.run(
       nanoid(), item.name, item.category, 'admin-1', item.owner,
-      null, item.currentUser, item.notes || '', NOW, NOW
+      staffId, 
+      item.currentUser, amenityId || null, item.notes || '', NOW, NOW
     )
   }
   console.log(`[demo]   ✓ ${inventoryData.length} items de inventario`)

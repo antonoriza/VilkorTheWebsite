@@ -24,15 +24,21 @@ export function getMonthsUpToNow() {
   const now = new Date()
   const currentMonth = now.getMonth() // 0-11
   const currentYear = now.getFullYear()
+
+  // Custom limit from CLI (1-12)
+  const limitStr = process.env.SEED_MONTH_LIMIT
+  const limit = (limitStr && !isNaN(parseInt(limitStr))) 
+    ? Math.min(Math.max(parseInt(limitStr), 1), currentMonth + 1)
+    : (currentMonth + 1)
   
   const months: { name: string; key: string; isCurrent: boolean }[] = []
   
-  for (let m = 0; m <= currentMonth; m++) {
+  for (let m = 0; m < limit; m++) {
     const d = new Date(currentYear, m, 1)
     months.push({
       name: d.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }),
       key: `${currentYear}-${String(m + 1).padStart(2, '0')}`,
-      isCurrent: m === currentMonth
+      isCurrent: m === (limit - 1)
     })
   }
   

@@ -227,6 +227,8 @@ export interface InventoryItem {
   currentUserId: string | null
   /** Human-readable user name */
   currentUser: string
+  /** ID of the amenity this belongs to (exclusive with currentUserId) */
+  amenityId: string | null
   /** Detailed notes */
   notes?: string
   /** ISO timestamps */

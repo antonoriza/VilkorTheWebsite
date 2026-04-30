@@ -23,7 +23,7 @@ function walk(dir) {
       }
     } else {
       // Only process text files we care about
-      if (/\.(ts|tsx|js|jsx|json|md|html|css)$/.test(file) || file === 'propertyPulse') {
+      if (/\.(ts|tsx|js|jsx|json|md|html|css)$/.test(file) || file === 'vilkor') {
         results.push(filePath);
       }
     }

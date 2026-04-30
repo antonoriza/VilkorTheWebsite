@@ -9,6 +9,7 @@ export interface DemoInventory {
   category: string
   owner: string
   currentUser: string
+  amenityName?: string // New field
   notes?: string
 }
 
@@ -28,11 +29,18 @@ export const inventoryData: DemoInventory[] = [
     notes: 'Cargar todas las noches en caseta.',
   },
   {
-    name: 'Radio Walkie-Talkie Motorola (G2)',
-    category: 'Seguridad',
+    name: 'Mesa de Ping Pong (Profesional)',
+    category: 'Deportes',
     owner: 'Administración',
     currentUser: 'Sin asignar',
-    notes: 'Reserva para turno nocturno.',
+    amenityName: 'Ludoteca', // Will be mapped to amenityId in seed.ts
+  },
+  {
+    name: 'Set de Mancuernas 5-25kg',
+    category: 'Fitness',
+    owner: 'Administración',
+    currentUser: 'Sin asignar',
+    amenityName: 'Gimnasio',
   },
   {
     name: 'Aspiradora Industrial Karcher',
@@ -40,10 +48,5 @@ export const inventoryData: DemoInventory[] = [
     owner: 'Administración',
     currentUser: 'Valentina Sánchez (Limpieza)',
   },
-  {
-    name: 'Kit de Herramientas Básico',
-    category: 'Mantenimiento',
-    owner: 'Administración',
-    currentUser: 'Enrique Martínez (Jardinero)',
-  },
 ]
+

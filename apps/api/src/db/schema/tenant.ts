@@ -263,6 +263,7 @@ export const inventory = sqliteTable('inventory', {
   owner:         text('owner').notNull(),
   currentUserId: text('current_user_id'),
   currentUser:   text('current_user').notNull(),
+  amenityId:     text('amenity_id').references(() => amenities.id),
   notes:         text('notes'),
   createdAt:     text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
   updatedAt:     text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),

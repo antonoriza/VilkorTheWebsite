@@ -1,4 +1,4 @@
-# PropertyPulse API — Multi-stage Docker Build
+# Vilkor API — Multi-stage Docker Build
 FROM oven/bun:1-alpine AS builder
 WORKDIR /app
 

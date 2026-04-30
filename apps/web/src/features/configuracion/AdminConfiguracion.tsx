@@ -163,6 +163,7 @@ export default function AdminConfiguracion() {
             inventory={state.inventory}
             residents={state.residents}
             staff={state.staff}
+            amenities={state.amenities}
             dispatch={dispatch}
           />
         )}

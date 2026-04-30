@@ -8,15 +8,15 @@ The command is already integrated into the project. No system changes are requir
 
 ```bash
 # Make the CLI executable (one-time setup)
-chmod +x dev-utilities/bin/propertyPulse
+chmod +x dev-utilities/bin/vilkor
 
 # Run from root using bun
-bun propertyPulse help
+bun vilkor help
 ```
 
 ## Commands
 
-### `propertyPulse run`
+### `vilkor run`
 
 Start the application stack with environment-specific configuration.
 
@@ -32,13 +32,13 @@ Flags can be combined:
 
 ```bash
 # Demo mode, web only
-propertyPulse run -demo -web
+vilkor run -demo -web
 
 # Production mode, API only
-propertyPulse run -prod -api
+vilkor run -prod -api
 ```
 
-### `propertyPulse help`
+### `vilkor help`
 
 Display usage information and available commands.
 
@@ -46,16 +46,16 @@ Display usage information and available commands.
 
 ```bash
 # Standard development workflow
-propertyPulse run
+vilkor run
 
 # Show the app to a stakeholder with sample data
-propertyPulse run -demo
+vilkor run -demo
 
 # Test the production build locally
-propertyPulse run -prod
+vilkor run -prod
 
 # Frontend-only work (API already running separately)
-propertyPulse run -web
+vilkor run -web
 ```
 
 ## Architecture
@@ -63,7 +63,7 @@ propertyPulse run -web
 ```
 dev-utilities/
 ├── bin/
-│   └── propertyPulse      # Main CLI entrypoint (bash)
+│   └── vilkor      # Main CLI entrypoint (bash)
 └── README.md               # This file
 ```
 
