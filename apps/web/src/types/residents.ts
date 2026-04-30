@@ -17,6 +17,8 @@ export interface Resident {
   email: string
   /** Contact phone number */
   phone?: string
+  /** Tags assigned to this resident (catalog IDs) */
+  tags?: string[]
 }
 
 // ─── Staff ───────────────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 /**
- * CantonAlfa — Barrel re-export for all domain types.
+ * Vilkor — Barrel re-export for all domain types.
  *
  * Consumers can import from '../../types' as before.
  * For targeted imports, use the domain files directly:

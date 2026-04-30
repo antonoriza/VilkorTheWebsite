@@ -2,7 +2,7 @@
  * Tenant Database Schema — Drizzle ORM
  *
  * One copy of this schema exists per tenant .db file.
- * Every table is derived from the canonical types in @propertypulse/shared.
+ * Every table is derived from the canonical types in @vilkor/shared.
  *
  * Conventions:
  *   - Column names use snake_case (SQL standard)

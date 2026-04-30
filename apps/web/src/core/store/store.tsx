@@ -1,7 +1,7 @@
 /**
- * Store — Centralized state management for CantonAlfa.
+ * Store — Centralized state management for Vilkor.
  *
- * Backed by the PropertyPulse API server. No browser persistence.
+ * Backed by the Vilkor API server. No browser persistence.
  *
  * Architecture:
  *   - StoreProvider — Loads state from API after auth, dispatches optimistically.

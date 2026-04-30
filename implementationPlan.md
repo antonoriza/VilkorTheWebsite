@@ -1,4 +1,4 @@
-# PropertyPulse — Engineering Development Process
+# Vilkor — Engineering Development Process
 > Correct build order: **Cleanup Commit → [Phase 0: DONE] → Agent Engine → Supabase Schema → Production UI**
 > North Star KPI: `AgentResolutionRate` > 80% | `units_per_manager` ratio
 

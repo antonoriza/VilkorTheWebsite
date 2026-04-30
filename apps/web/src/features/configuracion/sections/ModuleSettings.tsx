@@ -30,7 +30,7 @@ export default function ModuleSettings() {
               </p>
               <div className="bg-amber-50 border border-amber-100/50 rounded-xl px-3 py-2 flex items-center gap-2">
                 <span className="material-symbols-outlined text-amber-600 text-[14px]">lock</span>
-                <span className="text-[9px] font-bold text-amber-700 uppercase tracking-widest">Próximamente en Canton Alfa</span>
+                <span className="text-[9px] font-bold text-amber-700 uppercase tracking-widest">Próximamente en Vilkor</span>
               </div>
             </div>
           ))}

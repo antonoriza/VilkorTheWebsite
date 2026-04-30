@@ -135,7 +135,7 @@ export function ComingSoon({ label }: { label: string }) {
         {label}
       </h3>
       <p className="text-sm text-slate-500 font-medium max-w-sm mx-auto">
-        Estamos trabajando en la infraestructura de este componente para el siguiente release de Canton Alfa.
+        Estamos trabajando en la infraestructura de este componente para el siguiente release de Vilkor.
       </p>
     </div>
   )

@@ -51,6 +51,7 @@ interface UnifiedPerson {
   email?: string
   photo?: string
   tower?: string
+  tags?: string[]
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -87,6 +88,7 @@ export default function UsuariosPage() {
   const [typeFilter, setTypeFilter] = useState<PersonType | 'all'>('all')
   const [towerFilter, setTowerFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [tagFilter, setTagFilter] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
 
   // ── Sort state (applied after filters) ──
@@ -156,6 +158,7 @@ export default function UsuariosPage() {
         role: s.role,
         location: `${s.shiftStart} – ${s.shiftEnd}`,
         photo: s.photo,
+        tags: [],
       })),
       ...residents.map(r => ({
         id: r.id,
@@ -165,6 +168,7 @@ export default function UsuariosPage() {
         location: `${r.tower ? `${r.tower}-` : ''}${r.apartment}`,
         email: r.email,
         tower: r.tower,
+        tags: r.tags || [],
       })),
     ]
     if (role === 'operador') return result.filter(p => p.type !== 'Residente')
@@ -184,6 +188,9 @@ export default function UsuariosPage() {
         p.location.toLowerCase().includes(q) ||
         (p.email || '').toLowerCase().includes(q)
       )
+    }
+    if (tagFilter.length > 0) {
+      list = list.filter(p => p.tags && tagFilter.some(t => p.tags?.includes(t)))
     }
     return [...list].sort((a, b) => {
       const av = (a[sortKey] ?? '') as string
@@ -287,17 +294,18 @@ export default function UsuariosPage() {
   }
 
   const clearFilters = () => {
-    setTypeFilter('all'); setTowerFilter('all'); setSearch('')
+    setTypeFilter('all'); setTowerFilter('all'); setSearch(''); setTagFilter([])
   }
 
   const handleExportCSV = () => {
-    const headers = ['Nombre', 'Tipo', 'Rol/Puesto', 'Ubicación/Torre', 'Email']
+    const headers = ['Nombre', 'Tipo', 'Rol/Puesto', 'Ubicación/Torre', 'Email', 'Etiquetas']
     const rows = filtered.map(p => [
       p.name,
       p.type,
       p.role,
       p.location,
-      p.email || 'N/A'
+      p.email || 'N/A',
+      (p.tags || []).map(tid => bc.userTags?.find(t => t.id === tid)?.label).filter(Boolean).join('; ')
     ])
     const csvContent = [headers, ...rows].map(r => r.join(',')).join('\n')
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
@@ -438,6 +446,32 @@ export default function UsuariosPage() {
                 </div>
               </div>
             </div>
+
+            {/* Tag Filter Row */}
+            {bc.userTags && bc.userTags.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-200/50">
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest w-full mb-1 ml-1">Filtrar por Etiqueta</span>
+                {bc.userTags.map(tag => {
+                  const isActive = tagFilter.includes(tag.id)
+                  return (
+                    <button
+                      key={tag.id}
+                      onClick={() => setTagFilter(prev => prev.includes(tag.id) ? prev.filter(id => id !== tag.id) : [...prev, tag.id])}
+                      style={{
+                        backgroundColor: isActive ? tag.color : 'white',
+                        color: isActive ? 'white' : '#94a3b8',
+                        borderColor: isActive ? tag.color : '#f1f5f9'
+                      }}
+                      className={`px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                        isActive ? 'shadow-sm ring-2 ring-offset-1 ring-slate-100' : 'hover:border-slate-200'
+                      }`}
+                    >
+                      {tag.label}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
             
             <div className="flex items-center pt-4 border-t border-slate-200/50">
               <button 
@@ -459,6 +493,7 @@ export default function UsuariosPage() {
               <SortableTh<PersonSortKey> col="role" label="Rol / Puesto" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
               <SortableTh<PersonSortKey> col="location" label="Ubicación" sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
               <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Contacto</th>
+              <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Etiquetas</th>
               <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Acciones</th>
             </tr>
           </thead>
@@ -487,7 +522,6 @@ export default function UsuariosPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-slate-900">{p.name}</span>
-                        {/* Green dot for active status */}
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
                       </div>
                     </div>
@@ -516,6 +550,29 @@ export default function UsuariosPage() {
                   </td>
                   {/* Contact */}
                   <td className="px-6 py-4 text-sm font-medium text-slate-400">{p.email || '—'}</td>
+                  {/* Tags */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-wrap gap-1">
+                      {p.tags?.map(tagId => {
+                        const tag = bc.userTags?.find(t => t.id === tagId)
+                        if (!tag) return null
+                        
+                        return (
+                          <span 
+                            key={tagId} 
+                            style={{ 
+                              backgroundColor: `${tag.color}15`, 
+                              color: tag.color,
+                              borderColor: `${tag.color}30` 
+                            }}
+                            className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded border"
+                          >
+                            {tag.label}
+                          </span>
+                        )
+                      })}
+                    </div>
+                  </td>
                   {/* Actions */}
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
@@ -584,6 +641,32 @@ export default function UsuariosPage() {
               <span className={`text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${TYPE_BADGE[detailPerson.type]}`}>
                 {detailPerson.type}
               </span>
+
+              {/* Tags Display */}
+              {detailPerson.type === 'Residente' && (
+                <div className="flex flex-wrap justify-center gap-1.5 pt-2">
+                  {detailPerson.tags?.map(tagId => {
+                    const tag = bc.userTags?.find(t => t.id === tagId)
+                    if (!tag) return null
+                    const colorCls = 
+                      tag.color === 'indigo' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' :
+                      tag.color === 'emerald' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                      tag.color === 'amber' ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                      tag.color === 'rose' ? 'bg-rose-50 text-rose-700 border-rose-100' :
+                      tag.color === 'sky' ? 'bg-sky-50 text-sky-700 border-sky-100' :
+                      tag.color === 'purple' ? 'bg-purple-50 text-purple-700 border-purple-100' : 'bg-slate-50 text-slate-700 border-slate-100'
+                    
+                    return (
+                      <span key={tagId} className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border ${colorCls}`}>
+                        {tag.label}
+                      </span>
+                    )
+                  })}
+                  {(!detailPerson.tags || detailPerson.tags.length === 0) && (
+                    <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Sin etiquetas</span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Info grid */}
@@ -602,6 +685,54 @@ export default function UsuariosPage() {
                 <p className="text-sm font-bold text-slate-900 truncate">{detailPerson.email || '—'}</p>
               </div>
             </div>
+
+            {/* Tag Assignment (Admin Only) */}
+            {detailPerson.type === 'Residente' && (
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gestión de Etiquetas</h4>
+                  <span className="material-symbols-outlined text-slate-300 text-sm">sell</span>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  {(bc.userTags || []).map(tag => {
+                    const isAssigned = detailPerson.tags?.includes(tag.id)
+
+                    return (
+                      <button
+                        key={tag.id}
+                        onClick={() => {
+                          const resident = residents.find(r => r.id === detailPerson.id)
+                          if (!resident) return
+                          const newTags = isAssigned
+                            ? (resident.tags || []).filter(id => id !== tag.id)
+                            : [...(resident.tags || []), tag.id]
+                          dispatch({ type: 'UPDATE_RESIDENT', payload: { ...resident, tags: newTags } })
+                        }}
+                        style={{
+                          backgroundColor: isAssigned ? `${tag.color}15` : 'white',
+                          color: isAssigned ? tag.color : '#94a3b8',
+                          borderColor: isAssigned ? `${tag.color}30` : '#f1f5f9'
+                        }}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all text-[10px] font-black uppercase tracking-widest ${
+                          isAssigned 
+                            ? 'shadow-sm ring-2 ring-offset-1 ring-slate-100' 
+                            : 'hover:border-slate-200 hover:text-slate-600'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">
+                          {isAssigned ? 'check_circle' : 'add_circle'}
+                        </span>
+                        {tag.label}
+                      </button>
+                    )
+                  })}
+                  {(bc.userTags || []).length === 0 && (
+                    <p className="text-[10px] text-slate-400 italic">No hay etiquetas definidas en el catálogo.</p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Assigned assets */}
             <div className="space-y-3">

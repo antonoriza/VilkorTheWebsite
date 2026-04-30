@@ -1,6 +1,6 @@
-# CantonAlfa — PropertyPulse
+# Vilkor — Vilkor
 
-**CantonAlfa** is a multi-tenant residential property management SaaS. It digitizes every physical interaction within a residential community — payments, tickets, amenity bookings, package tracking, governance polls, and resident communications — into a single, unified, and highly delegable interface.
+**Vilkor** is a multi-tenant residential property management SaaS. It digitizes every physical interaction within a residential community — payments, tickets, amenity bookings, package tracking, governance polls, and resident communications — into a single, unified, and highly delegable interface.
 
 > North Star KPI: `AgentResolutionRate` > 80% | `units_per_manager` ratio  
 > Build order: **Phase 0 ✅ → Phase 1 (current) → Phase 2 → Phase 3**
@@ -67,17 +67,17 @@ API-backed · optimistic updates"]
 
 ```mermaid
 graph LR
-    ROOT["PropertyPulse/\nBun Workspaces"]
+    ROOT["Vilkor/\nBun Workspaces"]
 
     ROOT --> APPS["apps/"]
     ROOT --> PKGS["packages/"]
     ROOT --> DOCKER["docker/\nDockerfile + compose"]
     ROOT --> DOCS["docs/\ndesignDoc · implementationPlan"]
 
-    APPS --> WEB_APP["apps/web\n@propertypulse/web\nVite · React · TailwindCSS"]
-    APPS --> API_APP["apps/api\n@propertypulse/api\nBun · Hono · Drizzle"]
+    APPS --> WEB_APP["apps/web\n@vilkor/web\nVite · React · TailwindCSS"]
+    APPS --> API_APP["apps/api\n@vilkor/api\nBun · Hono · Drizzle"]
 
-    PKGS --> SHARED_PKG["packages/shared\n@propertypulse/shared\nTypes · Validators"]
+    PKGS --> SHARED_PKG["packages/shared\n@vilkor/shared\nTypes · Validators"]
 
     WEB_APP --> WEB_SRC["src/\n  App.tsx\n  features/   (10 domains)\n  core/       (auth, store)\n  layouts/\n  lib/api.ts"]
 
@@ -312,7 +312,7 @@ flowchart TD
 
 ```mermaid
 gantt
-    title CantonAlfa — Build Phases
+    title Vilkor — Build Phases
     dateFormat  YYYY-MM
     section Phase 0 — Prototype
     UI design & navigation validated     :done, p0, 2026-01, 1w
@@ -414,13 +414,13 @@ bun run dev:web      # web only
 
 ```bash
 # Generate new migration from schema changes
-bun run --filter=@propertypulse/api db:generate
+bun run --filter=@vilkor/api db:generate
 
 # Run migrations
-bun run --filter=@propertypulse/api db:migrate
+bun run --filter=@vilkor/api db:migrate
 
 # Seed with demo data
-bun run --filter=@propertypulse/api db:seed
+bun run --filter=@vilkor/api db:seed
 ```
 
 ### Type-check all packages
@@ -484,4 +484,4 @@ cp .env.example apps/api/.env
 
 ---
 
-*CantonAlfa — The Operating System for Modern Living.*
+*Vilkor — The Operating System for Modern Living.*

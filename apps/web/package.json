@@ -1,5 +1,5 @@
 {
-  "name": "@propertypulse/web",
+  "name": "@vilkor/web",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@propertypulse/shared": "workspace:*",
+    "@vilkor/shared": "workspace:*",
     "@react-pdf/renderer": "^4.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

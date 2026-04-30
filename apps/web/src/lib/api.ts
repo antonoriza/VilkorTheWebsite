@@ -1,5 +1,5 @@
 /**
- * API Client — Typed HTTP client for the PropertyPulse backend.
+ * API Client — Typed HTTP client for the Vilkor backend.
  *
  * Centralizes all API calls with:
  *   - Automatic cookie-based auth (credentials: 'include')

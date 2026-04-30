@@ -1,5 +1,5 @@
 /**
- * CantonAlfa — Canonical Type Definitions
+ * Vilkor — Canonical Type Definitions
  *
  * All TypeScript interfaces used across the app. These types are the
  * single source of truth for data shapes — referenced by both the

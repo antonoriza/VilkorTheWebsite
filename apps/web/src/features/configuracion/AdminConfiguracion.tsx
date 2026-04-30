@@ -116,7 +116,7 @@ export default function AdminConfiguracion() {
              activeTab === 'comunicacion'? 'Avisos/Notificaciones' :
              activeTab === 'servicios'   ? 'Logística e Inventario' :
              activeTab === 'permisos'    ? 'Directorio y Permisos' :
-             activeTab === 'auditoria'   ? 'Auditoría y Trazabilidad' : 'Resiliencia del Sistema'}
+             activeTab === 'auditoria'   ? 'Auditoría y Trazabilidad' : 'Opciones Avanzadas'}
           </h1>
           <p className="text-slate-500 font-medium text-sm mt-1">
             {activeTab === 'perfil'      ? 'Identidad legal, topología y Digital Twin' :
@@ -124,7 +124,7 @@ export default function AdminConfiguracion() {
              activeTab === 'comunicacion'? 'Canales, plantillas y automatizaciones' :
              activeTab === 'servicios'   ? 'Paquetería, proveedores e inventario' :
              activeTab === 'permisos'    ? 'Control de acceso y matriz de roles' :
-             activeTab === 'auditoria'   ? 'Registros de actividad y trazabilidad' : 'Backups, restauración y resiliencia'}
+             activeTab === 'auditoria'   ? 'Registros de actividad y trazabilidad' : 'Backups, restauración, logs y resiliencia'}
           </p>
         </div>
       </div>

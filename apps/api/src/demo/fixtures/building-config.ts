@@ -17,7 +17,7 @@ export const buildingConfig = {
   city: 'Coacalco de Berriozábal',
   state: 'Estado de México',
   country: 'México',
-  managementCompany: 'Canton Alfa Inc.',
+  managementCompany: 'Vilkor Inc.',
   totalUnits: 116,
   adminName: 'Administrador General',
   adminEmail: 'admin@property.com',
@@ -76,7 +76,7 @@ export const buildingConfig = {
   banking: {
     clabe: '0123 4567 8901 2345 67',
     bankName: 'BBVA México',
-    accountHolder: 'Canton Alfa Inc.',
+    accountHolder: 'Vilkor Inc.',
     acceptsTransfer: true,
     acceptsCash: false,
     acceptsOxxo: false,

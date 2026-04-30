@@ -1,6 +1,6 @@
 # Dev Utilities
 
-Developer tooling for the PropertyPulse monorepo. Provides a unified CLI to manage the application lifecycle across environments.
+Developer tooling for the Vilkor monorepo. Provides a unified CLI to manage the application lifecycle across environments.
 
 ## Quick Start
 

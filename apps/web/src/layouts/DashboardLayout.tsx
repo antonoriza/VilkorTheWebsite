@@ -31,7 +31,7 @@ const settingsItems = [
   { id: 'servicios', label: 'Logística e Inventario', icon: 'confirmation_number', desc: 'SLA y procesos', resource: 'logistica' },
   { id: 'permisos', label: 'Directorio y Permisos', icon: 'shield_person', desc: 'Roles y niveles de acceso', resource: 'directorio' },
   { id: 'auditoria', label: 'Auditoría y Trazabilidad', icon: 'history_edu', desc: 'Logs de actividad', resource: 'auditoria' },
-  { id: 'resiliencia', label: 'Resiliencia del Sistema', icon: 'data_usage', desc: 'Backups y reset', resource: 'configuracion' },
+  { id: 'resiliencia', label: 'Opciones Avanzadas', icon: 'data_usage', desc: 'Logs, Backups y Reset', resource: 'configuracion' },
 ]
 
 export default function DashboardLayout() {

@@ -1,5 +1,5 @@
 /**
- * PropertyPulse API — Entry Point
+ * Vilkor API — Entry Point
  *
  * Bun + Hono server with multi-tenant SQLite, Better Auth,
  * and role-based access control.
@@ -179,6 +179,9 @@ app.notFound((c) => c.json({ error: 'Not Found', path: c.req.path }, 404))
 // ─── Start Server ────────────────────────────────────────────────────
 
 import { migrateMaster, migrateAllTenants } from './db/migrate'
+import { auditLog } from './lib/logger'
+import fs from 'fs'
+import path from 'path'
 
 // Apply schema migrations on boot (ensures new columns exist in all tenant DBs)
 migrateMaster()
@@ -186,9 +189,18 @@ migrateAllTenants()
 
 const port = Number(process.env.PORT) || 3000
 
+// Disparamos un log de prueba al iniciar la app
+auditLog(
+  'System Log' as any, // Mapeado a Script Log / System Log según taxonomía
+  'SYSTEM_BOOT',
+  'System',
+  'Node/Bun Engine',
+  `API Iniciada en el puerto ${port}. Modo: ${process.env.APP_MODE || 'production'}`
+)
+
 console.log(`
   ╔══════════════════════════════════════════════════╗
-  ║   PropertyPulse API v0.1.0                       ║
+  ║   Vilkor API v0.1.0                       ║
   ║   http://localhost:${port}                          ║
   ║                                                  ║
   ║   Auth:   /api/auth/**                           ║
@@ -196,6 +208,31 @@ console.log(`
   ║   Health: /health                                ║
   ╚══════════════════════════════════════════════════╝
 `)
+
+// Limpiar logs al matar la app (Especial para modo demo)
+const cleanupLogs = () => {
+  const logsDir = path.resolve(process.cwd(), '../../appLogs')
+  if (fs.existsSync(logsDir)) {
+    console.log('[Cleanup] Borrando archivos de log por cierre de la aplicación...')
+    try {
+      const files = fs.readdirSync(logsDir)
+      for (const file of files) {
+        fs.unlinkSync(path.join(logsDir, file))
+      }
+    } catch (e) {
+      console.error('Error limpiando logs:', e)
+    }
+  }
+}
+
+process.on('SIGINT', () => {
+  cleanupLogs()
+  process.exit(0)
+})
+process.on('SIGTERM', () => {
+  cleanupLogs()
+  process.exit(0)
+})
 
 export default {
   port,

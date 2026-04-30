@@ -5,7 +5,7 @@
  * Includes a direct link to factory reset (Resiliencia tab).
  * Hidden completely in production (renders null).
  *
- * Design: amber, minimal, editorial — matches CantonAlfa aesthetic.
+ * Design: amber, minimal, editorial — matches Vilkor aesthetic.
  */
 import { useNavigate } from 'react-router-dom'
 import { useDemoMode } from '../hooks/useDemoMode'

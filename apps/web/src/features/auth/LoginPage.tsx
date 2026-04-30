@@ -98,7 +98,7 @@ export default function LoginPage() {
             </div>
             <div>
               <h1 className="text-3xl font-headline font-extrabold tracking-tight text-white leading-none">
-                CantonAlfa
+                Vilkor
               </h1>
               <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-emerald-400 mt-2">
                 Digital Estate
@@ -127,7 +127,7 @@ export default function LoginPage() {
         </div>
 
         <div className="absolute bottom-12 left-12 lg:left-20 text-[9px] font-black text-white/20 uppercase tracking-[0.5em] z-10">
-          PropTech by CantonAlfa © 2025
+          PropTech by Vilkor © 2025
         </div>
       </div>
 

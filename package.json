@@ -1,12 +1,12 @@
 {
-  "name": "propertypulse",
+  "name": "vilkor",
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "bun run --filter='*' dev",
-    "dev:web": "bun run --filter=@propertypulse/web dev",
-    "dev:api": "bun run --filter=@propertypulse/api dev",
-    "propertyPulse": "./dev-utilities/bin/propertyPulse",
+    "dev:web": "bun run --filter=@vilkor/web dev",
+    "dev:api": "bun run --filter=@vilkor/api dev",
+    "vilkor": "./dev-utilities/bin/vilkor",
     "build": "bun run --filter='*' build",
     "typecheck": "bun run --filter='*' typecheck"
   }

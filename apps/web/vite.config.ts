@@ -7,7 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@propertypulse/shared': path.resolve(__dirname, '../../packages/shared/src'),
+      '@vilkor/shared': path.resolve(__dirname, '../../packages/shared/src'),
     },
   },
 })

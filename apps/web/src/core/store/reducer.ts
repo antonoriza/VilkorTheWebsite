@@ -121,6 +121,7 @@ export const EMPTY_BUILDING_CONFIG: BuildingConfig = {
   defaultUnitDna: { privateArea: 0, totalArea: 0, ownershipCoefficient: 0, usageType: 'propietario' },
   equipment: [], vendors: [], permissionsMatrix: {},
   reservationApprovalMode: 'auto_approve', reservationExceptionApartments: [],
+  userTags: [],
 } as any
 
 export function emptyState(): StoreState {

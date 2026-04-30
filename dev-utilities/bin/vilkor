@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════
-# propertyPulse — Developer CLI for PropertyPulse monorepo
+# propertyPulse — Developer CLI for Vilkor monorepo
 # ═══════════════════════════════════════════════════════════════════
 # Usage:
 #   propertyPulse run              Start the full stack (web + api) in dev mode
@@ -31,7 +31,7 @@ MAGENTA="\033[0;35m"
 banner() {
   echo ""
   echo -e "${BOLD}${CYAN}  ╔══════════════════════════════════════════╗${RESET}"
-  echo -e "${BOLD}${CYAN}  ║   ${MAGENTA}▓▓ ${BOLD}PropertyPulse${RESET}${BOLD}${CYAN}   Dev Utilities       ║${RESET}"
+  echo -e "${BOLD}${CYAN}  ║   ${MAGENTA}▓▓ ${BOLD}Vilkor${RESET}${BOLD}${CYAN}   Dev Utilities       ║${RESET}"
   echo -e "${BOLD}${CYAN}  ╚══════════════════════════════════════════╝${RESET}"
   echo ""
 }
@@ -51,6 +51,7 @@ show_help() {
   echo -e "    ${YELLOW}-prod${RESET}       Start in production mode (builds assets, optimized)"
   echo -e "    ${YELLOW}-web${RESET}        Start only the web frontend (Vite dev server)"
   echo -e "    ${YELLOW}-api${RESET}        Start only the API backend (Hono + Bun)"
+  echo -e "    ${YELLOW}-logs${RESET}       Enable physical audit logs rotation and retention"
   echo -e "    ${DIM}(no flag)${RESET}    Start full stack in development mode (default)"
   echo ""
   echo -e "  ${BOLD}EXAMPLES${RESET}"
@@ -231,6 +232,7 @@ case "$COMMAND" in
     MODE="dev"
     ONLY_WEB=""
     ONLY_API=""
+    ENABLE_LOGS="false"
 
     # Parse flags
     while [ $# -gt 0 ]; do
@@ -239,6 +241,7 @@ case "$COMMAND" in
         -prod|--prod)  MODE="prod" ;;
         -web|--web)    ONLY_WEB=true ;;
         -api|--api)    ONLY_API=true ;;
+        -logs|--logs)  ENABLE_LOGS=true ;;
         *)
           echo -e "  ${RED}✖ Unknown flag: $1${RESET}"
           echo -e "  Run ${CYAN}propertyPulse help${RESET} for usage."
@@ -248,7 +251,7 @@ case "$COMMAND" in
       shift
     done
 
-    export ONLY_WEB ONLY_API
+    export ONLY_WEB ONLY_API ENABLE_LOGS
 
     case "$MODE" in
       dev)  run_dev  ;;

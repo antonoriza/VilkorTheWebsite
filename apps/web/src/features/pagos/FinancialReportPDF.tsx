@@ -323,7 +323,7 @@ export default function FinancialReportPDF({ data }: { data: ReportData }) {
 
         {/* Footer */}
         <View style={s.footer} fixed>
-          <Text style={s.footerText}>Generado por CantonAlfa · {data.managementCompany}</Text>
+          <Text style={s.footerText}>Generado por Vilkor · {data.managementCompany}</Text>
           <Text style={s.footerText}>{data.generatedAt}</Text>
         </View>
 

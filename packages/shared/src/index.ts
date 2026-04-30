@@ -1,2 +1,2 @@
-// @propertypulse/shared — barrel export
+// @vilkor/shared — barrel export
 export * from './types/index'

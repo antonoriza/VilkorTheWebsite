@@ -50,7 +50,7 @@ export default function SetupChecklist({
               <span className="material-symbols-outlined text-3xl text-white/80">rocket_launch</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-headline font-black text-white tracking-tight mb-4">
-              Bienvenido a PropertyPulse
+              Bienvenido a Vilkor
             </h1>
             <p className="text-white/60 font-medium leading-relaxed text-base md:text-lg max-w-lg mx-auto">
               Tu plataforma de gestión inmobiliaria está lista. Completa los pasos a continuación para activar todos los módulos del sistema.

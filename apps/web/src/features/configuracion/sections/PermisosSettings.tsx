@@ -11,6 +11,7 @@ import { SettingsTabBar } from '../../../core/components/SettingsShell'
 const TABS = [
   { id: 'acceso', label: 'Control de Acceso', icon: 'admin_panel_settings' },
   { id: 'roles',  label: 'Roles y Permisos',  icon: 'rule_settings' },
+  { id: 'tags',   label: 'Etiquetas',        icon: 'sell' },
 ]
 
 interface UnifiedPerson {
@@ -419,6 +420,162 @@ function RolesMatrixTab({ bc }: { bc: BuildingConfig }) {
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
+function UserTagsTab({ bc }: { bc: BuildingConfig }) {
+  const { dispatch } = useStore()
+  const tags = bc.userTags || []
+  const [newLabel, setNewLabel] = useState('')
+  const [newColor, setNewColor] = useState('#6366f1') // Default indigo hex
+  const [error, setError] = useState<string | null>(null)
+
+  const validateLabel = (val: string) => {
+    if (!val) return 'La etiqueta no puede estar vacía'
+    if (val.length > 25) return 'Máximo 25 caracteres'
+    if (!/^[a-zA-Z]/.test(val)) return 'Debe empezar con una letra'
+    if (!/^[a-zA-Z0-9\s]+$/.test(val)) return 'Solo caracteres alfanuméricos'
+    return null
+  }
+
+  const addTag = () => {
+    const labelErr = validateLabel(newLabel.trim())
+    if (labelErr) {
+      setError(labelErr)
+      return
+    }
+
+    // Unique color check
+    if (tags.some(t => t.color.toLowerCase() === newColor.toLowerCase())) {
+      setError('Este color ya está en uso por otra etiqueta')
+      return
+    }
+
+    const tag = {
+      id: `tag-${Date.now()}`,
+      label: newLabel.trim(),
+      color: newColor
+    }
+    dispatch({
+      type: 'UPDATE_BUILDING_CONFIG',
+      payload: { userTags: [...tags, tag] }
+    })
+    setNewLabel('')
+    setError(null)
+  }
+
+  const removeTag = (id: string) => {
+    dispatch({
+      type: 'UPDATE_BUILDING_CONFIG',
+      payload: { userTags: tags.filter(t => t.id !== id) }
+    })
+  }
+
+  return (
+    <div className="animate-in fade-in duration-500 space-y-8">
+      <div className="flex flex-col md:flex-row gap-6 justify-between items-start">
+        <div className="max-w-xl space-y-2">
+          <h3 className="text-[14px] font-black text-slate-900 uppercase tracking-widest">Catálogo de Etiquetas</h3>
+          <p className="text-[12px] text-slate-500 font-medium leading-relaxed">
+            Define roles especiales o categorías para los usuarios. Cada etiqueta debe tener un color único para facilitar la identificación visual.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Creation Form */}
+        <div className="md:col-span-1 p-6 bg-white border border-slate-200 rounded-3xl shadow-sm space-y-6 self-start">
+          <div className="space-y-2">
+            <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Nueva Etiqueta</label>
+            <input
+              type="text"
+              maxLength={25}
+              value={newLabel}
+              onChange={e => {
+                setNewLabel(e.target.value)
+                if (error) setError(null)
+              }}
+              placeholder="Ej: Mesa Directiva"
+              className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-sm font-bold text-slate-900 outline-none transition-all ${
+                error && error.includes('etiqueta') || error?.includes('caracteres') || error?.includes('letra')
+                  ? 'border-rose-200 focus:border-rose-400' 
+                  : 'border-slate-100 focus:border-slate-900'
+              }`}
+            />
+            {error && (
+              <p className="text-[10px] font-bold text-rose-500 ml-1 animate-in fade-in slide-in-from-top-1">
+                {error}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Color Distintivo (Hex)</label>
+            <div className="flex items-center gap-4 p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+              <input
+                type="color"
+                value={newColor}
+                onChange={e => {
+                  setNewColor(e.target.value)
+                  if (error?.includes('color')) setError(null)
+                }}
+                className="w-12 h-12 rounded-xl cursor-pointer border-0 bg-transparent overflow-hidden [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-xl"
+              />
+              <div className="flex-1">
+                <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight font-mono">{newColor}</p>
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Selecciona un color</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={addTag}
+            className="w-full py-3 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+          >
+            Agregar al Catálogo
+          </button>
+        </div>
+
+        {/* Tags List */}
+        <div className="md:col-span-2 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {tags.length === 0 ? (
+              <div className="col-span-2 py-12 border-2 border-dashed border-slate-100 rounded-3xl text-center">
+                 <span className="material-symbols-outlined text-4xl text-slate-100 mb-2">sell</span>
+                 <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No hay etiquetas creadas</p>
+              </div>
+            ) : (
+              tags.map(tag => {
+                return (
+                  <div 
+                    key={tag.id} 
+                    className="flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-white transition-all hover:shadow-lg hover:shadow-slate-100 group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 rounded-full shadow-inner" style={{ backgroundColor: tag.color }} />
+                      <span className="text-[11px] font-black uppercase tracking-widest text-slate-900">{tag.label}</span>
+                    </div>
+                    <button
+                      onClick={() => removeTag(tag.id)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-200 hover:bg-rose-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </div>
+                )
+              })
+            )}
+          </div>
+
+          <div className="p-5 bg-slate-50 border border-slate-100 rounded-2xl flex items-start gap-3">
+            <span className="material-symbols-outlined text-slate-400 text-lg">info</span>
+            <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+              Las etiquetas creadas aquí estarán disponibles en la sección de <strong>Usuarios</strong> para ser asignadas a los perfiles de los residentes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function PermisosSettings({
   bc,
   residents,
@@ -478,6 +635,7 @@ export default function PermisosSettings({
         />
       )}
       {activeTab === 'roles' && <RolesMatrixTab bc={bc} />}
+      {activeTab === 'tags' && <UserTagsTab bc={bc} />}
     </div>
   )
 }

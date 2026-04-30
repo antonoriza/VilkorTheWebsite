@@ -12,6 +12,14 @@ export type PropertyCategory = 'residencial' | 'industrial' | 'comercial' | 'hot
 /** Topographical grouping logic */
 export type GroupingMode = 'vertical' | 'horizontal'
 
+/** A customizable label for categorizing users */
+export interface UserTag {
+  id: string
+  label: string
+  /** Tailwind-compatible color name (e.g., 'emerald', 'indigo') */
+  color: string
+}
+
 /** Spatial zoning points (Digital Twin infrastructure) */
 export interface ZoningPoint {
   id: string
@@ -148,4 +156,7 @@ export interface BuildingConfig {
 
   // Penalty / Fine reasons catalog
   multaReasons: string[]
+
+  // Resident / User tags catalog
+  userTags: UserTag[]
 }
