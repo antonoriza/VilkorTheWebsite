@@ -17,10 +17,19 @@
         }
         body {
             background-image: 
-                radial-gradient(circle at 2px 2px, rgba(0,0,0,0.03) 1px, transparent 0);
+                radial-gradient(circle at 2px 2px, rgba(0,0,0,0.08) 1px, transparent 0);
             background-size: 40px 40px;
             letter-spacing: -0.01em;
             line-height: 1.6;
+        }
+        .bg-grid-subtle {
+            background-image: linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+        .dark .bg-grid-subtle {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
         }
         h1, h2, h3 {
             letter-spacing: -0.03em;
@@ -142,6 +151,28 @@
                         "label-sm": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
                         "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
                         "stats-display": ["40px", { "lineHeight": "1", "fontWeight": "700" }]
+                    },
+                    "animation": {
+                        "spin-slow": "spin 12s linear infinite",
+                        "reverse-spin": "reverse-spin 16s linear infinite",
+                        "data-flow": "data-flow 3s linear infinite",
+                        "data-flow-slow": "data-flow 5s linear infinite",
+                        "data-flow-fast": "data-flow 2s linear infinite",
+                        "data-flow-vertical": "data-flow-v 4s linear infinite"
+                    },
+                    "keyframes": {
+                        "reverse-spin": {
+                            "from": { "transform": "rotate(360deg)" },
+                            "to": { "transform": "rotate(0deg)" }
+                        },
+                        "data-flow": {
+                            "0%": { "transform": "translateX(-100%)" },
+                            "100%": { "transform": "translateX(200%)" }
+                        },
+                        "data-flow-v": {
+                            "0%": { "transform": "translateY(-100%)" },
+                            "100%": { "transform": "translateY(200%)" }
+                        }
                     }
                 }
             }

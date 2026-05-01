@@ -15,7 +15,7 @@
             <div class="hidden md:flex items-center bg-black/5 dark:bg-white/5 p-1 rounded-full border border-white/20 glass">
                 {{ range .AllTranslations }}
                 <a href="{{ .RelPermalink }}" 
-                   class="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all {{ if eq $.Language.Lang .Language.Lang }}bg-primary text-white shadow-lg shadow-primary/20{{ else }}text-on-surface-variant dark:text-gray-400 hover:text-on-background dark:hover:text-white{{ end }}">
+                   class="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all {{ if eq $.Language.Lang .Language.Lang }}bg-[#34d399] text-[#002114] shadow-lg shadow-[#34d399]/20{{ else }}text-on-surface-variant dark:text-gray-400 hover:text-on-background dark:hover:text-white{{ end }}">
                     {{ .Language.Lang }}
                 </a>
                 {{ end }}
@@ -40,7 +40,7 @@
             </button>
 
             <div class="hidden md:flex items-center ml-2">
-                <a class="bg-primary-container text-on-primary-fixed font-label-sm text-label-sm px-6 py-4 rounded-full hover:shadow-lg transition-all flex items-center justify-center border border-primary/20" href="#book-a-demo">
+                <a class="bg-[#34d399] text-[#002114] font-bold font-label-sm text-label-sm px-6 py-4 rounded-full hover:shadow-lg transition-all flex items-center justify-center border border-[#34d399]/20" href="#book-a-demo">
                     {{ T "book_demo" }}
                 </a>
             </div>
@@ -55,12 +55,12 @@
     <h3 class="font-h3 text-h3 text-on-background dark:text-white mb-6 text-center">Select Region</h3>
     <div class="space-y-4">
         {{ range .AllTranslations }}
-        <a href="{{ .RelPermalink }}" class="flex items-center justify-between p-5 rounded-2xl {{ if eq $.Language.Lang .Language.Lang }}bg-primary/10 border border-primary/30{{ else }}bg-black/5 dark:bg-white/5 border border-transparent{{ end }} transition-all">
+        <a href="{{ .RelPermalink }}" class="flex items-center justify-between p-5 rounded-2xl {{ if eq $.Language.Lang .Language.Lang }}bg-[#34d399]/10 border border-[#34d399]/30{{ else }}bg-black/5 dark:bg-white/5 border border-transparent{{ end }} transition-all">
             <div class="flex items-center gap-4">
                 <span class="font-bold text-lg dark:text-white uppercase tracking-widest">{{ .Language.Lang }} - {{ .Language.LanguageName }}</span>
             </div>
             {{ if eq $.Language.Lang .Language.Lang }}
-            <span class="material-symbols-outlined text-primary">check_circle</span>
+            <span class="material-symbols-outlined text-[#34d399]">check_circle</span>
             {{ end }}
         </a>
         {{ end }}

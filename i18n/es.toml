@@ -2,10 +2,10 @@
 other = "Una plataforma, control total."
 
 [hero_subtitle]
-other = "Aproveche el poder de la automatización impulsada por IA para reducir los gastos generales y eliminar la fatiga del tablero. Sus operaciones, unificadas."
+other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
 
 [book_demo]
-other = "Reservar Demo"
+other = "Agenda una llamada"
 
 [start_operating]
 other = "Comenzar Ahora"
@@ -25,8 +25,6 @@ other = "Preguntas Frecuentes"
 [one_platform]
 other = "Una plataforma, control total."
 
-[every_tool]
-other = "Cada herramienta que necesita para gestionar a escala."
 
 [ready_unstoppable]
 other = "¿Listo para hacer que su propiedad sea imparable?"
@@ -38,7 +36,7 @@ other = "Solicitud Recibida"
 other = "Gracias"
 
 [future_property_management]
-other = "El futuro de la gestión de propiedades. Conectado."
+other = "¡Digitaliza la administración de tu propiedad!"
 
 [intelligent_operations]
 other = "Operaciones Inteligentes."
@@ -50,73 +48,175 @@ other = "Sistema de Grado Empresarial"
 other = "Acceso Anticipado"
 
 [hero_description]
-other = "Vilkor aporta precisión institucional a la gestión de propiedades. Centralice operaciones, automatice flujos de trabajo y comande sus activos desde una plataforma única e inflexible."
+other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
 
 [explore_platform]
-other = "Explorar Plataforma"
+other = "Conoce más"
 
 [scale_potential_value]
-other = "Ilimitado"
+other = "ESCALABLE"
 
 [scale_potential_label]
-other = "Potencial de Escala"
+other = "CRECIMIENTO SIN FRICCIONES"
 
 [institutional_rigor_value]
-other = "Institucional"
+other = "INSTITUCIONAL"
 
 [institutional_rigor_label]
-other = "Rigor y Cumplimiento"
+other = "SEGURIDAD Y RIGOR OPERATIVO"
 
 [tech_stack_value]
-other = "Próxima Gen"
+other = "VANGUARDISTA"
 
 [tech_stack_label]
-other = "Stack Tecnológico"
+other = "INTELIGENCIA DE PRÓXIMA GENERACIÓN"
 
 [ai_automation_chip]
-other = "Lógica Predictiva"
+other = "LÓGICA OPERATIVA AVANZADA"
 
 [ai_automation_title]
-other = "Automatización Impulsada por IA"
+other = "Entendemos el reto..."
 
 [ai_automation_desc]
-other = "Nuestro motor predictivo enruta automáticamente las solicitudes de mantenimiento, categoriza los gastos y alerta sobre anomalías en los arrendamientos."
+other = "Sabemos que una gestión deficiente drena recursos y confianza. Por eso, Vilkor garantiza la aplicación de mejores prácticas mediante una infraestructura operacional diseñada para la transparencia y el rigor absoluto."
 
 [unmatched_speed_chip]
-other = "Sincronización en Tiempo Real"
+other = "SINCRONIZACIÓN TOTAL"
 
 [unmatched_speed_title]
-other = "Velocidad Inigualable"
+other = "Resultados en Tiempo Real"
 
 [unmatched_speed_desc]
-other = "Construido sobre una arquitectura de vanguardia para asegurar que los datos se carguen instantáneamente."
+other = "Elimine los cuellos de botella y la incertidumbre. La agilidad de Vilkor permite que su administración responda al ritmo de las necesidades reales, transformando procesos complejos en una operación fluida, rápida y totalmente transparente."
 
 [uptime_label]
 other = "Fiabilidad de Tiempo de Actividad"
 
 [unified_data_title]
-other = "Datos Unificados"
+other = "Transparencia Administrativa"
 
 [unified_data_desc]
-other = "Consolide registros de inquilinos, contratos de arrendamiento y datos financieros en una única fuente de verdad."
+other = "Unifique estados financieros, reportes de gestión y registros de staff en una fuente de verdad auditable y centralizada."
 
 [automated_workflows_title]
-other = "Flujos de Trabajo Automatizados"
+other = "Comunicación Institucional"
 
 [automated_workflows_desc]
-other = "Despliegue enrutamiento inteligente para solicitudes de mantenimiento y secuencias automáticas de renovación de contratos."
+other = "Gestione avisos críticos, convoque asambleas y coordine eventos con una infraestructura de comunicación de alto alcance."
 
 [realtime_analytics_title]
-other = "Analítica en Tiempo Real"
+other = "Control y Seguridad"
 
 [realtime_analytics_desc]
-other = "Monitoree el rendimiento del portafolio, rastree tasas de ocupación y pronostique ingresos con precisión."
+other = "Administre accesos, supervise la logística de paquetería y gestione el flujo de proveedores con monitoreo operativo en tiempo real."
 
-[intelligent_ops_desc]
-other = "Automatice la programación de mantenimiento rutinario, la conciliación financiera y las comunicaciones con los inquilinos. Los modelos predictivos de Vilkor actúan como un sistema nervioso digital para sus propiedades."
+[every_tool]
+other = "Arquitectura Modular de Grado Institucional."
 
 [every_tool_subtitle]
-other = "Experimente operaciones de propiedad sin fisuras con nuestra suite completa de características de grado empresarial."
+other = "Una suite de herramientas diseñadas para la precisión, escalabilidad y control total de su portafolio."
+
+# 1. Gestión de Activos (Finanzas)
+[finances_header]
+other = "Gestión de Activos"
+[finances_focus]
+other = "Enfoque: SOLIDEZ"
+
+[smart_collection_title]
+other = "Recaudación Inteligente"
+[smart_collection_empower]
+other = "Asegure el flujo de caja."
+[smart_collection_desc]
+other = "Automatice la cobranza y elimine la morosidad con flujos lógicos de seguimiento y conciliación inmediata."
+
+[data_integrity_title]
+other = "Integridad de Datos"
+[data_integrity_empower]
+other = "Exporte reportes institucionales."
+[data_integrity_desc]
+other = "Exporte reportes con precisión de grado ingeniería, listos para auditorías institucionales y toma de decisiones."
+
+[reserve_optimization_title]
+other = "Optimización de Reservas"
+[reserve_optimization_empower]
+other = "Administre fondos con transparencia."
+[reserve_optimization_desc]
+other = "Administre fondos de reserva y presupuestos con total transparencia y una visión financiera a largo plazo."
+
+[expense_audit_title]
+other = "Auditoría de Egresos"
+[expense_audit_empower]
+other = "Mantenga un control quirúrgico."
+[expense_audit_desc]
+other = "Mantenga un control quirúrgico sobre cada peso que sale de la administración con trazabilidad absoluta."
+
+# 2. Operaciones y Comunidad (Flujos)
+[operations_header]
+other = "Operaciones y Comunidad"
+[operations_focus]
+other = "Enfoque: AGILIDAD"
+
+[property_evolution_title]
+other = "Evolución del Inmueble"
+[property_evolution_empower]
+other = "Incremente la plusvalía."
+[property_evolution_desc]
+other = "Gestione reparaciones y mejoras estructurales que incrementan el valor patrimonial de su propiedad."
+
+[digital_vault_title]
+other = "Bóveda Digital"
+[digital_vault_empower]
+other = "Resguarde su información crítica."
+[digital_vault_desc]
+other = "Un repositorio centralizado y blindado para contratos, planos y reglamentos siempre disponibles."
+
+[service_logistics_title]
+other = "Logística de Servicios"
+[service_logistics_empower]
+other = "Centralice el mantenimiento."
+[service_logistics_desc]
+other = "Centralice las solicitudes de mantenimiento en un flujo de trabajo automatizado que nunca se detiene."
+
+[resolution_channel_title]
+other = "Canal de Resolución"
+[resolution_channel_empower]
+other = "Elimine malentendidos."
+[resolution_channel_desc]
+other = "Comunicación oficial y trazable que elimina el ruido operativo y acelera los acuerdos comunitarios."
+
+# 3. Control e Infraestructura (Seguridad)
+[security_header]
+other = "Control e Infraestructura"
+[security_focus]
+other = "Enfoque: BLINDAJE"
+
+[shielded_perimeter_title]
+other = "Perímetro Blindado"
+[shielded_perimeter_empower]
+other = "Gestione accesos con rigor."
+[shielded_perimeter_desc]
+other = "Gestión rigurosa de entradas y salidas con registro biométrico e instantáneo en la nube."
+
+[logistics_management_title]
+other = "Gestión de Logística"
+[logistics_management_empower]
+other = "Controle entregas e insumos."
+[logistics_management_desc]
+other = "Control total sobre la recepción de insumos operativos y entregas de última milla para residentes."
+
+[activity_monitor_title]
+other = "Monitor de Actividad"
+[activity_monitor_empower]
+other = "Capture eventos en tiempo real."
+[activity_monitor_desc]
+other = "Una bitácora digital que captura cada evento crítico y ronda de seguridad dentro del condominio."
+
+[staff_supervision_title]
+other = "Supervisión de Staff"
+[staff_supervision_empower]
+other = "Audite el desempeño operativo."
+[staff_supervision_desc]
+other = "Coordine y audite el desempeño del personal operativo y proveedores desde una sola pantalla de control."
 
 [tenant_portal_title]
 other = "Portal del Inquilino"
@@ -184,11 +284,6 @@ other = "LISTO PARA GDPR"
 [why_vilkor_subtitle]
 other = "Construido estrictamente para operaciones de gran escala, Vilkor abandona el desorden de los sistemas legados por la precisión arquitectónica."
 
-[data_integrity_title]
-other = "Integridad de Datos"
-
-[data_integrity_desc]
-other = "Libros de contabilidad inmutables y controles de acceso rigurosos aseguran el cumplimiento institucional."
 
 [rapid_deployment_title]
 other = "Despliegue Rápido"

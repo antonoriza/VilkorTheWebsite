@@ -25,8 +25,6 @@ other = "FAQ"
 [one_platform]
 other = "One platform, total control."
 
-[every_tool]
-other = "Every tool you need to manage at scale."
 
 [ready_unstoppable]
 other = "Ready to make your property unstoppable?"
@@ -50,7 +48,7 @@ other = "Enterprise Grade System"
 other = "Early Access"
 
 [hero_description]
-other = "Vilkor brings institutional precision to property management. Centralize operations, automate workflows, and command your assets from a single, uncompromising platform."
+other = "Centralize operations and automate residential workflows with Vilkor.<br class='hidden md:block'> Eliminate administrative chaos and maximize asset value with a robust, intelligent system."
 
 [explore_platform]
 other = "Explore Platform"
@@ -77,46 +75,148 @@ other = "Tech Stack"
 other = "Predictive Logic"
 
 [ai_automation_title]
-other = "AI-Driven Automation"
+other = "We understand the challenge..."
 
 [ai_automation_desc]
-other = "Our predictive engine automatically routes maintenance requests, categorizes expenses, and flags lease anomalies."
+other = "We know that poor management drains both resources and trust. That's why Vilkor ensures the application of best practices through an operational infrastructure designed for total transparency and absolute rigor."
 
 [unmatched_speed_chip]
 other = "Real-Time Sync"
 
 [unmatched_speed_title]
-other = "Unmatched Speed"
+other = "Real-Time Results"
 
 [unmatched_speed_desc]
-other = "Built on a cutting-edge architecture to ensure data loads instantly."
+other = "Eliminate bottlenecks and uncertainty. Vilkor's agility allows your management to respond at the pace of real needs, transforming complex processes into a fluid, fast, and fully transparent operation."
 
 [uptime_label]
 other = "Uptime Reliability"
 
 [unified_data_title]
-other = "Unified Data"
+other = "Administrative Transparency"
 
 [unified_data_desc]
-other = "Consolidate tenant records, lease agreements, and financial data into a single source of truth."
+other = "Unify financial statements, management reports, and staff records into a centralized, auditable source of truth."
 
 [automated_workflows_title]
-other = "Automated Workflows"
+other = "Institutional Communication"
 
 [automated_workflows_desc]
-other = "Deploy intelligent routing for maintenance requests and automated lease renewal sequences."
+other = "Manage critical notices, convene assemblies, and coordinate events with a high-reach communication infrastructure."
 
 [realtime_analytics_title]
-other = "Real-time Analytics"
+other = "Control & Security"
 
 [realtime_analytics_desc]
-other = "Monitor portfolio performance, track occupancy rates, and forecast revenue with precision."
+other = "Oversee access control, monitor package logistics, and manage vendor flow with real-time operational oversight."
 
-[intelligent_ops_desc]
-other = "Automate routine maintenance scheduling, financial reconciliation, and tenant communications. Vilkor's predictive models act as a digital nervous system for your properties."
+[every_tool]
+other = "Institutional-Grade Modular Architecture."
 
 [every_tool_subtitle]
-other = "Experience seamless property operations with our comprehensive suite of enterprise-grade features."
+other = "A suite of tools engineered for precision, scalability, and total portfolio control."
+
+# 1. Asset Management (Finances)
+[finances_header]
+other = "Asset Management"
+[finances_focus]
+other = "Focus: SOLIDITY"
+
+[smart_collection_title]
+other = "Smart Collection"
+[smart_collection_empower]
+other = "Secure your cash flow."
+[smart_collection_desc]
+other = "Automate billing and eliminate delinquency with logical follow-up flows and immediate reconciliation."
+
+[data_integrity_title]
+other = "Data Integrity"
+[data_integrity_empower]
+other = "Export institutional reports."
+[data_integrity_desc]
+other = "Generate reports with engineering-grade precision, ready for institutional audits and strategic decisions."
+
+[reserve_optimization_title]
+other = "Reserve Optimization"
+[reserve_optimization_empower]
+other = "Manage funds with transparency."
+[reserve_optimization_desc]
+other = "Manage reserve funds and budgets with total transparency and a long-term financial vision."
+
+[expense_audit_title]
+other = "Expense Audit"
+[expense_audit_empower]
+other = "Maintain surgical control."
+[expense_audit_desc]
+other = "Maintain surgical control over every dollar leaving the administration with absolute traceability."
+
+# 2. Operations and Community (Flows)
+[operations_header]
+other = "Operations and Community"
+[operations_focus]
+other = "Focus: AGILITY"
+
+[property_evolution_title]
+other = "Property Evolution"
+[property_evolution_empower]
+other = "Increase asset value."
+[property_evolution_desc]
+other = "Manage structural repairs and improvements that increase the capital value of your property."
+
+[digital_vault_title]
+other = "Digital Vault"
+[digital_vault_empower]
+other = "Protect critical information."
+[digital_vault_desc]
+other = "A centralized and shielded repository for contracts, blueprints, and regulations, always available."
+
+[service_logistics_title]
+other = "Service Logistics"
+[service_logistics_empower]
+other = "Centralize maintenance."
+[service_logistics_desc]
+other = "Centralize maintenance requests in an automated workflow that never stops."
+
+[resolution_channel_title]
+other = "Resolution Channel"
+[resolution_channel_empower]
+other = "Eliminate misunderstandings."
+[resolution_channel_desc]
+other = "Official and traceable communication that eliminates operational noise and accelerates agreements."
+
+# 3. Control and Infrastructure (Security)
+[security_header]
+other = "Control and Infrastructure"
+[security_focus]
+other = "Focus: SHIELDING"
+
+[shielded_perimeter_title]
+other = "Shielded Perimeter"
+[shielded_perimeter_empower]
+other = "Manage access with rigor."
+[shielded_perimeter_desc]
+other = "Rigorous management of entries and exits with biometric and instantaneous cloud recording."
+
+[logistics_management_title]
+other = "Logistics Management"
+[logistics_management_empower]
+other = "Control deliveries and supplies."
+[logistics_management_desc]
+other = "Total control over the reception of operational supplies and last-mile deliveries for residents."
+
+[activity_monitor_title]
+other = "Activity Monitor"
+[activity_monitor_empower]
+other = "Capture real-time events."
+[activity_monitor_desc]
+other = "A digital log that captures every critical event and security round within the building."
+
+[staff_supervision_title]
+other = "Staff Supervision"
+[staff_supervision_empower]
+other = "Audit operational performance."
+[staff_supervision_desc]
+other = "Coordinate and audit the performance of operational staff and vendors from a single control screen."
 
 [tenant_portal_title]
 other = "Tenant Portal"
@@ -184,17 +284,11 @@ other = "GDPR READY"
 [why_vilkor_subtitle]
 other = "Built strictly for high-scale operations, Vilkor abandons legacy clutter for architectural precision."
 
-[data_integrity_title]
-other = "Data Integrity"
-
-[data_integrity_desc]
-other = "Immutable ledgers and rigorous access controls ensure institutional compliance."
-
 [rapid_deployment_title]
 other = "Rapid Deployment"
 
 [rapid_deployment_desc]
-other = "Migrate portfolios in days, not months, with our dedicated onboarding architects."
+other = "Migre portfolios in days, not months, with our dedicated onboarding architects."
 
 [faq_q1]
 other = "How do you count units?"

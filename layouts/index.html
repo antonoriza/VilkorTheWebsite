@@ -3,44 +3,43 @@
 <section class="max-w-container-max mx-auto px-gutter grid grid-cols-1 lg:grid-cols-12 gap-xl items-center py-20" data-aos="fade">
     <div class="lg:col-span-7">
         <div class="flex items-center gap-3 mb-8" data-aos="fade-right">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 border border-primary-container/20 text-primary">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#34d399]/10 border border-[#34d399]/20 text-[#34d399]">
                 <span class="material-symbols-outlined text-[18px]">verified</span>
                 <span class="font-label-sm text-[12px] uppercase tracking-[0.2em]">{{ T "enterprise_grade" }}</span>
             </div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary/10 border border-tertiary/20 text-tertiary">
-                <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#eab308]/10 border border-[#eab308]/20 text-[#eab308] shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+                <span class="material-symbols-outlined text-[16px] animate-pulse">verified_user</span>
                 <span class="font-label-sm text-[11px] uppercase tracking-[0.1em] font-bold">{{ T "early_access" }}</span>
             </div>
         </div>
         <h1 class="font-h1 font-bold text-h1 text-on-background dark:text-white mb-8 leading-[1.05] tracking-[-0.04em]">
             {{ T "future_property_management" }}
         </h1>
-        <p class="font-body-lg text-[20px] text-on-surface-variant dark:text-white/60 mb-12 max-w-xl leading-relaxed">
-            {{ T "hero_description" }}
+        <p class="font-body-lg text-[20px] text-on-surface-variant dark:text-white/60 mb-12 max-w-2xl leading-relaxed">
+            {{ T "hero_description" | safeHTML }}
         </p>
         <div class="flex flex-col sm:flex-row gap-5 mb-12">
-            <a href="#book-a-demo" class="bg-primary-container text-on-primary-fixed font-label-sm text-label-sm px-10 py-5 rounded-full hover:shadow-[0_0_40px_rgba(52,211,153,0.3)] transition-all duration-500 flex items-center justify-center group">
+            <a href="#book-a-demo" class="bg-[#34d399] text-[#002114] font-bold px-10 py-5 rounded-full hover:shadow-[0_0_40px_rgba(52,211,153,0.3)] transition-all duration-500 flex items-center justify-center group">
                 {{ T "book_demo" }}
                 <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
-            <a href="#features" class="glass text-on-background dark:text-white font-label-sm text-label-sm px-10 py-5 rounded-full hover:bg-white/10 transition-all duration-500 flex items-center justify-center border border-on-background/10 dark:border-white/10">
+            <a href="#features" class="glass text-on-background dark:text-white font-label-sm text-label-sm px-10 py-5 rounded-full hover:bg-white/10 hover:border-[#eab308]/50 transition-all duration-500 flex items-center justify-center border border-on-background/10 dark:border-white/10 group">
                 {{ T "explore_platform" }}
+                <div class="w-1.5 h-1.5 bg-[#eab308] rounded-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
             </a>
         </div>
-        <div class="flex items-center gap-8 py-6 border-t border-on-background/5 dark:border-white/5 opacity-80">
-            <div class="flex flex-col">
-                <span class="font-bold text-h3 text-on-background dark:text-white uppercase tracking-tighter">{{ T "scale_potential_value" }}</span>
-                <span class="text-[11px] uppercase tracking-widest text-on-surface-variant">{{ T "scale_potential_label" }}</span>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-12 py-10 border-t border-on-background/10 dark:border-white/10 opacity-95">
+            <div class="flex flex-col gap-1.5">
+                <span class="font-bold text-[20px] lg:text-[22px] text-on-background dark:text-white uppercase tracking-tight leading-none whitespace-nowrap">{{ T "scale_potential_value" }}</span>
+                <span class="text-[9px] uppercase tracking-[0.25em] text-on-surface-variant font-bold leading-tight">{{ T "scale_potential_label" }}</span>
             </div>
-            <div class="w-px h-8 bg-on-background/10"></div>
-            <div class="flex flex-col">
-                <span class="font-bold text-h3 text-on-background dark:text-white uppercase tracking-tighter">{{ T "institutional_rigor_value" }}</span>
-                <span class="text-[11px] uppercase tracking-widest text-on-surface-variant">{{ T "institutional_rigor_label" }}</span>
+            <div class="flex flex-col gap-1.5 sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-6 md:pl-10">
+                <span class="font-bold text-[20px] lg:text-[22px] text-on-background dark:text-white uppercase tracking-tight leading-none whitespace-nowrap">{{ T "institutional_rigor_value" }}</span>
+                <span class="text-[9px] uppercase tracking-[0.25em] text-on-surface-variant font-bold leading-tight">{{ T "institutional_rigor_label" }}</span>
             </div>
-            <div class="w-px h-8 bg-on-background/10"></div>
-            <div class="flex flex-col">
-                <span class="font-bold text-h3 text-on-background dark:text-white uppercase tracking-tighter">{{ T "tech_stack_value" }}</span>
-                <span class="text-[11px] uppercase tracking-widest text-on-surface-variant">{{ T "tech_stack_label" }}</span>
+            <div class="flex flex-col gap-1.5 sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-6 md:pl-10">
+                <span class="font-bold text-[20px] lg:text-[22px] text-on-background dark:text-white uppercase tracking-tight leading-none whitespace-nowrap">{{ T "tech_stack_value" }}</span>
+                <span class="text-[9px] uppercase tracking-[0.25em] text-on-surface-variant font-bold leading-tight">{{ T "tech_stack_label" }}</span>
             </div>
         </div>
     </div>
@@ -55,62 +54,125 @@
     </div>
 </section>
 
-<!-- 2) Header is handled by baseof.html / nav.html -->
+<!-- 2) One platform, total control (Reordered: Technical Pillars First) -->
+<section id="solutions" class="py-32 border-t border-on-background/5 relative overflow-hidden bg-grid-subtle">
+    <div class="max-w-container-max mx-auto px-gutter relative z-10">
+        <div class="text-center mb-24 max-w-3xl mx-auto" data-aos="fade-up">
+            <span class="inline-block px-3 py-1 rounded-full bg-[#34d399]/10 border border-[#34d399]/20 text-[#34d399] font-label-sm text-[10px] uppercase tracking-[0.2em] mb-6">Omnicanalidad Operativa</span>
+            <h2 class="font-h1 font-bold text-[48px] text-on-background dark:text-white mb-6 tracking-tight">{{ T "one_platform" }}</h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-white/60 leading-relaxed">{{ T "hero_subtitle" }}</p>
+        </div>
+        <!-- 3 Tarjetitas Subidas con Efecto Glow y Chips -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-20">
+            <!-- 1. Administrative Transparency -->
+            <div class="glass p-8 min-h-[380px] rounded-2xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group flex flex-col items-center justify-center text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl">account_balance</span>
+                </div>
+            <div class="relative w-16 h-16 rounded-2xl bg-[#0058be]/10 flex items-center justify-center text-[#0058be] mb-8 group-hover:scale-110 transition-transform shadow-inner">
+                <div class="absolute inset-0 rounded-2xl bg-[#0058be]/20 blur-xl group-hover:blur-2xl transition-all opacity-50"></div>
+                <span class="material-symbols-outlined text-3xl relative z-10" style="font-variation-settings: 'FILL' 0;">account_balance</span>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-[#0058be]/5 text-[#0058be] text-[9px] font-bold uppercase tracking-[0.2em] border border-[#0058be]/10 mb-4">Integridad Total</span>
+            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-4 text-[24px]">{{ T "unified_data_title" }}</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant dark:text-gray-400 leading-relaxed">{{ T "unified_data_desc" }}</p>
+        </div>
+        <!-- 2. Institutional Communication -->
+        <div class="glass p-8 min-h-[380px] rounded-2xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group flex flex-col items-center justify-center text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-6xl">campaign</span>
+            </div>
+            <div class="relative w-16 h-16 rounded-2xl bg-[#674bb5]/10 flex items-center justify-center text-[#674bb5] mb-8 group-hover:scale-110 transition-transform shadow-inner">
+                <div class="absolute inset-0 rounded-2xl bg-[#674bb5]/20 blur-xl group-hover:blur-2xl transition-all opacity-50"></div>
+                <span class="material-symbols-outlined text-3xl relative z-10" style="font-variation-settings: 'FILL' 0;">campaign</span>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-[#674bb5]/5 text-[#674bb5] text-[9px] font-bold uppercase tracking-[0.2em] border border-[#674bb5]/10 mb-4">Alcance Masivo</span>
+            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-4 text-[24px]">{{ T "automated_workflows_title" }}</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant dark:text-gray-400 leading-relaxed">{{ T "automated_workflows_desc" }}</p>
+        </div>
+        <!-- 3. Control & Security -->
+        <div class="glass p-8 min-h-[380px] rounded-2xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group flex flex-col items-center justify-center text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="material-symbols-outlined text-6xl">security</span>
+            </div>
+            <div class="relative w-16 h-16 rounded-2xl bg-[#eab308]/10 flex items-center justify-center text-[#eab308] mb-8 group-hover:scale-110 transition-transform shadow-inner">
+                <div class="absolute inset-0 rounded-2xl bg-[#eab308]/20 blur-xl group-hover:blur-2xl transition-all opacity-50"></div>
+                <span class="material-symbols-outlined text-3xl relative z-10" style="font-variation-settings: 'FILL' 0;">security</span>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-[#eab308]/5 text-[#eab308] text-[9px] font-bold uppercase tracking-[0.2em] border border-[#eab308]/10 mb-4">Blindaje Activo</span>
+            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-4 text-[24px]">{{ T "realtime_analytics_title" }}</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant dark:text-gray-400 leading-relaxed">{{ T "realtime_analytics_desc" }}</p>
+        </div>
+    </div>
 
-<!-- 2) One platform, total control -->
-<section id="solutions" class="max-width-container-max mx-auto px-gutter py-24 border-t border-on-background/5 dark:border-white/5" data-aos="fade-up">
-    <div class="mb-20 text-center max-w-3xl mx-auto">
-        <h2 class="font-h1 font-bold text-[48px] text-on-background dark:text-white mb-6 tracking-tight">{{ T "one_platform" }}</h2>
-        <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-white/60 leading-relaxed">{{ T "hero_subtitle" }}</p>
-    </div>
     <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-20">
-        <div class="md:col-span-8 glass rounded-2xl p-xl flex flex-col justify-between border border-white/40 shadow-xl hover:translate-y-[-4px] transition-all duration-500 min-h-[400px]">
-            <div>
-                <div class="flex items-center gap-2 mb-md">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary-container/20 text-on-background dark:text-white glass">
-                        <span class="material-symbols-outlined">smart_toy</span>
+        <div class="md:col-span-8 bg-white dark:bg-[#0c0c0c] rounded-2xl p-xl border border-on-background/10 dark:border-white/10 shadow-xl hover:translate-y-[-4px] transition-all duration-500 min-h-[420px] relative overflow-hidden group">
+            <!-- 1) Data Flow Animation Canvas (Intensified Yellow) -->
+            <div class="absolute right-0 top-0 w-full md:w-3/4 h-full opacity-60 pointer-events-none overflow-hidden [mask-image:linear-gradient(to_left,black_70%,transparent)]">
+                <!-- Amber Dot Grid -->
+                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(currentColor 1.5px, transparent 0); background-size: 32px 32px; color: #eab308;"></div>
+                
+                <!-- Horizontal Amber Streams -->
+                <div class="absolute top-[20%] -left-full w-full h-[1.5px] bg-[#eab308] shadow-[0_0_12px_rgba(234,179,8,0.5)] animate-data-flow-slow"></div>
+                <div class="absolute top-[45%] -left-full w-full h-[1.5px] bg-[#eab308] shadow-[0_0_12px_rgba(234,179,8,0.5)] animate-data-flow-fast [animation-delay:1.5s]"></div>
+                <div class="absolute top-[70%] -left-full w-full h-[1.5px] bg-[#eab308] shadow-[0_0_12px_rgba(234,179,8,0.5)] animate-data-flow [animation-delay:0.7s]"></div>
+                
+                <!-- Vertical Infrastructure Streaks -->
+                <div class="absolute left-[25%] -top-full w-[1.2px] h-full bg-[#eab308]/40 shadow-[0_0_8px_rgba(234,179,8,0.3)] animate-data-flow-vertical [animation-delay:2s]"></div>
+                <div class="absolute left-[65%] -top-full w-[1.2px] h-full bg-[#eab308]/40 shadow-[0_0_8px_rgba(234,179,8,0.3)] animate-data-flow-vertical [animation-delay:0.5s]"></div>
+                
+                <!-- Energy Data Nodes -->
+                <div class="absolute top-[45%] left-[25%] w-2 h-2 bg-[#eab308] rounded-full shadow-[0_0_15px_rgba(234,179,8,0.6)] animate-pulse"></div>
+                <div class="absolute top-[20%] left-[65%] w-2 h-2 bg-[#eab308] rounded-full shadow-[0_0_15px_rgba(234,179,8,0.6)] animate-pulse [animation-delay:1s]"></div>
+                <div class="absolute top-[70%] left-[65%] w-2 h-2 bg-[#eab308] rounded-full shadow-[0_0_15px_rgba(234,179,8,0.6)] animate-pulse [animation-delay:2s]"></div>
+            </div>
+
+            <div class="relative z-10 flex flex-col h-full justify-between">
+                <div>
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-14 h-14 rounded-2xl bg-[#674bb5]/10 flex items-center justify-center text-[#674bb5] glass shadow-inner">
+                            <span class="material-symbols-outlined text-3xl">settings_input_component</span>
+                        </div>
+                        <span class="px-4 py-1.5 rounded-full bg-[#674bb5]/5 text-[#674bb5] text-[10px] font-bold uppercase tracking-[0.2em] border border-[#674bb5]/10">{{ T "ai_automation_chip" }}</span>
                     </div>
-                    <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20">{{ T "ai_automation_chip" }}</span>
+                    <h3 class="font-h1 font-bold text-[36px] text-on-background dark:text-white mb-6 leading-tight max-w-lg">
+                        {{ T "ai_automation_title" }}
+                    </h3>
+                    <p class="font-body-lg text-on-surface-variant dark:text-gray-400 max-w-lg leading-relaxed">
+                        {{ T "ai_automation_desc" }}
+                    </p>
                 </div>
-                <h3 class="font-h3 font-bold text-h3 text-on-background mb-sm">{{ T "ai_automation_title" }}</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant mb-lg max-w-md">{{ T "ai_automation_desc" }}</p>
-            </div>
-            <div class="w-full h-48 bg-surface rounded-lg border border-surface-container overflow-hidden relative shadow-inner">
-                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz-Bj5QxPZtlr19aypicbqABGrJjdgOq0cEWicNnjLqDExW0YL6NleVc_MrxTIxxtWOY03jH7ZXI8ffk73DntQVd_hvvPJuGH9kvT06FJzs-mq8j6PxGYIIkhWeOy6mKSljhd9YHtaWPmKsUak_iGME0d4aD5qM3ypyhOnQa7WFGxYYA0ZVAjRwUI1kSWYHHMKrvu7muinRpqsTIjyzR0YZt_SlHS7J0B1r8e7Ml4NJ8EEtO9xyLXpicw7wIBtijai47jjL3aTNLJo" />
             </div>
         </div>
-        <div class="md:col-span-4 bg-primary-container/90 backdrop-blur-xl rounded-2xl p-xl flex flex-col justify-between border border-primary/30 shadow-xl hover:translate-y-[-4px] transition-all duration-500">
-            <div>
-                <div class="flex items-center gap-2 mb-md">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 text-on-primary glass">
-                        <span class="material-symbols-outlined">bolt</span>
+        <div class="md:col-span-4 bg-[#34d399] rounded-2xl p-xl flex flex-col items-center justify-center text-center border border-[#34d399]/30 shadow-xl hover:translate-y-[-4px] transition-all duration-500 relative overflow-hidden group">
+            <!-- 1) High-End Visual: Radar Pulse Background -->
+            <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/20 rounded-full animate-ping duration-[3s]"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-white/10 rounded-full animate-ping duration-[4s]"></div>
+            </div>
+
+            <div class="relative z-10 flex flex-col items-center">
+                <!-- 2) Iconic Core -->
+                <div class="mb-8 relative">
+                    <div class="absolute -inset-4 border border-white/30 rounded-full animate-spin-slow opacity-50"></div>
+                    <div class="absolute -inset-10 border border-white/10 rounded-full animate-reverse-spin opacity-30"></div>
+                    
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white/20 text-on-primary glass shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                        <span class="material-symbols-outlined text-5xl">bolt</span>
                     </div>
-                    <span class="px-3 py-1 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest border border-white/20">{{ T "unmatched_speed_chip" }}</span>
                 </div>
-                <h3 class="font-h3 font-bold text-h3 text-on-primary-fixed mb-sm">{{ T "unmatched_speed_title" }}</h3>
-                <p class="font-body-md text-body-md text-on-primary-fixed-variant">{{ T "unmatched_speed_desc" }}</p>
+                
+                <h3 class="font-h1 font-bold text-[32px] text-on-primary-fixed mb-4 leading-none tracking-tight">
+                    {{ T "unmatched_speed_title" }}
+                </h3>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-2 h-2 bg-[#eab308] rounded-full animate-ping"></div>
+                    <span class="text-[10px] font-bold text-on-primary-fixed/60 uppercase tracking-[0.2em]">{{ T "sync_total_label" }}</span>
+                </div>
+                <p class="font-body-lg text-on-primary-fixed-variant max-w-[280px] leading-relaxed">
+                    {{ T "unmatched_speed_desc" }}
+                </p>
             </div>
-            <div class="mt-lg">
-                <p class="font-stats-display font-bold text-stats-display text-on-primary-fixed mb-xs">99.9%</p>
-                <p class="font-label-sm text-label-sm text-on-primary-fixed-variant uppercase tracking-tighter">{{ T "uptime_label" }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-        <div class="glass p-md rounded-xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group">
-            <span class="material-symbols-outlined text-[32px] text-primary mb-6 group-hover:scale-110 transition-transform">database</span>
-            <h3 class="font-h3 font-bold text-h3 text-on-background mb-4 text-[24px]">{{ T "unified_data_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant mb-6">{{ T "unified_data_desc" }}</p>
-        </div>
-        <div class="glass p-md rounded-xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group">
-            <span class="material-symbols-outlined text-[32px] text-primary mb-6 group-hover:scale-110 transition-transform">account_tree</span>
-            <h3 class="font-h3 font-bold text-h3 text-on-background mb-4 text-[24px]">{{ T "automated_workflows_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant mb-6">{{ T "automated_workflows_desc" }}</p>
-        </div>
-        <div class="glass p-md rounded-xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group">
-            <span class="material-symbols-outlined text-[32px] text-primary mb-6 group-hover:scale-110 transition-transform">monitoring</span>
-            <h3 class="font-h3 font-bold text-h3 text-on-background mb-4 text-[24px]">{{ T "realtime_analytics_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant mb-6">{{ T "realtime_analytics_desc" }}</p>
         </div>
     </div>
 </section>
@@ -152,63 +214,165 @@
     </div>
 </section>
 
-<!-- 3) Every tool you need to manage at scale -->
-<section id="features" class="py-24 px-8 max-w-container-max mx-auto border-b border-on-background/5 dark:border-white/5" data-aos="fade-up">
-    <div class="text-center mb-16">
-        <h2 class="font-h2 font-bold text-h2 text-on-background dark:text-white mb-md">{{ T "every_tool" }}</h2>
-        <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-gray-400 max-w-2xl mx-auto">{{ T "every_tool_subtitle" }}</p>
+<!-- 3) Modular Architecture Features -->
+<section id="features" class="py-24 px-8 max-w-container-max mx-auto border-t border-on-background/5 dark:border-white/5" data-aos="fade-up">
+    <div class="text-center mb-20">
+        <h2 class="font-h1 font-bold text-[40px] md:text-[48px] text-on-background dark:text-white mb-6 tracking-tight">{{ T "every_tool" }}</h2>
+        <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">{{ T "every_tool_subtitle" }}</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-        <div class="glass p-md rounded-2xl border border-white/40 group hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300">
-            <div class="w-12 h-12 bg-primary-container/20 rounded-lg flex items-center justify-center mb-md glass">
-                <span class="material-symbols-outlined text-primary-container text-3xl">home_app_logo</span>
-            </div>
-            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-sm">{{ T "tenant_portal_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">{{ T "tenant_portal_desc" }}</p>
-        </div>
-        <div class="glass p-md rounded-2xl border border-white/40 group hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300">
-            <div class="w-12 h-12 bg-tertiary-container/20 rounded-lg flex items-center justify-center mb-md glass">
-                <span class="material-symbols-outlined text-tertiary-container text-3xl">payments</span>
-            </div>
-            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-sm">{{ T "rent_collection_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">{{ T "rent_collection_desc" }}</p>
-        </div>
-        <div class="glass p-md rounded-2xl border border-white/40 group hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300">
-            <div class="w-12 h-12 bg-error-container/20 rounded-lg flex items-center justify-center mb-md glass">
-                <span class="material-symbols-outlined text-error-container text-3xl">build</span>
-            </div>
-            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-sm">{{ T "maintenance_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">{{ T "maintenance_desc" }}</p>
-        </div>
-        <div class="glass p-md rounded-2xl border border-tertiary/20 group hover:shadow-[0_20px_40px_-15px_rgba(103,75,181,0.3)] transition-all duration-500 hover:-translate-y-2 animate-float" data-aos="fade-up" data-aos-delay="100">
-            <div class="flex items-center gap-2 mb-md">
-                <div class="w-12 h-12 bg-tertiary text-white rounded-lg flex items-center justify-center glass group-hover:scale-110 transition-transform shadow-lg shadow-tertiary/20">
-                    <span class="material-symbols-outlined text-3xl">trending_up</span>
+
+    <div class="space-y-24">
+        <!-- CATEGORY 1: GESTIÓN DE ACTIVOS -->
+        <div class="space-y-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-on-background/10 dark:border-white/10 pb-6">
+                <div>
+                    <h3 class="font-h2 font-bold text-[32px] text-on-background dark:text-white">{{ T "finances_header" }}</h3>
                 </div>
-                <span class="px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary text-[9px] font-bold uppercase tracking-tighter border border-tertiary/20">{{ T "predictive_yield_chip" }}</span>
-            </div>
-            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-sm">{{ T "predictive_yield_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant dark:text-white/60">{{ T "predictive_yield_desc" }}</p>
-        </div>
-        <div class="glass p-md rounded-2xl border border-secondary/20 group hover:shadow-[0_20px_40px_-15px_rgba(0,88,190,0.3)] transition-all duration-500 hover:-translate-y-2 animate-float" style="animation-delay: 1.5s" data-aos="fade-up" data-aos-delay="200">
-            <div class="flex items-center gap-2 mb-md">
-                <div class="w-12 h-12 bg-secondary text-white rounded-lg flex items-center justify-center glass group-hover:scale-110 transition-transform shadow-lg shadow-secondary/20">
-                    <span class="material-symbols-outlined text-3xl">lock_open</span>
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-[#34d399] rounded-full animate-pulse"></div>
+                    <span class="font-label-sm text-[12px] font-bold text-[#34d399] tracking-[0.3em]">{{ T "finances_focus" }}</span>
                 </div>
-                <span class="px-2 py-0.5 rounded-full bg-secondary/10 text-secondary text-[9px] font-bold uppercase tracking-tighter border border-secondary/20">{{ T "smart_access_chip" }}</span>
             </div>
-            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-sm">{{ T "smart_access_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant dark:text-white/60">{{ T "smart_access_desc" }}</p>
-        </div>
-        <div class="glass p-md rounded-2xl border border-primary/20 group hover:shadow-[0_20px_40px_-15px_rgba(0,108,75,0.3)] transition-all duration-500 hover:-translate-y-2 animate-float" style="animation-delay: 3s" data-aos="fade-up" data-aos-delay="300">
-            <div class="flex items-center gap-2 mb-md">
-                <div class="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center glass group-hover:scale-110 transition-transform shadow-lg shadow-primary/20">
-                    <span class="material-symbols-outlined text-3xl">eco</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                <!-- Smart Collection -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center text-[#34d399] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "smart_collection_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "smart_collection_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "smart_collection_desc" }}</p>
                 </div>
-                <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-tighter border border-primary/20">{{ T "esg_compliance_chip" }}</span>
+                <!-- Data Integrity -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center text-[#34d399] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">verified</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "data_integrity_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "data_integrity_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "data_integrity_desc" }}</p>
+                </div>
+                <!-- Reserve Optimization -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center text-[#34d399] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">account_balance</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "reserve_optimization_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "reserve_optimization_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "reserve_optimization_desc" }}</p>
+                </div>
+                <!-- Expense Audit -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#34d399]/10 flex items-center justify-center text-[#34d399] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "expense_audit_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "expense_audit_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "expense_audit_desc" }}</p>
+                </div>
             </div>
-            <h3 class="font-h3 font-bold text-h3 text-on-background dark:text-white mb-sm">{{ T "esg_compliance_title" }}</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant dark:text-white/60">{{ T "esg_compliance_desc" }}</p>
+        </div>
+
+        <!-- CATEGORY 2: OPERACIONES Y COMUNIDAD -->
+        <div class="space-y-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-on-background/10 dark:border-white/10 pb-6">
+                <div>
+                    <h3 class="font-h2 font-bold text-[32px] text-on-background dark:text-white">{{ T "operations_header" }}</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-[#674bb5] rounded-full animate-pulse"></div>
+                    <span class="font-label-sm text-[12px] font-bold text-[#674bb5] tracking-[0.3em]">{{ T "operations_focus" }}</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                <!-- Property Evolution -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#674bb5]/10 flex items-center justify-center text-[#674bb5] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">architecture</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "property_evolution_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "property_evolution_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "property_evolution_desc" }}</p>
+                </div>
+                <!-- Digital Vault -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#674bb5]/10 flex items-center justify-center text-[#674bb5] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">encrypted</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "digital_vault_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "digital_vault_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "digital_vault_desc" }}</p>
+                </div>
+                <!-- Service Logistics -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#674bb5]/10 flex items-center justify-center text-[#674bb5] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">engineering</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "service_logistics_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "service_logistics_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "service_logistics_desc" }}</p>
+                </div>
+                <!-- Resolution Channel -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#674bb5]/10 flex items-center justify-center text-[#674bb5] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">forum</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "resolution_channel_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "resolution_channel_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "resolution_channel_desc" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY 3: CONTROL E INFRAESTRUCTURA -->
+        <div class="space-y-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-on-background/10 dark:border-white/10 pb-6">
+                <div>
+                    <h3 class="font-h2 font-bold text-[32px] text-on-background dark:text-white">{{ T "security_header" }}</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-[#0058be] rounded-full animate-pulse"></div>
+                    <span class="font-label-sm text-[12px] font-bold text-[#0058be] tracking-[0.3em]">{{ T "security_focus" }}</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+                <!-- Shielded Perimeter -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#0058be]/10 flex items-center justify-center text-[#0058be] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">security</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "shielded_perimeter_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "shielded_perimeter_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "shielded_perimeter_desc" }}</p>
+                </div>
+                <!-- Logistics Management -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#0058be]/10 flex items-center justify-center text-[#0058be] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">package_2</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "logistics_management_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "logistics_management_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "logistics_management_desc" }}</p>
+                </div>
+                <!-- Activity Monitor -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#0058be]/10 flex items-center justify-center text-[#0058be] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">visibility</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "activity_monitor_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "activity_monitor_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "activity_monitor_desc" }}</p>
+                </div>
+                <!-- Staff Supervision -->
+                <div class="glass p-8 min-h-[320px] rounded-[2rem] border border-white/40 dark:border-white/5 group hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-[#0058be]/10 flex items-center justify-center text-[#0058be] mb-6 group-hover:scale-110 transition-transform shadow-inner">
+                        <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">badge</span>
+                    </div>
+                    <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "staff_supervision_title" }}</h4>
+                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "staff_supervision_empower" }}</p>
+                    <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "staff_supervision_desc" }}</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -272,7 +436,24 @@
     </div>
 </section>
 
-<!-- 6) faq -->
+<!-- 5.5) Strategic Advisor Quote -->
+<section class="py-24 px-8 max-w-container-max mx-auto overflow-hidden">
+    <div class="glass p-xl md:p-24 rounded-[40px] border border-white/40 shadow-2xl relative overflow-hidden group">
+        <!-- Background Gold Detail -->
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-[#eab308]/5 rounded-full blur-[80px] group-hover:bg-[#eab308]/10 transition-colors duration-1000"></div>
+        
+        <div class="relative z-10 flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-[#eab308] text-[64px] mb-12 opacity-40">format_quote</span>
+            <blockquote class="font-h2 font-bold text-[28px] md:text-[36px] text-on-background dark:text-white leading-[1.3] tracking-tight mb-12 max-w-4xl italic">
+                "{{ T "strategic_advisor_quote" }}"
+            </blockquote>
+            <div class="flex flex-col items-center">
+                <div class="w-12 h-1 bg-[#eab308] rounded-full mb-6"></div>
+                <p class="font-label-sm text-[14px] uppercase tracking-[0.3em] text-[#eab308] font-bold">{{ T "strategic_advisor_name" }}</p>
+            </div>
+        </div>
+    </div>
+</section>
 <section id="faq" class="py-24 px-8 max-w-container-max mx-auto border-t border-on-background/5 dark:border-white/5">
     <h2 class="font-h2 font-bold text-h2 mb-16 text-center dark:text-white tracking-tight">{{ T "faq" }}</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-4xl mx-auto">
@@ -304,19 +485,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                         <div class="flex flex-col gap-xs">
                             <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">{{ T "first_name" }}</label>
-                            <input id="first-name" name="first_name" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="Jane" required type="text" minlength="2" maxlength="50" oninput="this.value = this.value.replace(/\d/g, ''); this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)"/>
+                            <input id="first-name" name="first_name" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-[#006c4b] focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-[#006c4b] dark:text-white" placeholder="Jane" required type="text" minlength="2" maxlength="50" oninput="this.value = this.value.replace(/\d/g, ''); this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)"/>
                         </div>
                         <div class="flex flex-col gap-xs">
                             <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">{{ T "last_name" }}</label>
-                            <input id="last-name" name="last_name" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="Doe" required type="text" minlength="2" maxlength="50" oninput="this.value = this.value.replace(/\d/g, ''); this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)"/>
+                            <input id="last-name" name="last_name" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-[#006c4b] focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-[#006c4b] dark:text-white" placeholder="Doe" required type="text" minlength="2" maxlength="50" oninput="this.value = this.value.replace(/\d/g, ''); this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)"/>
                         </div>
                         <div class="flex flex-col gap-xs">
                             <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">{{ T "work_email" }}</label>
-                            <input id="work-email" name="email" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="jane@company.com" required type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" maxlength="100"/>
+                            <input id="work-email" name="email" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-[#006c4b] focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-[#006c4b] dark:text-white" placeholder="jane@company.com" required type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" maxlength="100"/>
                         </div>
                         <div class="flex flex-col gap-xs">
                             <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">{{ T "phone_number" }}</label>
-                            <input id="phone" name="phone" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="+1 (555) 000-0000" required type="tel" pattern="^\+?[1-9]\d{1,14}$" oninput="this.value = this.value.replace(/[^\d+]/g, '')" maxlength="20"/>
+                            <input id="phone" name="phone" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-[#006c4b] focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-[#006c4b] dark:text-white" placeholder="+1 (555) 000-0000" required type="tel" pattern="^\+?[1-9]\d{1,14}$" oninput="this.value = this.value.replace(/[^\d+]/g, '')" maxlength="20"/>
                         </div>
                     </div>
                     <button id="submit-btn" class="w-full bg-primary-container text-on-primary-fixed font-label-sm text-label-sm h-[48px] rounded-lg border border-primary hover:opacity-80 transition-opacity flex items-center justify-center gap-sm" type="submit">
