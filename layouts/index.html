@@ -127,20 +127,38 @@
                 <div class="absolute top-[70%] left-[65%] w-2 h-2 bg-[#eab308] rounded-full shadow-[0_0_15px_rgba(234,179,8,0.6)] animate-pulse [animation-delay:2s]"></div>
             </div>
 
-            <div class="relative z-10 flex flex-col h-full justify-between">
-                <div>
+            <div class="relative z-10 flex flex-col h-full">
+                <div class="max-w-3xl">
                     <div class="flex items-center gap-4 mb-8">
                         <div class="w-14 h-14 rounded-2xl bg-[#674bb5]/10 flex items-center justify-center text-[#674bb5] glass shadow-inner">
-                            <span class="material-symbols-outlined text-3xl">settings_input_component</span>
+                            <span class="material-symbols-outlined text-3xl">assignment_turned_in</span>
                         </div>
                         <span class="px-4 py-1.5 rounded-full bg-[#674bb5]/5 text-[#674bb5] text-[10px] font-bold uppercase tracking-[0.2em] border border-[#674bb5]/10">{{ T "ai_automation_chip" }}</span>
                     </div>
-                    <h3 class="font-h1 font-bold text-[36px] text-on-background dark:text-white mb-6 leading-tight max-w-lg">
+                    <h3 class="font-h1 font-bold text-[36px] text-on-background dark:text-white mb-6 leading-tight">
                         {{ T "ai_automation_title" }}
                     </h3>
-                    <p class="font-body-lg text-on-surface-variant dark:text-gray-400 max-w-lg leading-relaxed">
-                        {{ T "ai_automation_desc" }}
-                    </p>
+                    <div class="relative">
+                        {{ T "ai_automation_desc" | safeHTML }}
+                    </div>
+
+                    <style>
+                        @keyframes fadeIn {
+                            from { opacity: 0; transform: translateY(4px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        .animate-fade-in {
+                            animation: fadeIn 0.4s ease-out forwards;
+                        }
+                        .peer\/admin:checked ~ div label[for="tab-admin"] {
+                            background-color: #674bb5;
+                            color: white;
+                        }
+                        .peer\/resident:checked ~ div label[for="tab-resident"] {
+                            background-color: #674bb5;
+                            color: white;
+                        }
+                    </style>
                 </div>
             </div>
         </div>
@@ -158,7 +176,7 @@
                     <div class="absolute -inset-10 border border-white/10 rounded-full animate-reverse-spin opacity-30"></div>
                     
                     <div class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white/20 text-on-primary glass shadow-2xl group-hover:scale-110 transition-transform duration-500">
-                        <span class="material-symbols-outlined text-5xl">bolt</span>
+                        <span class="material-symbols-outlined text-[48px] animate-pulse">home_work</span>
                     </div>
                 </div>
                 
@@ -238,7 +256,7 @@
         <div class="lg:w-1/2 flex flex-col gap-base order-1 lg:order-2">
             <div class="inline-flex items-center gap-xs text-[#674bb5] mb-2" data-aos="fade-left" data-aos-delay="300">
                 <div class="w-10 h-10 rounded-xl bg-[#674bb5]/10 flex items-center justify-center glass shadow-inner mb-2">
-                    <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">memory</span>
+                    <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">verified</span>
                 </div>
                 <span class="font-label-sm font-bold text-label-sm uppercase tracking-[0.2em] ml-2 text-[#674bb5]">{{ T "ai_automation_title" }}</span>
             </div>
@@ -249,16 +267,11 @@
             
             <div class="relative" data-aos="fade-left" data-aos-delay="500">
                 <div class="absolute -left-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#674bb5] to-transparent opacity-30"></div>
-                <p class="font-body-lg text-[18px] text-on-surface-variant dark:text-gray-400 leading-relaxed max-w-xl">
-                    {{ T "intelligent_ops_desc" }}
-                </p>
+                <div class="prose prose-slate dark:prose-invert max-w-none text-on-surface-variant dark:text-gray-400">
+                    {{ T "intelligent_ops_desc" | safeHTML }}
+                </div>
             </div>
 
-            <!-- Action Link / Status -->
-            <div class="mt-8 flex items-center gap-4" data-aos="fade-up" data-aos-delay="600">
-                <div class="w-2 h-2 rounded-full bg-[#34d399] animate-pulse"></div>
-                <span class="text-[12px] font-bold uppercase tracking-widest text-[#34d399]/80 italic">Precision Optimized</span>
-            </div>
         </div>
     </div>
 </section>
@@ -277,10 +290,6 @@
                 <div>
                     <h3 class="font-h2 font-bold text-[32px] text-on-background dark:text-white">{{ T "finances_header" }}</h3>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 bg-[#34d399] rounded-full animate-pulse"></div>
-                    <span class="font-label-sm text-[12px] font-bold text-[#34d399] tracking-[0.3em]">{{ T "finances_focus" }}</span>
-                </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
                 <!-- Smart Collection -->
@@ -289,7 +298,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "smart_collection_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "smart_collection_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "smart_collection_desc" }}</p>
                 </div>
                 <!-- Data Integrity -->
@@ -298,7 +306,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">verified</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "data_integrity_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "data_integrity_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "data_integrity_desc" }}</p>
                 </div>
                 <!-- Reserve Optimization -->
@@ -307,7 +314,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">account_balance</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "reserve_optimization_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "reserve_optimization_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "reserve_optimization_desc" }}</p>
                 </div>
                 <!-- Expense Audit -->
@@ -316,7 +322,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">receipt_long</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "expense_audit_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#34d399] uppercase tracking-[0.2em] mb-4">{{ T "expense_audit_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "expense_audit_desc" }}</p>
                 </div>
             </div>
@@ -328,10 +333,6 @@
                 <div>
                     <h3 class="font-h2 font-bold text-[32px] text-on-background dark:text-white">{{ T "operations_header" }}</h3>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 bg-[#674bb5] rounded-full animate-pulse"></div>
-                    <span class="font-label-sm text-[12px] font-bold text-[#674bb5] tracking-[0.3em]">{{ T "operations_focus" }}</span>
-                </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
                 <!-- Property Evolution -->
@@ -340,7 +341,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">architecture</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "property_evolution_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "property_evolution_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "property_evolution_desc" }}</p>
                 </div>
                 <!-- Digital Vault -->
@@ -349,7 +349,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">encrypted</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "digital_vault_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "digital_vault_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "digital_vault_desc" }}</p>
                 </div>
                 <!-- Service Logistics -->
@@ -358,7 +357,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">engineering</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "service_logistics_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "service_logistics_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "service_logistics_desc" }}</p>
                 </div>
                 <!-- Resolution Channel -->
@@ -367,7 +365,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">forum</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "resolution_channel_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#674bb5] uppercase tracking-[0.2em] mb-4">{{ T "resolution_channel_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "resolution_channel_desc" }}</p>
                 </div>
             </div>
@@ -379,10 +376,6 @@
                 <div>
                     <h3 class="font-h2 font-bold text-[32px] text-on-background dark:text-white">{{ T "security_header" }}</h3>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 bg-[#0058be] rounded-full animate-pulse"></div>
-                    <span class="font-label-sm text-[12px] font-bold text-[#0058be] tracking-[0.3em]">{{ T "security_focus" }}</span>
-                </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
                 <!-- Shielded Perimeter -->
@@ -391,7 +384,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">security</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "shielded_perimeter_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "shielded_perimeter_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "shielded_perimeter_desc" }}</p>
                 </div>
                 <!-- Logistics Management -->
@@ -400,7 +392,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">package_2</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "logistics_management_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "logistics_management_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "logistics_management_desc" }}</p>
                 </div>
                 <!-- Activity Monitor -->
@@ -409,7 +400,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">visibility</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "activity_monitor_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "activity_monitor_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "activity_monitor_desc" }}</p>
                 </div>
                 <!-- Staff Supervision -->
@@ -418,7 +408,6 @@
                         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 0;">badge</span>
                     </div>
                     <h4 class="font-bold text-[22px] text-on-background dark:text-white mb-1">{{ T "staff_supervision_title" }}</h4>
-                    <p class="text-[10px] font-bold text-[#0058be] uppercase tracking-[0.2em] mb-4">{{ T "staff_supervision_empower" }}</p>
                     <p class="font-body-md text-on-surface-variant leading-relaxed">{{ T "staff_supervision_desc" }}</p>
                 </div>
             </div>

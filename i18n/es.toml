@@ -1,5 +1,5 @@
 [hero_title]
-other = "Una plataforma, control total."
+other = "Una plataforma, control total"
 
 [hero_subtitle]
 other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
@@ -39,10 +39,31 @@ other = "Gracias"
 other = "¡Digitaliza la administración de tu propiedad!"
 
 [intelligent_operations]
-other = "Operaciones Inteligentes."
+other = "Operaciones Inteligentes"
 
 [intelligent_ops_desc]
-other = "Sabemos que una gestión deficiente drena recursos y confianza. Por eso, Vilkor garantiza la aplicación de mejores prácticas mediante una infraestructura operacional diseñada para la transparencia y el rigor absoluto."
+other = """
+<div class="space-y-6 text-on-surface-variant dark:text-gray-300">
+    <p class="font-body-lg text-[18px] leading-relaxed">
+        Administrar es proteger el patrimonio y la armonía de las personas. Vilkor profesionaliza su gestión mediante tres pilares de excelencia:
+    </p>
+
+    <ul class="space-y-4">
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#674bb5] text-xl mt-1">account_balance_wallet</span>
+            <p class="text-sm"><strong>Inteligencia Financiera:</strong> Automatice el monitoreo y reportes para una transparencia total y sin errores, obteniendo información al instante sin esperar días.</p>
+        </li>
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#674bb5] text-xl mt-1">forum</span>
+            <p class="text-sm"><strong>Comunicación Clara:</strong> Cree comunicados al instante, gestione peticiones y centralice mensajes con su administrador, asegurando un seguimiento impecable y resolución oportuna.</p>
+        </li>
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#674bb5] text-xl mt-1">widgets</span>
+            <p class="text-sm"><strong>Operativa Modular:</strong> Organice la convivencia mediante reservas automáticas, control de accesos y mantenimiento programado de sus activos.</p>
+        </li>
+    </ul>
+</div>
+"""
 
 [enterprise_grade]
 other = "Sistema de Grado Empresarial"
@@ -75,22 +96,82 @@ other = "VANGUARDISTA"
 other = "INTELIGENCIA DE PRÓXIMA GENERACIÓN"
 
 [ai_automation_chip]
-other = "LÓGICA OPERATIVA AVANZADA"
+other = "EFICIENCIA PROFESIONAL"
 
 [ai_automation_title]
-other = "Entendemos el reto..."
+other = "Gestión que Demuestra Confianza"
 
 [ai_automation_desc]
-other = "Sabemos que una gestión deficiente drena recursos y confianza. Por eso, Vilkor garantiza la aplicación de mejores prácticas mediante una infraestructura operacional diseñada para la transparencia y el rigor absoluto."
+other = """
+<div class="space-y-6">
+    <p class="font-body-lg text-on-surface-variant dark:text-gray-400 max-w-2xl leading-relaxed mb-8">
+        Optimice su operación con un ecosistema diseñado para la transparencia absoluta, elevado para aumentar el valor patrimonial y la confianza de los residentes.
+    </p>
+
+    <!-- Tab System (CSS Based) -->
+    <div class="relative w-full max-w-2xl">
+        <input type="radio" id="tab-admin" name="card-tabs" class="hidden peer/admin" checked>
+        <input type="radio" id="tab-resident" name="card-tabs" class="hidden peer/resident">
+
+        <!-- Tab Headers -->
+        <div class="flex p-1 bg-on-background/5 dark:bg-white/5 rounded-xl border border-on-background/10 dark:border-white/10 mb-8 w-fit">
+            <label for="tab-admin" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/admin:bg-[#674bb5] peer-checked/admin:text-white">Para la Administradora</label>
+            <label for="tab-resident" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/resident:bg-[#674bb5] peer-checked/resident:text-white">Para el Residente</label>
+        </div>
+
+        <!-- Admin Content -->
+        <div class="hidden peer-checked/admin:block animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">hub</span>
+                    <h4 class="font-bold text-sm dark:text-white">Escalabilidad Operativa</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Estandarice procesos y gestione múltiples carteras con una infraestructura ligera.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">account_balance</span>
+                    <h4 class="font-bold text-sm dark:text-white">Rigor de Auditoría</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">verified_user</span>
+                    <h4 class="font-bold text-sm dark:text-white">Blindaje de Reputación</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Proyecte profesionalismo mediante trazabilidad total en cada transacción.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resident Content -->
+        <div class="hidden peer-checked/resident:block animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">visibility</span>
+                    <h4 class="font-bold text-sm dark:text-white">Transparencia Total</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">phonelink_setup</span>
+                    <h4 class="font-bold text-sm dark:text-white">Certeza Operativa</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">trending_up</span>
+                    <h4 class="font-bold text-sm dark:text-white">Plusvalía Tecnológica</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Una comunidad organizada aumenta el valor real de su propiedad.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+"""
 
 [unmatched_speed_chip]
-other = "SINCRONIZACIÓN TOTAL"
+other = "BIENESTAR RESIDENCIAL"
 
 [unmatched_speed_title]
-other = "Resultados en Tiempo Real"
+other = "Tranquilidad para cada Residente"
 
 [unmatched_speed_desc]
-other = "Elimine los cuellos de botella y la incertidumbre. La agilidad de Vilkor permite que su administración responda al ritmo de las necesidades reales, transformando procesos complejos en una operación fluida, rápida y totalmente transparente."
+other = "Un hogar se vive sin complicaciones. Ofrezca a sus residentes la comodidad de resolver todo desde su celular: avisos, pagos y solicitudes de mantenimiento, garantizando respuestas rápidas y una convivencia sin fricciones ni malentendidos."
 
 [uptime_label]
 other = "Fiabilidad de Tiempo de Actividad"
@@ -114,7 +195,7 @@ other = "Control y Seguridad"
 other = "Administre accesos, supervise la logística de paquetería y gestione el flujo de proveedores con monitoreo operativo en tiempo real."
 
 [every_tool]
-other = "Arquitectura Modular de Grado Institucional."
+other = "Arquitectura Modular de Grado Institucional"
 
 [every_tool_subtitle]
 other = "Una suite de herramientas diseñadas para la precisión, escalabilidad y control total de su portafolio."
@@ -128,28 +209,28 @@ other = "Enfoque: SOLIDEZ"
 [smart_collection_title]
 other = "Recaudación Inteligente"
 [smart_collection_empower]
-other = "Asegure el flujo de caja."
+other = "Asegure el flujo de caja"
 [smart_collection_desc]
 other = "Automatice la cobranza y elimine la morosidad con flujos lógicos de seguimiento y conciliación inmediata."
 
 [data_integrity_title]
 other = "Integridad de Datos"
 [data_integrity_empower]
-other = "Exporte reportes institucionales."
+other = "Exporte reportes institucionales"
 [data_integrity_desc]
 other = "Exporte reportes con precisión de grado ingeniería, listos para auditorías institucionales y toma de decisiones."
 
 [reserve_optimization_title]
 other = "Optimización de Reservas"
 [reserve_optimization_empower]
-other = "Administre fondos con transparencia."
+other = "Administre fondos con transparencia"
 [reserve_optimization_desc]
 other = "Administre fondos de reserva y presupuestos con total transparencia y una visión financiera a largo plazo."
 
 [expense_audit_title]
 other = "Auditoría de Egresos"
 [expense_audit_empower]
-other = "Mantenga un control quirúrgico."
+other = "Mantenga un control quirúrgico"
 [expense_audit_desc]
 other = "Mantenga un control quirúrgico sobre cada peso que sale de la administración con trazabilidad absoluta."
 
@@ -162,28 +243,28 @@ other = "Enfoque: AGILIDAD"
 [property_evolution_title]
 other = "Evolución del Inmueble"
 [property_evolution_empower]
-other = "Incremente la plusvalía."
+other = "Incremente la plusvalía"
 [property_evolution_desc]
 other = "Gestione reparaciones y mejoras estructurales que incrementan el valor patrimonial de su propiedad."
 
 [digital_vault_title]
 other = "Bóveda Digital"
 [digital_vault_empower]
-other = "Resguarde su información crítica."
+other = "Resguarde su información crítica"
 [digital_vault_desc]
 other = "Un repositorio centralizado y blindado para contratos, planos y reglamentos siempre disponibles."
 
 [service_logistics_title]
 other = "Logística de Servicios"
 [service_logistics_empower]
-other = "Centralice el mantenimiento."
+other = "Centralice el mantenimiento"
 [service_logistics_desc]
 other = "Centralice las solicitudes de mantenimiento en un flujo de trabajo automatizado que nunca se detiene."
 
 [resolution_channel_title]
 other = "Canal de Resolución"
 [resolution_channel_empower]
-other = "Elimine malentendidos."
+other = "Elimine malentendidos"
 [resolution_channel_desc]
 other = "Comunicación oficial y trazable que elimina el ruido operativo y acelera los acuerdos comunitarios."
 
@@ -196,28 +277,28 @@ other = "Enfoque: BLINDAJE"
 [shielded_perimeter_title]
 other = "Perímetro Blindado"
 [shielded_perimeter_empower]
-other = "Gestione accesos con rigor."
+other = "Gestione accesos con rigor"
 [shielded_perimeter_desc]
 other = "Gestión rigurosa de entradas y salidas con registro biométrico e instantáneo en la nube."
 
 [logistics_management_title]
 other = "Gestión de Logística"
 [logistics_management_empower]
-other = "Controle entregas e insumos."
+other = "Controle entregas e insumos"
 [logistics_management_desc]
 other = "Control total sobre la recepción de insumos operativos y entregas de última milla para residentes."
 
 [activity_monitor_title]
 other = "Monitor de Actividad"
 [activity_monitor_empower]
-other = "Capture eventos en tiempo real."
+other = "Capture eventos en tiempo real"
 [activity_monitor_desc]
 other = "Una bitácora digital que captura cada evento crítico y ronda de seguridad dentro del condominio."
 
 [staff_supervision_title]
 other = "Supervisión de Staff"
 [staff_supervision_empower]
-other = "Audite el desempeño operativo."
+other = "Audite el desempeño operativo"
 [staff_supervision_desc]
 other = "Coordine y audite el desempeño del personal operativo y proveedores desde una sola pantalla de control."
 
@@ -270,7 +351,7 @@ other = "Informes de sostenibilidad automatizados y monitoreo de energía para i
 other = "Despliegue Inmediato Disponible"
 
 [command_headline]
-other = "Comande su Portafolio con una Precisión Inflexible."
+other = "Comande su Portafolio con una Precisión Inflexible"
 
 [command_subtitle]
 other = "Deje de gestionar. Comience a comandar. Únase a la próxima generación de operadores de propiedades institucionales."

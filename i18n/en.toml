@@ -1,5 +1,5 @@
 [hero_title]
-other = "One platform, total control."
+other = "One platform, total control"
 
 [hero_subtitle]
 other = "Harness the power of AI-driven automation to reduce overhead and eliminate dashboard fatigue. Your operations, unified."
@@ -36,10 +36,10 @@ other = "Request Received"
 other = "Thank you"
 
 [future_property_management]
-other = "The future of property management. Connected."
+other = "The future of property management. Connected"
 
 [intelligent_operations]
-other = "Intelligent Operations."
+other = "Intelligent Operations"
 
 [intelligent_ops_desc]
 other = "We know that poor management drains both resources and trust. That's why Vilkor ensures the application of best practices through an operational infrastructure designed for total transparency and absolute rigor."
@@ -75,22 +75,22 @@ other = "Next-Gen"
 other = "Tech Stack"
 
 [ai_automation_chip]
-other = "Predictive Logic"
+other = "PROFESSIONAL EFFICIENCY"
 
 [ai_automation_title]
-other = "We understand the challenge..."
+other = "Management that Inspires Trust"
 
 [ai_automation_desc]
-other = "We know that poor management drains both resources and trust. That's why Vilkor ensures the application of best practices through an operational infrastructure designed for total transparency and absolute rigor."
+other = "Leave behind the chaos of manual reports and constant calls. Vilkor organizes your entire management into an intuitive tool that allows you to manage your property with less effort, projecting an image of order and professionalism to your community."
 
 [unmatched_speed_chip]
-other = "Real-Time Sync"
+other = "RESIDENTIAL WELL-BEING"
 
 [unmatched_speed_title]
-other = "Real-Time Results"
+other = "Peace of Mind for Every Resident"
 
 [unmatched_speed_desc]
-other = "Eliminate bottlenecks and uncertainty. Vilkor's agility allows your management to respond at the pace of real needs, transforming complex processes into a fluid, fast, and fully transparent operation."
+other = "A modern home is lived without complications. Offer your residents the convenience of resolving everything from their phone: notices, payments, and maintenance requests, guaranteeing fast responses and frictionless coexistence."
 
 [uptime_label]
 other = "Uptime Reliability"
@@ -114,7 +114,7 @@ other = "Control & Security"
 other = "Oversee access control, monitor package logistics, and manage vendor flow with real-time operational oversight."
 
 [every_tool]
-other = "Institutional-Grade Modular Architecture."
+other = "Institutional-Grade Modular Architecture"
 
 [every_tool_subtitle]
 other = "A suite of tools engineered for precision, scalability, and total portfolio control."
@@ -128,28 +128,28 @@ other = "Focus: SOLIDITY"
 [smart_collection_title]
 other = "Smart Collection"
 [smart_collection_empower]
-other = "Secure your cash flow."
+other = "Secure your cash flow"
 [smart_collection_desc]
 other = "Automate billing and eliminate delinquency with logical follow-up flows and immediate reconciliation."
 
 [data_integrity_title]
 other = "Data Integrity"
 [data_integrity_empower]
-other = "Export institutional reports."
+other = "Export institutional reports"
 [data_integrity_desc]
 other = "Generate reports with engineering-grade precision, ready for institutional audits and strategic decisions."
 
 [reserve_optimization_title]
 other = "Reserve Optimization"
 [reserve_optimization_empower]
-other = "Manage funds with transparency."
+other = "Manage funds with transparency"
 [reserve_optimization_desc]
 other = "Manage reserve funds and budgets with total transparency and a long-term financial vision."
 
 [expense_audit_title]
 other = "Expense Audit"
 [expense_audit_empower]
-other = "Maintain surgical control."
+other = "Maintain surgical control"
 [expense_audit_desc]
 other = "Maintain surgical control over every dollar leaving the administration with absolute traceability."
 
@@ -162,28 +162,28 @@ other = "Focus: AGILITY"
 [property_evolution_title]
 other = "Property Evolution"
 [property_evolution_empower]
-other = "Increase asset value."
+other = "Increase asset value"
 [property_evolution_desc]
 other = "Manage structural repairs and improvements that increase the capital value of your property."
 
 [digital_vault_title]
 other = "Digital Vault"
 [digital_vault_empower]
-other = "Protect critical information."
+other = "Protect critical information"
 [digital_vault_desc]
 other = "A centralized and shielded repository for contracts, blueprints, and regulations, always available."
 
 [service_logistics_title]
 other = "Service Logistics"
 [service_logistics_empower]
-other = "Centralize maintenance."
+other = "Centralize maintenance"
 [service_logistics_desc]
 other = "Centralize maintenance requests in an automated workflow that never stops."
 
 [resolution_channel_title]
 other = "Resolution Channel"
 [resolution_channel_empower]
-other = "Eliminate misunderstandings."
+other = "Eliminate misunderstandings"
 [resolution_channel_desc]
 other = "Official and traceable communication that eliminates operational noise and accelerates agreements."
 
@@ -196,28 +196,28 @@ other = "Focus: SHIELDING"
 [shielded_perimeter_title]
 other = "Shielded Perimeter"
 [shielded_perimeter_empower]
-other = "Manage access with rigor."
+other = "Manage access with rigor"
 [shielded_perimeter_desc]
 other = "Rigorous management of entries and exits with biometric and instantaneous cloud recording."
 
 [logistics_management_title]
 other = "Logistics Management"
 [logistics_management_empower]
-other = "Control deliveries and supplies."
+other = "Control deliveries and supplies"
 [logistics_management_desc]
 other = "Total control over the reception of operational supplies and last-mile deliveries for residents."
 
 [activity_monitor_title]
 other = "Activity Monitor"
 [activity_monitor_empower]
-other = "Capture real-time events."
+other = "Capture real-time events"
 [activity_monitor_desc]
 other = "A digital log that captures every critical event and security round within the building."
 
 [staff_supervision_title]
 other = "Staff Supervision"
 [staff_supervision_empower]
-other = "Audit operational performance."
+other = "Audit operational performance"
 [staff_supervision_desc]
 other = "Coordinate and audit the performance of operational staff and vendors from a single control screen."
 
@@ -270,7 +270,7 @@ other = "Automated sustainability reporting and energy monitoring for institutio
 other = "Immediate Deployment Available"
 
 [command_headline]
-other = "Command Your Portfolio with Uncompromising Precision."
+other = "Command Your Portfolio with Uncompromising Precision"
 
 [command_subtitle]
 other = "Stop managing. Start commanding. Join the next generation of institutional property operators."
