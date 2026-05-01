@@ -41,6 +41,9 @@ other = "¡Digitaliza la administración de tu propiedad!"
 [intelligent_operations]
 other = "Operaciones Inteligentes."
 
+[intelligent_ops_desc]
+other = "Sabemos que una gestión deficiente drena recursos y confianza. Por eso, Vilkor garantiza la aplicación de mejores prácticas mediante una infraestructura operacional diseñada para la transparencia y el rigor absoluto."
+
 [enterprise_grade]
 other = "Sistema de Grado Empresarial"
 

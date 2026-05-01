@@ -41,6 +41,9 @@ other = "The future of property management. Connected."
 [intelligent_operations]
 other = "Intelligent Operations."
 
+[intelligent_ops_desc]
+other = "We know that poor management drains both resources and trust. That's why Vilkor ensures the application of best practices through an operational infrastructure designed for total transparency and absolute rigor."
+
 [enterprise_grade]
 other = "Enterprise Grade System"
 

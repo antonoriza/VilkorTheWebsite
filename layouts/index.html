@@ -183,33 +183,82 @@
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
 }
+@keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(200%); }
+}
 @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-15px); }
 }
-.animate-marquee {
-    animation: marquee 30s linear infinite;
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.animate-scanline {
+    animation: scanline 4s linear infinite;
 }
 .animate-float {
     animation: float 6s ease-in-out infinite;
 }
+.animate-spin-slow {
+    animation: spin-slow 12s linear infinite;
+}
 </style>
 
-<!-- 3) Intelligent Operations Section -->
-<section class="max-w-container-max mx-auto px-gutter py-24 border-b border-on-background/5 dark:border-white/5" data-aos="fade-up">
-    <div class="flex flex-col lg:flex-row items-center gap-gutter">
-        <div class="lg:w-1/2 w-full order-2 lg:order-1">
-            <div class="glass rounded-xl border border-outline-variant/30 dark:border-white/10 p-4 h-[300px] flex items-center justify-center relative overflow-hidden">
-                <img class="absolute inset-0 w-full h-full object-cover rounded-lg" alt="Intelligent Operations" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt3B2LNW6lleGww4dJr07FDfpjzP3ZHqtQpTwP7gGQ_ulkVYCnQ_GmF29JjuLUwzWDpKj6sxj4LVGLrQGGGAMqO8HtyHmXcx_p1u0LkvDtrTasj8C4SI1oq81UbOEBgsNwETyjgmushscqkB6kuU-6ev7uHetj9wbrfsAXUmzuEv3iGFvfVP6d0JusX4NLoIVozjBMMWLrEO_5lnScT3S6kRft7dEK7bu6HmbO8bgmHGeWwKROXAe9qFKLCCNlsCtCkjzl3IGefYvy" />
+<!-- 3) Intelligent Operations Section: High-Fidelity Refactor -->
+<section class="max-w-container-max mx-auto px-gutter py-32 border-b border-on-background/5 dark:border-white/5 relative overflow-hidden" data-aos="fade-up">
+    <!-- Decorative background element -->
+    <div class="absolute -right-20 top-20 w-96 h-96 bg-[#674bb5]/5 blur-3xl rounded-full pointer-events-none"></div>
+    
+    <div class="flex flex-col lg:flex-row items-center gap-gutter relative z-10">
+        <!-- Visual Column -->
+        <div class="lg:w-1/2 w-full order-2 lg:order-1" data-aos="fade-right" data-aos-delay="200">
+            <div class="relative group">
+                <!-- Outer Glow -->
+                <div class="absolute -inset-4 bg-gradient-to-r from-[#674bb5]/20 to-[#34d399]/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
+                
+                <!-- Main Container with Float Animation -->
+                <div class="glass rounded-2xl border border-white/40 dark:border-white/10 p-4 h-[400px] flex items-center justify-center relative overflow-hidden animate-float shadow-2xl">
+                    <!-- Scanning Line Effect -->
+                    <div class="absolute inset-0 z-20 pointer-events-none bg-gradient-to-b from-transparent via-[#674bb5]/10 to-transparent h-1/2 w-full animate-scanline"></div>
+                    
+                    <!-- Decorative Corner Accents -->
+                    <div class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#674bb5]/30 rounded-tl-lg"></div>
+                    <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#674bb5]/30 rounded-br-lg"></div>
+
+                    <img class="absolute inset-0 w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" 
+                         alt="Intelligent Operations" 
+                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt3B2LNW6lleGww4dJr07FDfpjzP3ZHqtQpTwP7gGQ_ulkVYCnQ_GmF29JjuLUwzWDpKj6sxj4LVGLrQGGGAMqO8HtyHmXcx_p1u0LkvDtrTasj8C4SI1oq81UbOEBgsNwETyjgmushscqkB6kuU-6ev7uHetj9wbrfsAXUmzuEv3iGFvfVP6d0JusX4NLoIVozjBMMWLrEO_5lnScT3S6kRft7dEK7bu6HmbO8bgmHGeWwKROXAe9qFKLCCNlsCtCkjzl3IGefYvy" />
+                </div>
             </div>
         </div>
+
+        <!-- Content Column -->
         <div class="lg:w-1/2 flex flex-col gap-base order-1 lg:order-2">
-            <div class="inline-flex items-center gap-xs text-primary-container mb-xs">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">memory</span>
-                <span class="font-label-sm font-bold text-label-sm uppercase tracking-wider">{{ T "ai_automation_title" }}</span>
+            <div class="inline-flex items-center gap-xs text-[#674bb5] mb-2" data-aos="fade-left" data-aos-delay="300">
+                <div class="w-10 h-10 rounded-xl bg-[#674bb5]/10 flex items-center justify-center glass shadow-inner mb-2">
+                    <span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">memory</span>
+                </div>
+                <span class="font-label-sm font-bold text-label-sm uppercase tracking-[0.2em] ml-2 text-[#674bb5]">{{ T "ai_automation_title" }}</span>
             </div>
-            <h2 class="font-h2 font-bold text-h2 text-on-background dark:text-white">{{ T "intelligent_operations" }}</h2>
-            <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-white/70">{{ T "intelligent_ops_desc" }}</p>
+            
+            <h2 class="font-h1 font-bold text-[42px] text-on-background dark:text-white mb-6 leading-[1.1] tracking-tight" data-aos="fade-left" data-aos-delay="400">
+                {{ T "intelligent_operations" }}
+            </h2>
+            
+            <div class="relative" data-aos="fade-left" data-aos-delay="500">
+                <div class="absolute -left-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#674bb5] to-transparent opacity-30"></div>
+                <p class="font-body-lg text-[18px] text-on-surface-variant dark:text-gray-400 leading-relaxed max-w-xl">
+                    {{ T "intelligent_ops_desc" }}
+                </p>
+            </div>
+
+            <!-- Action Link / Status -->
+            <div class="mt-8 flex items-center gap-4" data-aos="fade-up" data-aos-delay="600">
+                <div class="w-2 h-2 rounded-full bg-[#34d399] animate-pulse"></div>
+                <span class="text-[12px] font-bold uppercase tracking-widest text-[#34d399]/80 italic">Precision Optimized</span>
+            </div>
         </div>
     </div>
 </section>
