@@ -1,0 +1,45 @@
+baseURL = 'https://vilkor.com/'
+languageCode = 'en-us'
+title = 'Vilkor | Enterprise Property Management'
+defaultContentLanguage = 'en'
+
+[params]
+  description = "Institutional-grade property management platform for high-scale operations."
+  author = "Vilkor Enterprise"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[languages]
+  [languages.en]
+    languageName = "English"
+    weight = 1
+    contentDir = "content/en"
+  [languages.es]
+    languageName = "Español"
+    weight = 2
+    contentDir = "content/es"
+  [languages.pt]
+    languageName = "Português"
+    weight = 3
+    contentDir = "content/pt"
+
+[menu]
+  [[menu.main]]
+    name = "Solutions"
+    url = "#solutions"
+    weight = 1
+  [[menu.main]]
+    name = "Features"
+    url = "#features"
+    weight = 2
+  [[menu.main]]
+    name = "Why Vilkor"
+    url = "#why-vilkor"
+    weight = 3
+  [[menu.main]]
+    name = "FAQ"
+    url = "#faq"
+    weight = 4

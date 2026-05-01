@@ -1,13 +1,17 @@
 {
-  "name": "vilkor",
-  "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "name": "vilkorthewebsite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "bun run --filter='*' dev",
-    "dev:web": "bun run --filter=@vilkor/web dev",
-    "dev:api": "bun run --filter=@vilkor/api dev",
-    "vilkor": "./dev-utilities/bin/vilkor",
-    "build": "bun run --filter='*' build",
-    "typecheck": "bun run --filter='*' typecheck"
+    "dev": "hugo server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "hugo-extended": "^0.161.1"
   }
 }

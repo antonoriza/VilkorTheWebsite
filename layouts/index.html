@@ -1,0 +1,291 @@
+{{ define "main" }}
+<!-- 1) Header is handled by baseof.html / nav.html -->
+
+<!-- 2) One platform, total control -->
+<section id="solutions" class="max-w-container-max mx-auto px-gutter pt-32 pb-xl border-b border-surface-container-highest dark:border-white/10 custom-cursor" data-aos="fade-up">
+    <div class="mb-xl text-center max-w-4xl mx-auto">
+        <h1 class="font-h1 text-h1 text-on-background dark:text-white mb-sm">{{ T "one_platform" }}</h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-white/80">{{ T "hero_subtitle" }}</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-xl">
+        <div class="md:col-span-8 glass rounded-2xl p-xl flex flex-col justify-between border border-white/40 shadow-xl hover:translate-y-[-4px] transition-all duration-500 min-h-[400px]">
+            <div>
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary-container/20 text-on-background dark:text-white mb-md glass">
+                    <span class="material-symbols-outlined">smart_toy</span>
+                </div>
+                <h3 class="font-h3 text-h3 text-on-background mb-sm">AI-Driven Automation</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-lg max-w-md">Our predictive engine automatically routes maintenance requests, categorizes expenses, and flags lease anomalies.</p>
+            </div>
+            <div class="w-full h-48 bg-surface rounded-lg border border-surface-container overflow-hidden relative shadow-inner">
+                <img class="w-full h-full object-cover" src="/images/hero.png" />
+            </div>
+        </div>
+        <div class="md:col-span-4 bg-primary-container/90 backdrop-blur-xl rounded-2xl p-xl flex flex-col justify-between border border-primary/30 shadow-xl hover:translate-y-[-4px] transition-all duration-500">
+            <div>
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 text-on-primary mb-md glass">
+                    <span class="material-symbols-outlined">bolt</span>
+                </div>
+                <h3 class="font-h3 text-h3 text-on-primary-fixed mb-sm">Unmatched Speed</h3>
+                <p class="font-body-md text-body-md text-on-primary-fixed-variant">Built on a cutting-edge architecture to ensure data loads instantly.</p>
+            </div>
+            <div class="mt-lg">
+                <p class="font-stats-display text-stats-display text-on-primary-fixed mb-xs">99.9%</p>
+                <p class="font-label-sm text-label-sm text-on-primary-fixed-variant uppercase tracking-tighter">Uptime Reliability</p>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <div class="glass p-md rounded-xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group">
+            <span class="material-symbols-outlined text-[32px] text-primary mb-6 group-hover:scale-110 transition-transform">database</span>
+            <h3 class="font-h3 text-h3 text-on-background mb-4 text-[24px]">Unified Data</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-6">Consolidate tenant records, lease agreements, and financial data into a single source of truth.</p>
+        </div>
+        <div class="glass p-md rounded-xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group">
+            <span class="material-symbols-outlined text-[32px] text-primary mb-6 group-hover:scale-110 transition-transform">account_tree</span>
+            <h3 class="font-h3 text-h3 text-on-background mb-4 text-[24px]">Automated Workflows</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-6">Deploy intelligent routing for maintenance requests and automated lease renewal sequences.</p>
+        </div>
+        <div class="glass p-md rounded-xl border border-white/40 hover:shadow-2xl hover:translate-y-[-8px] transition-all duration-500 group">
+            <span class="material-symbols-outlined text-[32px] text-primary mb-6 group-hover:scale-110 transition-transform">monitoring</span>
+            <h3 class="font-h3 text-h3 text-on-background mb-4 text-[24px]">Real-time Analytics</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-6">Monitor portfolio performance, track occupancy rates, and forecast revenue with precision.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Logo Ticker Section -->
+<section class="py-xl overflow-hidden bg-surface-container-lowest dark:bg-zinc-950 border-b border-surface-container-highest dark:border-white/5" data-aos="fade">
+    <div class="flex space-x-12 animate-marquee whitespace-nowrap">
+        <div class="flex items-center space-x-12 min-w-full justify-around opacity-40 dark:opacity-80 grayscale dark:grayscale-0 dark:invert transition-all duration-700">
+            <span class="font-h3 text-h3 dark:text-white">SKYLINE</span>
+            <span class="font-h3 text-h3 dark:text-white">VERTEX</span>
+            <span class="font-h3 text-h3 dark:text-white">MODERN</span>
+            <span class="font-h3 text-h3 dark:text-white">HORIZON</span>
+            <span class="font-h3 text-h3 dark:text-white">PINNACLE</span>
+            <span class="font-h3 text-h3 dark:text-white">METRO</span>
+        </div>
+        <div class="flex items-center space-x-12 min-w-full justify-around opacity-40 dark:opacity-80 grayscale dark:grayscale-0 dark:invert transition-all duration-700">
+            <span class="font-h3 text-h3 dark:text-white">SKYLINE</span>
+            <span class="font-h3 text-h3 dark:text-white">VERTEX</span>
+            <span class="font-h3 text-h3 dark:text-white">MODERN</span>
+            <span class="font-h3 text-h3 dark:text-white">HORIZON</span>
+            <span class="font-h3 text-h3 dark:text-white">PINNACLE</span>
+            <span class="font-h3 text-h3 dark:text-white">METRO</span>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+    animation: marquee 30s linear infinite;
+}
+</style>
+
+<!-- 3) Every tool you need to manage at scale -->
+<section id="features" class="py-xl px-8 max-w-container-max mx-auto border-b border-surface-container-highest dark:border-white/10" data-aos="fade-up">
+    <div class="text-center mb-xl">
+        <h2 class="font-h2 text-h2 text-on-background dark:text-white mb-md">{{ T "every_tool" }}</h2>
+        <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-gray-400 max-w-2xl mx-auto">Experience seamless property operations with our comprehensive suite of enterprise-grade features.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        <div class="glass p-md rounded-2xl border border-white/40 group hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300">
+            <div class="w-12 h-12 bg-primary-container/20 rounded-lg flex items-center justify-center mb-md glass">
+                <span class="material-symbols-outlined text-primary-container text-3xl">home_app_logo</span>
+            </div>
+            <h3 class="font-h3 text-h3 text-on-background mb-sm">Tenant Portal</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant">Provide a seamless, branded experience for residents to manage leases and submit requests.</p>
+        </div>
+        <div class="glass p-md rounded-2xl border border-white/40 group hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300">
+            <div class="w-12 h-12 bg-tertiary-container/20 rounded-lg flex items-center justify-center mb-md glass">
+                <span class="material-symbols-outlined text-tertiary-container text-3xl">payments</span>
+            </div>
+            <h3 class="font-h3 text-h3 text-on-background mb-sm">Rent Collection</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant">Streamline your cash flow with automated billing and real-time reconciliation.</p>
+        </div>
+        <div class="glass p-md rounded-2xl border border-white/40 group hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] transition-all duration-300">
+            <div class="w-12 h-12 bg-error-container/20 rounded-lg flex items-center justify-center mb-md glass">
+                <span class="material-symbols-outlined text-error-container text-3xl">build</span>
+            </div>
+            <h3 class="font-h3 text-h3 text-on-background mb-sm">Maintenance</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant">Track issues from submission to resolution with automated vendor assignments.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 4) Ready to make your property unstoppable? -->
+<section class="py-xl px-gutter bg-surface-container-highest dark:bg-white/5 text-center" data-aos="zoom-in">
+    <h2 class="font-h1 text-h1 text-on-background dark:text-white max-w-4xl mx-auto mb-lg">{{ T "ready_unstoppable" }}</h2>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-sm">
+        <a class="bg-primary-container text-on-primary-fixed font-label-sm text-label-sm px-8 py-4 rounded-full min-h-[48px] flex items-center justify-center w-full sm:w-auto hover:opacity-90 transition-opacity" href="#book-a-demo">
+            {{ T "start_operating" }}
+        </a>
+    </div>
+</section>
+
+<!-- 5) Why vilkor? -->
+<section id="why-vilkor" class="py-xl px-8 max-w-container-max mx-auto border-t border-surface-container-highest dark:border-white/10" data-aos="fade-up">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+        <div class="lg:col-span-5">
+            <h2 class="font-h2 text-h2 text-on-background dark:text-white mb-md">{{ T "why_vilkor" }}</h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">Built strictly for high-scale operations, Vilkor abandons legacy clutter for architectural precision.</p>
+            <div class="space-y-md">
+                <div class="flex items-start">
+                    <span class="material-symbols-outlined text-primary-container mr-sm mt-1">check_circle</span>
+                    <div>
+                        <h4 class="font-label-sm text-label-sm text-on-background mb-xs">Data Integrity</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Immutable ledgers and rigorous access controls ensure institutional compliance.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <span class="material-symbols-outlined text-primary-container mr-sm mt-1">check_circle</span>
+                    <div>
+                        <h4 class="font-label-sm text-label-sm text-on-background mb-xs">Rapid Deployment</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Migrate portfolios in days, not months, with our dedicated onboarding architects.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="lg:col-span-7 glass rounded-3xl border border-white/40 p-3 h-[400px] overflow-hidden relative shadow-2xl">
+            <img alt="Dashboard Interface" class="w-full h-full object-cover rounded-2xl" src="/images/hero.png"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent pointer-events-none"></div>
+        </div>
+    </div>
+</section>
+
+<!-- 6) faq -->
+<section id="faq" class="py-xl px-8 max-w-container-max mx-auto border-t border-surface-container-highest dark:border-white/10">
+    <h2 class="font-h2 text-h2 mb-lg text-center dark:text-white">{{ T "faq" }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-4xl mx-auto">
+        <div class="glass p-md rounded-2xl border border-white/40">
+            <h4 class="font-h3 text-[20px] leading-tight font-semibold mb-xs text-on-background">How do you count units?</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">A unit is defined as any leasable space, including apartments, suites, and storage units.</p>
+        </div>
+        <div class="glass p-md rounded-2xl border border-white/40">
+            <h4 class="font-h3 text-[20px] leading-tight font-semibold mb-xs text-on-background">Can I upgrade mid-billing cycle?</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">Yes, structural shifts happen fast. You can upgrade at any time, and we will prorate the cost.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 7) book a demo? -->
+<section id="book-a-demo" class="py-xl px-8 max-w-container-max mx-auto border-t border-surface-container-highest dark:border-white/10" data-aos="fade-up">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+        <div class="lg:col-span-7 glass p-xl rounded-3xl border border-white/40 shadow-2xl relative overflow-hidden">
+            <div id="demo-form-content">
+                <h2 class="font-h2 text-h2 mb-md text-on-surface dark:text-white">{{ T "book_demo" }}</h2>
+                <p class="font-body-lg text-body-lg text-on-surface-variant mb-xl">Tell us a bit about your operations, and we'll tailor the walkthrough to your specific needs.</p>
+                <form id="demo-form" class="space-y-xl">
+                    <!-- Honeypot Field (Spam Protection) -->
+                    <div class="hidden" aria-hidden="true">
+                        <label for="honeypot">Do not fill this out if you are human</label>
+                        <input type="text" name="honeypot" id="honeypot" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                        <div class="flex flex-col gap-xs">
+                            <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">First Name</label>
+                            <input id="first-name" name="first_name" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="Jane" required type="text" minlength="2" maxlength="50" oninput="this.value = this.value.replace(/\d/g, ''); this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)"/>
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">Last Name</label>
+                            <input id="last-name" name="last_name" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="Doe" required type="text" minlength="2" maxlength="50" oninput="this.value = this.value.replace(/\d/g, ''); this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1)"/>
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">Work Email</label>
+                            <input id="work-email" name="email" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="jane@company.com" required type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" maxlength="100"/>
+                        </div>
+                        <div class="flex flex-col gap-xs">
+                            <label class="font-label-sm text-label-sm text-on-surface-variant dark:text-white/60">Phone Number</label>
+                            <input id="phone" name="phone" class="glass bg-white/10 border-b border-outline-variant dark:border-white/20 py-sm px-4 rounded-t-lg focus:border-primary focus:ring-0 transition-all invalid:border-error dark:invalid:border-white valid:border-primary dark:text-white" placeholder="+1 (555) 000-0000" required type="tel" pattern="^\+?[1-9]\d{1,14}$" oninput="this.value = this.value.replace(/[^\d+]/g, '')" maxlength="20"/>
+                        </div>
+                    </div>
+                    <button id="submit-btn" class="w-full bg-primary-container text-on-primary-fixed font-label-sm text-label-sm h-[48px] rounded-lg border border-primary hover:opacity-80 transition-opacity flex items-center justify-center gap-sm" type="submit">
+                        <span id="btn-text">Schedule Demo</span>
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Success Message (Hidden by default) -->
+            <div id="success-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-xl bg-white/10 backdrop-blur-md">
+                <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-lg scale-0 animate-success-check">
+                    <span class="material-symbols-outlined text-primary text-[48px]">check_circle</span>
+                </div>
+                <h3 class="font-h2 text-h2 text-on-background dark:text-white mb-md">{{ T "request_received" }}</h3>
+                <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-white/90 max-sm">
+                    {{ T "thank_you" }}, <span id="user-name-display" class="font-bold text-primary dark:text-primary-container"></span>! An onboarding architect will reach out to you within 24 hours to schedule your custom walkthrough.
+                </p>
+                <button onclick="document.getElementById('success-message').classList.add('hidden'); document.getElementById('demo-form-content').classList.remove('hidden');" class="mt-lg text-primary font-label-sm text-label-sm hover:underline">
+                    Send another request
+                </button>
+            </div>
+        </div>
+
+<style>
+@keyframes success-check {
+    to { transform: scale(1); }
+}
+.animate-success-check {
+    animation: success-check 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+</style>
+
+<script>
+document.getElementById('demo-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // 1. Honeypot Check (Spam Bot Protection)
+    const honeypot = document.getElementById('honeypot').value;
+    if (honeypot) {
+        console.warn("Spam detected.");
+        return; // Silently fail for bots
+    }
+
+    // 2. Loading State
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    btnText.textContent = "Processing...";
+
+    // 3. Capture Data
+    const firstName = document.getElementById('first-name').value;
+    const content = document.getElementById('demo-form-content');
+    const success = document.getElementById('success-message');
+    const nameDisplay = document.getElementById('user-name-display');
+    
+    // 4. Simulate Network Delay for UX
+    setTimeout(() => {
+        nameDisplay.textContent = firstName;
+        content.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+        
+        setTimeout(() => {
+            content.classList.add('hidden');
+            success.classList.remove('hidden');
+            success.classList.add('animate-in', 'fade-in', 'zoom-in', 'duration-500');
+        }, 500);
+    }, 1200);
+});
+</script>
+        <div class="lg:col-span-5 glass p-lg rounded-2xl border border-white/40 shadow-lg">
+                <p class="font-body-lg text-body-lg text-on-surface mb-lg italic">"Switching to Vilkor reduced our onboarding time for new properties by 40%."</p>
+                <div class="flex items-center gap-md">
+                    <div class="w-12 h-12 rounded-full overflow-hidden bg-surface-dim">
+                        <img alt="Michael Torres" src="/images/avatar.png"/>
+                    </div>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-on-surface">Michael Torres</p>
+                        <p class="font-body-md text-body-md text-on-surface-variant text-sm">VP of Operations, Skyline Realty</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 8) Footer is handled by baseof.html / footer.html -->
+{{ end }}
