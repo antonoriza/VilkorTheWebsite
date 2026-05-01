@@ -36,3 +36,207 @@ other = "Request Received"
 
 [thank_you]
 other = "Thank you"
+
+[future_property_management]
+other = "The future of property management. Connected."
+
+[intelligent_operations]
+other = "Intelligent Operations."
+
+[enterprise_grade]
+other = "Enterprise Grade System"
+
+[early_access]
+other = "Early Access"
+
+[hero_description]
+other = "Vilkor brings institutional precision to property management. Centralize operations, automate workflows, and command your assets from a single, uncompromising platform."
+
+[explore_platform]
+other = "Explore Platform"
+
+[scale_potential_value]
+other = "Unlimited"
+
+[scale_potential_label]
+other = "Scale Potential"
+
+[institutional_rigor_value]
+other = "Institutional"
+
+[institutional_rigor_label]
+other = "Rigor & Compliance"
+
+[tech_stack_value]
+other = "Next-Gen"
+
+[tech_stack_label]
+other = "Tech Stack"
+
+[ai_automation_chip]
+other = "Predictive Logic"
+
+[ai_automation_title]
+other = "AI-Driven Automation"
+
+[ai_automation_desc]
+other = "Our predictive engine automatically routes maintenance requests, categorizes expenses, and flags lease anomalies."
+
+[unmatched_speed_chip]
+other = "Real-Time Sync"
+
+[unmatched_speed_title]
+other = "Unmatched Speed"
+
+[unmatched_speed_desc]
+other = "Built on a cutting-edge architecture to ensure data loads instantly."
+
+[uptime_label]
+other = "Uptime Reliability"
+
+[unified_data_title]
+other = "Unified Data"
+
+[unified_data_desc]
+other = "Consolidate tenant records, lease agreements, and financial data into a single source of truth."
+
+[automated_workflows_title]
+other = "Automated Workflows"
+
+[automated_workflows_desc]
+other = "Deploy intelligent routing for maintenance requests and automated lease renewal sequences."
+
+[realtime_analytics_title]
+other = "Real-time Analytics"
+
+[realtime_analytics_desc]
+other = "Monitor portfolio performance, track occupancy rates, and forecast revenue with precision."
+
+[intelligent_ops_desc]
+other = "Automate routine maintenance scheduling, financial reconciliation, and tenant communications. Vilkor's predictive models act as a digital nervous system for your properties."
+
+[every_tool_subtitle]
+other = "Experience seamless property operations with our comprehensive suite of enterprise-grade features."
+
+[tenant_portal_title]
+other = "Tenant Portal"
+
+[tenant_portal_desc]
+other = "Provide a seamless, branded experience for residents to manage leases and submit requests."
+
+[rent_collection_title]
+other = "Rent Collection"
+
+[rent_collection_desc]
+other = "Streamline your cash flow with automated billing and real-time reconciliation."
+
+[maintenance_title]
+other = "Maintenance"
+
+[maintenance_desc]
+other = "Track issues from submission to resolution with automated vendor assignments."
+
+[predictive_yield_chip]
+other = "ROI Focus"
+
+[predictive_yield_title]
+other = "Predictive Yield"
+
+[predictive_yield_desc]
+other = "Maximize revenue with AI that analyzes market trends and optimizes pricing in real-time."
+
+[smart_access_chip]
+other = "IoT Ready"
+
+[smart_access_title]
+other = "Smart Access"
+
+[smart_access_desc]
+other = "Unified IoT integration for keyless entry, smart climate control, and facility security."
+
+[esg_compliance_chip]
+other = "Audit Ready"
+
+[esg_compliance_title]
+other = "ESG Compliance"
+
+[esg_compliance_desc]
+other = "Automated sustainability reporting and energy monitoring for institutional investors."
+
+[deployment_badge]
+other = "Immediate Deployment Available"
+
+[command_headline]
+other = "Command Your Portfolio with Uncompromising Precision."
+
+[command_subtitle]
+other = "Stop managing. Start commanding. Join the next generation of institutional property operators."
+
+[soc2_compliant]
+other = "SOC2 COMPLIANT"
+
+[encryption_label]
+other = "256-BIT ENCRYPTION"
+
+[gdpr_ready]
+other = "GDPR READY"
+
+[why_vilkor_subtitle]
+other = "Built strictly for high-scale operations, Vilkor abandons legacy clutter for architectural precision."
+
+[data_integrity_title]
+other = "Data Integrity"
+
+[data_integrity_desc]
+other = "Immutable ledgers and rigorous access controls ensure institutional compliance."
+
+[rapid_deployment_title]
+other = "Rapid Deployment"
+
+[rapid_deployment_desc]
+other = "Migrate portfolios in days, not months, with our dedicated onboarding architects."
+
+[faq_q1]
+other = "How do you count units?"
+
+[faq_a1]
+other = "A unit is defined as any leasable space, including apartments, suites, and storage units."
+
+[faq_q2]
+other = "Can I upgrade mid-billing cycle?"
+
+[faq_a2]
+other = "Yes, structural shifts happen fast. You can upgrade at any time, and we will prorate the cost."
+
+[demo_subtitle]
+other = "Tell us a bit about your operations, and we'll tailor the walkthrough to your specific needs."
+
+[first_name]
+other = "First Name"
+
+[last_name]
+other = "Last Name"
+
+[work_email]
+other = "Work Email"
+
+[phone_number]
+other = "Phone Number"
+
+[schedule_demo]
+other = "Schedule Demo"
+
+[onboarding_architect_msg]
+other = "An onboarding architect will reach out to you within 24 hours to schedule your custom walkthrough."
+
+[send_another]
+other = "Send another request"
+
+[strategic_advisor_quote]
+other = "The architecture Vilkor is proposing is a significant departure from legacy systems. It's built for the way we need to operate in the 2030s."
+
+[strategic_advisor_name]
+other = "Strategic Advisor"
+
+[strategic_advisor_title]
+other = "PropTech Integration Lead"

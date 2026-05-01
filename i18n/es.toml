@@ -36,3 +36,207 @@ other = "Solicitud Recibida"
 
 [thank_you]
 other = "Gracias"
+
+[future_property_management]
+other = "El futuro de la gestión de propiedades. Conectado."
+
+[intelligent_operations]
+other = "Operaciones Inteligentes."
+
+[enterprise_grade]
+other = "Sistema de Grado Empresarial"
+
+[early_access]
+other = "Acceso Anticipado"
+
+[hero_description]
+other = "Vilkor aporta precisión institucional a la gestión de propiedades. Centralice operaciones, automatice flujos de trabajo y comande sus activos desde una plataforma única e inflexible."
+
+[explore_platform]
+other = "Explorar Plataforma"
+
+[scale_potential_value]
+other = "Ilimitado"
+
+[scale_potential_label]
+other = "Potencial de Escala"
+
+[institutional_rigor_value]
+other = "Institucional"
+
+[institutional_rigor_label]
+other = "Rigor y Cumplimiento"
+
+[tech_stack_value]
+other = "Próxima Gen"
+
+[tech_stack_label]
+other = "Stack Tecnológico"
+
+[ai_automation_chip]
+other = "Lógica Predictiva"
+
+[ai_automation_title]
+other = "Automatización Impulsada por IA"
+
+[ai_automation_desc]
+other = "Nuestro motor predictivo enruta automáticamente las solicitudes de mantenimiento, categoriza los gastos y alerta sobre anomalías en los arrendamientos."
+
+[unmatched_speed_chip]
+other = "Sincronización en Tiempo Real"
+
+[unmatched_speed_title]
+other = "Velocidad Inigualable"
+
+[unmatched_speed_desc]
+other = "Construido sobre una arquitectura de vanguardia para asegurar que los datos se carguen instantáneamente."
+
+[uptime_label]
+other = "Fiabilidad de Tiempo de Actividad"
+
+[unified_data_title]
+other = "Datos Unificados"
+
+[unified_data_desc]
+other = "Consolide registros de inquilinos, contratos de arrendamiento y datos financieros en una única fuente de verdad."
+
+[automated_workflows_title]
+other = "Flujos de Trabajo Automatizados"
+
+[automated_workflows_desc]
+other = "Despliegue enrutamiento inteligente para solicitudes de mantenimiento y secuencias automáticas de renovación de contratos."
+
+[realtime_analytics_title]
+other = "Analítica en Tiempo Real"
+
+[realtime_analytics_desc]
+other = "Monitoree el rendimiento del portafolio, rastree tasas de ocupación y pronostique ingresos con precisión."
+
+[intelligent_ops_desc]
+other = "Automatice la programación de mantenimiento rutinario, la conciliación financiera y las comunicaciones con los inquilinos. Los modelos predictivos de Vilkor actúan como un sistema nervioso digital para sus propiedades."
+
+[every_tool_subtitle]
+other = "Experimente operaciones de propiedad sin fisuras con nuestra suite completa de características de grado empresarial."
+
+[tenant_portal_title]
+other = "Portal del Inquilino"
+
+[tenant_portal_desc]
+other = "Proporcione una experiencia de marca fluida para que los residentes gestionen arrendamientos y envíen solicitudes."
+
+[rent_collection_title]
+other = "Cobro de Alquiler"
+
+[rent_collection_desc]
+other = "Optimice su flujo de caja con facturación automatizada y conciliación en tiempo real."
+
+[maintenance_title]
+other = "Mantenimiento"
+
+[maintenance_desc]
+other = "Rastree problemas desde el envío hasta la resolución con asignaciones automatizadas a proveedores."
+
+[predictive_yield_chip]
+other = "Enfoque en ROI"
+
+[predictive_yield_title]
+other = "Rendimiento Predictivo"
+
+[predictive_yield_desc]
+other = "Maximice los ingresos con IA que analiza las tendencias del mercado y optimiza los precios en tiempo real."
+
+[smart_access_chip]
+other = "Listo para IoT"
+
+[smart_access_title]
+other = "Acceso Inteligente"
+
+[smart_access_desc]
+other = "Integración unificada de IoT para entrada sin llave, control de clima inteligente y seguridad de las instalaciones."
+
+[esg_compliance_chip]
+other = "Listo para Auditoría"
+
+[esg_compliance_title]
+other = "Cumplimiento ESG"
+
+[esg_compliance_desc]
+other = "Informes de sostenibilidad automatizados y monitoreo de energía para inversores institucionales."
+
+[deployment_badge]
+other = "Despliegue Inmediato Disponible"
+
+[command_headline]
+other = "Comande su Portafolio con una Precisión Inflexible."
+
+[command_subtitle]
+other = "Deje de gestionar. Comience a comandar. Únase a la próxima generación de operadores de propiedades institucionales."
+
+[soc2_compliant]
+other = "CUMPLIMIENTO SOC2"
+
+[encryption_label]
+other = "CIFRADO DE 256 BITS"
+
+[gdpr_ready]
+other = "LISTO PARA GDPR"
+
+[why_vilkor_subtitle]
+other = "Construido estrictamente para operaciones de gran escala, Vilkor abandona el desorden de los sistemas legados por la precisión arquitectónica."
+
+[data_integrity_title]
+other = "Integridad de Datos"
+
+[data_integrity_desc]
+other = "Libros de contabilidad inmutables y controles de acceso rigurosos aseguran el cumplimiento institucional."
+
+[rapid_deployment_title]
+other = "Despliegue Rápido"
+
+[rapid_deployment_desc]
+other = "Migre portafolios en días, no meses, con nuestros arquitectos de incorporación dedicados."
+
+[faq_q1]
+other = "¿Cómo cuentan las unidades?"
+
+[faq_a1]
+other = "Una unidad se define como cualquier espacio arrendable, incluyendo apartamentos, suites y unidades de almacenamiento."
+
+[faq_q2]
+other = "¿Puedo mejorar mi plan a mitad del ciclo de facturación?"
+
+[faq_a2]
+other = "Sí, los cambios estructurales ocurren rápido. Puede mejorar su plan en cualquier momento y prorratearemos el costo."
+
+[demo_subtitle]
+other = "Cuéntenos un poco sobre sus operaciones y adaptaremos el recorrido a sus necesidades específicas."
+
+[first_name]
+other = "Nombre"
+
+[last_name]
+other = "Apellido"
+
+[work_email]
+other = "Correo Electrónico de Trabajo"
+
+[phone_number]
+other = "Número de Teléfono"
+
+[schedule_demo]
+other = "Programar Demo"
+
+[onboarding_architect_msg]
+other = "Un arquitecto de incorporación se pondrá en contacto con usted en un plazo de 24 horas para programar su recorrido personalizado."
+
+[send_another]
+other = "Enviar otra solicitud"
+
+[strategic_advisor_quote]
+other = "La arquitectura que propone Vilkor es un cambio significativo respecto a los sistemas legados. Está construida para la forma en que necesitamos operar en la década de 2030."
+
+[strategic_advisor_name]
+other = "Asesor Estratégico"
+
+[strategic_advisor_title]
+other = "Líder de Integración PropTech"
