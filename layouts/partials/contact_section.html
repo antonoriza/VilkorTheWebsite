@@ -1,37 +1,14 @@
 <!-- 7) book a demo? -->
 <section id="book-a-demo" class="py-24 px-8 relative overflow-hidden border-t border-on-background/5 dark:border-white/5" data-aos="fade-up">
-    <!-- PCB Animated Background (High Density Traces) -->
+    <!-- PCB Animated Background -->
     <div class="absolute inset-0 -z-10 opacity-30 dark:opacity-50 pointer-events-none">
         <svg class="w-full h-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <!-- Emerald Paths -->
             <path d="M-100 100 H300 L400 200 V400 L500 500 H1300" stroke="#34d399" stroke-width="1.5" class="animate-pulse-path" style="filter: drop-shadow(0 0 5px #34d399);"/>
-            <path d="M400 -100 V200 L300 300 H-100" stroke="#34d399" stroke-width="1" class="animate-pulse-path" style="animation-delay: 4s; opacity: 0.2;"/>
-            <path d="M100 800 V600 L200 500 H400 L500 400 V0" stroke="#34d399" stroke-width="1" class="animate-pulse-path" style="animation-delay: 6s; opacity: 0.1;"/>
-            
-            <!-- Gold/Yellow Paths -->
             <path d="M1300 300 H900 L800 400 V600 L700 700 H-100" stroke="#eab308" stroke-width="1.5" class="animate-pulse-path" style="animation-delay: 2s; filter: drop-shadow(0 0 5px #eab308);"/>
-            <path d="M800 900 V600 L900 500 H1300" stroke="#eab308" stroke-width="1" class="animate-pulse-path" style="animation-delay: 1s; opacity: 0.2;"/>
-            <path d="M0 400 H200 L300 500 V800" stroke="#eab308" stroke-width="1.2" class="animate-pulse-path" style="animation-delay: 7s; opacity: 0.1;"/>
-
-            <!-- Blue Tech Paths -->
             <path d="M1200 100 V300 L1100 400 H800 L700 500 V800" stroke="#3b82f6" stroke-width="1.5" class="animate-pulse-path" style="animation-delay: 3s; filter: drop-shadow(0 0 5px #3b82f6);"/>
-            <path d="M0 600 H200 L300 700 V900" stroke="#3b82f6" stroke-width="1" class="animate-pulse-path" style="animation-delay: 5s; opacity: 0.2;"/>
-            <path d="M600 0 V200 L500 300 H0" stroke="#3b82f6" stroke-width="1" class="animate-pulse-path" style="animation-delay: 8s; opacity: 0.1;"/>
-            <path d="M1200 800 V600 L1000 400 H800 L700 300 V0" stroke="#3b82f6" stroke-width="1.2" class="animate-pulse-path" style="animation-delay: 9s; opacity: 0.1;"/>
-
-            <!-- Additional Micro Traces -->
-            <path d="M200 200 L250 250 H400" stroke="#34d399" stroke-width="0.5" opacity="0.2"/>
-            <path d="M900 500 L850 550 H700" stroke="#eab308" stroke-width="0.5" opacity="0.2"/>
-            <path d="M500 100 L550 150 V300" stroke="#3b82f6" stroke-width="0.5" opacity="0.2"/>
-            
-            <!-- Nodes -->
             <circle cx="300" cy="100" r="3" fill="#34d399" class="animate-node-glow"/>
             <circle cx="900" cy="300" r="3" fill="#eab308" class="animate-node-glow"/>
             <circle cx="1100" cy="400" r="3" fill="#3b82f6" class="animate-node-glow"/>
-            <circle cx="400" cy="400" r="3" fill="#34d399" class="animate-node-glow"/>
-            <circle cx="800" cy="600" r="2" fill="#eab308" class="animate-node-glow" style="animation-delay: 1.5s"/>
-            <circle cx="200" cy="500" r="2" fill="#34d399" class="animate-node-glow" style="animation-delay: 2.5s"/>
-            <circle cx="700" cy="300" r="2" fill="#3b82f6" class="animate-node-glow" style="animation-delay: 0.5s"/>
         </svg>
     </div>
 
@@ -43,28 +20,32 @@
                     <p class="font-body-lg text-on-surface-variant dark:text-gray-400">{{ T "demo_subtitle" }}</p>
                 </div>
                 
-                <form id="demo-form" class="space-y-6">
-                    <input type="hidden" name="honeypot" id="honeypot" style="display:none">
+                <!-- Integration with Static Forms (staticforms.dev) -->
+                <form id="demo-form" action="https://api.staticforms.dev/submit" method="POST" class="space-y-6">
+                    <!-- STATICFORMS.DEV CONFIG -->
+                    <input type="hidden" name="apiKey" value="{{ os.Getenv "STATICFORMS_API_KEY" | default site.Params.staticForms.apiKey }}">
+                    <input type="hidden" name="subject" value="Nueva Solicitud de Demo - Vilkor PMS">
                     
-                    <!-- Row 1: Name & Last Name -->
+                    <!-- Honeypot -->
+                    <input type="text" name="honeypot" style="display:none">
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col space-y-2">
                             <label for="first-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "first_name" }}</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">person</span>
-                                <input id="first-name" name="first-name" class="w-full bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-[#34d399] focus:ring-4 focus:ring-[#34d399]/10 transition-all outline-none dark:text-white placeholder:text-on-surface-variant/30 dark:placeholder:text-white/20" placeholder="{{ T "first_name_placeholder" }}" required type="text"/>
+                                <input id="first-name" name="first_name" class="w-full bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-[#34d399] focus:ring-4 focus:ring-[#34d399]/10 transition-all outline-none dark:text-white placeholder:text-on-surface-variant/30 dark:placeholder:text-white/20" placeholder="{{ T "first_name_placeholder" }}" required type="text"/>
                             </div>
                         </div>
                         <div class="flex flex-col space-y-2">
                             <label for="last-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "last_name" }}</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">badge</span>
-                                <input id="last-name" name="last-name" class="w-full bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-[#34d399] focus:ring-4 focus:ring-[#34d399]/10 transition-all outline-none dark:text-white placeholder:text-on-surface-variant/30 dark:placeholder:text-white/20" placeholder="{{ T "last_name_placeholder" }}" required type="text"/>
+                                <input id="last-name" name="last_name" class="w-full bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-[#34d399] focus:ring-4 focus:ring-[#34d399]/10 transition-all outline-none dark:text-white placeholder:text-on-surface-variant/30 dark:placeholder:text-white/20" placeholder="{{ T "last_name_placeholder" }}" required type="text"/>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Row 2: Email -->
                     <div class="flex flex-col space-y-2">
                         <label for="email" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "work_email" }}</label>
                         <div class="relative">
@@ -74,26 +55,24 @@
                         <p class="text-[11px] text-on-surface-variant/50 dark:text-white/30 ml-1">{{ T "privacy_promise" }}</p>
                     </div>
 
-                    <!-- Row 3: Phone (Enterprise Symmetric Design) -->
                     <div class="flex flex-col space-y-2">
                         <label for="phone" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "phone_number" }}</label>
                         <div class="flex gap-3 items-stretch">
-                            <!-- Country Code Dropdown -->
                             <div class="relative w-40 flex-shrink-0">
-                                <select id="country-code" name="country-code" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 px-4 pr-10 rounded-2xl focus:border-[#34d399] focus:ring-4 focus:ring-[#34d399]/10 transition-all outline-none dark:text-white dark:bg-zinc-900 appearance-none font-bold text-sm cursor-pointer">
+                                <select name="country_code" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 px-4 pr-10 rounded-2xl focus:border-[#34d399] outline-none dark:text-white dark:bg-zinc-900 appearance-none font-bold text-sm cursor-pointer">
                                     <option value="52">🇲🇽 +52</option>
+                                    <option value="1">🇺🇸 +1</option>
+                                    <option value="55">🇧🇷 +55</option>
                                 </select>
                                 <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 pointer-events-none text-[20px]">expand_more</span>
                             </div>
-                            <!-- Main Number -->
                             <div class="relative flex-grow">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">phone</span>
-                                <input id="phone" name="phone" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 pl-12 pr-4 rounded-2xl focus:border-[#34d399] focus:ring-4 focus:ring-[#34d399]/10 transition-all outline-none dark:text-white placeholder:text-on-surface-variant/30 dark:placeholder:text-white/20 text-sm" placeholder="{{ T "phone_placeholder" }}" required type="tel" oninput="this.value = this.value.replace(/[^\d]/g, '')" maxlength="15"/>
+                                <input id="phone" name="phone" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.03] border border-on-background/10 dark:border-white/20 pl-12 pr-4 rounded-2xl focus:border-[#34d399] focus:ring-4 focus:ring-[#34d399]/10 transition-all outline-none dark:text-white placeholder:text-on-surface-variant/30 dark:placeholder:text-white/20 text-sm" placeholder="{{ T "phone_placeholder" }}" required type="tel"/>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Submit -->
                     <div class="pt-4">
                         <button id="submit-btn" class="w-full bg-[#34d399] text-[#002114] font-bold text-lg h-[64px] rounded-2xl hover:shadow-xl hover:shadow-[#34d399]/20 transition-all flex items-center justify-center gap-3 group" type="submit">
                             <span id="btn-text">{{ T "schedule_demo" }}</span>
@@ -103,64 +82,49 @@
                 </form>
             </div>
             
-            <!-- Success Message (Hidden by default) -->
-            <div id="success-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-xl bg-white/10 backdrop-blur-md">
-                <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-lg scale-0 animate-success-check">
-                    <span class="material-symbols-outlined text-primary text-[48px]">check_circle</span>
+            <!-- Success Message -->
+            <div id="success-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-8 bg-white/10 dark:bg-black/40 backdrop-blur-md z-20">
+                <div class="w-20 h-20 bg-[#34d399]/20 rounded-full flex items-center justify-center mb-6 scale-0 animate-success-check">
+                    <span class="material-symbols-outlined text-[#34d399] text-[48px]">check_circle</span>
                 </div>
-                <h3 class="font-h2 text-h2 text-on-background dark:text-white mb-md">{{ T "request_received" }}</h3>
-                <p class="font-body-lg text-body-lg text-on-surface-variant dark:text-white/90 max-sm">
-                    {{ T "thank_you" }}, <span id="user-name-display" class="font-bold text-primary dark:text-primary-container"></span>! {{ T "onboarding_architect_msg" }}
+                <h3 class="font-h2 text-3xl font-bold text-on-background dark:text-white mb-4">{{ T "request_received" }}</h3>
+                <p class="font-body-lg text-on-surface-variant dark:text-white/90 max-w-sm">
+                    {{ T "thank_you" }}, <span id="user-name-display" class="font-bold text-[#34d399]"></span>! {{ T "onboarding_architect_msg" }}
                 </p>
-                <button onclick="document.getElementById('success-message').classList.add('hidden'); document.getElementById('demo-form-content').classList.remove('hidden');" class="mt-lg text-primary font-label-sm text-label-sm hover:underline">
+                <button onclick="window.location.reload()" class="mt-8 text-[#34d399] font-bold hover:underline">
                     {{ T "send_another" }}
                 </button>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-8 bg-red-500/10 backdrop-blur-md z-20">
+                <span class="material-symbols-outlined text-red-500 text-[48px] mb-4">error</span>
+                <h3 class="font-bold text-xl text-red-500 mb-2">Hubo un problema</h3>
+                <p class="text-sm text-on-surface-variant dark:text-white/70">No pudimos procesar tu solicitud. Por favor, intenta de nuevo.</p>
+                <button onclick="document.getElementById('error-message').classList.add('hidden'); document.getElementById('demo-form-content').classList.remove('hidden');" class="mt-4 font-bold text-on-background dark:text-white underline">Reintentar</button>
             </div>
         </div>
     </div>
 </section>
 
 <style>
-@keyframes success-check {
-    to { transform: scale(1); }
-}
-.animate-success-check {
-    animation: success-check 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
+@keyframes success-check { to { transform: scale(1); } }
+.animate-success-check { animation: success-check 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
-/* PCB Circuit Animation */
 .animate-pulse-path {
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
     animation: dash 10s linear infinite;
-    opacity: 0.3;
 }
-
 @keyframes dash {
     0% { stroke-dashoffset: 1000; opacity: 0.2; }
     20% { opacity: 1; }
-    50% { stroke-dashoffset: 0; opacity: 0.2; }
     100% { stroke-dashoffset: -1000; opacity: 0.2; }
 }
-
-.animate-node-glow {
-    animation: node-pulse 3s ease-in-out infinite;
-}
-
+.animate-node-glow { animation: node-pulse 3s ease-in-out infinite; }
 @keyframes node-pulse {
     0%, 100% { opacity: 0.2; r: 2; }
     50% { opacity: 1; r: 4; filter: blur(2px); }
-}
-
-/* Hide native select arrow */
-#country-code {
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-    background-image: none !important;
-}
-#country-code::-ms-expand {
-    display: none !important;
 }
 </style>
 
@@ -168,36 +132,49 @@
 document.getElementById('demo-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // 1. Honeypot Check (Spam Bot Protection)
-    const honeypot = document.getElementById('honeypot').value;
-    if (honeypot) {
-        console.warn("Spam detected.");
-        return; // Silently fail for bots
-    }
-
-    // 2. Loading State
+    const form = e.target;
     const submitBtn = document.getElementById('submit-btn');
     const btnText = document.getElementById('btn-text');
+    const content = document.getElementById('demo-form-content');
+    const success = document.getElementById('success-message');
+    const errorMsg = document.getElementById('error-message');
+    const nameDisplay = document.getElementById('user-name-display');
+
+    // Loading State
     submitBtn.disabled = true;
     submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
     btnText.textContent = '{{ T "processing" }}';
 
-    // 3. Capture Data
-    const firstName = document.getElementById('first-name').value;
-    const content = document.getElementById('demo-form-content');
-    const success = document.getElementById('success-message');
-    const nameDisplay = document.getElementById('user-name-display');
+    // Send via Fetch
+    const formData = new FormData(form);
     
-    // 4. Simulate Network Delay for UX
-    setTimeout(() => {
-        nameDisplay.textContent = firstName;
-        content.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-        
-        setTimeout(() => {
-            content.classList.add('hidden');
-            success.classList.remove('hidden');
-            success.classList.add('animate-in', 'fade-in', 'zoom-in', 'duration-500');
-        }, 500);
-    }, 1200);
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(async response => {
+        const data = await response.json();
+        if (response.ok && data.success) {
+            nameDisplay.textContent = form.elements['first_name'].value;
+            content.classList.add('opacity-0');
+            setTimeout(() => {
+                content.classList.add('hidden');
+                success.classList.remove('hidden');
+            }, 300);
+        } else {
+            throw new Error(data.message || 'Form submission failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        content.classList.add('hidden');
+        errorMsg.classList.remove('hidden');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnText.textContent = '{{ T "schedule_demo" }}';
+    });
 });
 </script>

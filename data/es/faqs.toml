@@ -1,0 +1,27 @@
+[[items]]
+question = "¿Vilkor es compatible con cualquier tipo de propiedad?"
+answer = "Sí. Vilkor está diseñado para adaptarse a desarrollos residenciales, comerciales, verticales (torres) y horizontales (fraccionamientos), proporcionando herramientas específicas para cada modelo operativo."
+
+[[items]]
+question = "¿Cuánto tiempo toma la implementación y migración?"
+answer = "Nuestra arquitectura permite una puesta en marcha inmediata. La configuración base se realiza en horas, y la migración de datos históricos desde otros sistemas suele completarse en menos de 48 horas laborales."
+
+[[items]]
+question = "¿Mis datos están seguros y cumplen con normativas?"
+answer = "Absolutamente. Utilizamos cifrado de grado militar (AES-256) y cumplimos con los estándares SOC2 y GDPR, garantizando que la información patrimonial y de residentes sea privada y segura 24/7."
+
+[[items]]
+question = "¿Ofrecen soporte técnico especializado?"
+answer = "Sí. Dependiendo de su plan, cuenta con acceso a soporte vía email, chat en vivo o un Onboarding Architect dedicado que asegura el éxito continuo de su operación sin intermediarios."
+
+[[items]]
+question = "¿Cómo acceden los residentes a la plataforma?"
+answer = "Vilkor es 100% web y mobile-responsive. Los residentes pueden gestionar pagos, reportar incidencias y votar desde cualquier navegador en segundos, sin necesidad de instalaciones complejas."
+
+[[items]]
+question = "¿Qué sucede si decido dejar la plataforma en el futuro?"
+answer = "Sus datos le pertenecen totalmente. Vilkor garantiza la soberanía de su información; usted puede exportar su historial financiero y operativo en formatos estándar en cualquier momento, asegurando que su administración nunca sea rehén de la tecnología."
+
+[[items]]
+question = "¿Existen contratos forzosos o plazos mínimos?"
+answer = "No. Ofrecemos total flexibilidad con planes mensuales sin permanencia obligatoria. Para organizaciones que buscan optimizar su inversión, el plan anual ofrece un descuento del 20% manteniendo la misma libertad operativa."

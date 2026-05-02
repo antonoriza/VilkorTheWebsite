@@ -1,0 +1,37 @@
+[[plans]]
+name = "Starter"
+price = "$649"
+features = ["Up to 30 units", "1 administrator", "Unlimited residents", "Email support"]
+cta = "pricing_cta_trial"
+delay = "100"
+
+[[plans]]
+name = "Standard"
+price = "$990"
+features = ["Up to 100 units", "3 administrators", "Unlimited residents", "Email and chat support"]
+cta = "pricing_cta_trial"
+delay = "200"
+
+[[plans]]
+name = "Pro"
+price = "$1,490"
+tag = "MOST POPULAR"
+features = ["Up to 200 units", "Unlimited admins", "Unlimited residents", "Email and chat support"]
+cta = "pricing_cta_trial"
+highlight = true
+delay = "300"
+
+[[plans]]
+name = "Class"
+price = "$1,900"
+features = ["Up to 300 units", "Unlimited admins", "Unlimited residents", "Email and chat support"]
+cta = "pricing_cta_trial"
+delay = "350"
+
+[[plans]]
+name = "Enterprise"
+price = "Quote"
+features = ["+300 units", "Unlimited admins", "Priority support", "Guaranteed SLA"]
+cta = "pricing_cta_contact"
+dark = true
+delay = "400"

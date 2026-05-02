@@ -1,0 +1,37 @@
+[[plans]]
+name = "Starter"
+price = "$649"
+features = ["Até 30 unidades", "1 administrador", "Residentes ilimitados", "Suporte por e-mail"]
+cta = "pricing_cta_trial"
+delay = "100"
+
+[[plans]]
+name = "Standard"
+price = "$990"
+features = ["Até 100 unidades", "3 administradores", "Residentes ilimitados", "Suporte por e-mail e chat"]
+cta = "pricing_cta_trial"
+delay = "200"
+
+[[plans]]
+name = "Pro"
+price = "$1,490"
+tag = "MAIS POPULAR"
+features = ["Até 200 unidades", "Admins ilimitados", "Residentes ilimitados", "Suporte por e-mail e chat"]
+cta = "pricing_cta_trial"
+highlight = true
+delay = "300"
+
+[[plans]]
+name = "Class"
+price = "$1,900"
+features = ["Até 300 unidades", "Admins ilimitados", "Residentes ilimitados", "Suporte por e-mail e chat"]
+cta = "pricing_cta_trial"
+delay = "350"
+
+[[plans]]
+name = "Enterprise"
+price = "Cotação"
+features = ["+300 unidades", "Admins ilimitados", "Suporte prioritário", "SLA Garantido"]
+cta = "pricing_cta_contact"
+dark = true
+delay = "400"

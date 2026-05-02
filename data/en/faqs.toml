@@ -1,0 +1,27 @@
+[[items]]
+question = "Is Vilkor compatible with any type of property?"
+answer = "Yes. Vilkor is designed to adapt to residential, commercial, vertical (towers), and horizontal (gated communities) developments, providing specific tools for each operating model."
+
+[[items]]
+question = "How long does implementation and migration take?"
+answer = "Our architecture allows for immediate startup. Base configuration is completed in hours, and the migration of historical data from other systems is typically finished in less than 48 business hours."
+
+[[items]]
+question = "Is my data secure and compliant with regulations?"
+answer = "Absolutely. We use military-grade encryption (AES-256) and comply with SOC2 and GDPR standards, ensuring that asset and resident information is private and secure 24/7."
+
+[[items]]
+question = "Do you offer specialized technical support?"
+answer = "Yes. Depending on your plan, you have access to support via email, live chat, or a dedicated Onboarding Architect who ensures the continuous success of your operation without intermediaries."
+
+[[items]]
+question = "How do residents access the platform?"
+answer = "Vilkor is 100% web and mobile-responsive. Residents can manage payments, report incidents, and vote from any browser in seconds, without the need for complex installations."
+
+[[items]]
+question = "What happens if I decide to leave the platform in the future?"
+answer = "Your data belongs entirely to you. Vilkor guarantees information sovereignty; you can export your financial and operational history in standard formats at any time, ensuring your administration is never held hostage by technology."
+
+[[items]]
+question = "Are there forced contracts or minimum terms?"
+answer = "No. We offer total flexibility with monthly plans and no mandatory stay. For organizations looking to optimize their investment, the annual plan offers a 20% discount while maintaining the same operational freedom."

@@ -1,0 +1,37 @@
+[[plans]]
+name = "Starter"
+price = "$649"
+features = ["Hasta 30 viviendas", "1 administrador", "Residentes ilimitados", "Soporte por email"]
+cta = "pricing_cta_trial"
+delay = "100"
+
+[[plans]]
+name = "Standard"
+price = "$990"
+features = ["Hasta 100 viviendas", "3 administradores", "Residentes ilimitados", "Soporte por email y chat"]
+cta = "pricing_cta_trial"
+delay = "200"
+
+[[plans]]
+name = "Pro"
+price = "$1,490"
+tag = "MÁS POPULAR"
+features = ["Hasta 200 viviendas", "Admin ilimitados", "Residentes ilimitados", "Soporte por email y chat"]
+cta = "pricing_cta_trial"
+highlight = true
+delay = "300"
+
+[[plans]]
+name = "Class"
+price = "$1,900"
+features = ["Hasta 300 viviendas", "Admin ilimitados", "Residentes ilimitados", "Soporte por email y chat"]
+cta = "pricing_cta_trial"
+delay = "350"
+
+[[plans]]
+name = "Enterprise"
+price = "Cotización"
+features = ["+300 viviendas", "Admin ilimitados", "Soporte prioritario", "SLA Garantizado"]
+cta = "pricing_cta_contact"
+dark = true
+delay = "400"

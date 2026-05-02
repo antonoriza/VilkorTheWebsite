@@ -4,3 +4,9 @@ resources/
 .hugo_build.lock
 .DS_Store
 *.log
+
+# Local secrets
+config.local.toml
+.env
+.env.local
+.env.*.local

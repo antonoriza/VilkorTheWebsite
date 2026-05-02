@@ -25,42 +25,6 @@ other = "Planes de Precios"
 [pricing_subtitle]
 other = "Soluciones escalables diseñadas para la eficiencia operativa de cualquier desarrollo inmobiliario, desde pequeñas comunidades hasta grandes complejos residenciales."
 
-[plan_starter_name]
-other = "Starter"
-[plan_starter_price]
-other = "$649"
-[plan_starter_features]
-other = "Hasta 30 viviendas,1 administrador,Residentes ilimitados,Soporte por email"
-
-[plan_standard_name]
-other = "Standard"
-[plan_standard_price]
-other = "$990"
-[plan_standard_features]
-other = "Hasta 100 viviendas,3 administradores,Residentes ilimitados,Soporte por email y chat"
-
-[plan_pro_name]
-other = "Pro"
-[plan_pro_price]
-other = "$1,490"
-[plan_pro_tag]
-other = "MÁS POPULAR"
-[plan_pro_features]
-other = "Hasta 200 viviendas,Admin ilimitados,Residentes ilimitados,Soporte por email y chat"
-
-[plan_class_name]
-other = "Class"
-[plan_class_price]
-other = "$1,900"
-[plan_class_features]
-other = "Hasta 300 viviendas,Admin ilimitados,Residentes ilimitados,Soporte por email y chat"
-
-[plan_enterprise_name]
-other = "Enterprise"
-[plan_enterprise_price]
-other = "Cotización"
-[plan_enterprise_features]
-other = "+300 viviendas,Admin ilimitados,Soporte prioritario,SLA Garantizado"
 
 [pricing_cta_trial]
 other = "Pruebalo 15 días sin costo"
@@ -441,13 +405,13 @@ other = "Lidere su Operación con Transparencia y Control Total"
 other = "Deje atrás procesos ambiguos y lentos. Evolucione a la plataforma diseñada para automatizar su gestión de desarrollos verticales y horizontales, brindando certeza operativa y administrativa."
 
 [soc2_compliant]
-other = "Datos seguros 24/7 en la nube."
+other = "Seguridad de Grado Bancario"
 
 [encryption_label]
-other = "Acceda desde su computadora, móvil o tablet."
+other = "Cifrado AES-256"
 
 [gdpr_ready]
-other = "PROTECCIÓN DE DATOS PERSONALES"
+other = "Privacidad Garantizada (GDPR)"
 
 [why_vilkor_subtitle]
 other = "Entendemos perfectamente los problemas que malas administraciones generan, lo hemos vivido. Vilkor es una plataforma en la nube que busca total certeza y transparencia en la gestión diaria de su propiedad."
@@ -458,30 +422,6 @@ other = "Onboarding Sencillo"
 [rapid_deployment_desc]
 other = "Eliminamos la complejidad tecnológica. Le acompañamos personalmente en la configuración y capacitación de su equipo, asegurando que Vilkor se convierta en el motor de su operación diaria sin fricciones ni curvas de aprendizaje lentas."
 
-[faq_q1]
-other = "¿Es difícil migrar mis datos desde otro software de gestión?"
-[faq_a1]
-other = "No. Vilkor cuenta con herramientas de migración inteligente y asistencia técnica especializada para asegurar una transición impecable. Nos encargamos de que su historial financiero y operativo se traslade con total integridad y sin interrupciones."
-
-[faq_q2]
-other = "¿Qué tipo de soporte recibimos durante la operación diaria?"
-[faq_a2]
-other = "Brindamos un acompañamiento experto y directo para asegurar su éxito operativo. Usted cuenta con asistencia técnica prioritaria para resolver dudas críticas al instante y capacitación especializada, garantizando que su administración funcione con la máxima precisión y sin intermediarios."
-
-[faq_q3]
-other = "¿Cómo garantizan la seguridad y privacidad de la información?"
-[faq_a3]
-other = "En Vilkor, cada desarrollo opera en una infraestructura aislada con bases de datos independientes. Sus datos están cifrados y respaldados en la nube con redundancia total, asegurando soberanía absoluta sobre su información."
-
-[faq_q4]
-other = "¿Cómo acceden los residentes a la plataforma?"
-[faq_a4]
-other = "Vilkor es 100% web y mobile-responsive. Los residentes pueden gestionar pagos, reportar incidencias y votar desde cualquier navegador en segundos, sin necesidad de instalaciones complejas."
-
-[faq_q5]
-other = "¿Qué sucede si decido dejar la plataforma en el futuro?"
-[faq_a5]
-other = "Sus datos le pertenecen totalmente. Vilkor garantiza la soberanía de su información; usted puede exportar su historial financiero y operativo en formatos estándar en cualquier momento, asegurando que su administración nunca sea rehén de la tecnología."
 
 [demo_subtitle]
 other = "Cuéntenos un poco sobre sus operaciones y adaptaremos el recorrido a sus necesidades específicas."
@@ -508,6 +448,15 @@ other = "Procesando..."
 
 [schedule_demo]
 other = "Agendar Demo"
+
+[cookie_title]
+other = "Privacidad y Cookies"
+[cookie_text]
+other = "Utilizamos cookies para mejorar su experiencia de navegación, ofrecer contenido personalizado y analizar nuestro tráfico. Al hacer clic en 'Aceptar todo', usted consiente nuestro uso de cookies."
+[cookie_accept]
+other = "Aceptar todo"
+[cookie_decline]
+other = "Rechazar todo"
 
 [onboarding_architect_msg]
 other = "Un arquitecto de incorporación se pondrá en contacto con usted en un plazo de 24 horas para programar su recorrido personalizado."

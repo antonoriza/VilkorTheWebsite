@@ -1,9 +1,11 @@
 baseURL = 'https://vilkor.xyz/'
 languageCode = 'en-us'
-defaultContentLanguage = 'en'
+defaultContentLanguage = 'es'
 
 [params]
   author = "Vilkor Enterprise"
+  [params.staticForms]
+    apiKey = ""
 
 [markup]
   [markup.goldmark]
@@ -25,7 +27,7 @@ defaultContentLanguage = 'en'
     weight = 2
     contentDir = "content/es"
     [languages.es.params]
-      description = "Plataforma de gestión de propiedades de grado institucional para operaciones a gran escala."
+      description = "Plataforma de gestión inmobiliaria de alta gama para la administración eficiente de propiedades y condominios."
 
   [languages.pt]
     languageName = "Português"

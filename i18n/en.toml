@@ -10,42 +10,6 @@ other = "Pricing Plans"
 [pricing_subtitle]
 other = "Scalable solutions designed for the operational efficiency of any real estate development, from small communities to large residential complexes."
 
-[plan_starter_name]
-other = "Starter"
-[plan_starter_price]
-other = "$39"
-[plan_starter_features]
-other = "Up to 30 units,1 Administrator,Unlimited Residents,Email Support"
-
-[plan_standard_name]
-other = "Standard"
-[plan_standard_price]
-other = "$59"
-[plan_standard_features]
-other = "Up to 100 units,3 Administrators,Unlimited Residents,Email and Chat Support"
-
-[plan_pro_name]
-other = "Pro"
-[plan_pro_price]
-other = "$89"
-[plan_pro_tag]
-other = "MOST POPULAR"
-[plan_pro_features]
-other = "Up to 200 units,Unlimited Admins,Unlimited Residents,Email and Chat Support"
-
-[plan_class_name]
-other = "Class"
-[plan_class_price]
-other = "$115"
-[plan_class_features]
-other = "Up to 300 units,Unlimited Admins,Unlimited Residents,Email and Chat Support"
-
-[plan_enterprise_name]
-other = "Enterprise"
-[plan_enterprise_price]
-other = "Contact"
-[plan_enterprise_features]
-other = "300+ units,Unlimited Admins,Priority Support,Guaranteed SLA"
 
 [pricing_cta_trial]
 other = "15-day free trial"
@@ -359,13 +323,13 @@ other = "Lead Your Operations with Transparency and Total Control"
 other = "Leave behind ambiguous and slow processes. Evolve to the platform designed to automate vertical and horizontal development management, providing operational and administrative certainty."
 
 [soc2_compliant]
-other = "Secure 24/7 Cloud Infrastructure."
+other = "Bank-Grade Security"
 
 [encryption_label]
-other = "Cross-Platform Access (PC, Mobile, Tablet)."
+other = "AES-256 Encryption"
 
 [gdpr_ready]
-other = "Privacy & GDPR Compliance"
+other = "Guaranteed Privacy (GDPR)"
 
 [why_vilkor_subtitle]
 other = "We understand the problems that poor management generates. Vilkor is a cloud platform that seeks total certainty and transparency in the daily management of your property."
@@ -376,30 +340,6 @@ other = "Frictionless Onboarding"
 [rapid_deployment_desc]
 other = "We eliminate technological complexity. We personally assist you in the configuration and training of your team, ensuring Vilkor becomes the engine of your daily operation without frictions or slow learning curves."
 
-[faq_q1]
-other = "Is it difficult to migrate my data from another management software?"
-[faq_a1]
-other = "No. Vilkor features intelligent migration tools and specialized technical assistance to ensure a flawless transition. We ensure your financial and operational history is moved with total integrity and no interruptions."
-
-[faq_q2]
-other = "What kind of support do we receive during daily operations?"
-[faq_a2]
-other = "We provide expert and direct assistance to ensure your operational success. You have priority technical support to resolve critical doubts instantly and specialized training, ensuring your administration runs with maximum precision and no intermediaries."
-
-[faq_q3]
-other = "How do you guarantee the security and privacy of information?"
-[faq_a3]
-other = "In Vilkor, each development operates on an isolated infrastructure with independent databases. Your data is encrypted and backed up in the cloud with total redundancy, ensuring absolute sovereignty over your information."
-
-[faq_q4]
-other = "How do residents access the platform?"
-[faq_a4]
-other = "Vilkor is 100% web and mobile-responsive. Residents can manage payments, report incidents, and vote from any browser in seconds, without complex installations."
-
-[faq_q5]
-other = "What happens if I decide to leave the platform in the future?"
-[faq_a5]
-other = "Your data belongs entirely to you. Vilkor guarantees information sovereignty; you can export your financial and operational history in standard formats at any time, ensuring your administration is never held hostage by technology."
 
 [demo_subtitle]
 other = "Tell us a bit about your operations, and we'll tailor the walkthrough to your specific needs."
@@ -438,6 +378,15 @@ other = "555-0123"
 
 [schedule_demo]
 other = "Schedule Demo"
+
+[cookie_title]
+other = "Privacy & Cookies"
+[cookie_text]
+other = "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking 'Accept All', you consent to our use of cookies."
+[cookie_accept]
+other = "Accept All"
+[cookie_decline]
+other = "Reject All"
 
 [onboarding_architect_msg]
 other = "An onboarding architect will reach out to you within 24 hours to schedule your custom walkthrough."

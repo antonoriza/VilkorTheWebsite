@@ -9,70 +9,24 @@
         </div>
 
         <div class="space-y-4">
-            <!-- FAQ Item 1 -->
-            <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-300 hover:border-[#34d399]/30">
-                <details class="group/item">
-                    <summary class="flex items-center justify-between p-7 cursor-pointer list-none">
-                        <h3 class="font-bold text-[18px] text-on-background dark:text-white pr-8">{{ T "faq_q1" }}</h3>
-                        <span class="material-symbols-outlined text-[#34d399] transition-transform duration-300 group-open/item:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="px-7 pb-7 text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
-                        {{ T "faq_a1" }}
-                    </div>
-                </details>
-            </div>
-
-            <!-- FAQ Item 2 -->
-            <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-300 hover:border-[#34d399]/30">
-                <details class="group/item">
-                    <summary class="flex items-center justify-between p-7 cursor-pointer list-none">
-                        <h3 class="font-bold text-[18px] text-on-background dark:text-white pr-8">{{ T "faq_q2" }}</h3>
-                        <span class="material-symbols-outlined text-[#34d399] transition-transform duration-300 group-open/item:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="px-7 pb-7 text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
-                        {{ T "faq_a2" }}
-                    </div>
-                </details>
-            </div>
-
-            <!-- FAQ Item 3 -->
-            <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-300 hover:border-[#34d399]/30">
-                <details class="group/item">
-                    <summary class="flex items-center justify-between p-7 cursor-pointer list-none">
-                        <h3 class="font-bold text-[18px] text-on-background dark:text-white pr-8">{{ T "faq_q3" }}</h3>
-                        <span class="material-symbols-outlined text-[#34d399] transition-transform duration-300 group-open/item:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="px-7 pb-7 text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
-                        {{ T "faq_a3" }}
-                    </div>
-                </details>
-            </div>
-
-            <!-- FAQ Item 4 -->
-            <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-300 hover:border-[#34d399]/30">
-                <details class="group/item">
-                    <summary class="flex items-center justify-between p-7 cursor-pointer list-none">
-                        <h3 class="font-bold text-[18px] text-on-background dark:text-white pr-8">{{ T "faq_q4" }}</h3>
-                        <span class="material-symbols-outlined text-[#34d399] transition-transform duration-300 group-open/item:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="px-7 pb-7 text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
-                        {{ T "faq_a4" }}
-                    </div>
-                </details>
-            </div>
-
-            <!-- FAQ Item 5 -->
-            <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-300 hover:border-[#34d399]/30">
-                <details class="group/item">
-                    <summary class="flex items-center justify-between p-7 cursor-pointer list-none">
-                        <h3 class="font-bold text-[18px] text-on-background dark:text-white pr-8">{{ T "faq_q5" }}</h3>
-                        <span class="material-symbols-outlined text-[#34d399] transition-transform duration-300 group-open/item:rotate-180">expand_more</span>
-                    </summary>
-                    <div class="px-7 pb-7 text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
-                        {{ T "faq_a5" }}
-                    </div>
-                </details>
-            </div>
+            {{ $langData := index .Site.Data .Language.Lang }}
+            {{ if $langData.faqs }}
+                {{ range $index, $item := $langData.faqs.items }}
+                <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-300 hover:border-[#34d399]/30">
+                    <details class="group/item">
+                        <summary class="flex items-center justify-between p-7 cursor-pointer list-none">
+                            <h3 class="font-bold text-[18px] text-on-background dark:text-white pr-8">{{ $item.question }}</h3>
+                            <span class="material-symbols-outlined text-[#34d399] transition-transform duration-300 group-open/item:rotate-180">expand_more</span>
+                        </summary>
+                        <div class="px-7 pb-7 text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
+                            {{ $item.answer | safeHTML }}
+                        </div>
+                    </details>
+                </div>
+                {{ end }}
+            {{ else }}
+                <p class="text-center text-on-surface-variant dark:text-white/40">No FAQ data found for {{ .Language.Lang }}.</p>
+            {{ end }}
             
             <!-- Still have questions? -->
             <div class="text-center pt-10">

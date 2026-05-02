@@ -1,0 +1,27 @@
+[[items]]
+question = "O Vilkor é compatível com qualquer tipo de propriedade?"
+answer = "Sim. O Vilkor foi projetado para se adaptar a empreendimentos residenciais, comerciais, verticais (torres) e horizontais (condomínios fechados), fornecendo ferramentas específicas para cada modelo operacional."
+
+[[items]]
+question = "Quanto tempo leva a implementação e migração?"
+answer = "Nossa arquitetura permite uma inicialização imediata. A configuração base é concluída em horas, e a migração de dados históricos de outros sistemas costuma ser finalizada em menos de 48 horas úteis."
+
+[[items]]
+question = "Meus dados estão seguros e em conformidade com as regulamentações?"
+answer = "Absolutamente. Utilizamos criptografia de nível militar (AES-256) e cumprimos os padrões SOC2 e GDPR, garantindo que as informações patrimoniais e dos residentes sejam privadas e seguras 24 horas por dia, 7 dias por semana."
+
+[[items]]
+question = "Vocês oferecem suporte técnico especializado?"
+answer = "Sim. Dependendo do seu plano, você tem acesso a suporte via e-mail, chat ao vivo ou um Arquiteto de Implantação dedicado, que garante o sucesso contínuo da sua operação sem intermediários."
+
+[[items]]
+question = "Como os residentes acessam a plataforma?"
+answer = "O Vilkor é 100% web e mobile-responsive. Os residentes podem gerenciar pagamentos, relatar incidentes e votar de qualquer navegador em segundos, sem a necessidade de instalações complexas."
+
+[[items]]
+question = "O que acontece se eu decidir deixar a plataforma no futuro?"
+answer = "Seus dados pertencem totalmente a você. O Vilkor garante a soberania da informação; você pode exportar seu histórico financeiro e operacional em formatos padrão a qualquer momento, garantindo que sua administração nunca seja refém da tecnologia."
+
+[[items]]
+question = "Existem contratos forçados ou prazos mínimos?"
+answer = "Não. Oferecemos flexibilidade total com planos mensais sem permanência obrigatória. Para organizações que buscam otimizar seu investimento, o plano anual oferece um desconto de 20%, mantendo a mesma liberdade operacional."

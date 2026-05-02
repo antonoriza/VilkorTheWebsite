@@ -10,42 +10,6 @@ other = "Planos de Preços"
 [pricing_subtitle]
 other = "Soluções escaláveis projetadas para a eficiência operacional de qualquer empreendimento imobiliário, de pequenas comunidades a grandes complexos residenciais."
 
-[plan_starter_name]
-other = "Starter"
-[plan_starter_price]
-other = "R$ 189"
-[plan_starter_features]
-other = "Até 30 unidades,1 Administrador,Residentes ilimitados,Suporte por e-mail"
-
-[plan_standard_name]
-other = "Standard"
-[plan_standard_price]
-other = "R$ 289"
-[plan_standard_features]
-other = "Até 100 unidades,3 Administradores,Residentes ilimitados,Suporte por e-mail e chat"
-
-[plan_pro_name]
-other = "Pro"
-[plan_pro_price]
-other = "R$ 439"
-[plan_pro_tag]
-other = "MAIS POPULAR"
-[plan_pro_features]
-other = "Até 200 unidades,Administradores ilimitados,Residentes ilimitados,Suporte por e-mail e chat"
-
-[plan_class_name]
-other = "Class"
-[plan_class_price]
-other = "R$ 549"
-[plan_class_features]
-other = "Até 300 unidades,Administradores ilimitados,Residentes ilimitados,Suporte por e-mail e chat"
-
-[plan_enterprise_name]
-other = "Enterprise"
-[plan_enterprise_price]
-other = "Contato"
-[plan_enterprise_features]
-other = "300+ unidades,Administradores ilimitados,Suporte prioritário,SLA Garantido"
 
 [pricing_cta_trial]
 other = "Teste 15 dias sem custo"
@@ -359,13 +323,13 @@ other = "Lidere sua Operação com Transparência e Controle Total"
 other = "Deixe para trás processos ambíguos e lentos. Evolua para a plataforma projetada para automatizar a gestão de empreendimentos verticais e horizontais, proporcionando certeza operacional e administrativa."
 
 [soc2_compliant]
-other = "Infraestrutura segura 24/7 na nuvem."
+other = "Segurança de Nível Bancário"
 
 [encryption_label]
-other = "Acesso multiplataforma (PC, Celular, Tablet)."
+other = "Criptografia AES-256"
 
 [gdpr_ready]
-other = "PRIVACIDADE E LGPD"
+other = "Privacidade Garantida (LGPD)"
 
 [why_vilkor_subtitle]
 other = "Entendemos os problemas que uma má gestão gera. O Vilkor é uma plataforma na nuvem que busca total certeza e transparência na gestão diária de sua propriedade."
@@ -438,6 +402,15 @@ other = "11 91234 5678"
 
 [schedule_demo]
 other = "Agendar Demonstração"
+
+[cookie_title]
+other = "Privacidade e Cookies"
+[cookie_text]
+other = "Utilizamos cookies para melhorar sua experiência de navegação, oferecer conteúdo personalizado e analisar nosso tráfego. Ao clicar em 'Aceitar tudo', você consente com o uso de cookies."
+[cookie_accept]
+other = "Aceitar tudo"
+[cookie_decline]
+other = "Recusar tudo"
 
 [onboarding_architect_msg]
 other = "Um arquiteto de implantação entrará em contato com você em até 24 horas para agendar sua demonstração personalizada."
