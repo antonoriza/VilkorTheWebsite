@@ -491,11 +491,6 @@ other = "juan.perez@empresa.com"
 [phone_placeholder]
 other = "55 1234 5678"
 
-[message_label]
-other = "¿En qué podemos ayudarte?"
-
-[message_placeholder]
-other = "Cuéntanos sobre tu proyecto, número de unidades o necesidades específicas..."
 
 [faq_footer_text]
 other = "¿Tiene más dudas?"

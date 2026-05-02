@@ -69,13 +69,6 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col space-y-2">
-                        <label for="message" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "message_label" }}</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-4 top-6 text-on-surface-variant/40 dark:text-white/50 text-[20px]">chat</span>
-                            <textarea id="message" name="message" rows="4" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-12 pr-4 py-4 rounded-2xl focus:border-[#34d399] transition-all outline-none dark:text-white resize-none" placeholder="{{ T "message_placeholder" }}" required></textarea>
-                        </div>
-                    </div>
 
                     <div class="pt-4">
                         <button id="submit-btn" class="w-full bg-[#34d399] text-[#002114] font-bold text-lg h-[64px] rounded-2xl hover:shadow-xl transition-all flex items-center justify-center gap-3 group" type="submit">
@@ -172,6 +165,10 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
         object.phone = `+${object.country_code} ${object.phone}`;
     }
 
+    // IMPORTANT: Remove redirectTo when using AJAX/fetch. 
+    // If present, StaticForms might return a redirect response that breaks JSON parsing.
+    delete object.redirectTo;
+
     // Validation: Check if apiKey is missing
     if (!object.apiKey || object.apiKey.trim() === "" || object.apiKey.includes("site.Params")) {
         console.error('StaticForms: API Key is missing or invalid.');
@@ -202,8 +199,9 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
             result = { success: false, message: 'Invalid response from server' };
         }
 
-        if (response.ok && (result.success || result.status === 'success')) {
-            // Success Logic
+        if (response.ok) {
+            // Success Logic: If response is OK, we assume it worked even if JSON parsing fails 
+            // (StaticForms sometimes returns non-JSON redirects if misconfigured)
             if (nameDisplay) nameDisplay.textContent = object.first_name || 'Juan';
             content.classList.add('opacity-0');
             setTimeout(() => {
