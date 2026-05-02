@@ -157,7 +157,7 @@ other = """
 
         <!-- Tab Headers -->
         <div class="flex p-1 bg-on-background/5 dark:bg-white/5 rounded-xl border border-on-background/10 dark:border-white/10 mb-8 w-fit">
-            <label for="tab-admin" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/admin:bg-[#674bb5] peer-checked/admin:text-white">Para la Administradora</label>
+            <label for="tab-admin" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/admin:bg-[#674bb5] peer-checked/admin:text-white">Para Administradores</label>
             <label for="tab-resident" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/resident:bg-[#674bb5] peer-checked/resident:text-white">Para el Residente</label>
         </div>
 
