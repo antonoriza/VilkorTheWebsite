@@ -25,6 +25,21 @@ other = "*Get a 15-20% discount (equivalent to 2 months free) when choosing annu
 [book_demo]
 other = "Schedule Demo"
 
+[demo_success_thanks]
+other = "Thanks"
+
+[demo_success_body]
+other = "We have received your request. A sales engineer will contact you shortly."
+
+[demo_error_title]
+other = "There was a problem"
+
+[demo_error_body]
+other = "We couldn't process your request."
+
+[demo_retry]
+other = "Retry"
+
 [start_operating]
 other = "Start Operating Now"
 

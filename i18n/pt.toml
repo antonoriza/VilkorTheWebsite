@@ -23,7 +23,22 @@ other = "brl / mês"
 other = "*Ganhe de 15 a 20% de desconto (equivalente a 2 meses grátis) ao escolher o faturamento anual."
 
 [book_demo]
-other = "Agendar Demonstração"
+other = "Agendar Demo"
+
+[demo_success_thanks]
+other = "Obrigado"
+
+[demo_success_body]
+other = "Recebemos sua solicitação. Um engenheiro de vendas entrará em contato em breve."
+
+[demo_error_title]
+other = "Houve um problema"
+
+[demo_error_body]
+other = "Não pudemos processar sua solicitação."
+
+[demo_retry]
+other = "Tentar novamente"
 
 [start_operating]
 other = "Começar Agora"

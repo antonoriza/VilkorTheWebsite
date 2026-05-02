@@ -10,6 +10,21 @@ other = "Sienta la libertad de una gestión que fluye. Recupere el control de su
 [book_demo]
 other = "Agendar Demo"
 
+[demo_success_thanks]
+other = "¡Gracias"
+
+[demo_success_body]
+other = "Hemos recibido tu solicitud. Un ingeniero de ventas te contactará en breve."
+
+[demo_error_title]
+other = "Hubo un problema"
+
+[demo_error_body]
+other = "No pudimos procesar tu solicitud."
+
+[demo_retry]
+other = "Reintentar"
+
 [start_operating]
 other = "Comenzar Ahora"
 
