@@ -394,6 +394,12 @@ other = "Dashboard Interface"
 [phone_placeholder]
 other = "555-0123"
 
+[message_label]
+other = "How can we help you?"
+
+[message_placeholder]
+other = "Tell us about your project, number of units, or specific needs..."
+
 [schedule_demo]
 other = "Schedule Demo"
 

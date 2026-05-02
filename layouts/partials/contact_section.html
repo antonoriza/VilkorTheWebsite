@@ -69,6 +69,14 @@
                         </div>
                     </div>
 
+                    <div class="flex flex-col space-y-2">
+                        <label for="message" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "message_label" }}</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-4 top-6 text-on-surface-variant/40 dark:text-white/50 text-[20px]">chat</span>
+                            <textarea id="message" name="message" rows="4" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-12 pr-4 py-4 rounded-2xl focus:border-[#34d399] transition-all outline-none dark:text-white resize-none" placeholder="{{ T "message_placeholder" }}" required></textarea>
+                        </div>
+                    </div>
+
                     <div class="pt-4">
                         <button id="submit-btn" class="w-full bg-[#34d399] text-[#002114] font-bold text-lg h-[64px] rounded-2xl hover:shadow-xl transition-all flex items-center justify-center gap-3 group" type="submit">
                             <span id="btn-text">{{ T "schedule_demo" }}</span>
@@ -159,19 +167,21 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
     const formData = new FormData(form);
     const object = Object.fromEntries(formData);
 
-    // Validation: Check if apiKey is missing (common cause of 400 errors)
-    if (!object.apiKey || object.apiKey.trim() === "") {
-        console.warn('StaticForms: API Key is missing. Submission will fail.');
-        // If we are in local dev, we might want to show a specific message
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            btnText.textContent = 'Falta API Key (Check hugo.toml)';
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btnText.textContent = originalText;
-            }, 3000);
-            return;
-        }
+    // Concat phone for better readability in email if needed
+    if (object.country_code && object.phone) {
+        object.phone = `+${object.country_code} ${object.phone}`;
+    }
+
+    // Validation: Check if apiKey is missing
+    if (!object.apiKey || object.apiKey.trim() === "" || object.apiKey.includes("site.Params")) {
+        console.error('StaticForms: API Key is missing or invalid.');
+        btnText.textContent = 'Error: Falta API Key';
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnText.textContent = originalText;
+        }, 3000);
+        return;
     }
 
     const json = JSON.stringify(object);
@@ -192,9 +202,9 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
             result = { success: false, message: 'Invalid response from server' };
         }
 
-        if (response.ok && result.success) {
+        if (response.ok && (result.success || result.status === 'success')) {
             // Success Logic
-            if (nameDisplay) nameDisplay.textContent = form.elements['first_name'].value || 'Juan';
+            if (nameDisplay) nameDisplay.textContent = object.first_name || 'Juan';
             content.classList.add('opacity-0');
             setTimeout(() => {
                 content.classList.add('hidden');
@@ -213,9 +223,11 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
         errorMsg.style.display = 'flex';
     })
     .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        btnText.textContent = originalText;
+        if (!content.classList.contains('hidden')) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnText.textContent = originalText;
+        }
     });
 });
 </script>

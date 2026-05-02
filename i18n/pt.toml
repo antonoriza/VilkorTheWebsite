@@ -418,6 +418,12 @@ other = "Telefone"
 [phone_placeholder]
 other = "11 91234 5678"
 
+[message_label]
+other = "Como podemos ajudar?"
+
+[message_placeholder]
+other = "Conte-nos sobre seu projeto, número de unidades ou necessidades específicas..."
+
 [schedule_demo]
 other = "Agendar Demonstração"
 
