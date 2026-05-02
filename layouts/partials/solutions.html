@@ -79,12 +79,12 @@
                             <input type="radio" id="tab-resident" name="card-tabs" class="hidden peer/resident">
 
                             <!-- Tab Headers - Elegant Border Highlighting -->
-                            <div class="flex p-1 bg-on-background/5 dark:bg-white/5 rounded-xl border border-on-background/10 dark:border-white/10 mb-8 w-fit mx-auto lg:mx-0">
-                                <label for="tab-admin" class="px-4 md:px-6 py-2 rounded-lg text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 border-2 border-transparent peer-checked/admin:bg-[#674bb5] peer-checked/admin:text-white peer-checked/admin:border-[#674bb5] peer-checked/admin:shadow-[0_0_15px_rgba(103,75,181,0.3)]">Para la Administradora</label>
-                                <label for="tab-resident" class="px-4 md:px-6 py-2 rounded-lg text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 border-2 border-transparent peer-checked/resident:bg-[#674bb5] peer-checked/resident:text-white peer-checked/resident:border-[#674bb5] peer-checked/resident:shadow-[0_0_15px_rgba(103,75,181,0.3)]">Para el Residente</label>
+                            <div class="flex p-1.5 bg-black/5 dark:bg-white/5 rounded-2xl border border-on-background/10 dark:border-white/10 mb-8 w-fit mx-auto lg:mx-0 shadow-inner relative z-20">
+                                <label for="tab-admin" class="tab-label px-5 md:px-7 py-2.5 rounded-xl text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 border-[3px] border-transparent text-on-surface-variant dark:text-gray-400 relative z-30">Para la Administradora</label>
+                                <label for="tab-resident" class="tab-label px-5 md:px-7 py-2.5 rounded-xl text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 border-[3px] border-transparent text-on-surface-variant dark:text-gray-400 relative z-30">Para el Residente</label>
                             </div>
 
-                            <div class="hidden peer-checked/admin:block animate-fade-in text-center lg:text-left">
+                            <div class="hidden peer-checked/admin:block animate-fade-in text-center lg:text-left relative z-10">
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div class="space-y-2 md:space-y-3">
                                         <span class="material-symbols-outlined text-[#674bb5] text-2xl">hub</span>
@@ -103,7 +103,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="hidden peer-checked/resident:block animate-fade-in text-center lg:text-left">
+                            <div class="hidden peer-checked/resident:block animate-fade-in text-center lg:text-left relative z-10">
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div class="space-y-2 md:space-y-3">
                                         <span class="material-symbols-outlined text-[#674bb5] text-2xl">visibility</span>
@@ -154,3 +154,22 @@
         </div>
     </div>
 </section>
+
+<style>
+#tab-admin:checked ~ div label[for="tab-admin"],
+#tab-resident:checked ~ div label[for="tab-resident"] {
+    border: 1px solid #674bb5 !important;
+    background-color: white !important;
+    color: #121212 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    transform: translateY(-1px);
+}
+
+.dark #tab-admin:checked ~ div label[for="tab-admin"],
+.dark #tab-resident:checked ~ div label[for="tab-resident"] {
+    background-color: #18181b !important;
+    color: white !important;
+    border-color: #674bb5 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+}
+</style>

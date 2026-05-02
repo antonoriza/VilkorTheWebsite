@@ -1,6 +1,9 @@
 [hero_title]
 other = "Una plataforma, control total"
 
+[no_copy_message]
+other = "Hey, no copies mis textos :P"
+
 [hero_subtitle]
 other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
 

@@ -1,9 +1,20 @@
 <!-- 5) Pricing -->
-<section id="pricing" class="py-12 md:py-20 px-6 md:px-8 bg-white dark:bg-zinc-950 scroll-mt-24">
+<section id="pricing" class="pt-12 md:pt-20 pb-4 md:pb-6 px-6 md:px-8 bg-white dark:bg-zinc-950 scroll-mt-24">
     <div class="max-w-container-max mx-auto">
-        <div class="text-center mb-16 md:mb-24" data-aos="fade-up">
+        <div class="text-center mb-10 md:mb-12" data-aos="fade-up">
             <h2 class="font-h1 font-bold text-3xl md:text-5xl text-on-background dark:text-white mb-4 md:mb-6 tracking-tight leading-tight">{{ T "pricing_title" }}</h2>
-            <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 max-w-2xl mx-auto">{{ T "pricing_subtitle" }}</p>
+            
+            <!-- Pricing Toggle Switch -->
+            <div class="flex items-center justify-center gap-4 mt-8 mb-12">
+                <span id="label-monthly" class="text-sm font-bold text-on-background dark:text-white transition-opacity duration-300">Mensual</span>
+                <button id="pricing-toggle" class="relative w-14 h-7 bg-on-background/10 dark:bg-white/10 rounded-full transition-colors duration-300 focus:outline-none group">
+                    <div id="toggle-knob" class="absolute left-1 top-1 w-5 h-5 bg-white dark:bg-[#34d399] rounded-full shadow-md transition-transform duration-300"></div>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span id="label-annual" class="text-sm font-bold text-on-surface-variant dark:text-gray-500 transition-opacity duration-300">Anual</span>
+                    <span class="bg-[#34d399]/10 text-[#34d399] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#34d399]/20">-20%</span>
+                </div>
+            </div>
         </div>
 
         <!-- 5 Plans Grid -->
@@ -12,14 +23,12 @@
             <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="100">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Starter</h3>
                 <div class="mb-6">
-                    <span class="text-3xl font-bold text-on-background dark:text-white">$649</span>
+                    <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="649" data-annual="519">$649</span>
                     <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 30 viviendas</li>
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>1 administrador</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Soporte por email</li>
                 </ul>
                 <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
@@ -28,14 +37,12 @@
             <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="200">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Standard</h3>
                 <div class="mb-6">
-                    <span class="text-3xl font-bold text-on-background dark:text-white">$990</span>
+                    <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="990" data-annual="792">$990</span>
                     <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 100 viviendas</li>
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>3 administradores</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Email y chat</li>
                 </ul>
                 <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
@@ -45,14 +52,12 @@
                 <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#34d399] text-[#002114] text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg">Más Popular</div>
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Pro</h3>
                 <div class="mb-6">
-                    <span class="text-3xl font-bold text-on-background dark:text-white">$1,490</span>
+                    <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="1,490" data-annual="1,192">$1,490</span>
                     <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 200 viviendas</li>
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Email y chat</li>
                 </ul>
                 <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl bg-[#34d399] text-[#002114] font-bold text-[13px] hover:shadow-lg transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
@@ -61,14 +66,12 @@
             <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="400">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Class</h3>
                 <div class="mb-6">
-                    <span class="text-3xl font-bold text-on-background dark:text-white">$1,900</span>
+                    <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="1,900" data-annual="1,520">$1,900</span>
                     <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 300 viviendas</li>
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Email y chat</li>
                 </ul>
                 <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
@@ -81,9 +84,7 @@
                 </div>
                 <ul class="space-y-3 mb-8 text-gray-400 text-sm w-full">
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>+300 viviendas</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
                     <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Soporte prioritario</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>SLA Garantizado</li>
                 </ul>
                 <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl bg-white text-black font-bold text-[13px] hover:bg-gray-200 transition-all text-center">{{ T "pricing_cta_contact" }}</a>
             </div>
@@ -95,22 +96,55 @@
     </div>
 </section>
 
-<!-- Desktop Only Tilt Initialization Script -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    function initPricingTilt() {
-        if (window.innerWidth > 1024 && typeof VanillaTilt !== 'undefined') {
-            const cards = document.querySelectorAll('.pricing-card');
-            cards.forEach(card => {
-                VanillaTilt.init(card, {
-                    max: 8,
-                    speed: 400,
-                    glare: true,
-                    "max-glare": 0.15,
-                });
+    const toggle = document.getElementById('pricing-toggle');
+    const knob = document.getElementById('toggle-knob');
+    const prices = document.querySelectorAll('.price-value');
+    const labelMonthly = document.getElementById('label-monthly');
+    const labelAnnual = document.getElementById('label-annual');
+    let isAnnual = false;
+
+    if (toggle) {
+        toggle.addEventListener('click', () => {
+            isAnnual = !isAnnual;
+            
+            // Toggle Visuals
+            knob.style.transform = isAnnual ? 'translateX(28px)' : 'translateX(0)';
+            labelMonthly.classList.toggle('text-on-surface-variant', isAnnual);
+            labelMonthly.classList.toggle('dark:text-gray-500', isAnnual);
+            labelAnnual.classList.toggle('text-on-surface-variant', !isAnnual);
+            labelAnnual.classList.toggle('dark:text-gray-500', !isAnnual);
+            labelAnnual.classList.toggle('dark:text-white', isAnnual);
+
+            // Update Prices
+            prices.forEach(price => {
+                price.style.opacity = '0';
+                setTimeout(() => {
+                    price.textContent = `$${isAnnual ? price.dataset.annual : price.dataset.monthly}`;
+                    price.style.opacity = '1';
+                }, 150);
             });
-        }
+        });
     }
-    initPricingTilt();
+
+    // Tilt Init
+    if (window.innerWidth > 1024 && typeof VanillaTilt !== 'undefined') {
+        const cards = document.querySelectorAll('.pricing-card');
+        cards.forEach(card => {
+            VanillaTilt.init(card, {
+                max: 8,
+                speed: 400,
+                glare: true,
+                "max-glare": 0.15,
+            });
+        });
+    }
 });
 </script>
+
+<style>
+.price-value {
+    transition: opacity 0.2s ease-in-out;
+}
+</style>

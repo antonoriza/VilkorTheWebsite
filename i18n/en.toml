@@ -43,6 +43,9 @@ other = "FAQ"
 [one_platform]
 other = "One platform, total control."
 
+[no_copy_message]
+other = "Hey, don't copy my content :P"
+
 [ready_unstoppable]
 other = "Ready to make your property unstoppable?"
 
