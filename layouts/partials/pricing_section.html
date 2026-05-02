@@ -1,92 +1,116 @@
-<!-- 6) Pricing Section -->
-<section id="pricing" class="py-16 md:py-24 px-6 md:px-gutter bg-[#fdfdfb] dark:bg-zinc-950 relative overflow-hidden scroll-mt-24">
-    <!-- Decorative Glow -->
-    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-[#34d399]/5 blur-[120px] rounded-full pointer-events-none"></div>
-    
-    <div class="relative z-10 text-center mb-12 md:mb-20" data-aos="fade-up">
-        <h2 class="font-h1 font-bold text-3xl md:text-[56px] text-on-background dark:text-white mb-4 md:mb-6 tracking-tighter leading-tight">{{ T "pricing_title" }}</h2>
-        <p class="font-body-lg text-base md:text-lg lg:text-body-lg text-on-surface-variant dark:text-white/60 max-w-3xl mx-auto leading-relaxed">
-            {{ T "pricing_subtitle" }}
+<!-- 5) Pricing -->
+<section id="pricing" class="py-12 md:py-20 px-6 md:px-8 bg-white dark:bg-zinc-950 scroll-mt-24">
+    <div class="max-w-container-max mx-auto">
+        <div class="text-center mb-16 md:mb-24" data-aos="fade-up">
+            <h2 class="font-h1 font-bold text-3xl md:text-5xl text-on-background dark:text-white mb-4 md:mb-6 tracking-tight leading-tight">{{ T "pricing_title" }}</h2>
+            <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 max-w-2xl mx-auto">{{ T "pricing_subtitle" }}</p>
+        </div>
+
+        <!-- 5 Plans Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-4 lg:gap-4 items-stretch">
+            <!-- 1. Starter -->
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="100">
+                <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Starter</h3>
+                <div class="mb-6">
+                    <span class="text-3xl font-bold text-on-background dark:text-white">$649</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                </div>
+                <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 30 viviendas</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>1 administrador</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Soporte por email</li>
+                </ul>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+            </div>
+
+            <!-- 2. Standard -->
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="200">
+                <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Standard</h3>
+                <div class="mb-6">
+                    <span class="text-3xl font-bold text-on-background dark:text-white">$990</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                </div>
+                <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 100 viviendas</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>3 administradores</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Email y chat</li>
+                </ul>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+            </div>
+
+            <!-- 3. Pro (Most Popular) -->
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border-2 border-[#34d399] flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:shadow-[0_0_30px_rgba(52,211,153,0.2)] relative z-10 group bg-[#34d399]/5" data-aos="fade-up" data-aos-delay="300">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#34d399] text-[#002114] text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg">Más Popular</div>
+                <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Pro</h3>
+                <div class="mb-6">
+                    <span class="text-3xl font-bold text-on-background dark:text-white">$1,490</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                </div>
+                <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 200 viviendas</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Email y chat</li>
+                </ul>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl bg-[#34d399] text-[#002114] font-bold text-[13px] hover:shadow-lg transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+            </div>
+
+            <!-- 4. Class -->
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="400">
+                <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Class</h3>
+                <div class="mb-6">
+                    <span class="text-3xl font-bold text-on-background dark:text-white">$1,900</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                </div>
+                <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 300 viviendas</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Residentes ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Email y chat</li>
+                </ul>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+            </div>
+
+            <!-- 5. Enterprise -->
+            <div class="pricing-card bg-[#121212] p-6 md:p-8 rounded-[2rem] border border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-white/20 hover:shadow-2xl relative group" data-aos="fade-up" data-aos-delay="500">
+                <h3 class="font-bold text-lg text-white mb-1">Enterprise</h3>
+                <div class="mb-6">
+                    <span class="text-3xl font-bold text-white">Cotización</span>
+                </div>
+                <ul class="space-y-3 mb-8 text-gray-400 text-sm w-full">
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>+300 viviendas</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Soporte prioritario</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>SLA Garantizado</li>
+                </ul>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl bg-white text-black font-bold text-[13px] hover:bg-gray-200 transition-all text-center">{{ T "pricing_cta_contact" }}</a>
+            </div>
+        </div>
+        
+        <p class="text-center mt-12 md:mt-16 text-xs md:text-sm text-on-surface-variant opacity-60 font-medium">
+            {{ T "pricing_disclaimer" }}
         </p>
     </div>
-
-    <div class="pricing-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 md:gap-gutter items-stretch max-w-[1400px] mx-auto">
-        {{ $langData := index .Site.Data .Language.Lang }}
-        {{ if $langData.pricing }}
-            {{ range $plan := $langData.pricing.plans }}
-            
-            {{ if $plan.highlight }}
-            <!-- Highlighted Plan (Pro) -->
-            <div class="relative group" data-aos="fade-up" data-aos-delay="{{ $plan.delay }}">
-                <div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 bg-[#34d399] text-[#002114] text-[9px] md:text-[10px] font-black px-3 md:px-4 py-1.5 md:py-2 rounded-full z-20 shadow-lg tracking-[0.1em] whitespace-nowrap">
-                    {{ $plan.tag }}
-                </div>
-                <div class="pricing-card shimmer-soft bg-white dark:bg-zinc-900 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border-2 border-[#34d399] flex flex-col h-full shadow-2xl shadow-[#34d399]/20 relative z-10 backdrop-blur-xl">
-                    <h3 class="font-bold text-lg md:text-xl text-on-background dark:text-white mb-1 md:mb-2">{{ $plan.name }}</h3>
-                    <div class="flex items-baseline gap-1 mb-6 md:mb-8">
-                        <span class="text-2xl md:text-[32px] font-black text-on-background dark:text-white">{{ $plan.price }}</span>
-                        <span class="text-[11px] md:text-[12px] text-on-surface-variant/60 font-medium lowercase">{{ T "currency_per_month" }}</span>
-                    </div>
-                    <ul class="space-y-3 md:space-y-4 mb-8 md:mb-10 flex-grow">
-                        {{ range $plan.features }}
-                        <li class="flex items-start gap-3 text-xs md:text-sm text-on-surface-variant dark:text-white/70">
-                            <span class="material-symbols-outlined text-[#34d399] text-[18px] md:text-[20px]">check_circle</span>
-                            {{ . }}
-                        </li>
-                        {{ end }}
-                    </ul>
-                    <a href="#book-a-demo" class="w-full py-3.5 md:py-4 bg-[#34d399] text-[#002114] rounded-xl font-bold text-sm text-center hover:shadow-lg transition-all">
-                        {{ T $plan.cta }}
-                    </a>
-                </div>
-            </div>
-            {{ else if $plan.dark }}
-            <!-- Dark Plan (Enterprise) -->
-            <div class="pricing-card shimmer-soft bg-zinc-950 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] border border-white/10 flex flex-col shadow-2xl transition-all duration-500" data-aos="fade-up" data-aos-delay="{{ $plan.delay }}">
-                <h3 class="font-bold text-lg md:text-xl text-[#34d399] mb-1 md:mb-2">{{ $plan.name }}</h3>
-                <div class="flex items-baseline gap-1 mb-6 md:mb-8">
-                    <span class="text-2xl md:text-[28px] font-black text-white leading-tight">{{ $plan.price }}</span>
-                </div>
-                <ul class="space-y-3 md:space-y-4 mb-8 md:mb-10 flex-grow">
-                    {{ range $plan.features }}
-                    <li class="flex items-start gap-3 text-xs md:text-sm text-white/70">
-                        <span class="material-symbols-outlined text-[#34d399] text-[18px] md:text-[20px]">check_circle</span>
-                        {{ . }}
-                    </li>
-                    {{ end }}
-                </ul>
-                <a href="#book-a-demo" class="w-full py-3.5 md:py-4 bg-[#34d399] text-[#002114] rounded-xl font-bold text-sm text-center hover:shadow-lg transition-all">
-                    {{ T $plan.cta }}
-                </a>
-            </div>
-            {{ else }}
-            <!-- Regular Plans (Starter, Standard, Class) -->
-            <div class="pricing-card glass shimmer-soft p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] flex flex-col transition-all duration-500" data-aos="fade-up" data-aos-delay="{{ $plan.delay }}">
-                <h3 class="font-bold text-lg md:text-xl text-on-background dark:text-white mb-1 md:mb-2">{{ $plan.name }}</h3>
-                <div class="flex items-baseline gap-1 mb-6 md:mb-8">
-                    <span class="text-2xl md:text-[32px] font-black text-on-background dark:text-white">{{ $plan.price }}</span>
-                    <span class="text-[11px] md:text-[12px] text-on-surface-variant/60 font-medium lowercase">{{ T "currency_per_month" }}</span>
-                </div>
-                <ul class="space-y-3 md:space-y-4 mb-8 md:mb-10 flex-grow">
-                    {{ range $plan.features }}
-                    <li class="flex items-start gap-3 text-xs md:text-sm text-on-surface-variant dark:text-white/70">
-                        <span class="material-symbols-outlined text-[#34d399] text-[18px] md:text-[20px]">check_circle</span>
-                        {{ . }}
-                    </li>
-                    {{ end }}
-                </ul>
-                <a href="#book-a-demo" class="w-full py-3.5 md:py-4 border-2 border-on-background dark:border-white rounded-xl font-bold text-sm text-center hover:bg-on-background hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
-                    {{ T $plan.cta }}
-                </a>
-            </div>
-            {{ end }}
-
-            {{ end }}
-        {{ else }}
-            <p class="text-center text-on-surface-variant dark:text-white/40">No pricing data found for {{ .Language.Lang }}.</p>
-        {{ end }}
-    </div>
-    <p class="text-center mt-12 text-[10px] md:text-[11px] uppercase tracking-[0.1em] text-on-surface-variant/60 dark:text-white/60 font-bold" data-aos="fade-up">
-        {{ T "pricing_disclaimer" }}
-    </p>
 </section>
+
+<!-- Desktop Only Tilt Initialization Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function initPricingTilt() {
+        if (window.innerWidth > 1024 && typeof VanillaTilt !== 'undefined') {
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach(card => {
+                VanillaTilt.init(card, {
+                    max: 8,
+                    speed: 400,
+                    glare: true,
+                    "max-glare": 0.15,
+                });
+            });
+        }
+    }
+    initPricingTilt();
+});
+</script>
