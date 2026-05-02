@@ -389,7 +389,7 @@ other = "Accept All"
 other = "Reject All"
 
 [onboarding_architect_msg]
-other = "An onboarding architect will reach out to you within 24 hours to schedule your custom walkthrough."
+other = "We will contact you shortly."
 
 [faq_footer_text]
 other = "Still have questions?"
@@ -445,3 +445,8 @@ other = "Select Region"
 
 [cancel]
 other = "Cancel"
+[footer_location]
+other = "Coacalco, State of Mexico, Mexico"
+
+[contact_email]
+other = "hola@vilkor.xyz"

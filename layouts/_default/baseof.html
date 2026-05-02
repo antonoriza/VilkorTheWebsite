@@ -182,29 +182,32 @@
 {{ partial "footer.html" . }}
 
     <script>
-        // Dark Mode Logic
-        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        // Theme Initial State
         const htmlElement = document.documentElement;
-
-        // Check for saved preference
         if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             htmlElement.classList.add('dark');
         }
 
-        darkModeToggle.addEventListener('click', () => {
-            htmlElement.classList.toggle('dark');
-            if (htmlElement.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        });
+        // Consolidated Dark Mode Logic
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                htmlElement.classList.toggle('dark');
+                localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+            });
+        }
 
-        AOS.init({
-            duration: 1000,
-            once: true,
-            easing: 'ease-out-quart'
-        });
+        // AOS Initialization
+        try {
+            AOS.init({
+                duration: 1000,
+                once: true,
+                easing: 'ease-out-quart',
+                offset: 100
+            });
+        } catch (e) {
+            console.warn("AOS failed to initialize:", e);
+        }
 
         // 3D Tilt Effect
         const cards = document.querySelectorAll('.pricing-card');

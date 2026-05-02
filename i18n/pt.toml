@@ -413,7 +413,7 @@ other = "Aceitar tudo"
 other = "Recusar tudo"
 
 [onboarding_architect_msg]
-other = "Um arquiteto de implantação entrará em contato com você em até 24 horas para agendar sua demonstração personalizada."
+other = "Entraremos em contato com você em breve."
 
 [faq_footer_text]
 other = "Ainda tem dúvidas?"
@@ -469,3 +469,8 @@ other = "Seleccionar Região"
 
 [cancel]
 other = "Cancelar"
+[footer_location]
+other = "Coacalco, Estado de México, México"
+
+[contact_email]
+other = "hola@vilkor.xyz"

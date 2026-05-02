@@ -459,7 +459,7 @@ other = "Aceptar todo"
 other = "Rechazar todo"
 
 [onboarding_architect_msg]
-other = "Un arquitecto de incorporación se pondrá en contacto con usted en un plazo de 24 horas para programar su recorrido personalizado."
+other = "Nos pondremos en contacto contigo a la brevedad."
 
 [first_name_placeholder]
 other = "Santiago"
@@ -497,6 +497,15 @@ other = "Plataforma"
 
 [footer_legal]
 other = "Legal"
+
+[footer_location]
+other = "Coacalco, Estado de México, México"
+
+[contact_email]
+other = "hola@vilkor.xyz"
+
+[contact_label]
+other = "Contacto"
 
 [footer_privacy]
 other = "Privacidad"

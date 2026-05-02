@@ -1,21 +1,21 @@
-<div id="cookie-banner" class="fixed bottom-8 left-8 w-[calc(100%-4rem)] md:max-w-md z-[100] transform -translate-x-[150%] transition-transform duration-700 ease-out">
-    <div class="glass dark:bg-zinc-900/90 p-6 rounded-[2rem] border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-2xl">
-        <div class="flex items-start gap-4 mb-4">
-            <div class="w-10 h-10 rounded-full bg-[#34d399]/10 flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-[#34d399] text-[20px]">cookie</span>
+<div id="cookie-banner" class="fixed bottom-4 left-4 md:bottom-8 md:left-8 w-[calc(100%-2rem)] md:max-w-md z-[100] transform -translate-x-[150%] transition-transform duration-700 ease-out">
+    <div class="glass dark:bg-zinc-900/90 p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-2xl">
+        <div class="flex items-start gap-3 md:gap-4 mb-4">
+            <div class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-[#34d399]/10 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-[#34d399] text-[18px] md:text-[20px]">cookie</span>
             </div>
             <div>
-                <h4 class="font-bold text-on-background dark:text-white text-sm mb-1">{{ T "cookie_title" }}</h4>
-                <p class="text-xs text-on-surface-variant dark:text-white/60 leading-relaxed">
+                <h4 class="font-bold text-on-background dark:text-white text-[13px] md:text-sm mb-0.5 md:mb-1">{{ T "cookie_title" }}</h4>
+                <p class="text-[11px] md:text-xs text-on-surface-variant dark:text-white/60 leading-relaxed">
                     {{ T "cookie_text" }}
                 </p>
             </div>
         </div>
         <div class="flex items-center gap-3">
-            <button onclick="setCookieConsent('accepted')" class="flex-grow py-3 bg-[#34d399] text-[#002114] rounded-xl font-bold text-[12px] hover:shadow-lg hover:shadow-[#34d399]/20 transition-all">
+            <button onclick="setCookieConsent('accepted')" class="flex-grow py-2.5 md:py-3 bg-[#34d399] text-[#002114] rounded-xl font-bold text-[11px] md:text-[12px] hover:shadow-lg hover:shadow-[#34d399]/20 transition-all">
                 {{ T "cookie_accept" }}
             </button>
-            <button onclick="setCookieConsent('declined')" class="px-6 py-3 border border-on-background/10 dark:border-white/10 text-on-surface-variant dark:text-white/60 rounded-xl font-bold text-[12px] hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+            <button onclick="setCookieConsent('declined')" class="px-4 md:px-6 py-2.5 md:py-3 border border-on-background/10 dark:border-white/10 text-on-surface-variant dark:text-white/60 rounded-xl font-bold text-[11px] md:text-[12px] hover:bg-black/5 dark:hover:bg-white/5 transition-all">
                 {{ T "cookie_decline" }}
             </button>
         </div>
@@ -25,11 +25,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const banner = document.getElementById('cookie-banner');
-        // Check if user has already made a choice
         const consent = localStorage.getItem('vilkor-cookie-consent');
-        
         if (!consent) {
-            // Show banner after 2 seconds
             setTimeout(() => {
                 banner.classList.remove('-translate-x-[150%]');
             }, 2000);
@@ -38,33 +35,10 @@
 
     function setCookieConsent(status) {
         const banner = document.getElementById('cookie-banner');
-        
-        // Save the specific choice
         localStorage.setItem('vilkor-cookie-consent', status);
-        
-        console.log(`Cookie consent set to: ${status}`);
-        
-        // If we had Google Analytics or Stripe, here we would enable/disable them
-        if (status === 'accepted') {
-            enableTracking();
-        } else {
-            disableTracking();
-        }
-
-        // Hide banner
         banner.classList.add('-translate-x-[150%]');
         setTimeout(() => {
             banner.remove();
         }, 1000);
-    }
-
-    function enableTracking() {
-        // Placeholder for future analytics integration
-        console.log("Tracking enabled.");
-    }
-
-    function disableTracking() {
-        // Placeholder to ensure privacy if rejected
-        console.log("Tracking disabled.");
     }
 </script>

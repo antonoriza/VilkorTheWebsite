@@ -1,102 +1,137 @@
-<nav class="glass fixed top-0 w-full z-50 border-b border-white/20 dark:border-white/10 dark:bg-black/60 transition-all duration-300">
-    <div class="flex justify-between items-center h-20 px-8 max-w-[1440px] mx-auto">
-        <div class="font-h3 text-h3 text-on-background dark:text-white tracking-tighter">
-            <a href="{{ site.Home.RelPermalink }}">Vilkor</a>
-        </div>
+<nav id="main-nav" class="fixed top-0 left-0 w-full z-[100] transition-all duration-500 border-b border-transparent">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12 py-6 flex justify-between items-center relative">
         
-        <div class="hidden lg:flex items-center space-x-gutter">
-            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#solutions">{{ T "nav_solutions" }}</a>
-            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#features">{{ T "nav_features" }}</a>
-            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#why-vilkor">{{ T "nav_why" }}</a>
-            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#pricing">{{ T "nav_pricing" }}</a>
-            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#faq">{{ T "nav_faq" }}</a>
+        <!-- Logo -->
+        <a href="{{ site.Home.RelPermalink }}" class="relative group z-[110]">
+            <span class="font-h3 text-[24px] font-black text-on-background dark:text-white uppercase tracking-tighter">
+                Vilkor
+            </span>
+            <div class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#34d399] transition-all duration-300 group-hover:w-full"></div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <div class="hidden lg:flex items-center gap-10">
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#solutions">{{ T "nav_solutions" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#features">{{ T "nav_features" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#why-vilkor">{{ T "nav_why" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#pricing">{{ T "nav_pricing" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#faq">{{ T "nav_faq" }}</a>
         </div>
 
-        <div class="flex items-center space-x-md">
-            <!-- Desktop: Segmented Pill Switcher -->
-            <div class="hidden md:flex items-center bg-black/5 dark:bg-white/5 p-1 rounded-full border border-white/20 glass">
+        <!-- Desktop Actions & Settings -->
+        <div class="flex items-center gap-4 md:gap-6 z-[110]">
+            <!-- Language Switcher (Desktop) -->
+            <div class="hidden sm:block relative group">
+                <button class="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-on-surface-variant dark:text-white/50 hover:text-[#34d399] transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">language</span>
+                    {{ .Language.LanguageName }}
+                </button>
+                <div class="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                    <div class="glass border border-white/20 p-2 rounded-xl shadow-xl min-w-[140px]">
+                        {{ range .AllTranslations }}
+                        <a href="{{ .RelPermalink }}" class="block px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant dark:text-white/70 hover:bg-[#34d399]/10 hover:text-[#34d399] rounded-lg transition-all">
+                            {{ .Language.LanguageName }}
+                        </a>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Toggle -->
+            <button id="dark-mode-toggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high dark:bg-white/5 text-on-surface-variant dark:text-white/70 hover:bg-[#34d399]/10 hover:text-[#34d399] transition-all" aria-label="Toggle dark mode">
+                <span class="material-symbols-outlined text-[20px] dark:hidden">dark_mode</span>
+                <span class="material-symbols-outlined text-[20px] hidden dark:block">light_mode</span>
+            </button>
+
+            <!-- CTA -->
+            <a href="#book-a-demo" class="hidden sm:flex px-6 py-3 bg-on-background dark:bg-white text-background dark:text-black text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-[#34d399] hover:text-black transition-all shadow-lg shadow-black/5">
+                {{ T "nav_contact" }}
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-toggle" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high dark:bg-white/5 text-on-surface-variant dark:text-white/70">
+                <span id="menu-icon" class="material-symbols-outlined">menu</span>
+                <span id="close-icon" class="material-symbols-outlined hidden">close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="lg:hidden fixed inset-0 bg-white dark:bg-zinc-950 z-[105] flex flex-col pt-32 px-8 transition-transform duration-500 translate-x-full">
+        <div class="flex flex-col gap-6 items-center text-center">
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#solutions">{{ T "nav_solutions" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#features">{{ T "nav_features" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#why-vilkor">{{ T "nav_why" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#pricing">{{ T "nav_pricing" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#faq">{{ T "nav_faq" }}</a>
+            
+            <div class="h-[1px] w-full bg-on-background/10 dark:bg-white/10 my-4"></div>
+            
+            <!-- Language Switcher (Mobile) -->
+            <div class="flex flex-wrap justify-center gap-4">
                 {{ range .AllTranslations }}
-                <a href="{{ .RelPermalink }}" 
-                   class="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all {{ if eq $.Language.Lang .Language.Lang }}bg-[#34d399] text-[#002114] shadow-lg shadow-[#34d399]/20{{ else }}text-on-surface-variant dark:text-gray-400 hover:text-on-background dark:hover:text-white{{ end }}">
-                    {{ .Language.Lang }}
+                <a href="{{ .RelPermalink }}" class="text-sm font-bold uppercase tracking-widest {{ if eq $.Language.Lang .Language.Lang }}text-[#34d399]{{ else }}text-on-surface-variant/50{{ end }}">
+                    {{ .Language.LanguageName }}
                 </a>
-                {{ end }}
-                <!-- Fallback if no translations -->
-                {{ if not .AllTranslations }}
-                <span class="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest bg-primary text-white">
-                    {{ .Language.Lang }}
-                </span>
                 {{ end }}
             </div>
 
-            <!-- Mobile: Globe Icon (Triggers Bottom Sheet) -->
-            <button onclick="toggleLangSheet()" class="md:hidden flex items-center p-2 text-on-surface-variant dark:text-gray-300">
-                <span class="material-symbols-outlined text-[24px]">language</span>
-                <span class="ml-1 font-label-sm uppercase">{{ .Language.Lang }}</span>
-            </button>
-
-            <!-- Dark Mode Toggle -->
-            <button id="dark-mode-toggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-all text-on-background dark:text-white">
-                <span class="material-symbols-outlined dark:hidden">dark_mode</span>
-                <span class="material-symbols-outlined hidden dark:block">light_mode</span>
-            </button>
-
-            <div class="hidden md:flex items-center ml-2">
-                <a class="bg-[#34d399] text-[#002114] font-bold font-label-sm text-label-sm px-6 py-4 rounded-full hover:shadow-lg transition-all flex items-center justify-center border border-[#34d399]/20" href="#book-a-demo">
-                    {{ T "book_demo" }}
-                </a>
-            </div>
+            <a href="#book-a-demo" class="mt-8 w-full py-5 bg-[#34d399] text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
+                {{ T "nav_contact" }}
+            </a>
         </div>
     </div>
 </nav>
 
-<!-- Mobile Language Bottom Sheet -->
-<div id="lang-sheet-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300" onclick="toggleLangSheet()"></div>
-<div id="lang-sheet" class="fixed bottom-0 left-0 right-0 glass dark:bg-zinc-900 z-[70] rounded-t-[2.5rem] p-8 border-t border-white/20 transform translate-y-full transition-transform duration-500 ease-out md:hidden">
-    <div class="w-12 h-1.5 bg-on-background/10 dark:bg-white/10 rounded-full mx-auto mb-8"></div>
-    <h3 class="font-h3 text-h3 text-on-background dark:text-white mb-6 text-center">{{ T "select_region" }}</h3>
-    <div class="space-y-4">
-        {{ range .AllTranslations }}
-        <a href="{{ .RelPermalink }}" class="flex items-center justify-between p-5 rounded-2xl {{ if eq $.Language.Lang .Language.Lang }}bg-[#34d399]/10 border border-[#34d399]/30{{ else }}bg-black/5 dark:bg-white/5 border border-transparent{{ end }} transition-all">
-            <div class="flex items-center gap-4">
-                <span class="font-bold text-lg dark:text-white uppercase tracking-widest">{{ .Language.Lang }} - {{ .Language.LanguageName }}</span>
-            </div>
-            {{ if eq $.Language.Lang .Language.Lang }}
-            <span class="material-symbols-outlined text-[#34d399]">check_circle</span>
-            {{ end }}
-        </a>
-        {{ end }}
-        <!-- Fallback current -->
-        {{ if not .AllTranslations }}
-        <div class="flex items-center justify-between p-5 rounded-2xl bg-primary/10 border border-primary/30">
-            <span class="font-bold text-lg dark:text-white uppercase tracking-widest">{{ .Language.Lang }} - {{ .Language.LanguageName }}</span>
-            <span class="material-symbols-outlined text-primary">check_circle</span>
-        </div>
-        {{ end }}
-    </div>
-    <button onclick="toggleLangSheet()" class="w-full mt-8 py-4 font-bold text-on-surface-variant dark:text-gray-400">{{ T "cancel" }}</button>
-</div>
-
 <script>
-function toggleLangSheet() {
-    const sheet = document.getElementById('lang-sheet');
-    const overlay = document.getElementById('lang-sheet-overlay');
-    const isHidden = sheet.classList.contains('translate-y-full');
-    
-    if (isHidden) {
-        overlay.classList.remove('hidden');
-        setTimeout(() => {
-            overlay.classList.remove('opacity-0');
-            sheet.classList.remove('translate-y-full');
-        }, 10);
-        document.body.style.overflow = 'hidden';
-    } else {
-        overlay.classList.add('opacity-0');
-        sheet.classList.add('translate-y-full');
-        setTimeout(() => {
-            overlay.classList.add('hidden');
-        }, 300);
-        document.body.style.overflow = '';
-    }
-}
+    document.addEventListener('DOMContentLoaded', () => {
+        const nav = document.getElementById('main-nav');
+        const menuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+        const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('glass-nav', 'py-4');
+                nav.classList.remove('py-6');
+            } else {
+                nav.classList.remove('glass-nav', 'py-4');
+                nav.classList.add('py-6');
+            }
+        });
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                const isOpen = !mobileMenu.classList.contains('translate-x-full');
+                if (isOpen) {
+                    mobileMenu.classList.add('translate-x-full');
+                    menuIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                    document.body.style.overflow = '';
+                } else {
+                    mobileMenu.classList.remove('translate-x-full');
+                    menuIcon.classList.add('hidden');
+                    closeIcon.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        }
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('translate-x-full');
+                menuIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+        });
+    });
 </script>
+
+<style>
+    .glass-nav {
+        @apply bg-white/80 dark:bg-black/80 backdrop-blur-xl border-on-background/5 dark:border-white/5;
+    }
+</style>
