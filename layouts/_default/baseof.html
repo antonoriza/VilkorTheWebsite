@@ -182,10 +182,15 @@
 {{ partial "footer.html" . }}
 
     <script>
-        // Theme Initial State
+        // Theme Initial State: Forced Light by default unless 'dark' is explicitly saved
         const htmlElement = document.documentElement;
-        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        const savedTheme = localStorage.getItem('theme');
+        
+        if (savedTheme === 'dark') {
             htmlElement.classList.add('dark');
+        } else {
+            // Default is Light (even if system prefers dark)
+            htmlElement.classList.remove('dark');
         }
 
         // Consolidated Dark Mode Logic
