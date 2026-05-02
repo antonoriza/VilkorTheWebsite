@@ -12,6 +12,10 @@ defaultContentLanguage = 'es'
     [markup.goldmark.renderer]
       unsafe = true
 
+[security]
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$', 'STATICFORMS_API_KEY']
+
 [languages]
   [languages.en]
     languageName = "English"
