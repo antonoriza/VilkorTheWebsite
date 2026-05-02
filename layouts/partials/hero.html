@@ -1,0 +1,45 @@
+<!-- 1) Hero Section: Architectural Precision -->
+<section class="max-w-container-max mx-auto px-gutter grid grid-cols-1 lg:grid-cols-12 gap-xl items-center py-20" data-aos="fade">
+    <div class="lg:col-span-7">
+        <div class="mb-8"></div>
+        <h1 class="font-h1 font-bold text-h1 text-on-background dark:text-white mb-8 leading-[1.05] tracking-[-0.04em]">
+            {{ T "future_property_management" }}
+        </h1>
+        <p class="font-body-lg text-[20px] text-on-surface-variant dark:text-white/60 mb-12 max-w-2xl leading-relaxed">
+            {{ T "hero_description" | safeHTML }}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-5 mb-12">
+            <a href="#book-a-demo" class="bg-[#34d399] text-[#002114] font-bold px-10 py-5 rounded-full hover:shadow-[0_0_40px_rgba(52,211,153,0.3)] transition-all duration-500 flex items-center justify-center group">
+                {{ T "book_demo" }}
+                <span class="material-symbols-outlined ml-2 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+            <a href="#features" class="glass text-on-background dark:text-white font-label-sm text-label-sm px-10 py-5 rounded-full hover:bg-white/10 hover:border-[#eab308]/50 transition-all duration-500 flex items-center justify-center border border-on-background/10 dark:border-white/10 group">
+                {{ T "explore_platform" }}
+                <div class="w-1.5 h-1.5 bg-[#eab308] rounded-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-12 py-10 border-t border-on-background/10 dark:border-white/10 opacity-95">
+            <div class="flex flex-col gap-1.5">
+                <span class="font-bold text-[20px] lg:text-[22px] text-on-background dark:text-white uppercase tracking-tight leading-none whitespace-nowrap">{{ T "scale_potential_value" }}</span>
+                <span class="text-[9px] uppercase tracking-[0.25em] text-on-surface-variant font-bold leading-tight">{{ T "scale_potential_label" }}</span>
+            </div>
+            <div class="flex flex-col gap-1.5 sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-6 md:pl-10">
+                <span class="font-bold text-[20px] lg:text-[22px] text-on-background dark:text-white uppercase tracking-tight leading-none whitespace-nowrap">{{ T "institutional_rigor_value" }}</span>
+                <span class="text-[9px] uppercase tracking-[0.25em] text-on-surface-variant font-bold leading-tight">{{ T "institutional_rigor_label" }}</span>
+            </div>
+            <div class="flex flex-col gap-1.5 sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-6 md:pl-10">
+                <span class="font-bold text-[20px] lg:text-[22px] text-on-background dark:text-white uppercase tracking-tight leading-none whitespace-nowrap">{{ T "tech_stack_value" }}</span>
+                <span class="text-[9px] uppercase tracking-[0.25em] text-on-surface-variant font-bold leading-tight">{{ T "tech_stack_label" }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="lg:col-span-5 relative" data-aos="fade-left" data-aos-delay="200">
+        <div class="relative">
+            <div class="absolute -inset-4 bg-primary-container/10 blur-3xl rounded-full opacity-50"></div>
+            <div class="glass rounded-[2rem] border border-white/40 dark:border-white/10 overflow-hidden aspect-[4/5] shadow-2xl relative z-10 transform hover:scale-[1.02] transition-transform duration-700">
+                <img alt="{{ T "alt_hero" }}" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuvOzxZ6julUV_plZ0u-hW-JCi28sy3GKQxGDtYirQAlgD_EqTrRzKvsXcle_P04ZArXftsqKTvma0jZLsK8X6YFS926lnbMPIVDr_C6A3X_QKEnEr1ZdW82fiPW23D5k45oqra4UmyRwYRTW3Ndhfx3mq4R4dxilBDp-V6eZPAzJtwO3k-n_fh0WsN--QqUycd6ntJ4gqeDA9EgsqMeY902ciXsf2sSOzK-RbAQCaL7YMrF8wGX9_gO3V4AZunyETzQWODTcVj-01" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+            </div>
+        </div>
+    </div>
+</section>

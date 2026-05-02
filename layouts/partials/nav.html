@@ -5,9 +5,11 @@
         </div>
         
         <div class="hidden lg:flex items-center space-x-gutter">
-            {{ range .Site.Menus.main }}
-            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="{{ .URL }}">{{ .Name }}</a>
-            {{ end }}
+            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#solutions">{{ T "nav_solutions" }}</a>
+            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#features">{{ T "nav_features" }}</a>
+            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#why-vilkor">{{ T "nav_why" }}</a>
+            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#pricing">{{ T "nav_pricing" }}</a>
+            <a class="font-body-md text-body-md text-on-surface-variant dark:text-gray-300 hover:text-on-background dark:hover:text-white transition-colors" href="#faq">{{ T "nav_faq" }}</a>
         </div>
 
         <div class="flex items-center space-x-md">
@@ -52,7 +54,7 @@
 <div id="lang-sheet-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300" onclick="toggleLangSheet()"></div>
 <div id="lang-sheet" class="fixed bottom-0 left-0 right-0 glass dark:bg-zinc-900 z-[70] rounded-t-[2.5rem] p-8 border-t border-white/20 transform translate-y-full transition-transform duration-500 ease-out md:hidden">
     <div class="w-12 h-1.5 bg-on-background/10 dark:bg-white/10 rounded-full mx-auto mb-8"></div>
-    <h3 class="font-h3 text-h3 text-on-background dark:text-white mb-6 text-center">Select Region</h3>
+    <h3 class="font-h3 text-h3 text-on-background dark:text-white mb-6 text-center">{{ T "select_region" }}</h3>
     <div class="space-y-4">
         {{ range .AllTranslations }}
         <a href="{{ .RelPermalink }}" class="flex items-center justify-between p-5 rounded-2xl {{ if eq $.Language.Lang .Language.Lang }}bg-[#34d399]/10 border border-[#34d399]/30{{ else }}bg-black/5 dark:bg-white/5 border border-transparent{{ end }} transition-all">
@@ -72,7 +74,7 @@
         </div>
         {{ end }}
     </div>
-    <button onclick="toggleLangSheet()" class="w-full mt-8 py-4 font-bold text-on-surface-variant dark:text-gray-400">Cancel</button>
+    <button onclick="toggleLangSheet()" class="w-full mt-8 py-4 font-bold text-on-surface-variant dark:text-gray-400">{{ T "cancel" }}</button>
 </div>
 
 <script>

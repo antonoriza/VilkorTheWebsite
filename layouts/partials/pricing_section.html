@@ -1,0 +1,121 @@
+<!-- 6) Pricing Section -->
+<section id="pricing" class="py-24 px-8 bg-[#fdfdfb] dark:bg-zinc-950 relative overflow-hidden">
+    <!-- Decorative Glow -->
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-[#34d399]/5 blur-[120px] rounded-full pointer-events-none"></div>
+    
+    <div class="relative z-10 text-center mb-20" data-aos="fade-up">
+        <h2 class="font-h1 font-bold text-[56px] text-on-background dark:text-white mb-6 tracking-tighter">{{ T "pricing_title" }}</h2>
+        <p class="font-body-lg text-on-surface-variant dark:text-white/60 max-w-3xl mx-auto leading-relaxed">
+            {{ T "pricing_subtitle" }}
+        </p>
+    </div>
+
+    <div class="pricing-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 items-stretch max-w-[1400px] mx-auto">
+        <!-- 1. Starter -->
+        <div class="pricing-card glass shimmer-soft p-8 rounded-[2rem] flex flex-col transition-all duration-500" data-aos="fade-up" data-aos-delay="100">
+            <h3 class="font-bold text-xl text-on-background dark:text-white mb-2">{{ T "plan_starter_name" }}</h3>
+            <div class="flex items-baseline gap-1 mb-8">
+                <span class="text-[32px] font-black text-on-background dark:text-white">{{ T "plan_starter_price" }}</span>
+                <span class="text-[12px] text-on-surface-variant/60 font-medium lowercase">{{ T "currency_per_month" }}</span>
+            </div>
+            <ul class="space-y-4 mb-10 flex-grow">
+                {{ range split (T "plan_starter_features") "," }}
+                <li class="flex items-start gap-3 text-sm text-on-surface-variant dark:text-white/70">
+                    <span class="material-symbols-outlined text-[#34d399] text-[20px]">check_circle</span>
+                    {{ . }}
+                </li>
+                {{ end }}
+            </ul>
+            <a href="#book-a-demo" class="w-full py-4 border-2 border-black dark:border-white rounded-xl font-bold text-sm text-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                {{ T "pricing_cta_trial" }}
+            </a>
+        </div>
+
+        <!-- 2. Standard -->
+        <div class="pricing-card glass shimmer-soft p-8 rounded-[2rem] flex flex-col transition-all duration-500" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="font-bold text-xl text-on-background dark:text-white mb-2">{{ T "plan_standard_name" }}</h3>
+            <div class="flex items-baseline gap-1 mb-8">
+                <span class="text-[32px] font-black text-on-background dark:text-white">{{ T "plan_standard_price" }}</span>
+                <span class="text-[12px] text-on-surface-variant/60 font-medium lowercase">{{ T "currency_per_month" }}</span>
+            </div>
+            <ul class="space-y-4 mb-10 flex-grow">
+                {{ range split (T "plan_standard_features") "," }}
+                <li class="flex items-start gap-3 text-sm text-on-surface-variant dark:text-white/70">
+                    <span class="material-symbols-outlined text-[#34d399] text-[20px]">check_circle</span>
+                    {{ . }}
+                </li>
+                {{ end }}
+            </ul>
+            <a href="#book-a-demo" class="w-full py-4 border-2 border-black dark:border-white rounded-xl font-bold text-sm text-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                {{ T "pricing_cta_trial" }}
+            </a>
+        </div>
+
+        <!-- 3. Pro (Highlighted) -->
+        <div class="relative group" data-aos="fade-up" data-aos-delay="300">
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#34d399] text-[#002114] text-[10px] font-black px-4 py-2 rounded-full z-20 shadow-lg tracking-[0.1em]">
+                {{ T "plan_pro_tag" }}
+            </div>
+            <div class="pricing-card shimmer-soft bg-white dark:bg-zinc-900 p-8 rounded-[2rem] border-2 border-[#34d399] flex flex-col h-full shadow-2xl shadow-[#34d399]/20 relative z-10 backdrop-blur-xl">
+                <h3 class="font-bold text-xl text-on-background dark:text-white mb-2">{{ T "plan_pro_name" }}</h3>
+                <div class="flex items-baseline gap-1 mb-8">
+                    <span class="text-[32px] font-black text-on-background dark:text-white">{{ T "plan_pro_price" }}</span>
+                    <span class="text-[12px] text-on-surface-variant/60 font-medium lowercase">{{ T "currency_per_month" }}</span>
+                </div>
+                <ul class="space-y-4 mb-10 flex-grow">
+                    {{ range split (T "plan_pro_features") "," }}
+                    <li class="flex items-start gap-3 text-sm text-on-surface-variant dark:text-white/70">
+                        <span class="material-symbols-outlined text-[#34d399] text-[20px]">check_circle</span>
+                        {{ . }}
+                    </li>
+                    {{ end }}
+                </ul>
+                <a href="#book-a-demo" class="w-full py-4 bg-[#34d399] text-[#002114] rounded-xl font-bold text-sm text-center hover:shadow-lg transition-all">
+                    {{ T "pricing_cta_trial" }}
+                </a>
+            </div>
+        </div>
+
+        <!-- 4. Class -->
+        <div class="pricing-card glass shimmer-soft p-8 rounded-[2rem] flex flex-col transition-all duration-500" data-aos="fade-up" data-aos-delay="350">
+            <h3 class="font-bold text-xl text-on-background dark:text-white mb-2">{{ T "plan_class_name" }}</h3>
+            <div class="flex items-baseline gap-1 mb-8">
+                <span class="text-[32px] font-black text-on-background dark:text-white">{{ T "plan_class_price" }}</span>
+                <span class="text-[12px] text-on-surface-variant/60 font-medium lowercase">{{ T "currency_per_month" }}</span>
+            </div>
+            <ul class="space-y-4 mb-10 flex-grow">
+                {{ range split (T "plan_class_features") "," }}
+                <li class="flex items-start gap-3 text-sm text-on-surface-variant dark:text-white/70">
+                    <span class="material-symbols-outlined text-[#34d399] text-[20px]">check_circle</span>
+                    {{ . }}
+                </li>
+                {{ end }}
+            </ul>
+            <a href="#book-a-demo" class="w-full py-4 border-2 border-black dark:border-white rounded-xl font-bold text-sm text-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                {{ T "pricing_cta_trial" }}
+            </a>
+        </div>
+
+        <!-- 5. Enterprise -->
+        <div class="pricing-card shimmer-soft bg-zinc-950 p-8 rounded-[2rem] border border-white/10 flex flex-col shadow-2xl transition-all duration-500" data-aos="fade-up" data-aos-delay="400">
+            <h3 class="font-bold text-xl text-[#34d399] mb-2">{{ T "plan_enterprise_name" }}</h3>
+            <div class="flex items-baseline gap-1 mb-8">
+                <span class="text-[28px] font-black text-white leading-tight">{{ T "plan_enterprise_price" }}</span>
+            </div>
+            <ul class="space-y-4 mb-10 flex-grow">
+                {{ range split (T "plan_enterprise_features") "," }}
+                <li class="flex items-start gap-3 text-sm text-white/70">
+                    <span class="material-symbols-outlined text-[#34d399] text-[20px]">check_circle</span>
+                    {{ . }}
+                </li>
+                {{ end }}
+            </ul>
+            <a href="#book-a-demo" class="w-full py-4 bg-[#34d399] text-[#002114] rounded-xl font-bold text-sm text-center hover:shadow-lg transition-all">
+                {{ T "pricing_cta_contact" }}
+            </a>
+        </div>
+    </div>
+    <p class="text-center mt-12 text-[11px] uppercase tracking-[0.1em] text-on-surface-variant/60 dark:text-white/60 font-bold" data-aos="fade-up">
+        {{ T "pricing_disclaimer" }}
+    </p>
+</section>

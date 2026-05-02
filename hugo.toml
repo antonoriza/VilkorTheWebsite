@@ -1,10 +1,8 @@
-baseURL = 'https://vilkor.com/'
+baseURL = 'https://vilkor.xyz/'
 languageCode = 'en-us'
-title = 'Vilkor | Enterprise Property Management'
 defaultContentLanguage = 'en'
 
 [params]
-  description = "Institutional-grade property management platform for high-scale operations."
   author = "Vilkor Enterprise"
 
 [markup]
@@ -15,16 +13,27 @@ defaultContentLanguage = 'en'
 [languages]
   [languages.en]
     languageName = "English"
+    title = "Vilkor | Enterprise Property Management"
     weight = 1
     contentDir = "content/en"
+    [languages.en.params]
+      description = "Institutional-grade property management platform for high-scale operations."
+
   [languages.es]
     languageName = "Español"
+    title = "Vilkor | Gestión de Propiedades Empresarial"
     weight = 2
     contentDir = "content/es"
+    [languages.es.params]
+      description = "Plataforma de gestión de propiedades de grado institucional para operaciones a gran escala."
+
   [languages.pt]
     languageName = "Português"
+    title = "Vilkor | Gestão de Propriedades Empresarial"
     weight = 3
     contentDir = "content/pt"
+    [languages.pt.params]
+      description = "Plataforma de gestão de propriedades de nível institucional para operações de larga escala."
 
 [menu]
   [[menu.main]]

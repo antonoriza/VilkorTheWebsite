@@ -1,11 +1,65 @@
 [hero_title]
-other = "Uma plataforma, controle total."
+other = "Lidere sua Operação com Transparência e Controle Total"
 
 [hero_subtitle]
-other = "Aproveite o poder da automação impulsionada por IA para reduzir custos e eliminar a fadiga do painel. Suas operações, unificadas."
+other = "Deixe para trás processos ambíguos e lentos. Evolua para a plataforma projetada para automatizar a gestão de empreendimentos verticais e horizontais, proporcionando certeza operacional e administrativa."
+
+[pricing_title]
+other = "Planos de Preços"
+
+[pricing_subtitle]
+other = "Soluções escaláveis projetadas para a eficiência operacional de qualquer empreendimento imobiliário, de pequenas comunidades a grandes complexos residenciais."
+
+[plan_starter_name]
+other = "Starter"
+[plan_starter_price]
+other = "R$ 189"
+[plan_starter_features]
+other = "Até 30 unidades,1 Administrador,Residentes ilimitados,Suporte por e-mail"
+
+[plan_standard_name]
+other = "Standard"
+[plan_standard_price]
+other = "R$ 289"
+[plan_standard_features]
+other = "Até 100 unidades,3 Administradores,Residentes ilimitados,Suporte por e-mail e chat"
+
+[plan_pro_name]
+other = "Pro"
+[plan_pro_price]
+other = "R$ 439"
+[plan_pro_tag]
+other = "MAIS POPULAR"
+[plan_pro_features]
+other = "Até 200 unidades,Administradores ilimitados,Residentes ilimitados,Suporte por e-mail e chat"
+
+[plan_class_name]
+other = "Class"
+[plan_class_price]
+other = "R$ 549"
+[plan_class_features]
+other = "Até 300 unidades,Administradores ilimitados,Residentes ilimitados,Suporte por e-mail e chat"
+
+[plan_enterprise_name]
+other = "Enterprise"
+[plan_enterprise_price]
+other = "Contato"
+[plan_enterprise_features]
+other = "300+ unidades,Administradores ilimitados,Suporte prioritário,SLA Garantido"
+
+[pricing_cta_trial]
+other = "Teste 15 dias sem custo"
+[pricing_cta_contact]
+other = "Fale Conosco"
+
+[currency_per_month]
+other = "brl / mês"
+
+[pricing_disclaimer]
+other = "*Ganhe de 15 a 20% de desconto (equivalente a 2 meses grátis) ao escolher o faturamento anual."
 
 [book_demo]
-other = "Agendar Demo"
+other = "Agendar Demonstração"
 
 [start_operating]
 other = "Começar Agora"
@@ -25,14 +79,420 @@ other = "FAQ"
 [one_platform]
 other = "Uma plataforma, controle total."
 
-[every_tool]
-other = "Todas as ferramentas que você precisa para gerenciar em escala."
-
 [ready_unstoppable]
 other = "Pronto para tornar sua propriedade imparável?"
+
+[request_sent]
+other = "Solicitação Enviada!"
+
+[thanks_interest]
+other = "Obrigado pelo seu interesse"
 
 [request_received]
 other = "Solicitação Recebida"
 
 [thank_you]
 other = "Obrigado"
+
+[future_property_management]
+other = "O futuro da gestão imobiliária. Conectado."
+
+[intelligent_operations]
+other = "Operações Inteligentes"
+
+[intelligent_ops_desc]
+other = "Entendemos os problemas que uma má gestão gera; nós já os vivemos. O Vilkor é uma plataforma na nuvem que busca total certeza e transparência na gestão diária de sua propriedade."
+
+[enterprise_grade]
+other = "Sistema de Nível Empresarial"
+
+[early_access]
+other = "Acesso Antecipado"
+
+[hero_description]
+other = "Centralize operações e automatize fluxos residenciais com o Vilkor.<br class='hidden md:block'> Elimine o caos administrativo e maximize o valor do ativo com un sistema robusto e inteligente."
+
+[explore_platform]
+other = "Explorar Plataforma"
+
+[scale_potential_value]
+other = "Ilimitado"
+
+[scale_potential_label]
+other = "Potencial de Escala"
+
+[institutional_rigor_value]
+other = "Institucional"
+
+[institutional_rigor_label]
+other = "Rigor e Compliance"
+
+[tech_stack_value]
+other = "Nova Geração"
+
+[tech_stack_label]
+other = "Stack Tecnológica"
+
+[ai_automation_chip]
+other = "EFICIÊNCIA PROFISSIONAL"
+
+[ai_automation_title]
+other = "Gestão que Inspira Confiança"
+
+[ai_automation_desc]
+other = "Deixe para trás o caos de relatórios manuais e chamadas constantes. O Vilkor organiza toda a sua gestão em uma ferramenta intuitiva que permite gerenciar sua propriedade com menos esforço, projetando uma imagem de ordem e profissionalismo."
+
+[unmatched_speed_chip]
+other = "BEM-ESTAR RESIDENCIAL"
+
+[unmatched_speed_title]
+other = "Tranquilidade para cada Residente"
+
+[unmatched_speed_desc]
+other = "Um lar moderno é vivido sem complicações. Ofereça aos seus residentes a conveniência de resolver tudo pelo celular: avisos, pagamentos e solicitações de manutenção, garantindo respostas rápidas e convivência sem atritos."
+
+[uptime_label]
+other = "Confiabilidade de Uptime"
+
+[unified_data_title]
+other = "Transparência Administrativa"
+
+[unified_data_desc]
+other = "Unifique demonstrações financeiras, relatórios de gestão e registros de pessoal em uma fonte de verdade centralizada e auditável."
+
+[automated_workflows_title]
+other = "Comunicação Institucional"
+
+[automated_workflows_desc]
+other = "Gerencie avisos críticos, convoque assembleias e coordene eventos com uma infraestrutura de comunicação de alto alcance."
+
+[realtime_analytics_title]
+other = "Controle e Segurança"
+
+[realtime_analytics_desc]
+other = "Monitore o controle de acesso, a logística de encomendas e o fluxo de fornecedores com supervisão operacional em tempo real."
+
+[alt_hero]
+other = "Arquitetura Empresarial Vilkor"
+
+[badge_smart_core]
+other = "NÚCLEO INTELIGENTE DE GESTÃO PATRIMONIAL"
+
+[label_secure_cloud]
+other = "Dados seguros 24/7 na nuvem."
+
+[label_cross_platform]
+other = "Acesse do seu computador, celular ou tablet."
+
+[chip_omnichannel]
+other = "Gestão Unificada"
+
+[chip_total_integrity]
+other = "Integridade Total"
+
+[chip_massive_reach]
+other = "Alcance Massivo"
+
+[chip_active_security]
+other = "Segurança Ativa"
+
+[every_tool]
+other = "Inteligência Operacional em Larga Escala"
+
+[every_tool_subtitle]
+other = "Soluções modulares que transformam complexidade em eficiência, garantindo o valor patrimonial da sua comunidade."
+
+# 1. Gestão de Ativos (Finanças)
+[finances_header]
+other = "Gestão de Ativos"
+[finances_focus]
+other = "Foco: SOLIDEZ"
+
+[smart_collection_title]
+other = "Cobrança Inteligente"
+[smart_collection_empower]
+other = "Garanta seu fluxo de caixa"
+[smart_collection_desc]
+other = "Automatize a cobrança e elimine a inadimplência com fluxos lógicos de acompanhamento e conciliação imediata."
+
+[data_integrity_title]
+other = "Integração Simples"
+[data_integrity_empower]
+other = "Transição sem fricção"
+[data_integrity_desc]
+other = "Migração integral e sem fricções. Trasladamos seus dados históricos para o Vilkor com total integridade e continuidade operacional desde o primeiro dia."
+
+[reserve_optimization_title]
+other = "Otimização de Reservas"
+[reserve_optimization_empower]
+other = "Gerencie fundos com transparência"
+[reserve_optimization_desc]
+other = "Gerencie fundos de reserva e orçamentos com total transparência e uma visão financeira de longo prazo."
+
+[expense_audit_title]
+other = "Auditoria de Despesas"
+[expense_audit_empower]
+other = "Mantenha controle cirúrgico"
+[expense_audit_desc]
+other = "Mantenha um controle cirúrgico sobre cada real que sai da administração com rastreabilidade absoluta."
+
+# 2. Operações e Comunidade
+[operations_header]
+other = "Operações e Comunidade"
+[operations_focus]
+other = "Foco: AGILIDADE"
+
+[property_evolution_title]
+other = "Evolução do Imóvel"
+[property_evolution_empower]
+other = "Aumente o valor do patrimônio"
+[property_evolution_desc]
+other = "Gerencie reparos estruturais e melhorias que aumentam o valor de capital da sua propriedade."
+
+[digital_vault_title]
+other = "Cofre Digital"
+[digital_vault_empower]
+other = "Proteja informações críticas"
+[digital_vault_desc]
+other = "Um repositório centralizado e blindado para contratos, plantas e regulamentos, sempre disponível."
+
+[service_logistics_title]
+other = "Logística de Serviços"
+[service_logistics_empower]
+other = "Centralize a manutenção"
+[service_logistics_desc]
+other = "Centralize solicitações de manutenção em um fluxo de trabalho automatizado que nunca para."
+
+[resolution_channel_title]
+other = "Canal de Resolução"
+[resolution_channel_empower]
+other = "Elimine mal-entendidos"
+[resolution_channel_desc]
+other = "Comunicação oficial e rastreável que elimina ruídos operacionais e acelera acordos."
+
+# 3. Controle e Infraestrutura (Segurança)
+[security_header]
+other = "Controle e Infraestrutura"
+[security_focus]
+other = "Foco: BLINDAGEM"
+
+[shielded_perimeter_title]
+other = "Perímetro Blindado"
+[shielded_perimeter_empower]
+other = "Gerencie acessos com rigor"
+[shielded_perimeter_desc]
+other = "Gestão rigorosa de entradas e saídas com registros biométricos e gravação instantânea na nuvem."
+
+[logistics_management_title]
+other = "Gestão Logística"
+[logistics_management_empower]
+other = "Controle entregas e suprimentos"
+[logistics_management_desc]
+other = "Controle total sobre o recebimento de suprimentos operacionais e entregas de última milha para residentes."
+
+[activity_monitor_title]
+other = "Monitor de Atividade"
+[activity_monitor_empower]
+other = "Capture eventos em tempo real"
+[activity_monitor_desc]
+other = "Um diário digital que captura cada evento crítico e ronda de segurança dentro do edifício."
+
+[staff_supervision_title]
+other = "Supervisão de Equipe"
+[staff_supervision_empower]
+other = "Audite o desempenho operacional"
+[staff_supervision_desc]
+other = "Coordene e audite o desempenho da equipe operacional e fornecedores a partir de uma única tela de controle."
+
+[tenant_portal_title]
+other = "Portal do Residente"
+
+[tenant_portal_desc]
+other = "Ofereça uma experiência fluida para os residentes gerenciarem pagamentos e enviarem solicitações."
+
+[rent_collection_title]
+other = "Arrecadação de Aluguel"
+
+[rent_collection_desc]
+other = "Otimize seu fluxo de caixa com faturamento automatizado e conciliação em tempo real."
+
+[maintenance_title]
+other = "Manutenção"
+
+[maintenance_desc]
+other = "Acompanhe problemas desde o envio até a resolução com atribuições automatizadas de fornecedores."
+
+[predictive_yield_chip]
+other = "Foco em ROI"
+
+[predictive_yield_title]
+other = "Rendimento Preditivo"
+
+[predictive_yield_desc]
+other = "Maximize a receita com análise de dados que otimiza o desempenho da sua comunidade."
+
+[smart_access_chip]
+other = "Pronto para IoT"
+
+[smart_access_title]
+other = "Acesso Inteligente"
+
+[smart_access_desc]
+other = "Integração unificada para entrada sem chave, controle de clima inteligente e segurança predial."
+
+[esg_compliance_chip]
+other = "Pronto para Auditoria"
+
+[esg_compliance_title]
+other = "Transparência"
+
+[esg_compliance_desc]
+other = "Relatórios automatizados de sustentabilidade e monitoramento de energia para investidores institucionais."
+
+[deployment_badge]
+other = "NÚCLEO INTELIGENTE DE GESTÃO PATRIMONIAL"
+
+[command_headline]
+other = "Lidere sua Operação com Transparência e Controle Total"
+
+[command_subtitle]
+other = "Deixe para trás processos ambíguos e lentos. Evolua para a plataforma projetada para automatizar a gestão de empreendimentos verticais e horizontais, proporcionando certeza operacional e administrativa."
+
+[soc2_compliant]
+other = "Infraestrutura segura 24/7 na nuvem."
+
+[encryption_label]
+other = "Acesso multiplataforma (PC, Celular, Tablet)."
+
+[gdpr_ready]
+other = "PRIVACIDADE E LGPD"
+
+[why_vilkor_subtitle]
+other = "Entendemos os problemas que uma má gestão gera. O Vilkor é uma plataforma na nuvem que busca total certeza e transparência na gestão diária de sua propriedade."
+
+[rapid_deployment_title]
+other = "Onboarding Sem Fricção"
+
+[rapid_deployment_desc]
+other = "Eliminamos a complexidade tecnológica. Acompanhamos você pessoalmente na configuração e treinamento da sua equipe, garantindo que o Vilkor se torne o motor da sua operação diária."
+
+[faq_q1]
+other = "É difícil migrar meus dados de outro software de gestão?"
+[faq_a1]
+other = "Não. O Vilkor conta com ferramentas de migração inteligente e assistência técnica especializada para garantir uma transição impecável. Garantimos que seu histórico financeiro e operacional seja transferido com total integridade."
+
+[faq_q2]
+other = "Que tipo de suporte recebemos durante a operação diária?"
+[faq_a2]
+other = "Oferecemos acompanhamento especializado e direto para garantir seu sucesso operacional. Você conta con assistência técnica prioritária para resolver dúvidas críticas instantaneamente e treinamento especializado, sem intermediários."
+
+[faq_q3]
+other = "Como vocês garantem a segurança e privacidade da informação?"
+[faq_a3]
+other = "No Vilkor, cada empreendimento opera em uma infraestrutura isolada com bancos de dados independentes. Seus dados são criptografados e armazenados na nuvem com redundância total, garantindo soberania absoluta."
+
+[faq_q4]
+other = "Como os residentes acessam a plataforma?"
+[faq_a4]
+other = "O Vilkor é 100% web e mobile-responsive. Os residentes podem gerenciar pagamentos, reportar incidentes e votar de qualquer navegador em segundos, sem necessidade de instalações complexas."
+
+[faq_q5]
+other = "O que acontece se eu decidir deixar a plataforma no futuro?"
+[faq_a5]
+other = "Seus dados pertencem totalmente a você. O Vilkor garante a soberania da informação; você pode exportar seu histórico financeiro e operacional em formatos padrão a qualquer momento."
+
+[demo_subtitle]
+other = "Conte-nos um pouco sobre suas operações e adaptaremos a demonstração às suas necessidades específicas."
+
+[first_name]
+other = "Nome"
+
+[privacy_promise]
+other = "Não compartilharemos suas informações com terceiros."
+
+[alt_dashboard]
+other = "Interface do Painel de Controle"
+
+[first_name_placeholder]
+other = "João"
+[processing]
+other = "Processando..."
+
+[last_name]
+other = "Sobrenome"
+
+[last_name_placeholder]
+other = "Silva"
+
+[work_email]
+other = "E-mail Corporativo"
+
+[work_email_placeholder]
+other = "joao.silva@empresa.com.br"
+
+[phone_number]
+other = "Telefone"
+
+[phone_placeholder]
+other = "11 91234 5678"
+
+[schedule_demo]
+other = "Agendar Demonstração"
+
+[onboarding_architect_msg]
+other = "Um arquiteto de implantação entrará em contato com você em até 24 horas para agendar sua demonstração personalizada."
+
+[faq_footer_text]
+other = "Ainda tem dúvidas?"
+
+[faq_footer_link]
+other = "Fale com um de nossos engenheiros de vendas"
+
+[nav_solutions]
+other = "Soluções"
+[nav_features]
+other = "Funcionalidades"
+[nav_why]
+other = "Benefícios"
+[nav_pricing]
+other = "Precios"
+[nav_faq]
+other = "FAQ"
+[nav_contact]
+other = "Agendar Demonstração"
+
+[footer_platform]
+other = "Plataforma"
+
+[footer_legal]
+other = "Legal"
+
+[footer_privacy]
+other = "Política de Privacidade"
+
+[footer_terms]
+other = "Termos de Serviço"
+
+[terms_title]
+other = "Termos e Condições de Uso – Vilkor PMS"
+
+[terms_content]
+other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última atualização: 2 de maio de 2026</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Processamento de Pagamentos e Comissões</h4> <p>Os serviços de pagamento no Vilkor são realizados através da infraestrutura da <strong>Stripe</strong>.</p> <ul class='list-disc pl-5 mt-2 space-y-1'> <li><strong>Comissões:</strong> O Usuário aceita que o uso do gateway de pagamento acarreta comissões que dependem das políticas vigentes da Stripe. O Vilkor reserva-se o direito de aplicar taxas de serviço adicionais, que serão detalhadas no momento da transação.</li> <li><strong>Independência Financeira:</strong> O Vilkor não retém fundos nem intervém no processo de liquidação. Esclarecimentos sobre transferências devem ser geridos via Stripe ou sua instituição bancária.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Conduta e Convivência</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Uso Aceitável:</strong> É estritamente proibido o uso de linguagem ofensiva, discriminatória ou violenta em qualquer módulo da plataforma.</li> <li><strong>Isenção de Interação:</strong> O Vilkor é um facilitador tecnológico. Não monitoramos comunicações privadas e nos isentamos de responsabilidades derivadas de conflitos entre residentes, funcionários ou administradores.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Gestão de Dados e Armazenamento</h4> <p>O Vilkor permite o upload de documentos e gestão de arquivos sob um esquema de <strong>armazenamento dinâmico</strong> sujeito aos limites do nosso provedor de infraestrutura em nuvem. O Usuário é responsável por manter backups externos de documentação crítica.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Rescisão do Serviço</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Período de Graça:</strong> Após o cancelamento, o Administrador terá <strong>30 dias corridos</strong> para exportar suas informações.</li> <li><strong>Exclusão:</strong> Decorrido este prazo, o Vilkor excluirá definitivamente os dados para garantir a privacidade e otimização do sistema.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Isenção de Responsabilidade de IA e Suporte (SLA)</h4> <p>O uso de agentes de <strong>IA</strong> é de caráter informativo. As decisões finais são de responsabilidade do Usuário Humano. A disponibilidade técnica é regida exclusivamente pelo SLA do nosso provedor de nuvem.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Lei Aplicável e Jurisdição</h4> <p>Este contrato é regido pelas leis do <strong>México</strong> (País de Origem). Quaisquer disputas serão resolvidas nos tribunais competentes da Cidade do México.</p> </section> </div>"
+
+[privacy_title]
+other = "Aviso de Privacidade Integral – Vilkor PMS"
+
+[privacy_content]
+other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última atualização: 2 de maio de 2026</p> <p>Em conformidade com a <strong>LGPD (Lei Geral de Proteção de Dados)</strong> e padrões internacionais, este Aviso de Privacidade Integral é disponibilizado a você.</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Identidade e Domicílio</h4> <p>A entidade responsável pelo tratamento dos seus dados pessoais é a equipe do <strong>Vilkor</strong>. Contato: <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a>.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Dados Pessoais Coletados</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Identificação:</strong> Nome completo, fotografia (opcional) e função.</li> <li><strong>Contato:</strong> Endereço de e-mail, telefone e unidade/departamento.</li> <li><strong>Financeiros:</strong> Processados diretamente pela <strong>Stripe</strong>.</li> <li><strong>Uso:</strong> Registros de acesso, logs e interacciones com agentes de IA.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Finalidades do Tratamento</h4> <ul class='list-disc pl-5 space-y-1'> <li>Gerenciar o controle de acesso e administração.</li> <li>Facilitar a comunicação interna (Residentes, Staff, Admins).</li> <li>Processar pagamentos automatizados via Stripe.</li> <li>Otimizar a gestão operativa através de Inteligência Artificial.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Transferência de Dados</h4> <p>Seus dados podem ser transferidos a terceiros apenas para a execução de transações financeiras (Stripe), hospedagem em infraestrutura segura (Cloud) ou por exigência de autoridades competentes.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Direitos de Privacidade (LGPD)</h4> <p>Você tem o direito de <strong>Acesso, Rectificação, Cancelamento ou Oposição</strong> ao tratamento de seus dados. Envie sua solicitação para <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a> com identificação oficial digitalizada.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Consentimento para Uso de IA</h4> <p>Ao utilizar o Vilkor, o usuário consente com o processamento de informações operacionais por modelos de linguagem para gerar resumos, relatórios e automações.</p> </section> </div>"
+
+[send_another]
+other = "Enviar outra solicitação"
+
+[understood]
+other = "Entendido"
+
+[select_region]
+other = "Seleccionar Região"
+
+[cancel]
+other = "Cancelar"

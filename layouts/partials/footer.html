@@ -1,31 +1,40 @@
-<footer class="bg-surface-container-lowest w-full border-t border-surface-container-highest">
-<div class="grid grid-cols-1 md:grid-cols-4 gap-12 py-20 px-8 max-w-[1440px] mx-auto">
-<!-- Brand -->
-<div class="col-span-1 md:col-span-1 flex flex-col justify-between">
-<div>
-<div class="font-h3 text-h3 font-black text-on-background mb-md">
-                        Vilkor
-                    </div>
-</div>
-<p class="font-body-md text-sm text-on-surface-variant mt-lg md:mt-0">
-                    © 2024 Vilkor Enterprise. Built for high-scale property operations.
+<footer class="bg-surface-container-lowest dark:bg-black w-full border-t border-surface-container-highest dark:border-white/5">
+    <div class="max-w-[1440px] mx-auto px-8 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+            <!-- Brand & Copyright -->
+            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                <div class="font-h3 text-[24px] font-black text-on-background dark:text-white uppercase tracking-tighter">
+                    Vilkor
+                </div>
+                <p class="font-body-md text-[12px] text-on-surface-variant dark:text-white/40 border-l border-on-background/10 dark:border-white/10 pl-8 hidden md:block">
+                    © 2026 Vilkor PMS.
                 </p>
-</div>
-<!-- Links Column 1 -->
-<div class="col-span-1 flex flex-col space-y-sm">
-<a class="font-body-md text-sm text-on-surface-variant hover:text-primary-container transition-transform hover:translate-x-1 duration-200 inline-block w-fit" href="/features">Features</a>
-<a class="font-body-md text-sm text-on-surface-variant hover:text-primary-container transition-transform hover:translate-x-1 duration-200 inline-block w-fit" href="#">Solutions</a>
-<a class="font-body-md text-sm text-on-surface-variant hover:text-primary-container transition-transform hover:translate-x-1 duration-200 inline-block w-fit" href="/pricing">Pricing</a>
-</div>
-<!-- Links Column 2 -->
-<div class="col-span-1 flex flex-col space-y-sm">
-<a class="font-body-md text-sm text-on-surface-variant hover:text-primary-container transition-transform hover:translate-x-1 duration-200 inline-block w-fit" href="#">Contact</a>
-<a class="font-body-md text-sm text-on-surface-variant hover:text-primary-container transition-transform hover:translate-x-1 duration-200 inline-block w-fit" href="#">Privacy Policy</a>
-<a class="font-body-md text-sm text-on-surface-variant hover:text-primary-container transition-transform hover:translate-x-1 duration-200 inline-block w-fit" href="#">Terms of Service</a>
-</div>
-<!-- Links Column 3 -->
-<div class="col-span-1 flex flex-col space-y-sm">
-<a class="font-body-md text-sm text-on-surface-variant hover:text-primary-container transition-transform hover:translate-x-1 duration-200 inline-block w-fit" href="#">Security</a>
-</div>
-</div>
+            </div>
+
+            <!-- Enterprise Ordered Links -->
+            <div class="flex flex-wrap justify-center gap-6 md:gap-8 lg:gap-10">
+                <!-- Product & Value -->
+                <a class="font-body-md text-sm text-on-surface-variant dark:text-white/60 hover:text-[#34d399] transition-colors" href="#solutions">{{ T "nav_solutions" }}</a>
+                <a class="font-body-md text-sm text-on-surface-variant dark:text-white/60 hover:text-[#34d399] transition-colors" href="#why-vilkor">{{ T "nav_why" }}</a>
+                <a class="font-body-md text-sm text-on-surface-variant dark:text-white/60 hover:text-[#34d399] transition-colors" href="#pricing">{{ T "nav_pricing" }}</a>
+                
+                <!-- Support -->
+                <a class="font-body-md text-sm text-on-surface-variant dark:text-white/60 hover:text-[#34d399] transition-colors" href="#faq">{{ T "nav_faq" }}</a>
+                
+                <!-- Action -->
+                <a class="font-body-md text-sm text-[#34d399] font-bold hover:opacity-80 transition-opacity" href="#book-a-demo">{{ T "nav_contact" }}</a>
+                
+                <!-- Legal -->
+                <div class="flex gap-6 border-l border-on-background/10 dark:border-white/10 pl-8 ml-2">
+                    <a class="font-body-md text-sm text-on-surface-variant/60 dark:text-white/40 hover:text-[#34d399] transition-colors" href="javascript:void(0)" onclick="togglePrivacyModal()">{{ T "footer_privacy" }}</a>
+                    <a class="font-body-md text-sm text-on-surface-variant/60 dark:text-white/40 hover:text-[#34d399] transition-colors" href="javascript:void(0)" onclick="toggleTermsModal()">{{ T "footer_terms" }}</a>
+                </div>
+            </div>
+
+            <!-- Mobile Copyright -->
+            <p class="font-body-md text-[12px] text-on-surface-variant dark:text-white/40 md:hidden">
+                © 2026 Vilkor PMS.
+            </p>
+        </div>
+    </div>
 </footer>

@@ -1,11 +1,65 @@
 [hero_title]
-other = "One platform, total control"
+other = "Lead Your Operations with Transparency and Total Control"
 
 [hero_subtitle]
-other = "Harness the power of AI-driven automation to reduce overhead and eliminate dashboard fatigue. Your operations, unified."
+other = "Leave behind ambiguous and slow processes. Evolve to the platform designed to automate vertical and horizontal development management, providing operational and administrative certainty."
+
+[pricing_title]
+other = "Pricing Plans"
+
+[pricing_subtitle]
+other = "Scalable solutions designed for the operational efficiency of any real estate development, from small communities to large residential complexes."
+
+[plan_starter_name]
+other = "Starter"
+[plan_starter_price]
+other = "$39"
+[plan_starter_features]
+other = "Up to 30 units,1 Administrator,Unlimited Residents,Email Support"
+
+[plan_standard_name]
+other = "Standard"
+[plan_standard_price]
+other = "$59"
+[plan_standard_features]
+other = "Up to 100 units,3 Administrators,Unlimited Residents,Email and Chat Support"
+
+[plan_pro_name]
+other = "Pro"
+[plan_pro_price]
+other = "$89"
+[plan_pro_tag]
+other = "MOST POPULAR"
+[plan_pro_features]
+other = "Up to 200 units,Unlimited Admins,Unlimited Residents,Email and Chat Support"
+
+[plan_class_name]
+other = "Class"
+[plan_class_price]
+other = "$115"
+[plan_class_features]
+other = "Up to 300 units,Unlimited Admins,Unlimited Residents,Email and Chat Support"
+
+[plan_enterprise_name]
+other = "Enterprise"
+[plan_enterprise_price]
+other = "Contact"
+[plan_enterprise_features]
+other = "300+ units,Unlimited Admins,Priority Support,Guaranteed SLA"
+
+[pricing_cta_trial]
+other = "15-day free trial"
+[pricing_cta_contact]
+other = "Contact Us"
+
+[currency_per_month]
+other = "usd / month"
+
+[pricing_disclaimer]
+other = "*Get a 15-20% discount (equivalent to 2 months free) when choosing annual billing."
 
 [book_demo]
-other = "Book a Demo"
+other = "Schedule Demo"
 
 [start_operating]
 other = "Start Operating Now"
@@ -17,7 +71,7 @@ other = "Solutions"
 other = "Features"
 
 [why_vilkor]
-other = "Why Vilkor"
+other = "Why Vilkor?"
 
 [faq]
 other = "FAQ"
@@ -25,9 +79,14 @@ other = "FAQ"
 [one_platform]
 other = "One platform, total control."
 
-
 [ready_unstoppable]
 other = "Ready to make your property unstoppable?"
+
+[request_sent]
+other = "Request Sent!"
+
+[thanks_interest]
+other = "Thank you for your interest"
 
 [request_received]
 other = "Request Received"
@@ -36,13 +95,13 @@ other = "Request Received"
 other = "Thank you"
 
 [future_property_management]
-other = "The future of property management. Connected"
+other = "The future of property management. Connected."
 
 [intelligent_operations]
 other = "Intelligent Operations"
 
 [intelligent_ops_desc]
-other = "We know that poor management drains both resources and trust. That's why Vilkor ensures the application of best practices through an operational infrastructure designed for total transparency and absolute rigor."
+other = "We understand the problems that poor management generates; we have lived them. Vilkor is a cloud platform that seeks total certainty and transparency in the daily management of your property."
 
 [enterprise_grade]
 other = "Enterprise Grade System"
@@ -113,11 +172,35 @@ other = "Control & Security"
 [realtime_analytics_desc]
 other = "Oversee access control, monitor package logistics, and manage vendor flow with real-time operational oversight."
 
+[alt_hero]
+other = "Vilkor Enterprise Architecture"
+
+[badge_smart_core]
+other = "INTELLIGENT ASSET MANAGEMENT CORE"
+
+[label_secure_cloud]
+other = "Secure data 24/7 in the cloud."
+
+[label_cross_platform]
+other = "Access from your computer, mobile, or tablet."
+
+[chip_omnichannel]
+other = "Unified Management"
+
+[chip_total_integrity]
+other = "Total Integrity"
+
+[chip_massive_reach]
+other = "Massive Reach"
+
+[chip_active_security]
+other = "Active Security"
+
 [every_tool]
-other = "Institutional-Grade Modular Architecture"
+other = "Large-Scale Operational Intelligence"
 
 [every_tool_subtitle]
-other = "A suite of tools engineered for precision, scalability, and total portfolio control."
+other = "Modular solutions that transform complexity into efficiency, guaranteeing the asset value of your community."
 
 # 1. Asset Management (Finances)
 [finances_header]
@@ -133,11 +216,11 @@ other = "Secure your cash flow"
 other = "Automate billing and eliminate delinquency with logical follow-up flows and immediate reconciliation."
 
 [data_integrity_title]
-other = "Data Integrity"
+other = "Seamless Integration"
 [data_integrity_empower]
-other = "Export institutional reports"
+other = "Frictionless transition"
 [data_integrity_desc]
-other = "Generate reports with engineering-grade precision, ready for institutional audits and strategic decisions."
+other = "Seamless, comprehensive migration. We transfer your historical data to Vilkor with total integrity and operational continuity from day one."
 
 [reserve_optimization_title]
 other = "Reserve Optimization"
@@ -225,7 +308,7 @@ other = "Coordinate and audit the performance of operational staff and vendors f
 other = "Tenant Portal"
 
 [tenant_portal_desc]
-other = "Provide a seamless, branded experience for residents to manage leases and submit requests."
+other = "Provide a seamless experience for residents to manage payments and submit requests."
 
 [rent_collection_title]
 other = "Rent Collection"
@@ -246,7 +329,7 @@ other = "ROI Focus"
 other = "Predictive Yield"
 
 [predictive_yield_desc]
-other = "Maximize revenue with AI that analyzes market trends and optimizes pricing in real-time."
+other = "Maximize revenue with data analysis that optimizes your community's performance."
 
 [smart_access_chip]
 other = "IoT Ready"
@@ -255,55 +338,68 @@ other = "IoT Ready"
 other = "Smart Access"
 
 [smart_access_desc]
-other = "Unified IoT integration for keyless entry, smart climate control, and facility security."
+other = "Unified integration for keyless entry, smart climate control, and facility security."
 
 [esg_compliance_chip]
 other = "Audit Ready"
 
 [esg_compliance_title]
-other = "ESG Compliance"
+other = "Transparency"
 
 [esg_compliance_desc]
 other = "Automated sustainability reporting and energy monitoring for institutional investors."
 
 [deployment_badge]
-other = "Immediate Deployment Available"
+other = "INTELLIGENT ASSET MANAGEMENT CORE"
 
 [command_headline]
-other = "Command Your Portfolio with Uncompromising Precision"
+other = "Lead Your Operations with Transparency and Total Control"
 
 [command_subtitle]
-other = "Stop managing. Start commanding. Join the next generation of institutional property operators."
+other = "Leave behind ambiguous and slow processes. Evolve to the platform designed to automate vertical and horizontal development management, providing operational and administrative certainty."
 
 [soc2_compliant]
-other = "SOC2 COMPLIANT"
+other = "Secure 24/7 Cloud Infrastructure."
 
 [encryption_label]
-other = "256-BIT ENCRYPTION"
+other = "Cross-Platform Access (PC, Mobile, Tablet)."
 
 [gdpr_ready]
-other = "GDPR READY"
+other = "Privacy & GDPR Compliance"
 
 [why_vilkor_subtitle]
-other = "Built strictly for high-scale operations, Vilkor abandons legacy clutter for architectural precision."
+other = "We understand the problems that poor management generates. Vilkor is a cloud platform that seeks total certainty and transparency in the daily management of your property."
 
 [rapid_deployment_title]
-other = "Rapid Deployment"
+other = "Frictionless Onboarding"
 
 [rapid_deployment_desc]
-other = "Migre portfolios in days, not months, with our dedicated onboarding architects."
+other = "We eliminate technological complexity. We personally assist you in the configuration and training of your team, ensuring Vilkor becomes the engine of your daily operation without frictions or slow learning curves."
 
 [faq_q1]
-other = "How do you count units?"
-
+other = "Is it difficult to migrate my data from another management software?"
 [faq_a1]
-other = "A unit is defined as any leasable space, including apartments, suites, and storage units."
+other = "No. Vilkor features intelligent migration tools and specialized technical assistance to ensure a flawless transition. We ensure your financial and operational history is moved with total integrity and no interruptions."
 
 [faq_q2]
-other = "Can I upgrade mid-billing cycle?"
-
+other = "What kind of support do we receive during daily operations?"
 [faq_a2]
-other = "Yes, structural shifts happen fast. You can upgrade at any time, and we will prorate the cost."
+other = "We provide expert and direct assistance to ensure your operational success. You have priority technical support to resolve critical doubts instantly and specialized training, ensuring your administration runs with maximum precision and no intermediaries."
+
+[faq_q3]
+other = "How do you guarantee the security and privacy of information?"
+[faq_a3]
+other = "In Vilkor, each development operates on an isolated infrastructure with independent databases. Your data is encrypted and backed up in the cloud with total redundancy, ensuring absolute sovereignty over your information."
+
+[faq_q4]
+other = "How do residents access the platform?"
+[faq_a4]
+other = "Vilkor is 100% web and mobile-responsive. Residents can manage payments, report incidents, and vote from any browser in seconds, without complex installations."
+
+[faq_q5]
+other = "What happens if I decide to leave the platform in the future?"
+[faq_a5]
+other = "Your data belongs entirely to you. Vilkor guarantees information sovereignty; you can export your financial and operational history in standard formats at any time, ensuring your administration is never held hostage by technology."
 
 [demo_subtitle]
 other = "Tell us a bit about your operations, and we'll tailor the walkthrough to your specific needs."
@@ -311,14 +407,34 @@ other = "Tell us a bit about your operations, and we'll tailor the walkthrough t
 [first_name]
 other = "First Name"
 
+[first_name_placeholder]
+other = "John"
+
 [last_name]
 other = "Last Name"
+
+[last_name_placeholder]
+other = "Smith"
+[processing]
+other = "Processing..."
 
 [work_email]
 other = "Work Email"
 
+[work_email_placeholder]
+other = "john.smith@company.com"
+
 [phone_number]
 other = "Phone Number"
+
+[privacy_promise]
+other = "We will not share your information with third parties."
+
+[alt_dashboard]
+other = "Dashboard Interface"
+
+[phone_placeholder]
+other = "555-0123"
 
 [schedule_demo]
 other = "Schedule Demo"
@@ -326,14 +442,57 @@ other = "Schedule Demo"
 [onboarding_architect_msg]
 other = "An onboarding architect will reach out to you within 24 hours to schedule your custom walkthrough."
 
+[faq_footer_text]
+other = "Still have questions?"
+
+[faq_footer_link]
+other = "Speak with one of our sales engineers"
+
+[nav_solutions]
+other = "Solutions"
+[nav_features]
+other = "Features"
+[nav_why]
+other = "Why Vilkor"
+[nav_pricing]
+other = "Pricing"
+[nav_faq]
+other = "FAQ"
+[nav_contact]
+other = "Schedule Demo"
+
+[footer_platform]
+other = "Platform"
+
+[footer_legal]
+other = "Legal"
+
+[footer_privacy]
+other = "Privacy Policy"
+
+[footer_terms]
+other = "Terms of Service"
+
+[terms_title]
+other = "Terms and Conditions of Use – Vilkor PMS"
+
+[terms_content]
+other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Last Updated: May 2, 2026</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Payment Processing and Commissions</h4> <p>Payment services in Vilkor are conducted through <strong>Stripe's</strong> infrastructure.</p> <ul class='list-disc pl-5 mt-2 space-y-1'> <li><strong>Commissions:</strong> The User agrees that using the payment gateway entails commissions depending on Stripe's current policies. Vilkor reserves the right to apply additional service charges, which will be itemized at the time of the transaction.</li> <li><strong>Financial Independence:</strong> Vilkor does not hold funds or intervene in the settlement process. Clarifications regarding transfers must be managed via Stripe or your banking institution.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Conduct and Coexistence</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Acceptable Use:</strong> Use of offensive, discriminatory, or violent language in any platform module is strictly prohibited.</li> <li><strong>Interaction Disclaimer:</strong> Vilkor is a technological facilitator. We do not monitor private communications and are disclaimed from liabilities arising from conflicts between residents, staff, or administrators.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Data Management and Storage</h4> <p>Vilkor allows document uploads and file management under a <strong>dynamic storage</strong> scheme subject to our cloud infrastructure provider's limits. The User is responsible for maintaining external backups of critical documentation.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Service Termination</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Grace Period:</strong> Upon cancellation, the Administrator will have <strong>30 calendar days</strong> to export their information.</li> <li><strong>Deletion:</strong> After this period, Vilkor will permanently delete the data to ensure privacy and system optimization.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. AI and Support Disclaimer (SLA)</h4> <p>The use of <strong>AI</strong> agents is for informational purposes. Final decisions are the responsibility of the Human User. Technical availability is governed exclusively by our cloud provider's SLA.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Governing Law and Jurisdiction</h4> <p>This contract is governed by the laws of <strong>Mexico</strong>. Any disputes shall be resolved in the competent courts of Mexico City.</p> </section> </div>"
+
+[privacy_title]
+other = "Comprehensive Privacy Notice – Vilkor PMS"
+
+[privacy_content]
+other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Last Updated: May 2, 2026</p> <p>In compliance with international data protection standards and local regulations, this Comprehensive Privacy Notice is made available to you.</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Identity and Domicile</h4> <p>The entity responsible for processing your personal data is the <strong>Vilkor</strong> team. Contact: <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a>.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Personal Data Collected</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Identification:</strong> Full name, photograph (optional), and role.</li> <li><strong>Contact:</strong> Email address, phone number, and unit/department.</li> <li><strong>Financial:</strong> Processed directly by <strong>Stripe</strong>.</li> <li><strong>Usage:</strong> Access records, logs, and interactions with AI agents.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Purposes of Processing</h4> <ul class='list-disc pl-5 space-y-1'> <li>Manage access control and administration.</li> <li>Facilitate internal communication (Residents, Staff, Admins).</li> <li>Process automated payments via Stripe.</li> <li>Optimize operational management through Artificial Intelligence.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Data Transfer</h4> <p>Your data may be transferred to third parties solely for the execution of financial transactions (Stripe), hosting on secure infrastructure (Cloud), or by requirement of competent authorities.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Privacy Rights</h4> <p>You have the right to <strong>Access, Rectify, Cancel, or Oppose</strong> the processing of your data. Send your request to <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a> with digitized official identification.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Consent for AI Usage</h4> <p>By using Vilkor, the user consents to the processing of operational information by language models to generate summaries, reports, and automations.</p> </section> </div>"
+
 [send_another]
 other = "Send another request"
 
-[strategic_advisor_quote]
-other = "The architecture Vilkor is proposing is a significant departure from legacy systems. It's built for the way we need to operate in the 2030s."
+[understood]
+other = "Understood"
 
-[strategic_advisor_name]
-other = "Strategic Advisor"
+[select_region]
+other = "Select Region"
 
-[strategic_advisor_title]
-other = "PropTech Integration Lead"
+[cancel]
+other = "Cancel"
