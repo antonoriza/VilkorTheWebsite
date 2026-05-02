@@ -92,27 +92,40 @@
                 });
             }
 
-            // High-Performance 3D Tilt (Throttled)
+            // High-Performance 3D Tilt (Optimized & Leak-Free)
             const cards = document.querySelectorAll('.pricing-card');
             if (cards.length > 0) {
-                let frame;
-                cards.forEach(card => {
-                    card.addEventListener('mousemove', e => {
-                        if (frame) cancelAnimationFrame(frame);
-                        frame = requestAnimationFrame(() => {
-                            const rect = card.getBoundingClientRect();
-                            const x = e.clientX - rect.left;
-                            const y = e.clientY - rect.top;
-                            const rotateX = (y - (rect.height / 2)) / 15;
-                            const rotateY = ((rect.width / 2) - x) / 15;
-                            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-                        });
+                const tiltObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        const card = entry.target;
+                        if (entry.isIntersecting) {
+                            let frame;
+                            const handleMove = (e) => {
+                                if (frame) cancelAnimationFrame(frame);
+                                frame = requestAnimationFrame(() => {
+                                    const rect = card.getBoundingClientRect();
+                                    const x = e.clientX - rect.left;
+                                    const y = e.clientY - rect.top;
+                                    const rotateX = (y - (rect.height / 2)) / 15;
+                                    const rotateY = ((rect.width / 2) - x) / 15;
+                                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                                });
+                            };
+                            const handleLeave = () => {
+                                cancelAnimationFrame(frame);
+                                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                            };
+                            card.addEventListener('mousemove', handleMove, { passive: true });
+                            card.addEventListener('mouseleave', handleLeave);
+                            card._tiltHandlers = { handleMove, handleLeave };
+                        } else if (card._tiltHandlers) {
+                            card.removeEventListener('mousemove', card._tiltHandlers.handleMove);
+                            card.removeEventListener('mouseleave', card._tiltHandlers.handleLeave);
+                        }
                     });
-                    card.addEventListener('mouseleave', () => {
-                        cancelAnimationFrame(frame);
-                        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-                    });
-                });
+                }, { threshold: 0.1 });
+
+                cards.forEach(card => tiltObserver.observe(card));
             }
         });
     </script>
