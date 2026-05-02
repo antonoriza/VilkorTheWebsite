@@ -77,20 +77,26 @@
                 </form>
             </div>
             
-            <!-- Success Message (SOLID FLAT OVERLAY - Clean Minimalist) -->
-            <div id="success-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-8 md:p-12 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 backdrop-blur-none">
-                <!-- Icon matching requested aesthetic: Light green circle, darker green check -->
-                <div class="w-20 h-20 md:w-28 md:h-28 bg-[#34d399]/15 rounded-full flex items-center justify-center mb-8 md:mb-10 scale-0 animate-success-check">
-                    <span class="material-symbols-outlined text-[#34d399] text-[48px] md:text-[64px]" style="font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 48;">check_circle</span>
+            <!-- Success Message (Refined & Institutional) -->
+            <div id="success-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 rounded-[2.5rem]">
+                <!-- Centered Icon with protection zone -->
+                <div class="mb-8 md:mb-10 flex flex-col items-center">
+                    <div class="w-24 h-24 md:w-28 md:h-28 bg-[#34d399]/10 rounded-full flex items-center justify-center animate-success-check shadow-inner border border-[#34d399]/20">
+                        <span class="material-symbols-outlined text-[#34d399] text-[40px] md:text-[56px]" style="font-variation-settings: 'FILL' 1, 'wght' 500;">check_circle</span>
+                    </div>
                 </div>
-                <div class="space-y-4 max-w-md">
-                    <p class="font-h2 text-xl md:text-2xl text-on-background dark:text-white leading-snug tracking-tight font-medium">
-                        ¡Gracias por ponerte en contacto <span id="user-name-display" class="font-bold text-[#34d399]"></span>! 
-                    </p>
-                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400">
-                        Un ingeniero de ventas te contactará pronto.
+
+                <div class="space-y-4 max-w-sm mx-auto">
+                    <h3 class="font-h2 text-2xl md:text-3xl text-on-background dark:text-white font-bold tracking-tight">
+                        ¡Gracias, <span id="user-name-display" class="text-[#34d399]"></span>!
+                    </h3>
+                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 leading-relaxed">
+                        Hemos recibido tu solicitud. Un especialista en infraestructura inmobiliaria te contactará en breve.
                     </p>
                 </div>
+
+                <!-- Footer accent -->
+                <div class="mt-12 w-12 h-1 bg-gradient-to-r from-transparent via-[#34d399]/30 to-transparent rounded-full"></div>
             </div>
 
             <!-- Error Message (SOLID FLAT OVERLAY) -->
