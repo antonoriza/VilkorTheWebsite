@@ -5,7 +5,7 @@ other = "Una plataforma, control total"
 other = "Hey, no copies mis textos :P"
 
 [hero_subtitle]
-other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
+other = "Sienta la libertad de una administración que fluye. Vilkor automatiza las finanzas, operaciones y comunicación de tu comunidad en tiempo real en una sola plataforma siempre disponible, auditable y segura."
 
 [book_demo]
 other = "Agendar Demo"
@@ -114,28 +114,28 @@ other = "Sistema de Grado Empresarial"
 other = "Acceso Anticipado"
 
 [hero_description]
-other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
+other = "Sienta la libertad de una administración que fluye. Vilkor automatiza las finanzas, operaciones y comunicación de tu comunidad en tiempo real en una sola plataforma siempre disponible, auditable y segura."
 
 [explore_platform]
 other = "Conoce más"
 
-[scale_potential_value]
-other = "ESCALABLE"
-
-[scale_potential_label]
-other = "CRECIMIENTO SIN FRICCIONES"
-
-[institutional_rigor_value]
-other = "INSTITUCIONAL"
-
-[institutional_rigor_label]
-other = "SEGURIDAD Y RIGOR OPERATIVO"
-
 [tech_stack_value]
-other = "VANGUARDISTA"
+other = "CONTROL"
 
 [tech_stack_label]
-other = "INTELIGENCIA DE PRÓXIMA GENERACIÓN"
+other = "Acceso total desde cualquier equipo hoy."
+
+[scale_potential_value]
+other = "AUDITORÍA"
+
+[scale_potential_label]
+other = "Operaciones claras y transparentes siempre."
+
+[institutional_rigor_value]
+other = "SOLIDEZ"
+
+[institutional_rigor_label]
+other = "El rigor operativo que tu hogar necesita."
 
 [ai_automation_chip]
 other = "EFICIENCIA PROFESIONAL"
@@ -155,50 +155,83 @@ other = """
         <input type="radio" id="tab-admin" name="card-tabs" class="hidden peer/admin" checked>
         <input type="radio" id="tab-resident" name="card-tabs" class="hidden peer/resident">
 
-        <!-- Tab Headers -->
-        <div class="flex p-1 bg-on-background/5 dark:bg-white/5 rounded-xl border border-on-background/10 dark:border-white/10 mb-8 w-fit">
-            <label for="tab-admin" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/admin:bg-[#674bb5] peer-checked/admin:text-white">Para Administradores</label>
-            <label for="tab-resident" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/resident:bg-[#674bb5] peer-checked/resident:text-white">Para el Residente</label>
+        <!-- Tabs Navigation -->
+        <div class="flex p-1 bg-surface-container-low dark:bg-white/5 rounded-2xl mb-8 w-fit border border-outline-variant/30">
+            <label for="tab-admin" class="px-6 py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-all duration-300 peer-checked/admin:bg-white peer-checked/admin:text-[#674bb5] peer-checked/admin:shadow-sm dark:peer-checked/admin:bg-white/10 dark:peer-checked/admin:text-white text-on-surface-variant hover:text-on-surface">
+                Para el Administrador
+            </label>
+            <label for="tab-resident" class="px-6 py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-all duration-300 peer-checked/resident:bg-white peer-checked/resident:text-[#674bb5] peer-checked/resident:shadow-sm dark:peer-checked/resident:bg-white/10 dark:peer-checked/resident:text-white text-on-surface-variant hover:text-on-surface">
+                Para el Residente
+            </label>
         </div>
 
-        <!-- Admin Content -->
-        <div class="hidden peer-checked/admin:block animate-fade-in">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="space-y-3">
-                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">hub</span>
-                    <h4 class="font-bold text-sm dark:text-white">Escalabilidad Operativa</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Estandarice procesos y gestione múltiples carteras con una infraestructura ligera.</p>
-                </div>
-                <div class="space-y-3">
-                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">account_balance</span>
-                    <h4 class="font-bold text-sm dark:text-white">Rigor de Auditoría</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias.</p>
-                </div>
-                <div class="space-y-3">
-                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">verified_user</span>
-                    <h4 class="font-bold text-sm dark:text-white">Seguridad Operativa</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Trazabilidad total en cada transacción, gestión de staff y accesos.</p>
+        <!-- Content Area -->
+        <div class="relative overflow-hidden min-h-[400px]">
+            <!-- Admin View -->
+            <div class="absolute inset-0 transition-all duration-500 opacity-0 translate-x-8 pointer-events-none peer-checked/admin:opacity-100 peer-checked/admin:translate-x-0 peer-checked/admin:pointer-events-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#674bb5]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#674bb5]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#674bb5]">monitoring</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Visibilidad 360°</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Monitoreo en tiempo real de cobranza, gastos y mantenimiento desde un solo tablero central.</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#674bb5]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#674bb5]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#674bb5]">automation</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Automatización Contable</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Conciliación bancaria automática y generación de estados de cuenta sin intervención manual.</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#674bb5]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#674bb5]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#674bb5]">campaign</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Canal Oficial</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Comunicados masivos vía App, email y WhatsApp con confirmación de lectura y trazabilidad.</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#674bb5]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#674bb5]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#674bb5]">shield_person</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Control de Accesos</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Gestión inteligente de visitantes, personal y proveedores con bitácora digital segura.</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Resident Content -->
-        <div class="hidden peer-checked/resident:block animate-fade-in">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="space-y-3">
-                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">visibility</span>
-                    <h4 class="font-bold text-sm dark:text-white">Transparencia Total</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera.</p>
-                </div>
-                <div class="space-y-3">
-                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">phonelink_setup</span>
-                    <h4 class="font-bold text-sm dark:text-white">Certeza Operativa</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas.</p>
-                </div>
-                <div class="space-y-3">
-                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">trending_up</span>
-                    <h4 class="font-bold text-sm dark:text-white">Plusvalía Tecnológica</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Una comunidad organizada aumenta el valor real de su propiedad.</p>
+            <!-- Resident View -->
+            <div class="absolute inset-0 transition-all duration-500 opacity-0 translate-x-8 pointer-events-none peer-checked/resident:opacity-100 peer-checked/resident:translate-x-0 peer-checked/resident:pointer-events-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#34d399]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#34d399]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#34d399]">payments</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Pago Click-and-Go</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Liquide sus cuotas en segundos desde la app con múltiples métodos de pago integrados.</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#34d399]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#34d399]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#34d399]">event_available</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Reservas Instantáneas</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Reserve amenidades y espacios comunes con calendario en tiempo real y reglas automáticas.</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#34d399]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#34d399]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#34d399]">support_agent</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Atención Directa</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Reporte incidencias y haga seguimiento a sus peticiones con evidencia fotográfica.</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl border-on-background/5 hover:border-[#34d399]/30 transition-colors group">
+                        <div class="w-12 h-12 bg-[#34d399]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-[#34d399]">qr_code_2</span>
+                        </div>
+                        <h4 class="font-bold text-on-surface mb-2">Invitaciones QR</h4>
+                        <p class="text-sm text-on-surface-variant leading-relaxed">Genere accesos rápidos para sus visitas y reciba notificaciones instantáneas de llegada.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -206,352 +239,5 @@ other = """
 </div>
 """
 
-[chip_omnichannel]
-other = "Gestión Unificada"
-
-[chip_total_integrity]
-other = "Integridad Total"
-
-[chip_massive_reach]
-other = "Alcance Masivo"
-
-[chip_active_security]
-other = "Seguridad Activa"
-
-[unmatched_speed_chip]
-other = "BIENESTAR RESIDENCIAL"
-
-[unmatched_speed_title]
-other = "Tranquilidad para cada Residente"
-
-[unmatched_speed_desc]
-other = "Un hogar se vive sin complicaciones. Ofrezca a sus residentes la comodidad de resolver todo desde su celular: avisos, pagos y solicitudes de mantenimiento, garantizando respuestas rápidas y una convivencia sin fricciones ni malentendidos."
-
-[uptime_label]
-other = "Fiabilidad de Tiempo de Actividad"
-
-[unified_data_title]
-other = "Transparencia Administrativa"
-
-[unified_data_desc]
-other = "Unifique estados financieros, reportes de gestión y registros de staff en una fuente de verdad auditable y centralizada."
-
-[automated_workflows_title]
-other = "Comunicación Institucional"
-
-[automated_workflows_desc]
-other = "Gestione avisos críticos, convoque asambleas y coordine eventos con una infraestructura de comunicación de alto alcance."
-
-[realtime_analytics_title]
-other = "Control y Seguridad"
-
-[realtime_analytics_desc]
-other = "Administre accesos, supervise la logística de paquetería y gestione el flujo de proveedores con monitoreo operativo en tiempo real."
-
-[every_tool]
-other = "Inteligencia Operativa a Gran Escala"
-
-[every_tool_subtitle]
-other = "Soluciones modulares que transforman la complejidad en eficiencia, garantizando el valor patrimonial de su comunidad."
-
-# 1. Gestión de Activos (Finanzas)
-[finances_header]
-other = "Gestión de Activos"
-[finances_focus]
-other = "Enfoque: SOLIDEZ"
-
-[smart_collection_title]
-other = "Recaudación Inteligente"
-[smart_collection_empower]
-other = "Asegure el flujo de caja"
-[smart_collection_desc]
-other = "Automatice la cobranza y elimine la morosidad con flujos lógicos de seguimiento y conciliación inmediata."
-
-[data_integrity_title]
-other = "Integración Sencilla"
-[data_integrity_empower]
-other = "Transición sin fricciones"
-[data_integrity_desc]
-other = "Migración integral y sin fricciones. Trasladamos sus datos históricos a Vilkor con total integridad y continuidad operativa desde el primer día."
-
-[reserve_optimization_title]
-other = "Optimización de Reservas"
-[reserve_optimization_empower]
-other = "Administre fondos con transparencia"
-[reserve_optimization_desc]
-other = "Administre fondos de reserva y presupuestos con total transparencia y una visión financiera a largo plazo."
-
-[expense_audit_title]
-other = "Auditoría de Egresos"
-[expense_audit_empower]
-other = "Mantenga un control quirúrgico"
-[expense_audit_desc]
-other = "Mantenga un control quirúrgico sobre cada peso que sale de la administración con trazabilidad absoluta."
-
-# 2. Operaciones y Comunidad (Flujos)
-[operations_header]
-other = "Operaciones y Comunidad"
-[operations_focus]
-other = "Enfoque: AGILIDAD"
-
-[property_evolution_title]
-other = "Evolución del Inmueble"
-[property_evolution_empower]
-other = "Incremente la plusvalía"
-[property_evolution_desc]
-other = "Gestione reparaciones y mejoras estructurales que incrementan el valor patrimonial de su propiedad."
-
-[digital_vault_title]
-other = "Bóveda Digital"
-[digital_vault_empower]
-other = "Resguarde su información crítica"
-[digital_vault_desc]
-other = "Un repositorio centralizado y blindado para contratos, planos y reglamentos siempre disponibles."
-
-[service_logistics_title]
-other = "Logística de Servicios"
-[service_logistics_empower]
-other = "Centralice el mantenimiento"
-[service_logistics_desc]
-other = "Centralice las solicitudes de mantenimiento en un flujo de trabajo automatizado que nunca se detiene."
-
-[resolution_channel_title]
-other = "Canal de Resolución"
-[resolution_channel_empower]
-other = "Elimine malentendidos"
-[resolution_channel_desc]
-other = "Comunicación oficial y trazable que elimina el ruido operativo y acelera los acuerdos comunitarios."
-
-# 3. Control e Infraestructura (Seguridad)
-[security_header]
-other = "Control e Infraestructura"
-[security_focus]
-other = "Enfoque: BLINDAJE"
-
-[shielded_perimeter_title]
-other = "Perímetro Blindado"
-[shielded_perimeter_empower]
-other = "Gestione accesos con rigor"
-[shielded_perimeter_desc]
-other = "Gestión rigurosa de entradas y salidas con registro biométrico e instantáneo en la nube."
-
-[logistics_management_title]
-other = "Gestión de Logística"
-[logistics_management_empower]
-other = "Controle entregas e insumos"
-[logistics_management_desc]
-other = "Control total sobre la recepción de insumos operativos y entregas de última milla para residentes."
-
-[activity_monitor_title]
-other = "Monitor de Actividad"
-[activity_monitor_empower]
-other = "Capture eventos en tiempo real"
-[activity_monitor_desc]
-other = "Una bitácora digital que captura cada evento crítico y ronda de seguridad dentro del condominio."
-
-[staff_supervision_title]
-other = "Supervisión de Staff"
-[staff_supervision_empower]
-other = "Audite el desempeño operativo"
-[staff_supervision_desc]
-other = "Coordine y audite el desempeño del personal operativo y proveedores desde una sola pantalla de control."
-
-[tenant_portal_title]
-other = "Portal del Inquilino"
-
-[tenant_portal_desc]
-other = "Proporcione una experiencia de marca fluida para que los residentes gestionen arrendamientos y envíen solicitudes."
-
-[rent_collection_title]
-other = "Cobro de Alquiler"
-
-[rent_collection_desc]
-other = "Optimice su flujo de caja con facturación automatizada y conciliación en tiempo real."
-
-[maintenance_title]
-other = "Mantenimiento"
-
-[maintenance_desc]
-other = "Rastree problemas desde el envío hasta la resolución con asignaciones automatizadas a proveedores."
-
-[predictive_yield_chip]
-other = "Enfoque en ROI"
-
-[predictive_yield_title]
-other = "Rendimiento Predictivo"
-
-[predictive_yield_desc]
-other = "Maximice los ingresos con IA que analiza las tendencias del mercado y optimiza los precios en tiempo real."
-
-[smart_access_chip]
-other = "Listo para IoT"
-
-[smart_access_title]
-other = "Acceso Inteligente"
-
-[smart_access_desc]
-other = "Integración unificada de IoT para entrada sin llave, control de clima inteligente y seguridad de las instalaciones."
-
-[esg_compliance_chip]
-other = "Listo para Auditoría"
-
-[esg_compliance_title]
-other = "Cumplimiento ESG"
-
-[esg_compliance_desc]
-other = "Informes de sostenibilidad automatizados y monitoreo de energía para inversores institucionales."
-
-[deployment_badge]
-other = "NÚCLEO INTELIGENTE DE GESTIÓN PATRIMONIAL"
-
-[alt_hero]
-other = "Arquitectura Empresarial Vilkor"
-
-[badge_smart_core]
-other = "NÚCLEO INTELIGENTE DE GESTIÓN PATRIMONIAL"
-
-[label_secure_cloud]
-other = "Datos seguros 24/7 en la nube."
-
-[label_cross_platform]
-other = "Acceda desde su computadora, móvil o tablet."
-
-[command_headline]
-other = "Lidere su Operación con Transparencia y Control Total"
-
-[command_subtitle]
-other = "Deje atrás procesos ambiguos y lentos. Evolucione a la plataforma diseñada para automatizar su gestión de desarrollos verticales y horizontales, brindando certeza operativa y administrativa."
-
-[soc2_compliant]
-other = "Seguridad de Grado Bancario"
-
-[encryption_label]
-other = "Cifrado AES-256"
-
-[gdpr_ready]
-other = "Privacidad Garantizada (GDPR)"
-
-[why_vilkor_subtitle]
-other = "Entendemos perfectamente los problemas que malas administraciones generan, lo hemos vivido. Vilkor es una plataforma en la nube que busca total certeza y transparencia en la gestión diaria de su propiedad."
-
-
-[rapid_deployment_title]
-other = "Onboarding Sencillo"
-[rapid_deployment_desc]
-other = "Eliminamos la complejidad tecnológica. Le acompañamos personalmente en la configuración y capacitación de su equipo, asegurando que Vilkor se convierta en el motor de su operación diaria sin fricciones ni curvas de aprendizaje lentas."
-
-
-[demo_subtitle]
-other = "Cuéntenos un poco sobre sus operaciones y adaptaremos el recorrido a sus necesidades específicas."
-
-[first_name]
-other = "Nombre"
-
-[last_name]
-other = "Apellido"
-
-[work_email]
-other = "Correo Electrónico de Trabajo"
-
-[privacy_promise]
-other = "No compartiremos su información con terceros."
-
-[alt_dashboard]
-other = "Interfaz del Panel de Control"
-
-[phone_number]
-other = "Número de Teléfono"
-[processing]
-other = "Procesando..."
-
-[schedule_demo]
-other = "Agendar Demo"
-
-[cookie_title]
-other = "Privacidad y Cookies"
-[cookie_text]
-other = "Utilizamos cookies para mejorar su experiencia de navegación, ofrecer contenido personalizado y analizar nuestro tráfico. Al hacer clic en 'Aceptar todo', usted consiente nuestro uso de cookies."
-[cookie_accept]
-other = "Aceptar todo"
-[cookie_decline]
-other = "Rechazar todo"
-
-[onboarding_architect_msg]
-other = "Nos pondremos en contacto contigo a la brevedad."
-
-[first_name_placeholder]
-other = "Santiago"
-
-[last_name_placeholder]
-other = "Pérez"
-
-[work_email_placeholder]
-other = "juan.perez@empresa.com"
-
-[phone_placeholder]
-other = "55 1234 5678"
-
-
-[faq_footer_text]
-other = "¿Tiene más dudas?"
-
-[faq_footer_link]
-other = "Hable con uno de nuestros ingenieros de venta"
-
-[nav_solutions]
-other = "Soluciones"
-[nav_features]
-other = "Funcionalidades"
-[nav_why]
-other = "Beneficios"
-[nav_pricing]
-other = "Precios"
-[nav_faq]
-other = "FAQ"
-[nav_contact]
-other = "Agendar Demo"
-
-[footer_platform]
-other = "Plataforma"
-
-[footer_legal]
-other = "Legal"
-
-[footer_location]
-other = "🏢 Coacalco, Estado de México, México"
-
-[contact_email]
-other = "hola@vilkor.xyz"
-
-[contact_label]
-other = "Contacto"
-
-[footer_privacy]
-other = "Privacidad"
-
-[footer_terms]
-other = "Términos de Servicio"
-
-[terms_title]
-other = "Términos y Condiciones de Uso – Vilkor PMS"
-
-[terms_content]
-other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última actualización: 2 de mayo de 2026</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Procesamiento de Pagos y Comisiones</h4> <p>El servicio de pagos en Vilkor se realiza a través de la infraestructura de <strong>Stripe</strong>.</p> <ul class='list-disc pl-5 mt-2 space-y-1'> <li><strong>Comisiones:</strong> El Usuario acepta que el uso de la pasarela de pagos conlleva comisiones que dependen de las políticas vigentes de Stripe. Vilkor se reserva el derecho de aplicar cargos por servicio adicionales desglosados al momento de la transacción.</li> <li><strong>Independencia Financiera:</strong> Vilkor no retiene fondos ni interviene en el proceso de liquidación. Aclaraciones sobre transferencias deben gestionarse vía Stripe o su institución bancaria.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Conducta y Convivencia</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Uso Aceptable:</strong> Queda estrictamente prohibido el uso de lenguaje ofensivo, discriminatorio o violento en cualquier módulo de la plataforma.</li> <li><strong>Deslinde de Interacción:</strong> Vilkor es un facilitador tecnológico. No supervisamos comunicaciones privadas y nos deslindamos de responsabilidades derivadas de conflictos entre residentes, staff o administradores.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Gestión de Datos y Almacenamiento</h4> <p>Vilkor permite la carga de documentos y gestión de archivos bajo un esquema de <strong>almacenamiento dinámico</strong> sujeto a los límites de nuestro proveedor de infraestructura cloud. El Usuario es responsable de mantener respaldos externos de documentación crítica.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Terminación del Servicio</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Periodo de Gracia:</strong> Tras la cancelación, el Administrador tendrá <strong>30 días naturales</strong> para exportar su información.</li> <li><strong>Eliminación:</strong> Transcurrido dicho plazo, Vilkor eliminará definitivamente los datos para garantizar la privacidad y optimización del sistema.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Deslinde de IA y Soporte (SLA)</h4> <p>El uso de agentes de <strong>IA</strong> es de carácter informativo. Las decisiones finales son responsabilidad del Usuario Humano. La disponibilidad técnica se rige exclusivamente por el SLA de nuestro proveedor de nube.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Ley Aplicable y Jurisdicción</h4> <p>Este contrato se rige por las leyes de <strong>México</strong>. Cualquier disputa será resuelta en los tribunales competentes de la Ciudad de México / Estado de México.</p> </section> </div>"
-
-[privacy_title]
-other = "Aviso de Privacidad Integral – Vilkor PMS"
-
-[privacy_content]
-other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última actualización: 2 de mayo de 2026</p> <p>En cumplimiento con la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong>, se pone a su disposición el presente Aviso de Privacidad Integral.</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Identidad y Domicilio</h4> <p>El responsable del tratamiento de sus datos personales es el equipo de <strong>Vilkor</strong>. Contacto: <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a>.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Datos Personales Recabados</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Identificación:</strong> Nombre completo, fotografía (opcional) y rol.</li> <li><strong>Contacto:</strong> Correo electrónico, teléfono y unidad/departmento.</li> <li><strong>Financieros:</strong> Procesados directamente por <strong>Stripe</strong>.</li> <li><strong>Uso:</strong> Registros de acceso, logs e interacciones con agentes de IA.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Finalidades del Tratamiento</h4> <ul class='list-disc pl-5 space-y-1'> <li>Gestionar el control de acceso y administración.</li> <li>Facilitar comunicación interna (Residentes, Staff, Admins).</li> <li>Procesar pagos automatizados vía Stripe.</li> <li>Optimizar la gestión operativa mediante Inteligencia Artificial.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Transferencia de Datos</h4> <p>Sus datos pueden ser transferidos a terceros únicamente para la ejecución de transacciones financieras (Stripe), alojamiento en infraestructura segura (Cloud) o por requerimiento de autoridades competentes.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Derechos ARCO</h4> <p>Usted tiene derecho al <strong>Acceso, Rectificación, Cancelación u Oposición</strong> de sus datos. Envíe su solicitud a <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a> con identificación oficial digitalizada.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Consentimiento para uso de IA</h4> <p>Al utilizar Vilkor, el usuario consiente el procesamiento de información operativa por modelos de lenguaje para generar resúmenes, reportes y automatizaciones.</p> </section> </div>"
-
-[send_another]
-other = "Enviar otra solicitud"
-
-[understood]
-other = "Entendido"
-
-[select_region]
-other = "Seleccionar Región"
-
-[cancel]
-other = "Cancelar"
+[explore_all]
+other = "Explorar todas las funciones"

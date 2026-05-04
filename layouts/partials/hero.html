@@ -36,17 +36,20 @@
     
     <!-- Bottom Row: Full-width Stats Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-12 lg:gap-16 py-12 border-t border-on-background/10 dark:border-white/10 opacity-95">
+        <!-- 1) CONTROL -->
         <div class="flex flex-col gap-2 items-center lg:items-start text-center lg:text-left">
+            <span class="font-stats-display font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white tracking-tighter leading-none">{{ T "tech_stack_value" }}</span>
+            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant font-bold leading-tight">{{ T "tech_stack_label" }}</span>
+        </div>
+        <!-- 2) AUDITORÍA -->
+        <div class="flex flex-col gap-2 items-center lg:items-start text-center lg:text-left sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-10 lg:pl-16">
             <span class="font-stats-display font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white tracking-tighter leading-none">{{ T "scale_potential_value" }}</span>
             <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant font-bold leading-tight">{{ T "scale_potential_label" }}</span>
         </div>
+        <!-- 3) SOLIDEZ -->
         <div class="flex flex-col gap-2 items-center lg:items-start text-center lg:text-left sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-10 lg:pl-16">
             <span class="font-stats-display font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white tracking-tighter leading-none">{{ T "institutional_rigor_value" }}</span>
             <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant font-bold leading-tight">{{ T "institutional_rigor_label" }}</span>
-        </div>
-        <div class="flex flex-col gap-2 items-center lg:items-start text-center lg:text-left sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-10 lg:pl-16">
-            <span class="font-stats-display font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white tracking-tighter leading-none">{{ T "tech_stack_value" }}</span>
-            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant font-bold leading-tight">{{ T "tech_stack_label" }}</span>
         </div>
     </div>
 </section>
