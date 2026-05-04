@@ -102,7 +102,7 @@
             </div>
             
             <!-- Success Message (Refined & Institutional) -->
-            <div id="success-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 rounded-[2.5rem]" style="display: none;">
+            <div id="final-success-check-123" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 rounded-[2.5rem]" style="display: none;">
                 <!-- Centered Icon with protection zone -->
                 <div class="mb-8 md:mb-10 flex flex-col items-center">
                     <div class="w-24 h-24 md:w-28 md:h-28 bg-primary-container/10 rounded-full flex items-center justify-center animate-success-check shadow-inner border border-primary-container/20">
@@ -124,7 +124,7 @@
             </div>
 
             <!-- Error Message (SOLID FLAT OVERLAY) -->
-            <div id="error-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-8 md:p-12 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 backdrop-blur-none" style="display: none;">
+            <div id="contact-error-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-8 md:p-12 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 backdrop-blur-none" style="display: none;">
                 <div class="w-20 h-20 md:w-24 md:h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-8">
                     <span class="material-symbols-outlined text-red-500 text-[48px] md:text-[56px]">priority_high</span>
                 </div>
@@ -169,8 +169,8 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
     const submitBtn = document.getElementById('submit-btn');
     const btnText = document.getElementById('btn-text');
     const content = document.getElementById('demo-form-content');
-    const success = document.getElementById('success-message');
-    const errorMsg = document.getElementById('error-message');
+    const success = document.getElementById('final-success-check-123');
+    const errorMsg = document.getElementById('contact-error-message');
     const nameDisplay = document.getElementById('user-name-display');
 
     // UI Feedback

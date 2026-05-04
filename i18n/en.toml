@@ -179,7 +179,29 @@ other = "The future of property management. Connected."
 other = "Intelligent Operations"
 
 [intelligent_ops_desc]
-other = "We understand the problems that poor management generates; we have lived them. Vilkor is a cloud platform that seeks total certainty and transparency in the daily management of your property."
+other = """
+<div class="space-y-6 text-on-surface-variant dark:text-gray-300">
+    <p class="font-body-lg text-[18px] leading-relaxed">
+        Managing is protecting people's assets and harmony. Vilkor professionalizes your management through three pillars of excellence:
+    </p>
+
+    <ul class="space-y-4">
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">account_balance_wallet</span>
+            <p class="text-sm"><strong>Financial Intelligence:</strong> Automate monitoring and reports for total transparency and without errors, obtaining information instantly without waiting for days.</p>
+        </li>
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">forum</span>
+            <p class="text-sm"><strong>Clear Communication:</strong> Create notices instantly, manage requests, and centralize messages with your administrator, ensuring impeccable follow-up and timely resolution.</p>
+        </li>
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">widgets</span>
+            <p class="text-sm"><strong>Modular Operations:</strong> Organize coexistence through automatic reservations, access control, and scheduled maintenance of your assets.</p>
+        </li>
+    </ul>
+</div>
+"""
+
 
 [enterprise_grade]
 other = "Enterprise Grade System"
@@ -446,7 +468,9 @@ other = "AES-256 Encryption"
 other = "GUARANTEED CONFIDENTIALITY"
 
 [why_vilkor_subtitle]
-other = "We understand the problems that poor management generates. Vilkor is a cloud platform that seeks total certainty and transparency in the daily management of your property."
+other = "We know what it's like to deal with poor management in your home, from inefficiencies to lack of transparency. That's why we've created technology that enforces best practices and accountability, with a focus centered on operational quality, communication, and traceability."
+
+
 
 [rapid_deployment_title]
 other = "Frictionless Onboarding"

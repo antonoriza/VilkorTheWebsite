@@ -12,13 +12,13 @@
             {{ $langData := index .Site.Data .Language.Lang }}
             {{ if $langData.faqs }}
                 {{ range $index, $item := $langData.faqs.items }}
-                <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-300 hover:border-[#34d399]/30">
+                <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-500 hover:border-[#34d399]/30 open:bg-primary-container/5 dark:open:bg-[#34d399]/5">
                     <details class="group/item">
                         <summary class="flex items-center justify-between p-5 md:p-7 cursor-pointer list-none">
                             <h3 class="font-bold text-base md:text-[18px] text-on-background dark:text-white pr-6 md:pr-8">{{ $item.question }}</h3>
-                            <span class="material-symbols-outlined text-[#34d399] transition-transform duration-300 group-open/item:rotate-180">expand_more</span>
+                            <span class="material-symbols-outlined text-[#34d399] transition-transform duration-500 group-open/item:rotate-45">add</span>
                         </summary>
-                        <div class="px-5 md:px-7 pb-5 md:pb-7 text-sm md:text-base text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div class="px-5 md:px-7 pb-5 md:pb-7 text-sm md:text-base text-on-surface-variant dark:text-gray-400 leading-relaxed animate-in fade-in slide-in-from-top-2 duration-500">
                             {{ $item.answer | safeHTML }}
                         </div>
                     </details>

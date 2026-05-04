@@ -1,31 +1,39 @@
-<!-- 3) why vilkor? -->
+<!-- why vilkor? (Closing Section) -->
 <section id="why-vilkor" class="py-12 md:py-20 px-6 md:px-8 bg-on-background/5 dark:bg-zinc-950 scroll-mt-24">
     <div class="max-w-container-max mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             <div class="space-y-6 md:space-y-8 text-center lg:text-left" data-aos="fade-right">
-                <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#674bb5]/10 border border-[#674bb5]/20 text-[#674bb5] font-bold text-[10px] md:text-[11px] uppercase tracking-[0.2em] mx-auto lg:mx-0">
-                    <span class="w-2 h-2 bg-[#674bb5] rounded-full animate-pulse"></span>
+                <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 text-[#8b5cf6] font-bold text-[10px] md:text-[11px] uppercase tracking-[0.2em] mx-auto lg:mx-0">
+                    <span class="w-2 h-2 bg-[#8b5cf6] rounded-full animate-pulse"></span>
                     {{ T "why_vilkor" }}
                 </div>
                 <h2 class="font-h1 font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white leading-tight tracking-tight">
-                    {{ T "intelligent_operations" }}
+                    {{ T "why_vilkor" }}
                 </h2>
-                <div class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 space-y-6 max-w-xl mx-auto lg:mx-0">
-                    {{ T "intelligent_ops_desc" | safeHTML }}
+                <div class="font-body-lg text-lg md:text-xl text-on-surface-variant dark:text-gray-400 space-y-6 max-w-xl mx-auto lg:mx-0 leading-relaxed italic border-l-4 border-tertiary pl-6">
+                    {{ T "why_vilkor_subtitle" }}
                 </div>
+
                 <div class="pt-4 md:pt-6 flex justify-center lg:justify-start">
-                    <a href="#book-a-demo" class="group flex items-center gap-3 font-bold text-on-background dark:text-white hover:text-[#34d399] transition-colors">
-                        {{ T "start_operating" }}
-                        <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+                    <a href="#book-a-demo" class="group relative px-8 py-4 rounded-full overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-3">
+                        <!-- Glass Background -->
+                        <div class="absolute inset-0 bg-tertiary/5 group-hover:bg-tertiary/10 backdrop-blur-md transition-colors"></div>
+                        <div class="absolute inset-0 border border-tertiary/20 group-hover:border-tertiary/40 rounded-full transition-colors"></div>
+                        
+                        <span class="relative z-10 font-bold text-on-background dark:text-white flex items-center gap-2">
+                            {{ T "start_operating" }}
+                            <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </span>
                     </a>
                 </div>
+
             </div>
             
             <div class="relative mt-8 lg:mt-0" data-aos="fade-left">
-                <div class="absolute -inset-10 bg-[#674bb5]/10 blur-[80px] rounded-full opacity-40"></div>
+                <div class="absolute -inset-10 bg-[#8b5cf6]/10 blur-[80px] rounded-full opacity-40"></div>
                 <div class="glass rounded-[2rem] md:rounded-[3rem] border border-white/40 dark:border-white/10 overflow-hidden shadow-2xl relative z-10 transform lg:hover:scale-105 transition-transform duration-700 aspect-square sm:aspect-video lg:aspect-square">
                     <img alt="{{ T "why_vilkor" }}" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuvOzxZ6julUV_plZ0u-hW-JCi28sy3GKQxGDtYirQAlgD_EqTrRzKvsXcle_P04ZArXftsqKTvma0jZLsK8X6YFS926lnbMPIVDr_C6A3X_QKEnEr1ZdW82fiPW23D5k45oqra4UmyRwYRTW3Ndhfx3mq4R4dxilBDp-V6eZPAzJtwO3k-n_fh0WsN--QqUycd6ntJ4gqeDA9EgsqMeY902ciXsf2sSOzK-RbAQCaL7YMrF8wGX9_gO3V4AZunyETzQWODTcVj-01" />
-                    <div class="absolute inset-0 bg-gradient-to-tr from-[#674bb5]/20 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-tr from-[#8b5cf6]/20 to-transparent"></div>
                 </div>
             </div>
         </div>

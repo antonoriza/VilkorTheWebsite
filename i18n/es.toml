@@ -5,7 +5,7 @@ other = "Una plataforma, control total"
 other = "Hey, no copies mis textos :P"
 
 [hero_subtitle]
-other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
+other = "Sienta la libertad de una administración que fluye. Vilkor automatiza las finanzas, operaciones y comunicación de tu comunidad en tiempo real en una sola plataforma siempre disponible, auditable y segura."
 
 [site_description]
 other = "Vilkor es la plataforma líder en gestión de propiedades y desarrollos inmobiliarios, diseñada para ofrecer transparencia, control y eficiencia operativa total."
@@ -137,20 +137,21 @@ other = """
 
     <ul class="space-y-4">
         <li class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-[#674bb5] text-xl mt-1">account_balance_wallet</span>
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">account_balance_wallet</span>
             <p class="text-sm"><strong>Inteligencia Financiera:</strong> Automatice el monitoreo y reportes para una transparencia total y sin errores, obteniendo información al instante sin esperar días.</p>
         </li>
         <li class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-[#674bb5] text-xl mt-1">forum</span>
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">forum</span>
             <p class="text-sm"><strong>Comunicación Clara:</strong> Cree comunicados al instante, gestione peticiones y centralice mensajes con su administrador, asegurando un seguimiento impecable y resolución oportuna.</p>
         </li>
         <li class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-[#674bb5] text-xl mt-1">widgets</span>
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">widgets</span>
             <p class="text-sm"><strong>Operativa Modular:</strong> Organice la convivencia mediante reservas automáticas, control de accesos y mantenimiento programado de sus activos.</p>
         </li>
     </ul>
 </div>
 """
+
 
 [enterprise_grade]
 other = "Sistema de Grado Empresarial"
@@ -159,7 +160,7 @@ other = "Sistema de Grado Empresarial"
 other = "Acceso Anticipado"
 
 [hero_description]
-other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
+other = "Sienta la libertad de una administración que fluye. Vilkor automatiza las finanzas, operaciones y comunicación de tu comunidad en tiempo real en una sola plataforma siempre disponible, auditable y segura."
 
 [explore_platform]
 other = "Conoce más"
@@ -528,7 +529,9 @@ other = "Legal"
 other = "Todos los derechos reservados."
 
 [why_vilkor_subtitle]
-other = "Entendemos perfectamente los problemas que malas administraciones generan, lo hemos vivido. Vilkor es una plataforma en la nube que busca total certeza y transparencia en la gestión diaria de su propiedad."
+other = "Sabemos lo que es tener una mala administración en tu hogar, desde ineficiencias hasta corrupción. Por ello, hemos creado tecnología que enforza transparencia y buenas prácticas bajo un enfoque centrado en calidad operativa, comunicación y trazabilidad."
+
+
 
 
 [rapid_deployment_title]

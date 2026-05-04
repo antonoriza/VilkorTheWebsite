@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ .Lang }}">
+<html lang="{{ .Lang }}" class="overflow-x-hidden">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -13,6 +13,10 @@
     <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}"/>
     <meta property="og:description" content="{{ T "site_description" }}"/>
     <meta property="og:image" content="{{ .Site.BaseURL }}images/og-image.png"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}"/>
+    <meta name="twitter:description" content="{{ T "site_description" }}"/>
+    <meta name="twitter:image" content="{{ .Site.BaseURL }}images/og-image.png"/>
     
     <!-- Cache Control: Force freshness on every load -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -60,7 +64,10 @@
         }
     </script>
 </head>
-<body class="bg-background text-on-background dark:bg-[#0a0a0a] dark:text-gray-100 antialiased selection:bg-primary-container transition-colors duration-500">
+<body class="bg-background text-on-background dark:bg-[#0a0a0a] dark:text-gray-100 antialiased selection:bg-primary-container transition-colors duration-500 overflow-x-hidden">
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-primary-container to-[#34d399] z-[1000] w-0 transition-all duration-150 ease-out shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
+
 
     {{ partial "nav.html" . }}
 
@@ -81,6 +88,14 @@
             else html.classList.remove('dark');
         };
         setInitialTheme();
+        
+        // Scroll Progress Logic
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("scroll-progress").style.width = scrolled + "%";
+        }, { passive: true });
 
         document.addEventListener('DOMContentLoaded', () => {
             // AOS Init
@@ -92,13 +107,40 @@
                 disable: 'mobile' // Disable on mobile for performance if needed
             });
 
-            // Optimized Dark Mode Toggle
+            // Optimized Dark Mode Toggle with Animation
             const toggle = document.getElementById('dark-mode-toggle');
             if (toggle) {
                 toggle.addEventListener('click', () => {
-                    html.classList.toggle('dark');
-                    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+                    const icon = toggle.querySelector('.material-symbols-outlined:not(.hidden)');
+                    icon.style.transform = 'rotate(360deg) scale(0)';
+                    icon.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        html.classList.toggle('dark');
+                        localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+                        
+                        const newIcon = toggle.querySelector('.material-symbols-outlined:not(.hidden)');
+                        newIcon.style.transform = 'rotate(-360deg) scale(0)';
+                        newIcon.style.opacity = '0';
+                        
+                        requestAnimationFrame(() => {
+                            newIcon.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                            newIcon.style.transform = 'rotate(0deg) scale(1)';
+                            newIcon.style.opacity = '1';
+                        });
+                    }, 250);
                 });
+            }
+            
+            // Hero Parallax Logic
+            const heroImage = document.getElementById('hero-image');
+            if (heroImage) {
+                window.addEventListener('scroll', () => {
+                    const scrolled = window.pageYOffset;
+                    if (scrolled < 1000) {
+                        heroImage.style.transform = `translateY(${scrolled * 0.1}px)`;
+                    }
+                }, { passive: true });
             }
 
             // High-Performance 3D Tilt (Optimized & Leak-Free)

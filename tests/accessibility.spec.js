@@ -21,9 +21,10 @@ test.describe('Vilkor Accessibility Audit', () => {
   });
 
   test('Pricing section should be accessible', async ({ page }) => {
-    await page.goto('/es/#pricing');
+    await page.goto('/es/');
+    await page.waitForLoadState('networkidle');
     await injectAxe(page);
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000); // Wait for AOS animations to settle
     await checkA11y(page, '#pricing', {
       includedImpacts: ['critical', 'serious']
     });

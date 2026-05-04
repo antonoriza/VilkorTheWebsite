@@ -7,8 +7,8 @@
             <!-- Pricing Toggle Switch -->
             <div class="flex items-center justify-center gap-4 mt-8 mb-12">
                 <span id="label-monthly" class="text-sm font-bold text-on-background dark:text-white transition-opacity duration-300">{{ T "pricing_monthly" }}</span>
-                <button id="pricing-toggle" aria-label="{{ T "pricing_toggle_label" }}" class="relative w-14 h-7 bg-on-background/10 dark:bg-white/10 rounded-full transition-colors duration-300 focus:outline-none group">
-                    <div id="toggle-knob" class="absolute left-1 top-1 w-5 h-5 bg-white dark:bg-primary-container rounded-full shadow-md transition-transform duration-300"></div>
+                <button id="pricing-toggle" aria-label="{{ T "pricing_toggle_label" }}" class="relative w-14 h-7 bg-zinc-200 dark:bg-white/10 border border-on-background/5 dark:border-white/5 rounded-full transition-colors duration-300 focus:outline-none group">
+                    <div id="toggle-knob" class="absolute left-1 top-1 w-5 h-5 bg-primary-container rounded-full shadow-lg transition-transform duration-300"></div>
                 </button>
                 <div class="flex items-center gap-2">
                     <span id="label-annual" class="text-sm font-bold text-on-surface-variant dark:text-gray-400 transition-opacity duration-300">{{ T "pricing_annual" }}</span>
@@ -20,7 +20,7 @@
         <!-- 5 Plans Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-4 lg:gap-4 items-stretch">
             <!-- 1. Starter -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="100">
+            <div class="pricing-card glass shadow-premium p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="100">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Starter</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="649" data-annual="519">$649</span>
@@ -34,7 +34,7 @@
             </div>
 
             <!-- 2. Standard -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="200">
+            <div class="pricing-card glass shadow-premium p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="200">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Standard</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="990" data-annual="792">$990</span>
@@ -48,7 +48,7 @@
             </div>
 
             <!-- 3. Pro (Most Popular) -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border-2 border-primary-container flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:shadow-[0_0_30px_rgba(52,211,153,0.2)] relative z-10 group bg-primary-container/5" data-aos="fade-up" data-aos-delay="300">
+            <div class="pricing-card glass shadow-premium p-6 md:p-8 rounded-[2rem] border-2 border-primary-container flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:shadow-[0_0_30px_rgba(52,211,153,0.2)] relative z-10 group bg-primary-container/5" data-aos="fade-up" data-aos-delay="300">
                 <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-[#002114] text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg">{{ T "pricing_popular" }}</div>
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Pro</h3>
                 <div class="mb-6">
@@ -63,7 +63,7 @@
             </div>
 
             <!-- 4. Class -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="400">
+            <div class="pricing-card glass shadow-premium p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="400">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Class</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="1,900" data-annual="1,520">$1,900</span>
@@ -77,7 +77,7 @@
             </div>
 
             <!-- 5. Enterprise -->
-            <div class="pricing-card bg-[#121212] p-6 md:p-8 rounded-[2rem] border border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-white/20 hover:shadow-2xl relative group" data-aos="fade-up" data-aos-delay="500">
+            <div class="pricing-card shadow-premium bg-[#121212] p-6 md:p-8 rounded-[2rem] border border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-white/20 hover:shadow-2xl relative group" data-aos="fade-up" data-aos-delay="500">
                 <h3 class="font-bold text-lg text-white mb-1">Enterprise</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-white">{{ T "pricing_enterprise_quote" }}</span>
@@ -111,6 +111,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Toggle Visuals
             knob.style.transform = isAnnual ? 'translateX(28px)' : 'translateX(0)';
+            toggle.classList.toggle('bg-primary-container/30', isAnnual);
+            toggle.classList.toggle('bg-zinc-200', !isAnnual);
             labelMonthly.classList.toggle('text-on-surface-variant', isAnnual);
             labelMonthly.classList.toggle('dark:text-gray-400', isAnnual);
             labelAnnual.classList.toggle('text-on-surface-variant', !isAnnual);

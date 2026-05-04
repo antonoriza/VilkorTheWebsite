@@ -3,26 +3,26 @@
     <div class="absolute inset-0 bg-primary-container/20 blur-[120px] opacity-20 animate-pulse"></div>
     <div class="relative z-10">
         <span class="font-label-sm text-primary dark:text-white text-sm uppercase tracking-[0.3em] mb-6 block">{{ T "deployment_badge" }}</span>
-        <h2 class="font-h1 font-bold text-[64px] text-white max-w-5xl mx-auto mb-8 tracking-tighter leading-none">{{ T "command_headline" }}</h2>
+        <h2 class="font-h1 font-bold text-4xl md:text-[64px] text-white max-w-5xl mx-auto mb-8 tracking-tighter leading-none">{{ T "command_headline" }}</h2>
         <p class="text-white/60 text-xl max-w-2xl mx-auto mb-12">{{ T "command_subtitle" }}</p>
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-sm mb-16">
-        <a class="bg-primary-container text-on-primary-fixed font-label-sm text-label-sm px-12 py-6 rounded-full min-h-[60px] flex items-center justify-center w-full sm:w-auto hover:shadow-[0_0_50px_rgba(52,211,153,0.4)] transition-all duration-500 scale-110 hover:scale-115" href="#book-a-demo">
-            {{ T "start_operating" }}
-        </a>
-    </div>
-    <div class="flex justify-center items-center gap-10 opacity-40 grayscale contrast-125">
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-white">verified_user</span>
-            <span class="text-white text-[11px] uppercase tracking-widest font-bold">{{ T "soc2_compliant" }}</span>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-sm mb-16">
+            <a class="bg-gradient-to-b from-primary-container to-[#2bad7d] text-on-primary-fixed font-label-sm text-label-sm px-12 py-6 rounded-full min-h-[60px] flex items-center justify-center w-full sm:w-auto hover:shadow-[0_20px_50px_rgba(52,211,153,0.4)] transition-all duration-500 scale-110 hover:scale-115 border-t border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.3)]" href="#book-a-demo">
+                {{ T "start_operating" }}
+            </a>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-white">security</span>
-            <span class="text-white text-[11px] uppercase tracking-widest font-bold">{{ T "encryption_label" }}</span>
+        <div class="flex justify-center items-center gap-10 opacity-40 grayscale contrast-125">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-white">verified_user</span>
+                <span class="text-white text-[11px] uppercase tracking-widest font-bold">{{ T "soc2_compliant" }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-white">security</span>
+                <span class="text-white text-[11px] uppercase tracking-widest font-bold">{{ T "encryption_label" }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-white">gavel</span>
+                <span class="text-white text-[11px] uppercase tracking-widest font-bold">{{ T "gdpr_ready" }}</span>
+            </div>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-white">gavel</span>
-            <span class="text-white text-[11px] uppercase tracking-widest font-bold">{{ T "gdpr_ready" }}</span>
-        </div>
-    </div>
     </div>
 </section>
