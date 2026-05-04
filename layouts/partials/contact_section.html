@@ -32,14 +32,14 @@
                         <div class="flex flex-col space-y-2">
                             <label for="first-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "first_name" }}</label>
                             <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">person</span>
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">person</span>
                                 <input id="first-name" name="first_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "first_name_placeholder" }}" required type="text" minlength="3"/>
                             </div>
                         </div>
                         <div class="flex flex-col space-y-2">
                             <label for="last-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "last_name" }}</label>
                             <div class="relative">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">badge</span>
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">badge</span>
                                 <input id="last-name" name="last_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "last_name_placeholder" }}" required type="text" minlength="3"/>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                     <div class="flex flex-col space-y-2">
                         <label for="email" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "work_email" }}</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">mail</span>
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">mail</span>
                             <input id="email" name="email" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "work_email_placeholder" }}" required type="email"/>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                         <label for="phone" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "phone_number" }}</label>
                         <div class="flex gap-3">
                             <div class="w-32 flex-shrink-0 relative">
-                                <select name="country_code" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-4 pr-10 rounded-2xl appearance-none cursor-pointer outline-none dark:text-white dark:bg-zinc-900 font-bold text-sm">
+                                <select name="country_code" aria-label="{{ T "select_region" }}" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-4 pr-10 rounded-2xl appearance-none cursor-pointer outline-none dark:text-white dark:bg-zinc-900 font-bold text-sm">
                                     <option value="52" selected>🇲🇽 +52</option>
                                     <option value="1">🇺🇸 +1</option>
                                     <option value="1">🇨🇦 +1</option>
@@ -82,10 +82,10 @@
                                     <option value="58">🇻🇪 +58</option>
                                     <option value="34">🇪🇸 +34</option>
                                 </select>
-                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 pointer-events-none text-[20px]">expand_more</span>
+                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">expand_more</span>
                             </div>
                             <div class="relative flex-grow">
-                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">phone</span>
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">phone</span>
                                 <input id="phone" name="phone" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "phone_placeholder" }}" required type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '');"/>
                             </div>
                         </div>

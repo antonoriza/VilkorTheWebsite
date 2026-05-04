@@ -617,6 +617,9 @@ other = "🏢 Coacalco, Estado de México, México"
 [contact_email]
 other = "hola@vilkor.xyz"
 
+[pricing_toggle_label]
+other = "Cambiar entre facturación mensual y anual"
+
 [contact_label]
 other = "Contacto"
 

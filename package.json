@@ -13,6 +13,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
+    "axe-playwright": "^2.2.2",
     "hugo-extended": "^0.161.1"
   }
 }

@@ -563,3 +563,6 @@ other = "🏢 Coacalco, State of Mexico, Mexico"
 
 [contact_email]
 other = "hola@vilkor.xyz"
+
+[pricing_toggle_label]
+other = "Toggle between monthly and annual pricing"
