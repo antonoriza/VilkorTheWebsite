@@ -2,10 +2,55 @@
 other = "Lidere sua Operação com Transparência e Controle Total"
 
 [hero_subtitle]
-other = "Sinta a liberdade de uma gestão que flui. O Vilkor automatiza as finanças, operações e comunicação da sua comunidade em tempo real em uma única plataforma sempre disponível, auditável e segura."
+other = "Sinta a liberdade de uma gestão que flui. Recupere o controle de seus ativos, erradique o cansaço da papelada e arquivos dispersos, descubra a paz de uma operação totalmente transparente, unificada e previsível."
+
+[site_description]
+other = "Vilkor é a plataforma líder em gestão de propriedades e desenvolvimentos imobiliários, projetada para oferecer transparência, controle e total eficiência operacional."
 
 [pricing_title]
 other = "Planos de Preços"
+
+[pricing_monthly]
+other = "Mensal"
+
+[pricing_annual]
+other = "Anual"
+
+[pricing_per_month]
+other = "mxn / mês"
+
+[pricing_popular]
+other = "Mais Popular"
+
+[pricing_starter_desc]
+other = "Até 30 unidades"
+
+[pricing_starter_admin]
+other = "1 administrador"
+
+[pricing_standard_desc]
+other = "Até 100 unidades"
+
+[pricing_standard_admin]
+other = "3 administradores"
+
+[pricing_pro_desc]
+other = "Até 200 unidades"
+
+[pricing_pro_admin]
+other = "Admin ilimitados"
+
+[pricing_class_desc]
+other = "Até 300 unidades"
+
+[pricing_enterprise_quote]
+other = "Cotação"
+
+[pricing_enterprise_desc]
+other = "+300 unidades"
+
+[pricing_enterprise_support]
+other = "Suporte prioritário"
 
 [pricing_subtitle]
 other = "Soluções escaláveis projetadas para a eficiência operacional de qualquer empreendimento imobiliário, de pequenas comunidades a grandes complexos residenciais."
@@ -57,6 +102,57 @@ other = "FAQ"
 
 [one_platform]
 other = "Uma plataforma, controle total."
+
+[tab_admin]
+other = "Para Administradores"
+
+[tab_resident]
+other = "Para o Residente"
+
+[admin_scalability_title]
+other = "Escalabilidade Operacional"
+
+[admin_scalability_desc]
+other = "Padronize processos e gerencie vários portfólios com uma infraestrutura leve."
+
+[admin_audit_title]
+other = "Rigor de Auditoria"
+
+[admin_audit_desc]
+other = "Relatórios financeiros íntegros e prontos para prestação de contas, sem discrepâncias."
+
+[admin_security_title]
+other = "Segurança Operacional"
+
+[admin_security_desc]
+other = "Rastreabilidade total em cada transação, gestão de equipe e acessos."
+
+[resident_transparency_title]
+other = "Transparência Total"
+
+[resident_transparency_desc]
+other = "Acesso imediato a extratos de conta, regulamentos e evidências de gestão financeira."
+
+[resident_certainty_title]
+other = "Certeza Operacional"
+
+[resident_certainty_desc]
+other = "Canal directo para trâmites, relatórios e acompanhamento formal de solicitações com respostas oportunas."
+
+[resident_value_title]
+other = "Mais-valia Tecnológica"
+
+[resident_value_desc]
+other = "Uma comunidade organizada aumenta o valor real de sua propriedade."
+
+[footer_support]
+other = "Suporte"
+
+[footer_legal]
+other = "Legal"
+
+[footer_rights]
+other = "Todos os direitos reservados."
 
 [no_copy_message]
 other = "Ei, não copie meus conteúdos :P"
@@ -456,8 +552,6 @@ other = "Agendar Demonstração"
 [footer_platform]
 other = "Plataforma"
 
-[footer_legal]
-other = "Legal"
 
 [footer_privacy]
 other = "Política de Privacidade"

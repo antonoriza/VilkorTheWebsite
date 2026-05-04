@@ -6,13 +6,13 @@
             
             <!-- Pricing Toggle Switch -->
             <div class="flex items-center justify-center gap-4 mt-8 mb-12">
-                <span id="label-monthly" class="text-sm font-bold text-on-background dark:text-white transition-opacity duration-300">Mensual</span>
+                <span id="label-monthly" class="text-sm font-bold text-on-background dark:text-white transition-opacity duration-300">{{ T "pricing_monthly" }}</span>
                 <button id="pricing-toggle" class="relative w-14 h-7 bg-on-background/10 dark:bg-white/10 rounded-full transition-colors duration-300 focus:outline-none group">
-                    <div id="toggle-knob" class="absolute left-1 top-1 w-5 h-5 bg-white dark:bg-[#34d399] rounded-full shadow-md transition-transform duration-300"></div>
+                    <div id="toggle-knob" class="absolute left-1 top-1 w-5 h-5 bg-white dark:bg-primary-container rounded-full shadow-md transition-transform duration-300"></div>
                 </button>
                 <div class="flex items-center gap-2">
-                    <span id="label-annual" class="text-sm font-bold text-on-surface-variant dark:text-gray-500 transition-opacity duration-300">Anual</span>
-                    <span class="bg-[#34d399]/10 text-[#34d399] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#34d399]/20">-20%</span>
+                    <span id="label-annual" class="text-sm font-bold text-on-surface-variant dark:text-gray-500 transition-opacity duration-300">{{ T "pricing_annual" }}</span>
+                    <span class="bg-primary-container/10 text-primary-container text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary-container/20">-20%</span>
                 </div>
             </div>
         </div>
@@ -20,71 +20,71 @@
         <!-- 5 Plans Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-4 lg:gap-4 items-stretch">
             <!-- 1. Starter -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="100">
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="100">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Starter</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="649" data-annual="519">$649</span>
-                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">{{ T "pricing_per_month" }}</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 30 viviendas</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>1 administrador</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_starter_desc" }}</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_starter_admin" }}</li>
                 </ul>
-                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-primary-container hover:text-[#002114] hover:border-primary-container transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
 
             <!-- 2. Standard -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="200">
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="200">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Standard</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="990" data-annual="792">$990</span>
-                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">{{ T "pricing_per_month" }}</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 100 viviendas</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>3 administradores</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_standard_desc" }}</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_standard_admin" }}</li>
                 </ul>
-                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-primary-container hover:text-[#002114] hover:border-primary-container transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
 
             <!-- 3. Pro (Most Popular) -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border-2 border-[#34d399] flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:shadow-[0_0_30px_rgba(52,211,153,0.2)] relative z-10 group bg-[#34d399]/5" data-aos="fade-up" data-aos-delay="300">
-                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#34d399] text-[#002114] text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg">Más Popular</div>
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border-2 border-primary-container flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:shadow-[0_0_30px_rgba(52,211,153,0.2)] relative z-10 group bg-primary-container/5" data-aos="fade-up" data-aos-delay="300">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-[#002114] text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg">{{ T "pricing_popular" }}</div>
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Pro</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="1,490" data-annual="1,192">$1,490</span>
-                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">{{ T "pricing_per_month" }}</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 200 viviendas</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_pro_desc" }}</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_pro_admin" }}</li>
                 </ul>
-                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl bg-[#34d399] text-[#002114] font-bold text-[13px] hover:shadow-lg transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl bg-primary-container text-[#002114] font-bold text-[13px] hover:shadow-lg transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
 
             <!-- 4. Class -->
-            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-[#34d399]/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="400">
+            <div class="pricing-card glass p-6 md:p-8 rounded-[2rem] border border-on-background/10 dark:border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-primary-container/40 hover:shadow-xl relative group" data-aos="fade-up" data-aos-delay="400">
                 <h3 class="font-bold text-lg text-on-background dark:text-white mb-1">Class</h3>
                 <div class="mb-6">
                     <span class="text-3xl font-bold text-on-background dark:text-white price-value" data-monthly="1,900" data-annual="1,520">$1,900</span>
-                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">mxn / mes</span>
+                    <span class="text-on-surface-variant dark:text-gray-500 text-[10px] font-bold uppercase tracking-wider ml-1">{{ T "pricing_per_month" }}</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-on-surface-variant dark:text-gray-400 text-sm w-full">
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Hasta 300 viviendas</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Admin ilimitados</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_class_desc" }}</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_pro_admin" }}</li>
                 </ul>
-                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-[#34d399] hover:text-[#002114] hover:border-[#34d399] transition-all text-center">{{ T "pricing_cta_trial" }}</a>
+                <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl border border-on-background/10 dark:border-white/10 font-bold text-[13px] text-on-background dark:text-white hover:bg-primary-container hover:text-[#002114] hover:border-primary-container transition-all text-center">{{ T "pricing_cta_trial" }}</a>
             </div>
 
             <!-- 5. Enterprise -->
             <div class="pricing-card bg-[#121212] p-6 md:p-8 rounded-[2rem] border border-white/10 flex flex-col items-center lg:items-start text-center lg:text-left transition-all duration-500 hover:border-white/20 hover:shadow-2xl relative group" data-aos="fade-up" data-aos-delay="500">
                 <h3 class="font-bold text-lg text-white mb-1">Enterprise</h3>
                 <div class="mb-6">
-                    <span class="text-3xl font-bold text-white">Cotización</span>
+                    <span class="text-3xl font-bold text-white">{{ T "pricing_enterprise_quote" }}</span>
                 </div>
                 <ul class="space-y-3 mb-8 text-gray-400 text-sm w-full">
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>+300 viviendas</li>
-                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-[#34d399] text-lg">check_circle</span>Soporte prioritario</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_enterprise_desc" }}</li>
+                    <li class="flex items-center lg:items-start justify-center lg:justify-start gap-2"><span class="material-symbols-outlined text-primary-container text-lg">check_circle</span>{{ T "pricing_enterprise_support" }}</li>
                 </ul>
                 <a href="#book-a-demo" class="mt-auto w-full py-3 rounded-xl bg-white text-black font-bold text-[13px] hover:bg-gray-200 transition-all text-center">{{ T "pricing_cta_contact" }}</a>
             </div>

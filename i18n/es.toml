@@ -7,6 +7,9 @@ other = "Hey, no copies mis textos :P"
 [hero_subtitle]
 other = "Sienta la libertad de una gestión que fluye. Recupere el control de sus activos, erradique la fatiga del papeleo y archivos dispersos, descubra la paz de una operación totalmente transparente, unificada y predecible."
 
+[site_description]
+other = "Vilkor es la plataforma líder en gestión de propiedades y desarrollos inmobiliarios, diseñada para ofrecer transparencia, control y eficiencia operativa total."
+
 [book_demo]
 other = "Agendar Demo"
 
@@ -39,6 +42,48 @@ other = "¿Por qué Vilkor?"
 
 [pricing_title]
 other = "Planes de Precios"
+
+[pricing_monthly]
+other = "Mensual"
+
+[pricing_annual]
+other = "Anual"
+
+[pricing_per_month]
+other = "mxn / mes"
+
+[pricing_popular]
+other = "Más Popular"
+
+[pricing_starter_desc]
+other = "Hasta 30 viviendas"
+
+[pricing_starter_admin]
+other = "1 administrador"
+
+[pricing_standard_desc]
+other = "Hasta 100 viviendas"
+
+[pricing_standard_admin]
+other = "3 administradores"
+
+[pricing_pro_desc]
+other = "Hasta 200 viviendas"
+
+[pricing_pro_admin]
+other = "Admin ilimitados"
+
+[pricing_class_desc]
+other = "Hasta 300 viviendas"
+
+[pricing_enterprise_quote]
+other = "Cotización"
+
+[pricing_enterprise_desc]
+other = "+300 viviendas"
+
+[pricing_enterprise_support]
+other = "Soporte prioritario"
 
 [pricing_subtitle]
 other = "Soluciones escalables diseñadas para la eficiencia operativa de cualquier desarrollo inmobiliario, desde pequeñas comunidades hasta grandes complejos residenciales."
@@ -139,6 +184,48 @@ other = "Acceso total desde cualquier equipo hoy."
 
 [ai_automation_chip]
 other = "EFICIENCIA PROFESIONAL"
+
+[tab_admin]
+other = "Para Administradores"
+
+[tab_resident]
+other = "Para el Residente"
+
+[admin_scalability_title]
+other = "Escalabilidad Operativa"
+
+[admin_scalability_desc]
+other = "Estandarice procesos y gestione múltiples carteras con una infraestructura ligera."
+
+[admin_audit_title]
+other = "Rigor de Auditoría"
+
+[admin_audit_desc]
+other = "Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias."
+
+[admin_security_title]
+other = "Seguridad Operativa"
+
+[admin_security_desc]
+other = "Trazabilidad total en cada transacción, gestión de staff y accesos."
+
+[resident_transparency_title]
+other = "Transparencia Total"
+
+[resident_transparency_desc]
+other = "Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera."
+
+[resident_certainty_title]
+other = "Certeza Operativa"
+
+[resident_certainty_desc]
+other = "Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas."
+
+[resident_value_title]
+other = "Plusvalía Tecnológica"
+
+[resident_value_desc]
+other = "Una comunidad organizada aumenta el valor real de su propiedad."
 
 [ai_automation_title]
 other = "Gestión que Demuestra Confianza"
@@ -431,6 +518,15 @@ other = "Cifrado AES-256"
 [gdpr_ready]
 other = "CONFIDENCIALIDAD GARANTIZADA"
 
+[footer_support]
+other = "Soporte"
+
+[footer_legal]
+other = "Legal"
+
+[footer_rights]
+other = "Todos los derechos reservados."
+
 [why_vilkor_subtitle]
 other = "Entendemos perfectamente los problemas que malas administraciones generan, lo hemos vivido. Vilkor es una plataforma en la nube que busca total certeza y transparencia en la gestión diaria de su propiedad."
 
@@ -514,8 +610,6 @@ other = "Agendar Demo"
 [footer_platform]
 other = "Plataforma"
 
-[footer_legal]
-other = "Legal"
 
 [footer_location]
 other = "🏢 Coacalco, Estado de México, México"

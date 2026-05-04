@@ -2,10 +2,55 @@
 other = "Lead Your Operations with Transparency and Total Control"
 
 [hero_subtitle]
-other = "Experience the freedom of seamless management. Vilkor automates your community's finances, operations, and communication in real-time within a single, secure, and auditable platform."
+other = "Feel the freedom of management that flows. Regain control of your assets, eradicate the fatigue of paperwork and scattered files, discover the peace of a fully transparent, unified, and predictable operation."
+
+[site_description]
+other = "Vilkor is the leading platform for property management and real estate development, designed to provide transparency, control, and total operational efficiency."
 
 [pricing_title]
 other = "Pricing Plans"
+
+[pricing_monthly]
+other = "Monthly"
+
+[pricing_annual]
+other = "Annual"
+
+[pricing_per_month]
+other = "mxn / month"
+
+[pricing_popular]
+other = "Most Popular"
+
+[pricing_starter_desc]
+other = "Up to 30 units"
+
+[pricing_starter_admin]
+other = "1 administrator"
+
+[pricing_standard_desc]
+other = "Up to 100 units"
+
+[pricing_standard_admin]
+other = "3 administrators"
+
+[pricing_pro_desc]
+other = "Up to 200 units"
+
+[pricing_pro_admin]
+other = "Unlimited Admins"
+
+[pricing_class_desc]
+other = "Up to 300 units"
+
+[pricing_enterprise_quote]
+other = "Quote"
+
+[pricing_enterprise_desc]
+other = "300+ units"
+
+[pricing_enterprise_support]
+other = "Priority support"
 
 [pricing_subtitle]
 other = "Scalable solutions designed for the operational efficiency of any real estate development, from small communities to large residential complexes."
@@ -57,6 +102,57 @@ other = "FAQ"
 
 [one_platform]
 other = "One platform, total control."
+
+[tab_admin]
+other = "For Administrators"
+
+[tab_resident]
+other = "For Residents"
+
+[admin_scalability_title]
+other = "Operational Scalability"
+
+[admin_scalability_desc]
+other = "Standardize processes and manage multiple portfolios with a lean infrastructure."
+
+[admin_audit_title]
+other = "Audit Rigor"
+
+[admin_audit_desc]
+other = "Complete and ready-to-report financial statements without discrepancies."
+
+[admin_security_title]
+other = "Operational Security"
+
+[admin_security_desc]
+other = "Full traceability in every transaction, staff management, and access control."
+
+[resident_transparency_title]
+other = "Total Transparency"
+
+[resident_transparency_desc]
+other = "Immediate access to account statements, regulations, and financial management evidence."
+
+[resident_certainty_title]
+other = "Operational Certainty"
+
+[resident_certainty_desc]
+other = "Direct channel for procedures, reports, and formal request follow-up with timely responses."
+
+[resident_value_title]
+other = "Technological Value"
+
+[resident_value_desc]
+other = "An organized community increases the real value of your property."
+
+[footer_support]
+other = "Support"
+
+[footer_legal]
+other = "Legal"
+
+[footer_rights]
+other = "All rights reserved."
 
 [no_copy_message]
 other = "Hey, don't copy my content :P"
@@ -432,8 +528,6 @@ other = "Schedule Demo"
 [footer_platform]
 other = "Platform"
 
-[footer_legal]
-other = "Legal"
 
 [footer_privacy]
 other = "Privacy Policy"

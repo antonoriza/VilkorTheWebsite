@@ -3,6 +3,15 @@
    Optimized for Performance & Visual Fidelity
 */
 
+:root {
+    --color-primary: #006c4b;
+    --color-primary-container: #34d399;
+    --color-secondary: #0058be;
+    --color-tertiary: #674bb5;
+    --color-warning: #eab308;
+    --color-on-background: #1a1c17;
+}
+
 html {
     scroll-behavior: smooth;
 }

@@ -6,30 +6,30 @@
             <span class="font-h3 text-[24px] font-black text-on-background dark:text-white uppercase tracking-tighter">
                 Vilkor
             </span>
-            <div class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#34d399] transition-all duration-300 group-hover:w-full"></div>
+            <div class="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary-container transition-all duration-300 group-hover:w-full"></div>
         </a>
 
         <!-- Desktop Navigation Links -->
         <div class="hidden lg:flex items-center gap-10">
-            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#solutions">{{ T "nav_solutions" }}</a>
-            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#features">{{ T "nav_features" }}</a>
-            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#why-vilkor">{{ T "nav_why" }}</a>
-            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#pricing">{{ T "nav_pricing" }}</a>
-            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-[#34d399] dark:hover:text-[#34d399] transition-colors" href="#faq">{{ T "nav_faq" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary-container dark:hover:text-primary-container transition-colors" href="#solutions">{{ T "nav_solutions" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary-container dark:hover:text-primary-container transition-colors" href="#features">{{ T "nav_features" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary-container dark:hover:text-primary-container transition-colors" href="#why-vilkor">{{ T "nav_why" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary-container dark:hover:text-primary-container transition-colors" href="#pricing">{{ T "nav_pricing" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary-container dark:hover:text-primary-container transition-colors" href="#faq">{{ T "nav_faq" }}</a>
         </div>
 
         <!-- Desktop Actions & Settings -->
         <div class="flex items-center gap-4 md:gap-6 z-[110]">
             <!-- Language Switcher (Desktop) -->
             <div class="hidden sm:block relative group">
-                <button class="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-on-surface-variant dark:text-white/50 hover:text-[#34d399] transition-colors">
+                <button class="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-on-surface-variant dark:text-white/50 hover:text-primary-container transition-colors">
                     <span class="material-symbols-outlined text-[18px]">language</span>
                     {{ .Language.LanguageName }}
                 </button>
                 <div class="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                     <div class="glass border border-white/20 p-2 rounded-xl shadow-xl min-w-[140px]">
                         {{ range .AllTranslations }}
-                        <a href="{{ .RelPermalink }}" class="block px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant dark:text-white/70 hover:bg-[#34d399]/10 hover:text-[#34d399] rounded-lg transition-all">
+                        <a href="{{ .RelPermalink }}" class="block px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant dark:text-white/70 hover:bg-primary-container/10 hover:text-primary-container rounded-lg transition-all">
                             {{ .Language.LanguageName }}
                         </a>
                         {{ end }}
@@ -38,13 +38,13 @@
             </div>
 
             <!-- Theme Toggle -->
-            <button id="dark-mode-toggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high dark:bg-white/5 text-on-surface-variant dark:text-white/70 hover:bg-[#34d399]/10 hover:text-[#34d399] transition-all" aria-label="Toggle dark mode">
+            <button id="dark-mode-toggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high dark:bg-white/5 text-on-surface-variant dark:text-white/70 hover:bg-primary-container/10 hover:text-primary-container transition-all" aria-label="Toggle dark mode">
                 <span class="material-symbols-outlined text-[20px] dark:hidden">dark_mode</span>
                 <span class="material-symbols-outlined text-[20px] hidden dark:block">light_mode</span>
             </button>
 
             <!-- CTA -->
-            <a href="#book-a-demo" class="hidden sm:flex px-6 py-3 bg-[#34d399] text-black text-[11px] font-black uppercase tracking-widest rounded-full hover:shadow-[0_0_20px_rgba(52,211,153,0.4)] transition-all shadow-lg shadow-black/5">
+            <a href="#book-a-demo" class="hidden sm:flex px-6 py-3 bg-primary-container text-black text-[11px] font-black uppercase tracking-widest rounded-full hover:shadow-[0_0_20px_rgba(52,211,153,0.4)] transition-all shadow-lg shadow-black/5">
                 {{ T "nav_contact" }}
             </a>
 
@@ -70,13 +70,13 @@
             <!-- Language Switcher (Mobile) -->
             <div class="flex flex-wrap justify-center gap-4">
                 {{ range .AllTranslations }}
-                <a href="{{ .RelPermalink }}" class="text-sm font-bold uppercase tracking-widest {{ if eq $.Language.Lang .Language.Lang }}text-[#34d399]{{ else }}text-on-surface-variant/50{{ end }}">
+                <a href="{{ .RelPermalink }}" class="text-sm font-bold uppercase tracking-widest {{ if eq $.Language.Lang .Language.Lang }}text-primary-container{{ else }}text-on-surface-variant/50{{ end }}">
                     {{ .Language.LanguageName }}
                 </a>
                 {{ end }}
             </div>
 
-            <a href="#book-a-demo" class="mt-8 w-full py-5 bg-[#34d399] text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
+            <a href="#book-a-demo" class="mt-8 w-full py-5 bg-primary-container text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
                 {{ T "nav_contact" }}
             </a>
         </div>

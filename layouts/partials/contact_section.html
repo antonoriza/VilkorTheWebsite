@@ -3,12 +3,12 @@
     <!-- PCB Animated Background - High Fidelity -->
     <div class="absolute inset-0 -z-10 opacity-40 dark:opacity-60 pointer-events-none">
         <svg class="w-full h-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M-100 100 H300 L400 200 V400 L500 500 H1300" stroke="#34d399" stroke-width="2" class="animate-pulse-path" style="filter: drop-shadow(0 0 8px #34d399);"/>
-            <path d="M1300 300 H900 L800 400 V600 L700 700 H-100" stroke="#eab308" stroke-width="2" class="animate-pulse-path" style="animation-delay: 2s; filter: drop-shadow(0 0 8px #eab308);"/>
-            <path d="M1200 100 V300 L1100 400 H800 L700 500 V800" stroke="#3b82f6" stroke-width="2" class="animate-pulse-path" style="animation-delay: 3.5s; filter: drop-shadow(0 0 8px #3b82f6);"/>
-            <circle cx="300" cy="100" r="4" fill="#34d399" class="animate-node-glow"/>
-            <circle cx="900" cy="300" r="4" fill="#eab308" class="animate-node-glow"/>
-            <circle cx="1100" cy="400" r="4" fill="#3b82f6" class="animate-node-glow"/>
+            <path d="M-100 100 H300 L400 200 V400 L500 500 H1300" stroke="primary-container" stroke-width="2" class="animate-pulse-path" style="filter: drop-shadow(0 0 8px primary-container);"/>
+            <path d="M1300 300 H900 L800 400 V600 L700 700 H-100" stroke="warning" stroke-width="2" class="animate-pulse-path" style="animation-delay: 2s; filter: drop-shadow(0 0 8px warning);"/>
+            <path d="M1200 100 V300 L1100 400 H800 L700 500 V800" stroke="secondary" stroke-width="2" class="animate-pulse-path" style="animation-delay: 3.5s; filter: drop-shadow(0 0 8px secondary);"/>
+            <circle cx="300" cy="100" r="4" fill="primary-container" class="animate-node-glow"/>
+            <circle cx="900" cy="300" r="4" fill="warning" class="animate-node-glow"/>
+            <circle cx="1100" cy="400" r="4" fill="secondary" class="animate-node-glow"/>
         </svg>
     </div>
 
@@ -33,14 +33,14 @@
                             <label for="first-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "first_name" }}</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">person</span>
-                                <input id="first-name" name="first_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-[#34d399] transition-all outline-none dark:text-white" placeholder="{{ T "first_name_placeholder" }}" required type="text" minlength="3"/>
+                                <input id="first-name" name="first_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "first_name_placeholder" }}" required type="text" minlength="3"/>
                             </div>
                         </div>
                         <div class="flex flex-col space-y-2">
                             <label for="last-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "last_name" }}</label>
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">badge</span>
-                                <input id="last-name" name="last_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-[#34d399] transition-all outline-none dark:text-white" placeholder="{{ T "last_name_placeholder" }}" required type="text" minlength="3"/>
+                                <input id="last-name" name="last_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "last_name_placeholder" }}" required type="text" minlength="3"/>
                             </div>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                         <label for="email" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "work_email" }}</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">mail</span>
-                            <input id="email" name="email" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-[#34d399] transition-all outline-none dark:text-white" placeholder="{{ T "work_email_placeholder" }}" required type="email"/>
+                            <input id="email" name="email" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "work_email_placeholder" }}" required type="email"/>
                         </div>
                     </div>
 
@@ -57,21 +57,43 @@
                         <label for="phone" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "phone_number" }}</label>
                         <div class="flex gap-3">
                             <div class="w-32 flex-shrink-0 relative">
-                                <select name="country_code" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 px-4 rounded-2xl appearance-none cursor-pointer outline-none dark:text-white dark:bg-zinc-900 font-bold">
-                                    <option value="52">🇲🇽 +52</option>
+                                <select name="country_code" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-4 pr-10 rounded-2xl appearance-none cursor-pointer outline-none dark:text-white dark:bg-zinc-900 font-bold text-sm">
+                                    <option value="52" selected>🇲🇽 +52</option>
                                     <option value="1">🇺🇸 +1</option>
+                                    <option value="1">🇨🇦 +1</option>
+                                    <option value="54">🇦🇷 +54</option>
+                                    <option value="591">🇧🇴 +591</option>
+                                    <option value="55">🇧🇷 +55</option>
+                                    <option value="56">🇨🇱 +56</option>
+                                    <option value="57">🇨🇴 +57</option>
+                                    <option value="506">🇨🇷 +506</option>
+                                    <option value="53">🇨🇺 +53</option>
+                                    <option value="593">🇪🇨 +593</option>
+                                    <option value="503">🇸🇻 +503</option>
+                                    <option value="502">🇬🇹 +502</option>
+                                    <option value="504">🇭🇳 +504</option>
+                                    <option value="505">🇳🇮 +505</option>
+                                    <option value="507">🇵🇦 +507</option>
+                                    <option value="595">🇵🇾 +595</option>
+                                    <option value="51">🇵🇪 +51</option>
+                                    <option value="1">🇵🇷 +1</option>
+                                    <option value="1">🇩🇴 +1</option>
+                                    <option value="598">🇺🇾 +598</option>
+                                    <option value="58">🇻🇪 +58</option>
+                                    <option value="34">🇪🇸 +34</option>
                                 </select>
+                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40 pointer-events-none text-[20px]">expand_more</span>
                             </div>
                             <div class="relative flex-grow">
                                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 dark:text-white/50 text-[20px]">phone</span>
-                                <input id="phone" name="phone" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-12 pr-4 rounded-2xl focus:border-[#34d399] transition-all outline-none dark:text-white" placeholder="{{ T "phone_placeholder" }}" required type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '');"/>
+                                <input id="phone" name="phone" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "phone_placeholder" }}" required type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '');"/>
                             </div>
                         </div>
                     </div>
 
 
                     <div class="pt-4">
-                        <button id="submit-btn" class="w-full bg-[#34d399] text-[#002114] font-bold text-lg h-[64px] rounded-2xl hover:shadow-xl transition-all flex items-center justify-center gap-3 group" type="submit">
+                        <button id="submit-btn" class="w-full bg-primary-container text-[#002114] font-bold text-lg h-[64px] rounded-2xl hover:shadow-xl transition-all flex items-center justify-center gap-3 group" type="submit">
                             <span id="btn-text">{{ T "schedule_demo" }}</span>
                             <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </button>
@@ -83,14 +105,14 @@
             <div id="success-message" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 rounded-[2.5rem]" style="display: none;">
                 <!-- Centered Icon with protection zone -->
                 <div class="mb-8 md:mb-10 flex flex-col items-center">
-                    <div class="w-24 h-24 md:w-28 md:h-28 bg-[#34d399]/10 rounded-full flex items-center justify-center animate-success-check shadow-inner border border-[#34d399]/20">
-                        <span class="material-symbols-outlined text-[#34d399] text-[40px] md:text-[56px]" style="font-variation-settings: 'FILL' 1, 'wght' 500;">check_circle</span>
+                    <div class="w-24 h-24 md:w-28 md:h-28 bg-primary-container/10 rounded-full flex items-center justify-center animate-success-check shadow-inner border border-primary-container/20">
+                        <span class="material-symbols-outlined text-primary-container text-[40px] md:text-[56px]" style="font-variation-settings: 'FILL' 1, 'wght' 500;">check_circle</span>
                     </div>
                 </div>
 
                 <div class="space-y-4 max-w-sm mx-auto">
                     <h3 class="font-h2 text-2xl md:text-3xl text-on-background dark:text-white font-bold tracking-tight">
-                        {{ T "demo_success_thanks" }}, <span id="user-name-display" class="text-[#34d399]"></span>!
+                        {{ T "demo_success_thanks" }}, <span id="user-name-display" class="text-primary-container"></span>!
                     </h3>
                     <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 leading-relaxed">
                         {{ T "demo_success_body" }}
@@ -98,7 +120,7 @@
                 </div>
 
                 <!-- Footer accent -->
-                <div class="mt-12 w-12 h-1 bg-gradient-to-r from-transparent via-[#34d399]/30 to-transparent rounded-full"></div>
+                <div class="mt-12 w-12 h-1 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent rounded-full"></div>
             </div>
 
             <!-- Error Message (SOLID FLAT OVERLAY) -->
