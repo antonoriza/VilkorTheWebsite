@@ -155,12 +155,25 @@
     90% { opacity: 1; }
     100% { stroke-dashoffset: 0; opacity: 0; }
 }
-.animate-node-glow { animation: node-pulse 4s ease-in-out infinite; }
-@keyframes node-pulse {
-    0%, 100% { opacity: 0.1; r: 3; }
-    50% { opacity: 0.8; r: 5; filter: blur(3px); }
-}
+    .animate-node-glow { animation: node-pulse 4s ease-in-out infinite; }
+    @keyframes node-pulse {
+        0%, 100% { opacity: 0.1; r: 3; }
+        50% { opacity: 0.8; r: 5; filter: blur(3px); }
+    }
+
+    /* Fix for overlapping select arrows */
+    select.appearance-none {
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        background-image: none !important;
+    }
+    /* IE/Edge fix */
+    select.appearance-none::-ms-expand {
+        display: none;
+    }
 </style>
+
 
 <script>
 document.getElementById('demo-form').addEventListener('submit', function(e) {
