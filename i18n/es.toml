@@ -1,11 +1,11 @@
 [hero_title]
-other = "Una plataforma, control total"
+other = "Administración de Condominio. A la altura de su desarrollo."
 
 [no_copy_message]
 other = "Hey, no copies mis textos :P"
 
 [hero_subtitle]
-other = "Sienta la libertad de una administración que fluye. Vilkor automatiza las finanzas, operaciones y comunicación de tu comunidad en tiempo real en una sola plataforma siempre disponible, auditable y segura."
+other = "Vilkor centraliza la cobranza, comunicación y operaciones de su desarrollo inmobiliario en una plataforma auditada, disponible 24/7 y lista para escalar."
 
 [site_description]
 other = "Vilkor es la plataforma líder en gestión de propiedades y desarrollos inmobiliarios, diseñada para ofrecer transparencia, control y eficiencia operativa total."
@@ -17,7 +17,7 @@ other = "Agendar Demo"
 other = "¡Gracias"
 
 [demo_success_body]
-other = "Hemos recibido tu solicitud. Un ingeniero de ventas te contactará en breve."
+other = "Hemos recibido su solicitud. Un ingeniero de ventas le contactará en breve."
 
 [demo_error_title]
 other = "Hubo un problema"
@@ -90,7 +90,7 @@ other = "Soluciones escalables diseñadas para la eficiencia operativa de cualqu
 
 
 [pricing_cta_trial]
-other = "Pruebalo 15 días sin costo"
+other = "Pruébalo gratis 15 días"
 [pricing_cta_contact]
 other = "Contáctanos"
 
@@ -123,7 +123,7 @@ other = "Solicitud Recibida"
 other = "Gracias"
 
 [future_property_management]
-other = "¡Digitaliza la administración de tu propiedad!"
+other = "La administración que su desarrollo merece."
 
 [intelligent_operations]
 other = "Operaciones Inteligentes"
@@ -160,7 +160,7 @@ other = "Sistema de Grado Empresarial"
 other = "Acceso Anticipado"
 
 [hero_description]
-other = "Sienta la libertad de una administración que fluye. Vilkor automatiza las finanzas, operaciones y comunicación de tu comunidad en tiempo real en una sola plataforma siempre disponible, auditable y segura."
+other = "Vilkor centraliza la cobranza, comunicación y operaciones de su desarrollo inmobiliario en una plataforma auditada, disponible 24/7 y lista para escalar."
 
 [explore_platform]
 other = "Conoce más"
@@ -175,7 +175,7 @@ other = "Operaciones claras y transparentes siempre."
 other = "SOLIDEZ"
 
 [institutional_rigor_label]
-other = "El rigor operativo que tu hogar necesita."
+other = "El rigor operativo que su desarrollo requiere."
 
 [tech_stack_value]
 other = "CONTROL"
@@ -340,7 +340,7 @@ other = "Administre accesos, supervise la logística de paquetería y gestione e
 other = "Inteligencia Operativa a Gran Escala"
 
 [every_tool_subtitle]
-other = "Soluciones modulares que transforman la complejidad en eficiencia, garantizando el valor patrimonial de su comunidad."
+other = "Soluciones modulares que transforman la complejidad en rentabilidad, garantizando el valor patrimonial de su desarrollo."
 
 # 1. Gestión de Activos (Finanzas)
 [finances_header]
@@ -349,7 +349,7 @@ other = "Gestión de Activos"
 other = "Enfoque: SOLIDEZ"
 
 [smart_collection_title]
-other = "Recaudación Inteligente"
+other = "Cobranza Automatizada"
 [smart_collection_empower]
 other = "Asegure el flujo de caja"
 [smart_collection_desc]
@@ -360,7 +360,7 @@ other = "Integración Sencilla"
 [data_integrity_empower]
 other = "Transición sin fricciones"
 [data_integrity_desc]
-other = "Migración integral y sin fricciones. Trasladamos sus datos históricos a Vilkor con total integridad y continuidad operativa desde el primer día."
+other = "Trasladamos sus datos históricos a Vilkor con total integridad, asegurando la continuidad de su operación desde el primer día."
 
 [reserve_optimization_title]
 other = "Optimización de Reservas"
@@ -383,7 +383,7 @@ other = "Operaciones y Comunidad"
 other = "Enfoque: AGILIDAD"
 
 [property_evolution_title]
-other = "Evolución del Inmueble"
+other = "Mantenimiento Mayor"
 [property_evolution_empower]
 other = "Incremente la plusvalía"
 [property_evolution_desc]
@@ -404,7 +404,7 @@ other = "Centralice el mantenimiento"
 other = "Centralice las solicitudes de mantenimiento en un flujo de trabajo automatizado que nunca se detiene."
 
 [resolution_channel_title]
-other = "Canal de Resolución"
+other = "Canal de Atención Formal"
 [resolution_channel_empower]
 other = "Elimine malentendidos"
 [resolution_channel_desc]
@@ -431,7 +431,7 @@ other = "Controle entregas e insumos"
 other = "Control total sobre la recepción de insumos operativos y entregas de última milla para residentes."
 
 [activity_monitor_title]
-other = "Monitor de Actividad"
+other = "Bitácora Operativa en Tiempo Real"
 [activity_monitor_empower]
 other = "Capture eventos en tiempo real"
 [activity_monitor_desc]
@@ -505,10 +505,10 @@ other = "Datos seguros 24/7 en la nube."
 other = "Acceda desde su computadora, móvil o tablet."
 
 [command_headline]
-other = "Lidere su Operación con Transparencia y Control Total"
+other = "Su condominio puede operar como una empresa. Comience hoy."
 
 [command_subtitle]
-other = "Deje atrás procesos ambiguos y lentos. Evolucione a la plataforma diseñada para automatizar su gestión de desarrollos verticales y horizontales, brindando certeza operativa y administrativa."
+other = "Deje atrás la ambigüedad y la gestión manual. Evolucione a la plataforma diseñada para automatizar el ciclo de vida de su desarrollo inmobiliario, brindando certeza técnica y financiera."
 
 [soc2_compliant]
 other = "SEGURIDAD NATIVA EN LA NUBE"
@@ -529,7 +529,7 @@ other = "Legal"
 other = "Todos los derechos reservados."
 
 [why_vilkor_subtitle]
-other = "Sabemos lo que es tener una mala administración en tu hogar, desde ineficiencias hasta corrupción. Por ello, hemos creado tecnología que enforza transparencia y buenas prácticas bajo un enfoque centrado en calidad operativa, comunicación y trazabilidad."
+other = "Sabemos lo que es enfrentar una gestión deficiente, desde la opacidad hasta la falta de control. Por ello, hemos creado tecnología que impone transparencia y mejores prácticas bajo un enfoque centrado en calidad operativa, comunicación y trazabilidad."
 
 
 
@@ -576,7 +576,7 @@ other = "Aceptar todo"
 other = "Rechazar todo"
 
 [onboarding_architect_msg]
-other = "Nos pondremos en contacto contigo a la brevedad."
+other = "Nos pondremos en contacto con usted a la brevedad."
 
 [first_name_placeholder]
 other = "Santiago"
@@ -602,7 +602,7 @@ other = "Soluciones"
 [nav_features]
 other = "Funcionalidades"
 [nav_why]
-other = "Beneficios"
+other = "Diferenciadores"
 [nav_pricing]
 other = "Precios"
 [nav_faq]
