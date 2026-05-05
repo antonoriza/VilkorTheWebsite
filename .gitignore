@@ -1,6 +1,8 @@
 node_modules/
 .hugo_internal/
 .hugo_build.lock
+public/
+resources/
 .DS_Store
 *.log
 
