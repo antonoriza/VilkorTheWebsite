@@ -61,13 +61,21 @@ other = "Hasta 30 viviendas"
 [pricing_starter_f1]
 other = "1 administrador"
 [pricing_starter_f2]
-other = "Gestión de Cuotas y Adeudos"
+other = "Control integral de cuotas, adeudos y multas"
 [pricing_starter_f3]
-other = "Administración de Presupuesto"
+other = "Monitoreo del flujo de caja (Ingresos/Egresos)"
 [pricing_starter_f4]
-other = "Amenidades y Votaciones"
+other = "Planificación estratégica de presupuestos"
 [pricing_starter_f5]
+other = "Avisos, votaciones, eventos"
+[pricing_starter_f6]
 other = "Soporte por correo"
+[pricing_starter_reports_note]
+other = "Incluye reportes y cierres con periodicidad mensual y anual."
+[pricing_standard_reports_note]
+other = "Incluye reportes y cierres con periodicidad mensual y anual."
+[pricing_pro_reports_note]
+other = "Incluye reportes y cierres con periodicidad mensual y anual."
 
 # --- Standard ---
 [pricing_standard_tagline]
