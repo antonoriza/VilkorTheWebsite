@@ -83,7 +83,7 @@ other = "Gestión completa para comunidades en crecimiento."
 [pricing_standard_desc]
 other = "Hasta 100 viviendas"
 [pricing_standard_f1]
-other = "Todo lo del plan Starter.*"
+other = "Todo lo del plan Starter."
 [pricing_standard_f2]
 other = "Hasta 2 administradores."
 [pricing_standard_f3]
@@ -103,7 +103,7 @@ other = "La operación completa, sin límites de usuarios."
 [pricing_pro_desc]
 other = "Hasta 200 viviendas"
 [pricing_pro_f1]
-other = "Todo lo del plan Standard.*"
+other = "Todo lo del plan Standard."
 [pricing_pro_f2]
 other = "Hasta 3 administradores."
 [pricing_pro_f3]
@@ -123,7 +123,7 @@ other = "Infraestructura tecnológica y control avanzado."
 [pricing_class_desc]
 other = "Hasta 300 viviendas"
 [pricing_class_f1]
-other = "Todo lo del plan Pro.*"
+other = "Todo lo del plan Pro."
 [pricing_class_f2]
 other = "Integración Biométrica y Sensores."
 [pricing_class_f3]
@@ -143,7 +143,7 @@ other = "Cotización"
 [pricing_enterprise_desc]
 other = "Más de 300 viviendas"
 [pricing_enterprise_f1]
-other = "Todo lo del plan Class.*"
+other = "Todo lo del plan Class."
 [pricing_enterprise_f2]
 other = "Migración de datos asistida."
 [pricing_enterprise_f3]
