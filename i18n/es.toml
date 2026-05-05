@@ -109,7 +109,7 @@ other = "Soporte en 24h (Días hábiles)"
 
 # --- Class ---
 [pricing_class_tagline]
-other = "Múltiples propiedades, un solo panel de control."
+other = "Potencia operativa para comunidades grandes."
 [pricing_class_desc]
 other = "Hasta 300 viviendas"
 [pricing_class_f1]
@@ -117,11 +117,11 @@ other = "Todo lo del plan Pro"
 [pricing_class_f2]
 other = "Administradores ilimitados"
 [pricing_class_f3]
-other = "Gestión multi-fraccionamiento"
+other = "Gestión de Amenidades y Reservas"
 [pricing_class_f4]
-other = "Dashboard de carteras"
+other = "Votaciones y Asambleas Digitales"
 [pricing_class_f5]
-other = "Exportación avanzada"
+other = "Auditoría Financiera Avanzada"
 [pricing_class_f6]
 other = "Soporte prioritario"
 
