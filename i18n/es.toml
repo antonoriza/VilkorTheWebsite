@@ -105,17 +105,17 @@ other = "Hasta 200 viviendas"
 [pricing_pro_f1]
 other = "Todo lo del plan Standard.*"
 [pricing_pro_f2]
-other = "Administradores ilimitados."
+other = "Hasta 3 administradores."
 [pricing_pro_f3]
-other = "Gestión de paquetería."
+other = "Gestión de paquetería e inventario."
 [pricing_pro_f4]
-other = "Bitácora de eventos y rondas."
+other = "Bitácora de actividades del staff."
 [pricing_pro_f5]
-other = "Supervisión de staff."
+other = "Gestión y Reserva de amenidades."
 [pricing_pro_f6]
-other = "Pagos en línea integrados."
+other = "Directorio de proveedores."
 [pricing_pro_f7]
-other = "Soporte en 24h (Días hábiles)."
+other = "Gestión de staff (Horarios/Vacaciones)."
 
 # --- Class ---
 [pricing_class_tagline]
