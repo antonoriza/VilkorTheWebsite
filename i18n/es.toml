@@ -4,8 +4,6 @@ other = "Administración de Condominio. A la altura de su desarrollo."
 [no_copy_message]
 other = "Hey, no copies mis textos :P"
 
-[hero_subtitle]
-other = "Vilkor centraliza la cobranza, comunicación y operaciones de su desarrollo inmobiliario en una plataforma auditada, disponible 24/7 y lista para escalar."
 
 [site_description]
 other = "Vilkor es la plataforma líder en gestión de propiedades y desarrollos inmobiliarios, diseñada para ofrecer transparencia, control y eficiencia operativa total."
@@ -104,7 +102,7 @@ other = "*Obtén un 15-20% de descuento (equivalente a 2 meses gratis) al elegir
 other = "Preguntas Frecuentes"
 
 [one_platform]
-other = "Una plataforma, control total."
+other = "Gestión Centralizada"
 
 
 [ready_unstoppable]
@@ -163,7 +161,7 @@ other = "Acceso Anticipado"
 other = "Vilkor centraliza la cobranza, comunicación y operaciones de su desarrollo inmobiliario en una plataforma auditada, disponible 24/7 y lista para escalar."
 
 [explore_platform]
-other = "Conoce más"
+other = "Ver todas las funciones"
 
 [scale_potential_value]
 other = "AUDITORÍA"
@@ -193,7 +191,7 @@ other = "Para Administradores"
 other = "Para el Residente"
 
 [admin_scalability_title]
-other = "Escalabilidad Operativa"
+other = "Arquitectura que Escala"
 
 [admin_scalability_desc]
 other = "Estandarice procesos y gestione múltiples carteras con una infraestructura ligera."
@@ -205,19 +203,19 @@ other = "Rigor de Auditoría"
 other = "Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias."
 
 [admin_security_title]
-other = "Seguridad Operativa"
+other = "Control y Trazabilidad"
 
 [admin_security_desc]
 other = "Trazabilidad total en cada transacción, gestión de staff y accesos."
 
 [resident_transparency_title]
-other = "Transparencia Total"
+other = "Visibilidad Directa"
 
 [resident_transparency_desc]
 other = "Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera."
 
 [resident_certainty_title]
-other = "Certeza Operativa"
+other = "Gestión sin Ambigüedades"
 
 [resident_certainty_desc]
 other = "Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas."
@@ -235,7 +233,7 @@ other = "Gestión que Demuestra Confianza"
 other = """
 <div class="space-y-6">
     <p class="font-body-lg text-on-surface-variant dark:text-gray-400 max-w-2xl leading-relaxed mb-8">
-        Optimice su operación con un ecosistema diseñado para la transparencia absoluta, elevado para aumentar el valor patrimonial y la confianza de los residentes.
+        Optimice su gestión con un ecosistema diseñado para la rendición de cuentas, elevado para aumentar el valor patrimonial y la confianza de los residentes.
     </p>
 
     <!-- Tab System (CSS Based) -->
@@ -254,7 +252,7 @@ other = """
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">hub</span>
-                    <h4 class="font-bold text-sm dark:text-white">Escalabilidad Operativa</h4>
+                    <h4 class="font-bold text-sm dark:text-white">Arquitectura que Escala</h4>
                     <p class="text-[12px] opacity-70 leading-relaxed">Estandarice procesos y gestione múltiples carteras con una infraestructura ligera.</p>
                 </div>
                 <div class="space-y-3">
@@ -264,7 +262,7 @@ other = """
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">verified_user</span>
-                    <h4 class="font-bold text-sm dark:text-white">Seguridad Operativa</h4>
+                    <h4 class="font-bold text-sm dark:text-white">Control y Trazabilidad</h4>
                     <p class="text-[12px] opacity-70 leading-relaxed">Trazabilidad total en cada transacción, gestión de staff y accesos.</p>
                 </div>
             </div>
@@ -275,12 +273,12 @@ other = """
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">visibility</span>
-                    <h4 class="font-bold text-sm dark:text-white">Transparencia Total</h4>
+                    <h4 class="font-bold text-sm dark:text-white">Visibilidad Directa</h4>
                     <p class="text-[12px] opacity-70 leading-relaxed">Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">phonelink_setup</span>
-                    <h4 class="font-bold text-sm dark:text-white">Certeza Operativa</h4>
+                    <h4 class="font-bold text-sm dark:text-white">Gestión sin Ambigüedades</h4>
                     <p class="text-[12px] opacity-70 leading-relaxed">Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas.</p>
                 </div>
                 <div class="space-y-3">
@@ -319,7 +317,7 @@ other = "Un hogar se vive sin complicaciones. Ofrezca a sus residentes la comodi
 other = "Fiabilidad de Tiempo de Actividad"
 
 [unified_data_title]
-other = "Transparencia Administrativa"
+other = "Estados de Cuenta en Tiempo Real"
 
 [unified_data_desc]
 other = "Unifique estados financieros, reportes de gestión y registros de staff en una fuente de verdad auditable y centralizada."
@@ -340,7 +338,7 @@ other = "Administre accesos, supervise la logística de paquetería y gestione e
 other = "Inteligencia Operativa a Gran Escala"
 
 [every_tool_subtitle]
-other = "Soluciones modulares que transforman la complejidad en rentabilidad, garantizando el valor patrimonial de su desarrollo."
+other = "Soluciones modulares que transforman la complejidad en rentabilidad y plusvalía, garantizando el rigor administrativo."
 
 # 1. Gestión de Activos (Finanzas)
 [finances_header]
@@ -365,9 +363,9 @@ other = "Trasladamos sus datos históricos a Vilkor con total integridad, asegur
 [reserve_optimization_title]
 other = "Optimización de Reservas"
 [reserve_optimization_empower]
-other = "Administre fondos con transparencia"
+other = "Control de fondos de reserva"
 [reserve_optimization_desc]
-other = "Administre fondos de reserva y presupuestos con total transparencia y una visión financiera a largo plazo."
+other = "Visualice la salud financiera a largo plazo con proyecciones de fondos y presupuestos auditables."
 
 [expense_audit_title]
 other = "Auditoría de Egresos"
@@ -387,7 +385,7 @@ other = "Mantenimiento Mayor"
 [property_evolution_empower]
 other = "Incremente la plusvalía"
 [property_evolution_desc]
-other = "Gestione reparaciones y mejoras estructurales que incrementan el valor patrimonial de su propiedad."
+other = "Planifique y ejecute mantenimientos preventivos y correctivos que protegen su inversión estructural."
 
 [digital_vault_title]
 other = "Bóveda Digital"
@@ -408,7 +406,7 @@ other = "Canal de Atención Formal"
 [resolution_channel_empower]
 other = "Elimine malentendidos"
 [resolution_channel_desc]
-other = "Comunicación oficial y trazable que elimina el ruido operativo y acelera los acuerdos comunitarios."
+other = "Centralice la atención al residente bajo un sistema de tickets que garantiza respuestas y acuerdos trazables."
 
 # 3. Control e Infraestructura (Seguridad)
 [security_header]
@@ -495,8 +493,6 @@ other = "NÚCLEO INTELIGENTE DE GESTIÓN PATRIMONIAL"
 [alt_hero]
 other = "Arquitectura Empresarial Vilkor"
 
-[badge_smart_core]
-other = "NÚCLEO INTELIGENTE DE GESTIÓN PATRIMONIAL"
 
 [label_secure_cloud]
 other = "Datos seguros 24/7 en la nube."
@@ -529,7 +525,7 @@ other = "Legal"
 other = "Todos los derechos reservados."
 
 [why_vilkor_subtitle]
-other = "Sabemos lo que es enfrentar una gestión deficiente, desde la opacidad hasta la falta de control. Por ello, hemos creado tecnología que impone transparencia y mejores prácticas bajo un enfoque centrado en calidad operativa, comunicación y trazabilidad."
+other = "Construimos Vilkor porque la administración de condominios merecía algo mejor: un sistema que imponga orden, registre cada transacción y le dé al administrador la autoridad que necesita para operar con excelencia."
 
 
 
@@ -563,8 +559,6 @@ other = "Número de Teléfono"
 [processing]
 other = "Procesando..."
 
-[schedule_demo]
-other = "Agendar Demo"
 
 [cookie_title]
 other = "Privacidad y Cookies"
@@ -608,7 +602,7 @@ other = "Precios"
 [nav_faq]
 other = "FAQ"
 [nav_contact]
-other = "Agendar Demo"
+other = "Solicitar Demo"
 
 [footer_platform]
 other = "Plataforma"
