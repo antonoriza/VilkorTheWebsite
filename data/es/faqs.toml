@@ -8,7 +8,7 @@ answer = "Nuestra arquitectura permite una puesta en marcha inmediata. La config
 
 [[items]]
 question = "¿Mis datos están seguros y cumplen con normativas?"
-answer = "Absolutamente. Utilizamos cifrado de grado militar (AES-256) y cumplimos con los estándares SOC2 y GDPR, garantizando que la información patrimonial y de residentes sea privada y segura 24/7."
+answer = "Absolutamente. La infraestructura de Vilkor está respaldada por los mismos gigantes tecnológicos que protegen a las grandes corporaciones a nivel mundial, lo que nos permite heredar automáticamente sus rigurosas certificaciones de seguridad, incluyendo SOC2. A esto le sumamos nuestra propia capa de cifrado avanzado a nivel de aplicación, garantizando que la información esté blindada y sea estrictamente privada 24/7."
 
 [[items]]
 question = "¿Ofrecen soporte técnico especializado?"
