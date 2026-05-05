@@ -1,6 +1,6 @@
 [[items]]
 question = "¿Vilkor es compatible con cualquier tipo de propiedad?"
-answer = "Sí. Vilkor está diseñado para adaptarse a desarrollos residenciales, comerciales, verticales (torres) y horizontales (fraccionamientos), proporcionando herramientas específicas para cada modelo operativo."
+answer = "Nuestra plataforma es agnóstica al tipo de inmueble. Está diseñada para operar con la misma eficiencia en desarrollos verticales como horizontales, tales como torres de departamentos y fraccionamientos/privadas residenciales. El sistema moldea sus herramientas operativas para hacer \"match\" con tu modelo de gestión."
 
 [[items]]
 question = "¿Cuánto tiempo toma la implementación y migración?"
