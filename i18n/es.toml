@@ -53,50 +53,97 @@ other = "mxn / mes"
 [pricing_popular]
 other = "Más Popular"
 
+# --- Starter ---
 [pricing_starter_desc]
 other = "Hasta 30 viviendas"
-
 [pricing_starter_admin]
-other = "1 administrador"
+other = "1 administrador incluido"
+[pricing_starter_f1]
+other = "Cobranza y estados de cuenta"
+[pricing_starter_f2]
+other = "Comunicados a residentes"
+[pricing_starter_f3]
+other = "Control de acceso básico"
+[pricing_starter_f4]
+other = "Soporte por correo electrónico"
 
+# --- Standard ---
 [pricing_standard_desc]
 other = "Hasta 100 viviendas"
-
 [pricing_standard_admin]
-other = "3 administradores"
+other = "3 administradores incluidos"
+[pricing_standard_f1]
+other = "Todo lo del plan Starter"
+[pricing_standard_f2]
+other = "Módulo de mantenimiento y tickets"
+[pricing_standard_f3]
+other = "Bóveda de documentos digitales"
+[pricing_standard_f4]
+other = "Reportes financieros descargables"
+[pricing_standard_f5]
+other = "Soporte por correo (respuesta en 48h)"
 
+# --- Pro ---
 [pricing_pro_desc]
 other = "Hasta 200 viviendas"
-
 [pricing_pro_admin]
-other = "Admin ilimitados"
+other = "Administradores ilimitados"
+[pricing_pro_f1]
+other = "Todo lo del plan Standard"
+[pricing_pro_f2]
+other = "Gestión de paquetería y logística"
+[pricing_pro_f3]
+other = "Bitácora de rondas de seguridad"
+[pricing_pro_f4]
+other = "Supervisión de staff y proveedores"
+[pricing_pro_f5]
+other = "Integración de pagos en línea"
+[pricing_pro_f6]
+other = "Soporte por correo (respuesta en 24h)"
 
+# --- Class ---
 [pricing_class_desc]
 other = "Hasta 300 viviendas"
+[pricing_class_f1]
+other = "Todo lo del plan Pro"
+[pricing_class_f2]
+other = "Gestión multi-fraccionamiento"
+[pricing_class_f3]
+other = "Dashboard consolidado de carteras"
+[pricing_class_f4]
+other = "Exportación avanzada de reportes"
+[pricing_class_f5]
+other = "Soporte prioritario (respuesta en 8h)"
 
+# --- Enterprise ---
 [pricing_enterprise_quote]
 other = "Cotización"
-
 [pricing_enterprise_desc]
-other = "+300 viviendas"
-
+other = "Más de 300 viviendas"
+[pricing_enterprise_f1]
+other = "Todo lo del plan Class"
+[pricing_enterprise_f2]
+other = "Implementación y migración asistida"
+[pricing_enterprise_f3]
+other = "Capacitación personalizada del equipo"
+[pricing_enterprise_f4]
+other = "Acuerdo de nivel de servicio (SLA)"
 [pricing_enterprise_support]
-other = "Soporte prioritario"
+other = "Soporte directo con el equipo técnico"
 
 [pricing_subtitle]
-other = "Soluciones escalables diseñadas para la eficiencia operativa de cualquier desarrollo inmobiliario, desde pequeñas comunidades hasta grandes complejos residenciales."
-
+other = "Precios pensados para cada etapa de su desarrollo. Sin contratos de largo plazo, sin letra chica."
 
 [pricing_cta_trial]
 other = "Pruébalo gratis 15 días"
 [pricing_cta_contact]
-other = "Contáctanos"
+other = "Solicitar Cotización"
 
 [currency_per_month]
 other = "mxn / mes"
 
 [pricing_disclaimer]
-other = "*Obtén un 15-20% de descuento (equivalente a 2 meses gratis) al elegir facturación anual."
+other = "*Al elegir facturación anual obtiene el equivalente a 2 meses gratis. Precios en MXN más IVA."
 
 [faq]
 other = "Preguntas Frecuentes"
@@ -130,21 +177,21 @@ other = "Operaciones Inteligentes"
 other = """
 <div class="space-y-6 text-on-surface-variant dark:text-gray-300">
     <p class="font-body-lg text-[18px] leading-relaxed">
-        Administrar es proteger el patrimonio y la armonía de las personas. Vilkor profesionaliza su gestión mediante tres pilares de excelencia:
+        Administrar un condominio es gestionar el patrimonio y la convivencia de decenas de familias. Vilkor estructura esa responsabilidad en tres pilares:
     </p>
 
     <ul class="space-y-4">
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">account_balance_wallet</span>
-            <p class="text-sm"><strong>Inteligencia Financiera:</strong> Automatice el monitoreo y reportes para una transparencia total y sin errores, obteniendo información al instante sin esperar días.</p>
+            <p class="text-sm"><strong>Finanzas con Trazabilidad:</strong> Cobranza automatizada, conciliación inmediata y reportes listos para rendición de cuentas. La información financiera, disponible en tiempo real para quien la necesite.</p>
         </li>
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">forum</span>
-            <p class="text-sm"><strong>Comunicación Clara:</strong> Cree comunicados al instante, gestione peticiones y centralice mensajes con su administrador, asegurando un seguimiento impecable y resolución oportuna.</p>
+            <p class="text-sm"><strong>Comunicación Oficial:</strong> Emita avisos, convoque asambleas y gestione solicitudes a través de un canal formal que deja registro de cada interacción.</p>
         </li>
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">widgets</span>
-            <p class="text-sm"><strong>Operativa Modular:</strong> Organice la convivencia mediante reservas automáticas, control de accesos y mantenimiento programado de sus activos.</p>
+            <p class="text-sm"><strong>Módulos que se Adaptan:</strong> Desde el control de acceso hasta la logística de paquetería y el seguimiento de mantenimientos, cada módulo se activa según las necesidades de su desarrollo.</p>
         </li>
     </ul>
 </div>
@@ -370,9 +417,9 @@ other = "Visualice la salud financiera a largo plazo con proyecciones de fondos 
 [expense_audit_title]
 other = "Auditoría de Egresos"
 [expense_audit_empower]
-other = "Mantenga un control quirúrgico"
+other = "Visibilidad total de cada gasto"
 [expense_audit_desc]
-other = "Mantenga un control quirúrgico sobre cada peso que sale de la administración con trazabilidad absoluta."
+other = "Registre, clasifique y apruebe cada gasto administrativo con trazabilidad completa. Nada sale sin evidencia."
 
 # 2. Operaciones y Comunidad (Flujos)
 [operations_header]
@@ -390,16 +437,16 @@ other = "Planifique y ejecute mantenimientos preventivos y correctivos que prote
 [digital_vault_title]
 other = "Bóveda Digital"
 [digital_vault_empower]
-other = "Resguarde su información crítica"
+other = "Documentación siempre a la mano"
 [digital_vault_desc]
-other = "Un repositorio centralizado y blindado para contratos, planos y reglamentos siempre disponibles."
+other = "Almacene contratos, reglamentos y planos en un repositorio seguro, accesible para los perfiles autorizados en cualquier momento."
 
 [service_logistics_title]
-other = "Logística de Servicios"
+other = "Tickets de Mantenimiento"
 [service_logistics_empower]
-other = "Centralice el mantenimiento"
+other = "Resolución con seguimiento formal"
 [service_logistics_desc]
-other = "Centralice las solicitudes de mantenimiento en un flujo de trabajo automatizado que nunca se detiene."
+other = "Registre solicitudes de mantenimiento, asígnelas a proveedores y dé seguimiento hasta su cierre con evidencia fotográfica."
 
 [resolution_channel_title]
 other = "Canal de Atención Formal"
@@ -429,11 +476,11 @@ other = "Controle entregas e insumos"
 other = "Control total sobre la recepción de insumos operativos y entregas de última milla para residentes."
 
 [activity_monitor_title]
-other = "Bitácora Operativa en Tiempo Real"
+other = "Bitácora de Eventos"
 [activity_monitor_empower]
-other = "Capture eventos en tiempo real"
+other = "Registro auditable de cada turno"
 [activity_monitor_desc]
-other = "Una bitácora digital que captura cada evento crítico y ronda de seguridad dentro del condominio."
+other = "Lleve un registro cronológico de incidencias, visitas y rondas de seguridad. Consulte el historial en cualquier momento desde cualquier dispositivo."
 
 [staff_supervision_title]
 other = "Supervisión de Staff"
