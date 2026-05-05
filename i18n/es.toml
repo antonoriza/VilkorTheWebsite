@@ -69,9 +69,13 @@ other = "Planificación estratégica de presupuestos.*"
 [pricing_starter_f5]
 other = "Avisos, votaciones, eventos."
 [pricing_starter_f6]
+other = "Pago en línea o por STP.**"
+[pricing_starter_f7]
 other = "Soporte por correo."
 [pricing_starter_reports_note]
 other = "Incluye reportes y cierres con periodicidad mensual y anual."
+[pricing_starter_fee_note]
+other = "Aplica una tarifa de procesamiento estándar por transacción."
 [pricing_standard_reports_note]
 other = "Incluye reportes y cierres con periodicidad mensual y anual."
 [pricing_pro_reports_note]
