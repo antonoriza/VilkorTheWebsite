@@ -59,17 +59,17 @@ other = "Para condominios pequeños que buscan orden."
 [pricing_starter_desc]
 other = "Hasta 30 viviendas"
 [pricing_starter_f1]
-other = "1 administrador"
+other = "1 administrador."
 [pricing_starter_f2]
-other = "Control integral de cuotas, adeudos y multas"
+other = "Control integral de cuotas, adeudos y multas*."
 [pricing_starter_f3]
-other = "Monitoreo del flujo de caja (Ingresos/Egresos)"
+other = "Monitoreo del flujo de caja (Ingresos/Egresos)*."
 [pricing_starter_f4]
-other = "Planificación estratégica de presupuestos"
+other = "Planificación estratégica de presupuestos*."
 [pricing_starter_f5]
-other = "Avisos, votaciones, eventos"
+other = "Avisos, votaciones, eventos."
 [pricing_starter_f6]
-other = "Soporte por correo"
+other = "Soporte por correo."
 [pricing_starter_reports_note]
 other = "Incluye reportes y cierres con periodicidad mensual y anual."
 [pricing_standard_reports_note]
@@ -83,17 +83,17 @@ other = "Gestión completa para comunidades en crecimiento."
 [pricing_standard_desc]
 other = "Hasta 100 viviendas"
 [pricing_standard_f1]
-other = "Todo lo del plan Starter"
+other = "Hasta 3 administradores."
 [pricing_standard_f2]
-other = "Hasta 3 administradores"
+other = "Todo lo del plan Starter*."
 [pricing_standard_f3]
-other = "Tickets de mantenimiento"
+other = "Tickets de mantenimiento."
 [pricing_standard_f4]
-other = "Expediente Digital Administrativo"
+other = "Expediente Digital Administrativo."
 [pricing_standard_f5]
-other = "Comunicados Masivos"
+other = "Comunicados Masivos."
 [pricing_standard_f6]
-other = "Soporte estándar"
+other = "Soporte estándar."
 
 # --- Pro ---
 [pricing_pro_tagline]
@@ -101,19 +101,19 @@ other = "La operación completa, sin límites de usuarios."
 [pricing_pro_desc]
 other = "Hasta 200 viviendas"
 [pricing_pro_f1]
-other = "Todo lo del plan Standard"
+other = "Todo lo del plan Standard*."
 [pricing_pro_f2]
-other = "Administradores ilimitados"
+other = "Administradores ilimitados."
 [pricing_pro_f3]
-other = "Gestión de paquetería"
+other = "Gestión de paquetería."
 [pricing_pro_f4]
-other = "Bitácora de eventos y rondas"
+other = "Bitácora de eventos y rondas."
 [pricing_pro_f5]
-other = "Supervisión de staff"
+other = "Supervisión de staff."
 [pricing_pro_f6]
-other = "Pagos en línea integrados"
+other = "Pagos en línea integrados."
 [pricing_pro_f7]
-other = "Soporte en 24h (Días hábiles)"
+other = "Soporte en 24h (Días hábiles)."
 
 # --- Class ---
 [pricing_class_tagline]
@@ -121,17 +121,17 @@ other = "Infraestructura tecnológica y control avanzado."
 [pricing_class_desc]
 other = "Hasta 300 viviendas"
 [pricing_class_f1]
-other = "Todo lo del plan Pro"
+other = "Todo lo del plan Pro."
 [pricing_class_f2]
-other = "Integración Biométrica y Sensores"
+other = "Integración Biométrica y Sensores."
 [pricing_class_f3]
-other = "Monitoreo de Acceso IoT"
+other = "Monitoreo de Acceso IoT."
 [pricing_class_f4]
-other = "Auditoría Financiera Avanzada"
+other = "Auditoría Financiera Avanzada."
 [pricing_class_f5]
-other = "Exportación técnica de datos"
+other = "Exportación técnica de datos."
 [pricing_class_f6]
-other = "Soporte prioritario"
+other = "Soporte prioritario."
 
 # --- Enterprise ---
 [pricing_enterprise_tagline]
@@ -141,15 +141,15 @@ other = "Cotización"
 [pricing_enterprise_desc]
 other = "Más de 300 viviendas"
 [pricing_enterprise_f1]
-other = "Todo lo del plan Class"
+other = "Todo lo del plan Class."
 [pricing_enterprise_f2]
-other = "Migración de datos asistida"
+other = "Migración de datos asistida."
 [pricing_enterprise_f3]
-other = "Capacitación personalizada"
+other = "Capacitación personalizada."
 [pricing_enterprise_f4]
-other = "Acuerdo de nivel (SLA)"
+other = "Acuerdo de nivel (SLA)."
 [pricing_enterprise_f5]
-other = "Soporte directo especializado"
+other = "Soporte directo especializado."
 
 [pricing_subtitle]
 other = "Todos los planes incluyen soporte, actualizaciones y acceso completo a la plataforma. Sin contratos de largo plazo."
