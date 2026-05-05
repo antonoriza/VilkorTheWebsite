@@ -36,8 +36,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: '20'
+          cache: 'npm'
 
       - name: Cache Hugo Binary
         id: cache-hugo
@@ -90,39 +90,47 @@ jobs:
       - name: Generate Premium Suite-Based Dashboard
         if: always()
         run: |
+          JSON_REPORT=".hugo_internal/test-results.json"
           echo "## 🛡️ Vilkor Enterprise Quality Dashboard" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
-          REPORT=".hugo_internal/playwright-report/index.html"
-
-          if [ ! -f "$REPORT" ]; then
-            echo "### ⚠️ Pipeline Warning" >> $GITHUB_STEP_SUMMARY
-            echo "> 🔴 **Tests were not executed.** The pipeline stopped early (possibly due to Linting errors)." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ ! -f "$JSON_REPORT" ]; then
+            echo "### ⚠️ Pipeline Error" >> $GITHUB_STEP_SUMMARY
+            echo "> 🔴 **Tests failed to execute.** Check the Linting or Setup steps." >> $GITHUB_STEP_SUMMARY
           else
-            # Test Status
-            PASSED=$(grep -c "passed" $REPORT || echo "0")
-            FAILED=$(grep -c "failed" $REPORT || echo "0")
+            # Extract stats using jq
+            TOTAL=$(jq '.stats.expected' $JSON_REPORT)
+            FAILED=$(jq '.stats.unexpected' $JSON_REPORT)
+            SKIPPED=$(jq '.stats.skipped' $JSON_REPORT)
+            DURATION=$(jq '.stats.duration' $JSON_REPORT | awk '{print $1/1000 "s"}')
             
-            echo "### 🧪 Test Status" >> $GITHUB_STEP_SUMMARY
+            echo "### 🧪 Test Summary" >> $GITHUB_STEP_SUMMARY
             if [ "$FAILED" -eq "0" ]; then
-              echo "> ✅ All **$PASSED** functional tests passed perfectly." >> $GITHUB_STEP_SUMMARY
+              echo "> ✅ **$TOTAL** tests passed in **$DURATION**." >> $GITHUB_STEP_SUMMARY
             else
-              echo "> ❌ **$FAILED** tests failed. Please review the report below." >> $GITHUB_STEP_SUMMARY
+              echo "> ❌ **$FAILED** tests failed out of **$TOTAL**. Review the report below." >> $GITHUB_STEP_SUMMARY
             fi
             
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "#### 🧪 Test Suites Breakdown" >> $GITHUB_STEP_SUMMARY
-            echo "| Suite | Status | Passed | Failed |" >> $GITHUB_STEP_SUMMARY
-            echo "| --- | --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
+            echo "#### 📂 Suite Breakdown" >> $GITHUB_STEP_SUMMARY
+            echo "| Suite | Status | Tests | Failed |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :---: | :---: | :---: |" >> $GITHUB_STEP_SUMMARY
             
-            # Helper to check failures per suite
-            STATUS_AUDIT="🟢"; [ $(grep -c "audit" $REPORT | grep -v "0") ] && STATUS_AUDIT="🟢" || STATUS_AUDIT="⚪"
-            echo "| 🛡️ Audit | $STATUS_AUDIT | $(grep -c "audit" $REPORT || echo "0") | 0 |" >> $GITHUB_STEP_SUMMARY
-            echo "| ⚙️ Functional | 🟢 | $(grep -c "functional" $REPORT || echo "0") | 0 |" >> $GITHUB_STEP_SUMMARY
-            echo "| 🌍 i18n | 🟢 | $(grep -c "i18n" $REPORT || echo "0") | 0 |" >> $GITHUB_STEP_SUMMARY
-            echo "| 🎨 Visual | 🟢 | $(grep -c "visual" $REPORT || echo "0") | 0 |" >> $GITHUB_STEP_SUMMARY
-            echo "| 📱 UI-UX | 🟢 | $(grep -c "ui-ux" $REPORT || echo "0") | 0 |" >> $GITHUB_STEP_SUMMARY
+            # Function to get suite stats
+            get_suite_stats() {
+              local suite=$1
+              local count=$(jq "[.suites[] | select(.title | contains(\"$suite\")) | .specs[]] | length" $JSON_REPORT || echo "0")
+              local fails=$(jq "[.suites[] | select(.title | contains(\"$suite\")) | .specs[] | select(.ok == false)] | length" $JSON_REPORT || echo "0")
+              local icon="🟢"
+              if [ "$fails" -gt "0" ]; then icon="🔴"; elif [ "$count" -eq "0" ]; then icon="⚪"; fi
+              echo "| $suite | $icon | $count | $fails |"
+            }
+
+            get_suite_stats "Audit" >> $GITHUB_STEP_SUMMARY
+            get_suite_stats "Functional" >> $GITHUB_STEP_SUMMARY
+            get_suite_stats "i18n" >> $GITHUB_STEP_SUMMARY
+            get_suite_stats "Visual" >> $GITHUB_STEP_SUMMARY
+            get_suite_stats "UI-UX" >> $GITHUB_STEP_SUMMARY
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -136,10 +144,10 @@ jobs:
           else
              echo "> ⚪ Lighthouse audit skipped." >> $GITHUB_STEP_SUMMARY
           fi
-
+          
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 [Download Full Traceability Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 [View Full Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
