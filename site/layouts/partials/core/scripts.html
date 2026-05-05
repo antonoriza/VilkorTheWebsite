@@ -1,19 +1,34 @@
-{{/*
- * partials/scripts.html
- * All global deferred scripts and module references.
- * Single responsibility: script loading and initialization order.
- */}}
+{{/* * partials/scripts.html * All global deferred scripts and module
+references. * Single responsibility: script loading and initialization order.
+*/}}
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-{{/* Load all JS modules in dependency order */}}
-{{ $app := resources.Get "js/app.js" | minify | fingerprint }}
-<script src="{{ $app.RelPermalink }}" integrity="{{ $app.Data.Integrity }}" defer></script>
+{{/* Load all JS modules in dependency order */}} {{ $app := resources.Get
+"js/app.js" | minify | fingerprint }}
+<script
+  src="{{ $app.RelPermalink }}"
+  integrity="{{ $app.Data.Integrity }}"
+  defer
+></script>
 
 {{ $nav := resources.Get "js/nav.js" | minify | fingerprint }}
-<script src="{{ $nav.RelPermalink }}" integrity="{{ $nav.Data.Integrity }}" defer></script>
+<script
+  src="{{ $nav.RelPermalink }}"
+  integrity="{{ $nav.Data.Integrity }}"
+  defer
+></script>
 
 {{ $heroCanvas := resources.Get "js/hero-canvas.js" | minify | fingerprint }}
-<script src="{{ $heroCanvas.RelPermalink }}" integrity="{{ $heroCanvas.Data.Integrity }}" defer></script>
+<script
+  src="{{ $heroCanvas.RelPermalink }}"
+  integrity="{{ $heroCanvas.Data.Integrity }}"
+  defer
+></script>
 
-{{ $pricingToggle := resources.Get "js/pricing-toggle.js" | minify | fingerprint }}
-<script src="{{ $pricingToggle.RelPermalink }}" integrity="{{ $pricingToggle.Data.Integrity }}" defer></script>
+{{ $pricingToggle := resources.Get "js/pricing-toggle.js" | minify | fingerprint
+}}
+<script
+  src="{{ $pricingToggle.RelPermalink }}"
+  integrity="{{ $pricingToggle.Data.Integrity }}"
+  defer
+></script>

@@ -1,10 +1,10 @@
 /* base/_variables.css — Design Tokens */
 
 :root {
-    --color-primary: #006c4b;
-    --color-primary-container: #34d399;
-    --color-secondary: #0058be;
-    --color-tertiary: #674bb5;
-    --color-warning: #4fa3ff;
-    --color-on-background: #1a1c17;
+  --color-primary: #006c4b;
+  --color-primary-container: #34d399;
+  --color-secondary: #0058be;
+  --color-tertiary: #674bb5;
+  --color-warning: #4fa3ff;
+  --color-on-background: #1a1c17;
 }

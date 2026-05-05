@@ -1,191 +1,245 @@
 <!-- 9) Terms & Conditions Modal -->
-<div id="terms-modal" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-6">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="toggleTermsModal()"></div>
-    
-    <!-- Modal Card -->
-    <div class="glass relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-white dark:bg-zinc-950 rounded-[2.5rem] border border-white/20 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="terms-card">
-        <!-- Header -->
-        <div class="p-8 border-b border-on-background/10 dark:border-white/10 flex items-center justify-between bg-white/5">
-            <h2 class="font-h3 text-xl font-bold dark:text-white">{{ T "terms_title" }}</h2>
-            <button onclick="toggleTermsModal()" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-                <span class="material-symbols-outlined text-on-background dark:text-white">close</span>
-            </button>
-        </div>
-        
-        <!-- Content Area (Scrollable) -->
-        <div class="p-8 overflow-y-auto custom-scrollbar bg-white dark:bg-transparent">
-            {{ T "terms_content" | safeHTML }}
-        </div>
-        
-        <!-- Footer -->
-        <div class="p-8 border-t border-on-background/10 dark:border-white/10 text-center bg-white/5">
-            <button onclick="toggleTermsModal()" class="px-8 py-3 bg-[#34d399] text-[#002114] font-bold rounded-full hover:shadow-lg transition-all">
-                {{ T "understood" }}
-            </button>
-        </div>
+<div
+  id="terms-modal"
+  class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-6"
+>
+  <!-- Backdrop -->
+  <div
+    class="absolute inset-0 bg-black/80 backdrop-blur-md"
+    onclick="toggleTermsModal()"
+  ></div>
+
+  <!-- Modal Card -->
+  <div
+    class="glass relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-white dark:bg-zinc-950 rounded-[2.5rem] border border-white/20 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300"
+    id="terms-card"
+  >
+    <!-- Header -->
+    <div
+      class="p-8 border-b border-on-background/10 dark:border-white/10 flex items-center justify-between bg-white/5"
+    >
+      <h2 class="font-h3 text-xl font-bold dark:text-white">
+        {{ T "terms_title" }}
+      </h2>
+      <button
+        onclick="toggleTermsModal()"
+        class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+      >
+        <span
+          class="material-symbols-outlined text-on-background dark:text-white"
+          >close</span
+        >
+      </button>
     </div>
+
+    <!-- Content Area (Scrollable) -->
+    <div
+      class="p-8 overflow-y-auto custom-scrollbar bg-white dark:bg-transparent"
+    >
+      {{ T "terms_content" | safeHTML }}
+    </div>
+
+    <!-- Footer -->
+    <div
+      class="p-8 border-t border-on-background/10 dark:border-white/10 text-center bg-white/5"
+    >
+      <button
+        onclick="toggleTermsModal()"
+        class="px-8 py-3 bg-[#34d399] text-[#002114] font-bold rounded-full hover:shadow-lg transition-all"
+      >
+        {{ T "understood" }}
+      </button>
+    </div>
+  </div>
 </div>
 
 <style>
-/* Custom Scrollbar for the Terms Modal */
-.custom-scrollbar::-webkit-scrollbar {
+  /* Custom Scrollbar for the Terms Modal */
+  .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
     background: rgba(52, 211, 153, 0.2);
     border-radius: 10px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(52, 211, 153, 0.4);
-}
+  }
 </style>
 
 <!-- 10) Privacy Policy Modal -->
-<div id="privacy-modal" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-6">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="togglePrivacyModal()"></div>
-    
-    <!-- Modal Card -->
-    <div class="glass relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-white dark:bg-zinc-950 rounded-[2.5rem] border border-white/20 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="privacy-card">
-        <!-- Header -->
-        <div class="p-8 border-b border-on-background/10 dark:border-white/10 flex items-center justify-between bg-white/5">
-            <h2 class="font-h3 text-xl font-bold dark:text-white">{{ T "privacy_title" }}</h2>
-            <button onclick="togglePrivacyModal()" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-                <span class="material-symbols-outlined text-on-background dark:text-white">close</span>
-            </button>
-        </div>
-        
-        <!-- Content Area (Scrollable) -->
-        <div class="p-8 overflow-y-auto custom-scrollbar bg-white dark:bg-transparent">
-            {{ T "privacy_content" | safeHTML }}
-        </div>
-        
-        <!-- Footer -->
-        <div class="p-8 border-t border-on-background/10 dark:border-white/10 text-center bg-white/5">
-            <button onclick="togglePrivacyModal()" class="px-8 py-3 bg-[#34d399] text-[#002114] font-bold rounded-full hover:shadow-lg transition-all">
-                {{ T "understood" }}
-            </button>
-        </div>
+<div
+  id="privacy-modal"
+  class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-6"
+>
+  <!-- Backdrop -->
+  <div
+    class="absolute inset-0 bg-black/80 backdrop-blur-md"
+    onclick="togglePrivacyModal()"
+  ></div>
+
+  <!-- Modal Card -->
+  <div
+    class="glass relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-white dark:bg-zinc-950 rounded-[2.5rem] border border-white/20 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300"
+    id="privacy-card"
+  >
+    <!-- Header -->
+    <div
+      class="p-8 border-b border-on-background/10 dark:border-white/10 flex items-center justify-between bg-white/5"
+    >
+      <h2 class="font-h3 text-xl font-bold dark:text-white">
+        {{ T "privacy_title" }}
+      </h2>
+      <button
+        onclick="togglePrivacyModal()"
+        class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+      >
+        <span
+          class="material-symbols-outlined text-on-background dark:text-white"
+          >close</span
+        >
+      </button>
     </div>
+
+    <!-- Content Area (Scrollable) -->
+    <div
+      class="p-8 overflow-y-auto custom-scrollbar bg-white dark:bg-transparent"
+    >
+      {{ T "privacy_content" | safeHTML }}
+    </div>
+
+    <!-- Footer -->
+    <div
+      class="p-8 border-t border-on-background/10 dark:border-white/10 text-center bg-white/5"
+    >
+      <button
+        onclick="togglePrivacyModal()"
+        class="px-8 py-3 bg-[#34d399] text-[#002114] font-bold rounded-full hover:shadow-lg transition-all"
+      >
+        {{ T "understood" }}
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
-function toggleTermsModal() {
-    const modal = document.getElementById('terms-modal');
-    const card = document.getElementById('terms-card');
-    const isHidden = modal.classList.contains('hidden');
-    
-    if (isHidden) {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            card.classList.remove('scale-95');
-            card.classList.add('scale-100');
-        }, 10);
-    } else {
-        modal.classList.add('opacity-0');
-        card.classList.remove('scale-100');
-        card.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }, 300);
-    }
-}
+  function toggleTermsModal() {
+    const modal = document.getElementById("terms-modal");
+    const card = document.getElementById("terms-card");
+    const isHidden = modal.classList.contains("hidden");
 
-function togglePrivacyModal() {
-    const modal = document.getElementById('privacy-modal');
-    const card = document.getElementById('privacy-card');
-    const isHidden = modal.classList.contains('hidden');
-    
     if (isHidden) {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            card.classList.remove('scale-95');
-            card.classList.add('scale-100');
-        }, 10);
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => {
+        modal.classList.remove("opacity-0");
+        card.classList.remove("scale-95");
+        card.classList.add("scale-100");
+      }, 10);
     } else {
-        modal.classList.add('opacity-0');
-        card.classList.remove('scale-100');
-        card.classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
-        }, 300);
+      modal.classList.add("opacity-0");
+      card.classList.remove("scale-100");
+      card.classList.add("scale-95");
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "";
+      }, 300);
     }
-}
-function populateCountries(activeLang) {
-    const select = document.getElementById('country-code');
+  }
+
+  function togglePrivacyModal() {
+    const modal = document.getElementById("privacy-modal");
+    const card = document.getElementById("privacy-card");
+    const isHidden = modal.classList.contains("hidden");
+
+    if (isHidden) {
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => {
+        modal.classList.remove("opacity-0");
+        card.classList.remove("scale-95");
+        card.classList.add("scale-100");
+      }, 10);
+    } else {
+      modal.classList.add("opacity-0");
+      card.classList.remove("scale-100");
+      card.classList.add("scale-95");
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "";
+      }, 300);
+    }
+  }
+  function populateCountries(activeLang) {
+    const select = document.getElementById("country-code");
     const countries = [
-        { code: "1", name: "USA", flag: "🇺🇸", lang: "en" },
-        { code: "52", name: "México", flag: "🇲🇽", lang: "es" },
-        { code: "55", name: "Brasil", flag: "🇧🇷", lang: "pt" },
-        { code: "34", name: "España", flag: "🇪🇸" },
-        { code: "54", name: "Argentina", flag: "🇦🇷" },
-        { code: "56", name: "Chile", flag: "🇨🇱" },
-        { code: "57", name: "Colombia", flag: "🇨🇴" },
-        { code: "51", name: "Perú", flag: "🇵🇪" },
-        { code: "58", name: "Venezuela", flag: "🇻🇪" },
-        { code: "593", name: "Ecuador", flag: "🇪🇨" },
-        { code: "502", name: "Guatemala", flag: "🇬🇹" },
-        { code: "506", name: "Costa Rica", flag: "🇨🇷" },
-        { code: "507", name: "Panamá", flag: "🇵🇦" },
-        { code: "1", name: "Canada", flag: "🇨🇦" },
-        { code: "44", name: "UK", flag: "🇬🇧" },
-        { code: "49", name: "Germany", flag: "🇩🇪" },
-        { code: "33", name: "France", flag: "🇫🇷" },
-        { code: "39", name: "Italy", flag: "🇮🇹" },
-        { code: "81", name: "Japan", flag: "🇯🇵" },
-        { code: "86", name: "China", flag: "🇨🇳" },
-        { code: "91", name: "India", flag: "🇮🇳" },
-        { code: "61", name: "Australia", flag: "🇦🇺" },
-        { code: "64", name: "NZ", flag: "🇳🇿" },
-        { code: "27", name: "South Africa", flag: "🇿🇦" },
-        { code: "971", name: "UAE", flag: "🇦🇪" },
-        { code: "966", name: "Saudi Arabia", flag: "🇸🇦" },
-        { code: "82", name: "South Korea", flag: "🇰🇷" },
-        { code: "351", name: "Portugal", flag: "🇵🇹" },
-        { code: "41", name: "Switzerland", flag: "🇨🇭" },
-        { code: "43", name: "Austria", flag: "🇦🇹" },
-        { code: "32", name: "Belgium", flag: "🇧🇪" },
-        { code: "31", name: "Netherlands", flag: "🇳🇱" },
-        { code: "46", name: "Sweden", flag: "🇸🇪" },
-        { code: "47", name: "Norway", flag: "🇳🇴" },
-        { code: "45", name: "Denmark", flag: "🇩🇰" },
-        { code: "358", name: "Finland", flag: "🇫🇮" },
-        { code: "353", name: "Ireland", flag: "🇮🇪" },
-        { code: "30", name: "Greece", flag: "🇬🇷" },
-        { code: "90", name: "Turkey", flag: "🇹🇷" },
-        { code: "7", name: "Russia", flag: "🇷🇺" },
-        { code: "972", name: "Israel", flag: "🇮🇱" },
-        { code: "65", name: "Singapore", flag: "🇸🇬" },
-        { code: "60", name: "Malaysia", flag: "🇲🇾" },
-        { code: "66", name: "Thailand", flag: "🇹🇭" },
-        { code: "84", name: "Vietnam", flag: "🇻🇳" },
-        { code: "63", name: "Philippines", flag: "🇵🇭" },
-        { code: "62", name: "Indonesia", flag: "🇮🇩" }
+      { code: "1", name: "USA", flag: "🇺🇸", lang: "en" },
+      { code: "52", name: "México", flag: "🇲🇽", lang: "es" },
+      { code: "55", name: "Brasil", flag: "🇧🇷", lang: "pt" },
+      { code: "34", name: "España", flag: "🇪🇸" },
+      { code: "54", name: "Argentina", flag: "🇦🇷" },
+      { code: "56", name: "Chile", flag: "🇨🇱" },
+      { code: "57", name: "Colombia", flag: "🇨🇴" },
+      { code: "51", name: "Perú", flag: "🇵🇪" },
+      { code: "58", name: "Venezuela", flag: "🇻🇪" },
+      { code: "593", name: "Ecuador", flag: "🇪🇨" },
+      { code: "502", name: "Guatemala", flag: "🇬🇹" },
+      { code: "506", name: "Costa Rica", flag: "🇨🇷" },
+      { code: "507", name: "Panamá", flag: "🇵🇦" },
+      { code: "1", name: "Canada", flag: "🇨🇦" },
+      { code: "44", name: "UK", flag: "🇬🇧" },
+      { code: "49", name: "Germany", flag: "🇩🇪" },
+      { code: "33", name: "France", flag: "🇫🇷" },
+      { code: "39", name: "Italy", flag: "🇮🇹" },
+      { code: "81", name: "Japan", flag: "🇯🇵" },
+      { code: "86", name: "China", flag: "🇨🇳" },
+      { code: "91", name: "India", flag: "🇮🇳" },
+      { code: "61", name: "Australia", flag: "🇦🇺" },
+      { code: "64", name: "NZ", flag: "🇳🇿" },
+      { code: "27", name: "South Africa", flag: "🇿🇦" },
+      { code: "971", name: "UAE", flag: "🇦🇪" },
+      { code: "966", name: "Saudi Arabia", flag: "🇸🇦" },
+      { code: "82", name: "South Korea", flag: "🇰🇷" },
+      { code: "351", name: "Portugal", flag: "🇵🇹" },
+      { code: "41", name: "Switzerland", flag: "🇨🇭" },
+      { code: "43", name: "Austria", flag: "🇦🇹" },
+      { code: "32", name: "Belgium", flag: "🇧🇪" },
+      { code: "31", name: "Netherlands", flag: "🇳🇱" },
+      { code: "46", name: "Sweden", flag: "🇸🇪" },
+      { code: "47", name: "Norway", flag: "🇳🇴" },
+      { code: "45", name: "Denmark", flag: "🇩🇰" },
+      { code: "358", name: "Finland", flag: "🇫🇮" },
+      { code: "353", name: "Ireland", flag: "🇮🇪" },
+      { code: "30", name: "Greece", flag: "🇬🇷" },
+      { code: "90", name: "Turkey", flag: "🇹🇷" },
+      { code: "7", name: "Russia", flag: "🇷🇺" },
+      { code: "972", name: "Israel", flag: "🇮🇱" },
+      { code: "65", name: "Singapore", flag: "🇸🇬" },
+      { code: "60", name: "Malaysia", flag: "🇲🇾" },
+      { code: "66", name: "Thailand", flag: "🇹🇭" },
+      { code: "84", name: "Vietnam", flag: "🇻🇳" },
+      { code: "63", name: "Philippines", flag: "🇵🇭" },
+      { code: "62", name: "Indonesia", flag: "🇮🇩" },
     ];
 
-    select.innerHTML = '';
-    
-    countries.sort((a, b) => a.name.localeCompare(b.name)).forEach(c => {
-        const opt = document.createElement('option');
+    select.innerHTML = "";
+
+    countries
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach((c) => {
+        const opt = document.createElement("option");
         opt.value = c.code;
         opt.textContent = `${c.flag} +${c.code}`;
         // Smart Selection based on Language
         if (activeLang === c.lang) opt.selected = true;
         select.appendChild(opt);
-    });
-}
+      });
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     populateCountries("{{ .Lang }}");
-});
+  });
 </script>

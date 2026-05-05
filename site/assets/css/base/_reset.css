@@ -1,19 +1,25 @@
 /* base/_reset.css — Base resets and global layout rules */
 
 html {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
-    letter-spacing: -0.01em;
-    line-height: 1.6;
-    background-image: radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0);
-    background-size: 60px 60px;
-    overflow-x: hidden;
+  letter-spacing: -0.01em;
+  line-height: 1.6;
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    rgba(0, 0, 0, 0.05) 1px,
+    transparent 0
+  );
+  background-size: 60px 60px;
+  overflow-x: hidden;
 }
 
-h1, h2, h3 {
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+h1,
+h2,
+h3 {
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }

@@ -1,52 +1,62 @@
-const { test, expect } = require('@playwright/test');
-const { injectAxe, checkA11y } = require('axe-playwright');
+const { test, expect } = require("@playwright/test");
+const { injectAxe, checkA11y } = require("axe-playwright");
 
-test.describe('Vilkor Accessibility Audit', () => {
-
-  test('Home page should not have critical accessibility issues', async ({ page }) => {
-    await page.goto('/');
+test.describe("Vilkor Accessibility Audit", () => {
+  test("Home page should not have critical accessibility issues", async ({
+    page,
+  }) => {
+    await page.goto("/");
     await injectAxe(page);
-    
+
     // Check for accessibility violations
     // We can filter by impact: 'critical', 'serious', 'moderate', 'minor'
     await page.waitForTimeout(1000);
-    await checkA11y(page, null, {
-      includedImpacts: ['critical', 'serious']
-    }, (violations) => {
-      violations.forEach(v => {
-        console.error(`Violation: ${v.id} - ${v.description}`);
-        v.nodes.forEach(n => console.error(`  Node: ${n.html}`));
-      });
-    });
+    await checkA11y(
+      page,
+      null,
+      {
+        includedImpacts: ["critical", "serious"],
+      },
+      (violations) => {
+        violations.forEach((v) => {
+          console.error(`Violation: ${v.id} - ${v.description}`);
+          v.nodes.forEach((n) => console.error(`  Node: ${n.html}`));
+        });
+      },
+    );
   });
 
-  test('Pricing section should be accessible', async ({ page }) => {
-    await page.goto('/es/');
-    await page.waitForLoadState('networkidle');
+  test("Pricing section should be accessible", async ({ page }) => {
+    await page.goto("/es/");
+    await page.waitForLoadState("networkidle");
     await injectAxe(page);
     await page.waitForTimeout(2000); // Wait for AOS animations to settle
-    await checkA11y(page, '#pricing', {
-      includedImpacts: ['critical', 'serious'],
-      // color-contrast is excluded: passes on Chromium/Firefox but produces
-      // intermittent false positives in Mobile Safari WebKit under parallel execution.
-      // The design meets WCAG AA 4.5:1 ratio — verified manually.
-      rules: { 'color-contrast': { enabled: false } }
-    }, (violations) => {
-      violations.forEach(v => {
-        console.error(`Violation: ${v.id} - ${v.description}`);
-        v.nodes.forEach(n => console.error(`  Node: ${n.html}`));
-      });
-    });
+    await checkA11y(
+      page,
+      "#pricing",
+      {
+        includedImpacts: ["critical", "serious"],
+        // color-contrast is excluded: passes on Chromium/Firefox but produces
+        // intermittent false positives in Mobile Safari WebKit under parallel execution.
+        // The design meets WCAG AA 4.5:1 ratio — verified manually.
+        rules: { "color-contrast": { enabled: false } },
+      },
+      (violations) => {
+        violations.forEach((v) => {
+          console.error(`Violation: ${v.id} - ${v.description}`);
+          v.nodes.forEach((n) => console.error(`  Node: ${n.html}`));
+        });
+      },
+    );
   });
 
-  test('Contact form should be accessible', async ({ page }) => {
-    await page.goto('/es/#book-a-demo');
-    await page.waitForLoadState('networkidle');
+  test("Contact form should be accessible", async ({ page }) => {
+    await page.goto("/es/#book-a-demo");
+    await page.waitForLoadState("networkidle");
     await injectAxe(page);
     // Specifically check the form for accessibility
-    await checkA11y(page, '#demo-form', {
-      includedImpacts: ['critical', 'serious']
+    await checkA11y(page, "#demo-form", {
+      includedImpacts: ["critical", "serious"],
     });
   });
-
 });

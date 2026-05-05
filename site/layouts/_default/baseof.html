@@ -1,26 +1,24 @@
-{{/*
- * _default/baseof.html
- * Layout skeleton. Single responsibility: document structure and partial orchestration.
- * All logic lives in head.html, scripts.html and the individual section partials.
- */}}
-<!DOCTYPE html>
+{{/* * _default/baseof.html * Layout skeleton. Single responsibility: document
+structure and partial orchestration. * All logic lives in head.html,
+scripts.html and the individual section partials. */}}
+<!doctype html>
 <html lang="{{ .Lang }}" class="overflow-x-hidden">
-<head>
+  <head>
     {{ partial "core/head.html" . }}
-</head>
-<body class="bg-background text-on-background dark:bg-[#0a0a0a] dark:text-gray-100 antialiased selection:bg-primary-container transition-colors duration-500 overflow-x-hidden">
-
-    <div id="scroll-progress" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-primary-container to-[#34d399] z-[1000] w-0 transition-all duration-150 ease-out shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
+  </head>
+  <body
+    class="bg-background text-on-background dark:bg-[#0a0a0a] dark:text-gray-100 antialiased selection:bg-primary-container transition-colors duration-500 overflow-x-hidden"
+  >
+    <div
+      id="scroll-progress"
+      class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-primary-container to-[#34d399] z-[1000] w-0 transition-all duration-150 ease-out shadow-[0_0_10px_rgba(52,211,153,0.5)]"
+    ></div>
 
     {{ partial "ui/nav.html" . }}
 
-    <main class="pt-[100px]">
-        {{ block "main" . }}{{ end }}
-    </main>
+    <main class="pt-[100px]">{{ block "main" . }}{{ end }}</main>
 
-    {{ partial "ui/footer.html" . }}
-    {{ partial "ui/cookie_banner.html" . }}
-    {{ partial "core/scripts.html" . }}
-
-</body>
+    {{ partial "ui/footer.html" . }} {{ partial "ui/cookie_banner.html" . }} {{
+    partial "core/scripts.html" . }}
+  </body>
 </html>
