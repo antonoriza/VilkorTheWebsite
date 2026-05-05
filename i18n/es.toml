@@ -75,7 +75,7 @@ other = "Soporte por correo."
 [pricing_starter_reports_note]
 other = "Incluye reportes y cierres con periodicidad mensual y anual."
 [pricing_starter_fee_note]
-other = "Aplica una tarifa de procesamiento estándar por transacción."
+other = "Aplica una tarifa de procesamiento estándar por transacción en línea (no aplica a STP)."
 [pricing_standard_reports_note]
 other = "Incluye reportes y cierres con periodicidad mensual y anual."
 [pricing_pro_reports_note]
