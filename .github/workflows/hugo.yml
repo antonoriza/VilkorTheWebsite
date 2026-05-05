@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-      - run: npm install
+      - run: npm ci
       - name: Run Linter
         run: npm run lint
 
@@ -46,7 +46,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-      - run: npm install
+      - run: npm ci
       - name: Clean Hugo Cache
         run: rm -rf .hugo_internal/build .hugo_internal/cache
 
@@ -88,7 +88,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-      - run: npm install
+      - run: npm ci
 
       - name: Build Hugo Site
         run: hugo --minify --config config/_default/config.toml
@@ -137,11 +137,8 @@ jobs:
               local icon="🟢"; if [ "$fails" -gt "0" ]; then icon="🔴"; elif [ "$count" -eq "0" ]; then icon="⚪"; fi
               echo "| $suite | $icon | $count | $fails |"
             }
-            get_suite_stats "Audit" >> $GITHUB_STEP_SUMMARY
-            get_suite_stats "Functional" >> $GITHUB_STEP_SUMMARY
-            get_suite_stats "i18n" >> $GITHUB_STEP_SUMMARY
+            get_suite_stats "Smoke" >> $GITHUB_STEP_SUMMARY
             get_suite_stats "Visual" >> $GITHUB_STEP_SUMMARY
-            get_suite_stats "UI-UX" >> $GITHUB_STEP_SUMMARY
           fi
 
           echo "" >> $GITHUB_STEP_SUMMARY

@@ -6,10 +6,7 @@
   "scripts": {
     "dev": "hugo server --configDir config",
     "test": "playwright test -c qa/playwright.config.js",
-    "test:audit": "playwright test -c qa/playwright.config.js qa/tests/audit",
-    "test:functional": "playwright test -c qa/playwright.config.js qa/tests/functional",
-    "test:i18n": "playwright test -c qa/playwright.config.js qa/tests/i18n",
-    "test:ui": "playwright test -c qa/playwright.config.js qa/tests/ui-ux",
+    "test:smoke": "playwright test -c qa/playwright.config.js qa/tests/smoke.spec.js",
     "test:visual": "playwright test -c qa/playwright.config.js qa/tests/visual",
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
