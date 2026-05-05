@@ -125,15 +125,17 @@ other = "Hasta 300 viviendas"
 [pricing_class_f1]
 other = "Todo lo del plan Pro."
 [pricing_class_f2]
-other = "Integración Biométrica y Sensores."
+other = "Generación de pases de acceso vía QR."
 [pricing_class_f3]
-other = "Monitoreo de Acceso IoT."
-[pricing_class_f4]
 other = "Auditoría Financiera Avanzada."
+[pricing_class_f4]
+other = "Botón de pánico."
 [pricing_class_f5]
-other = "Exportación técnica de datos."
+other = "Integraciones con módulos inteligentes (Biométricos/IoT).*"
 [pricing_class_f6]
-other = "Soporte prioritario."
+other = "Soporte prioritario por whatsapp."
+[pricing_class_hardware_note]
+other = "Dichos módulos se venden por separado."
 
 # --- Enterprise ---
 [pricing_enterprise_tagline]
