@@ -51,7 +51,21 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: npm test
+        run: npx playwright test -c qa/playwright.config.js --reporter=list,github,html
+        env:
+          PLAYWRIGHT_HTML_REPORT: .hugo_internal/playwright-report
+
+      - name: Generate Test Summary
+        if: always()
+        run: |
+          echo "### 📊 Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| ✅ Passed | $(grep -c "passed" .hugo_internal/playwright-report/index.html || echo "N/A") |" >> $GITHUB_STEP_SUMMARY
+          echo "| ❌ Failed | $(grep -c "failed" .hugo_internal/playwright-report/index.html || echo "N/A") |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⏭️ Skipped | $(grep -c "skipped" .hugo_internal/playwright-report/index.html || echo "N/A") |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View full HTML report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
 
       - name: Setup Pages
         id: pages
