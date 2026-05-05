@@ -19,7 +19,7 @@
             <div id="demo-form-content" class="transition-opacity duration-300 relative z-10">
                 <div class="mb-10 text-center">
                     <h2 class="font-h2 text-3xl md:text-4xl font-bold mb-4 text-on-surface dark:text-white tracking-tight leading-tight">{{ T "book_demo" }}</h2>
-                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 max-w-md mx-auto">{{ T "demo_subtitle" }}</p>
+                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-white/80 max-w-md mx-auto">{{ T "demo_subtitle" }}</p>
                 </div>
                 
                 <form id="demo-form" action="https://api.staticforms.dev/submit" method="POST" class="space-y-6">
@@ -114,7 +114,7 @@
                     <h3 class="font-h2 text-2xl md:text-3xl text-on-background dark:text-white font-bold tracking-tight">
                         {{ T "demo_success_thanks" }}, <span id="user-name-display" class="text-primary-container"></span>!
                     </h3>
-                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 leading-relaxed">
+                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-white/80 leading-relaxed">
                         {{ T "demo_success_body" }}
                     </p>
                 </div>
@@ -129,7 +129,7 @@
                     <span class="material-symbols-outlined text-red-500 text-[48px] md:text-[56px]">priority_high</span>
                 </div>
                 <h3 class="font-bold text-2xl md:text-3xl text-on-background dark:text-white mb-4 tracking-tight">{{ T "demo_error_title" }}</h3>
-                <p class="text-sm md:text-base text-on-surface-variant dark:text-gray-400 max-w-sm mb-10">{{ T "demo_error_body" }}</p>
+                <p class="text-sm md:text-base text-on-surface-variant dark:text-white/80 max-w-sm mb-10">{{ T "demo_error_body" }}</p>
                 <button onclick="window.location.reload();" class="px-10 py-4 bg-on-background dark:bg-white text-white dark:text-black rounded-xl font-bold text-sm">{{ T "demo_retry" }}</button>
             </div>
         </div>

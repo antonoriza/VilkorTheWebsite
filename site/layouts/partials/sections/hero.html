@@ -28,7 +28,7 @@
             <h1 class="font-h1 font-bold text-4xl md:text-5xl lg:text-h1 text-on-background dark:text-white mb-6 md:mb-8 leading-[1.1] md:leading-[1.05] tracking-[-0.04em] text-center lg:text-left">
                 {{ T "future_property_management" }}
             </h1>
-            <p class="font-body-lg text-base md:text-lg lg:text-[20px] text-on-surface-variant dark:text-white/60 mb-8 md:mb-12 max-w-2xl leading-relaxed text-center lg:text-left mx-auto lg:mx-0">
+            <p class="font-body-lg text-base md:text-lg lg:text-[20px] text-on-surface-variant dark:text-white mb-8 md:mb-12 max-w-2xl leading-relaxed text-center lg:text-left mx-auto lg:mx-0">
                 {{ T "hero_description" | safeHTML }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center lg:justify-start">
@@ -48,7 +48,7 @@
         <div class="lg:col-span-5 relative mt-12 lg:mt-0 flex items-start justify-end" data-aos="fade-left" data-aos-delay="200">
             <div class="relative w-full max-w-[550px]">
                 <div class="absolute -inset-10 bg-secondary/10 blur-[100px] rounded-full opacity-50"></div>
-                <div class="glass rounded-[2rem] md:rounded-[2.5rem] border border-white/40 dark:border-white/10 overflow-hidden aspect-[4/5] shadow-2xl relative z-10 transform lg:hover:scale-[1.02] transition-transform duration-700">
+                <div class="glass rounded-[2rem] md:rounded-[2.5rem] border border-white/40 dark:border-white/20 overflow-hidden aspect-[4/5] shadow-2xl relative z-10 transform lg:hover:scale-[1.02] transition-transform duration-700">
                     {{ $heroImg := resources.Get "images/hero_premium.png" }}
                     {{ if $heroImg }}
                         <img id="hero-image" alt="{{ T "alt_hero" }}" class="w-full h-full object-cover will-change-transform" src="{{ $heroImg.RelPermalink }}" />
@@ -60,21 +60,21 @@
     </div>
     
     <!-- Bottom Row: Full-width Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-12 lg:gap-16 py-12 border-t border-on-background/10 dark:border-white/10 opacity-95">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-12 lg:gap-16 py-12 border-t border-on-background/10 dark:border-white/20 opacity-95">
         <!-- 1) CONTROL -->
         <div class="flex flex-col gap-2 items-center lg:items-start text-center lg:text-left">
             <span class="font-stats-display font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white tracking-tighter leading-none">{{ T "tech_stack_value" }}</span>
-            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant font-bold leading-tight">{{ T "tech_stack_label" }}</span>
+            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/70 font-bold leading-tight">{{ T "tech_stack_label" }}</span>
         </div>
         <!-- 2) AUDITORÍA -->
         <div class="flex flex-col gap-2 items-center lg:items-start text-center lg:text-left sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-10 lg:pl-16">
             <span class="font-stats-display font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white tracking-tighter leading-none">{{ T "scale_potential_value" }}</span>
-            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant font-bold leading-tight">{{ T "scale_potential_label" }}</span>
+            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/70 font-bold leading-tight">{{ T "scale_potential_label" }}</span>
         </div>
         <!-- 3) SOLIDEZ -->
         <div class="flex flex-col gap-2 items-center lg:items-start text-center lg:text-left sm:border-l sm:border-on-background/10 dark:sm:border-white/10 sm:pl-10 lg:pl-16">
             <span class="font-stats-display font-bold text-3xl md:text-4xl lg:text-5xl text-on-background dark:text-white tracking-tighter leading-none">{{ T "institutional_rigor_value" }}</span>
-            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant font-bold leading-tight">{{ T "institutional_rigor_label" }}</span>
+            <span class="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/70 font-bold leading-tight">{{ T "institutional_rigor_label" }}</span>
         </div>
     </div>
     </div>
