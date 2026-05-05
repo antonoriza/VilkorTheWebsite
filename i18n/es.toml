@@ -75,9 +75,9 @@ other = "Gestión completa para comunidades en crecimiento."
 [pricing_standard_desc]
 other = "Hasta 100 viviendas"
 [pricing_standard_f1]
-other = "Hasta 3 administradores"
-[pricing_standard_f2]
 other = "Todo lo del plan Starter"
+[pricing_standard_f2]
+other = "Hasta 3 administradores"
 [pricing_standard_f3]
 other = "Tickets de mantenimiento"
 [pricing_standard_f4]
@@ -93,9 +93,9 @@ other = "La operación completa, sin límites de usuarios."
 [pricing_pro_desc]
 other = "Hasta 200 viviendas"
 [pricing_pro_f1]
-other = "Administradores ilimitados"
-[pricing_pro_f2]
 other = "Todo lo del plan Standard"
+[pricing_pro_f2]
+other = "Administradores ilimitados"
 [pricing_pro_f3]
 other = "Gestión de paquetería"
 [pricing_pro_f4]
@@ -113,9 +113,9 @@ other = "Múltiples propiedades, un solo panel de control."
 [pricing_class_desc]
 other = "Hasta 300 viviendas"
 [pricing_class_f1]
-other = "Administradores ilimitados"
-[pricing_class_f2]
 other = "Todo lo del plan Pro"
+[pricing_class_f2]
+other = "Administradores ilimitados"
 [pricing_class_f3]
 other = "Gestión multi-fraccionamiento"
 [pricing_class_f4]
