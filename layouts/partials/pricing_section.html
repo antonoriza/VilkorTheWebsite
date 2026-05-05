@@ -119,9 +119,30 @@
             </div>
         </div>
         
-        <p class="text-center mt-6 md:mt-8 text-xs md:text-sm text-on-surface-variant font-medium pb-0">
-            {{ T "pricing_disclaimer" }}
-        </p>
+        <!-- Enterprise Trust Bar -->
+        <div class="mt-12 md:mt-16 pt-8 border-t border-on-background/5 dark:border-white/5">
+            <div class="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-on-surface-variant dark:text-white/40">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">event_available</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider">{{ T "pricing_disclaimer_trial" }}</span>
+                </div>
+                <div class="w-1 h-1 rounded-full bg-on-background/10 dark:bg-white/10 hidden md:block"></div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">redeem</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider">{{ T "pricing_disclaimer_annual" }}</span>
+                </div>
+                <div class="w-1 h-1 rounded-full bg-on-background/10 dark:bg-white/10 hidden md:block"></div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">payments</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider">{{ T "pricing_disclaimer_tax" }}</span>
+                </div>
+                <div class="w-1 h-1 rounded-full bg-on-background/10 dark:bg-white/10 hidden md:block"></div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">database</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider">{{ T "pricing_disclaimer_storage" }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 

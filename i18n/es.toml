@@ -154,8 +154,14 @@ other = "Solicitar Cotización"
 [currency_per_month]
 other = "mxn / mes"
 
-[pricing_disclaimer]
-other = "Todos los planes incluyen 15 días de prueba sin costo. Al elegir facturación anual obtiene el equivalente a 2 meses gratis. Precios en MXN más IVA. Límites de almacenamiento administrativo aplican según el plan."
+[pricing_disclaimer_trial]
+other = "15 días de prueba sin compromiso"
+[pricing_disclaimer_annual]
+other = "2 meses de regalo en pago anual"
+[pricing_disclaimer_tax]
+other = "Precios en MXN más IVA"
+[pricing_disclaimer_storage]
+other = "Sujeto a límites de almacenamiento administrativo"
 
 [faq]
 other = "Preguntas Frecuentes"
