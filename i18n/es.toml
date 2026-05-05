@@ -39,7 +39,7 @@ other = "Funcionalidades"
 other = "¿Por qué Vilkor?"
 
 [pricing_title]
-other = "Planes de Precios"
+other = "Planes que Crecen con su Desarrollo"
 
 [pricing_monthly]
 other = "Mensual"
@@ -54,88 +54,100 @@ other = "mxn / mes"
 other = "Más Popular"
 
 # --- Starter ---
+[pricing_starter_tagline]
+other = "Para condominios pequeños que buscan orden."
 [pricing_starter_desc]
 other = "Hasta 30 viviendas"
-[pricing_starter_admin]
-other = "1 administrador incluido"
 [pricing_starter_f1]
-other = "Cobranza y estados de cuenta"
+other = "1 administrador"
 [pricing_starter_f2]
-other = "Comunicados a residentes"
+other = "Cobranza y estados de cuenta"
 [pricing_starter_f3]
-other = "Control de acceso básico"
+other = "Comunicados a residentes"
 [pricing_starter_f4]
-other = "Soporte por correo electrónico"
+other = "Control de acceso"
+[pricing_starter_f5]
+other = "Soporte por correo"
 
 # --- Standard ---
+[pricing_standard_tagline]
+other = "Gestión completa para comunidades en crecimiento."
 [pricing_standard_desc]
 other = "Hasta 100 viviendas"
-[pricing_standard_admin]
-other = "3 administradores incluidos"
 [pricing_standard_f1]
-other = "Todo lo del plan Starter"
+other = "Hasta 3 administradores"
 [pricing_standard_f2]
-other = "Módulo de mantenimiento y tickets"
+other = "Todo lo de Starter, más:"
 [pricing_standard_f3]
-other = "Bóveda de documentos digitales"
+other = "Tickets de mantenimiento"
 [pricing_standard_f4]
-other = "Reportes financieros descargables"
+other = "Bóveda de documentos"
 [pricing_standard_f5]
-other = "Soporte por correo (respuesta en 48h)"
+other = "Reportes financieros descargables"
+[pricing_standard_f6]
+other = "Soporte con respuesta en 48h"
 
 # --- Pro ---
+[pricing_pro_tagline]
+other = "La operación completa, sin límites de usuarios."
 [pricing_pro_desc]
 other = "Hasta 200 viviendas"
-[pricing_pro_admin]
-other = "Administradores ilimitados"
 [pricing_pro_f1]
-other = "Todo lo del plan Standard"
+other = "Administradores ilimitados"
 [pricing_pro_f2]
-other = "Gestión de paquetería y logística"
+other = "Todo lo de Standard, más:"
 [pricing_pro_f3]
-other = "Bitácora de rondas de seguridad"
+other = "Gestión de paquetería"
 [pricing_pro_f4]
-other = "Supervisión de staff y proveedores"
+other = "Bitácora de rondas de seguridad"
 [pricing_pro_f5]
-other = "Integración de pagos en línea"
+other = "Supervisión de staff y proveedores"
 [pricing_pro_f6]
-other = "Soporte por correo (respuesta en 24h)"
+other = "Pagos en línea integrados"
+[pricing_pro_f7]
+other = "Soporte con respuesta en 24h"
 
 # --- Class ---
+[pricing_class_tagline]
+other = "Múltiples propiedades, un solo panel de control."
 [pricing_class_desc]
 other = "Hasta 300 viviendas"
 [pricing_class_f1]
-other = "Todo lo del plan Pro"
+other = "Administradores ilimitados"
 [pricing_class_f2]
-other = "Gestión multi-fraccionamiento"
+other = "Todo lo de Pro, más:"
 [pricing_class_f3]
-other = "Dashboard consolidado de carteras"
+other = "Gestión multi-fraccionamiento"
 [pricing_class_f4]
-other = "Exportación avanzada de reportes"
+other = "Dashboard consolidado de carteras"
 [pricing_class_f5]
+other = "Exportación avanzada de reportes"
+[pricing_class_f6]
 other = "Soporte prioritario (respuesta en 8h)"
 
 # --- Enterprise ---
+[pricing_enterprise_tagline]
+other = "Solución a la medida de su operación."
 [pricing_enterprise_quote]
 other = "Cotización"
 [pricing_enterprise_desc]
 other = "Más de 300 viviendas"
 [pricing_enterprise_f1]
-other = "Todo lo del plan Class"
+other = "Todo lo de Class, más:"
 [pricing_enterprise_f2]
 other = "Implementación y migración asistida"
 [pricing_enterprise_f3]
 other = "Capacitación personalizada del equipo"
 [pricing_enterprise_f4]
 other = "Acuerdo de nivel de servicio (SLA)"
-[pricing_enterprise_support]
+[pricing_enterprise_f5]
 other = "Soporte directo con el equipo técnico"
 
 [pricing_subtitle]
-other = "Precios pensados para cada etapa de su desarrollo. Sin contratos de largo plazo, sin letra chica."
+other = "Todos los planes incluyen soporte, actualizaciones y acceso completo a la plataforma. Sin contratos de largo plazo."
 
 [pricing_cta_trial]
-other = "Pruébalo gratis 15 días"
+other = "Iniciar prueba gratuita"
 [pricing_cta_contact]
 other = "Solicitar Cotización"
 
@@ -143,7 +155,7 @@ other = "Solicitar Cotización"
 other = "mxn / mes"
 
 [pricing_disclaimer]
-other = "*Al elegir facturación anual obtiene el equivalente a 2 meses gratis. Precios en MXN más IVA."
+other = "Todos los planes incluyen 15 días de prueba sin costo. Al elegir facturación anual obtiene el equivalente a 2 meses gratis. Precios en MXN más IVA."
 
 [faq]
 other = "Preguntas Frecuentes"
