@@ -153,13 +153,13 @@ other = "Más de 300 viviendas"
 [pricing_enterprise_f1]
 other = "Todo lo del plan Class."
 [pricing_enterprise_f2]
-other = "Migración de datos asistida."
-[pricing_enterprise_f3]
 other = "Capacitación personalizada."
+[pricing_enterprise_f3]
+other = "Integración de módulos inteligentes externos."
 [pricing_enterprise_f4]
-other = "Acuerdo de nivel (SLA)."
+other = "Acuerdo de nivel de servicio personalizado (SLA)."
 [pricing_enterprise_f5]
-other = "Soporte directo especializado."
+other = "Soporte directo prioritario especializado."
 
 [pricing_subtitle]
 other = "Todos los planes incluyen soporte, actualizaciones y acceso completo a la plataforma. Sin contratos de largo plazo."
