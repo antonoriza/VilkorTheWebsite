@@ -30,4 +30,14 @@ test.describe('Vilkor Accessibility Audit', () => {
     });
   });
 
+  test('Contact form should be accessible', async ({ page }) => {
+    await page.goto('/es/#book-a-demo');
+    await page.waitForLoadState('networkidle');
+    await injectAxe(page);
+    // Specifically check the form for accessibility
+    await checkA11y(page, '#demo-form', {
+      includedImpacts: ['critical', 'serious']
+    });
+  });
+
 });

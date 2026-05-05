@@ -24,7 +24,7 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.124.1
+      HUGO_VERSION: 0.160.0
       STATICFORMS_API_KEY: ${{ secrets.STATICFORMS_API_KEY }}
     steps:
       - name: Checkout
@@ -48,7 +48,7 @@ jobs:
           && sudo dpkg -i ${{ runner.temp }}/hugo.deb
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
 
       - name: Run Playwright tests
         run: npx playwright test

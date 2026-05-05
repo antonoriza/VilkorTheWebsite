@@ -16,12 +16,12 @@
         <div class="lg:w-1/2 w-full order-2 lg:order-1" data-aos="fade-right" data-aos-delay="200">
             <div class="relative group overflow-hidden py-10">
                 <!-- Radar Pulse -->
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full border-2 border-tertiary/10 rounded-full animate-ping opacity-20 pointer-events-none will-change-transform"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full border-2 border-secondary/10 rounded-full animate-ping opacity-20 pointer-events-none will-change-transform"></div>
                 
                 <!-- Main Container -->
                 <div class="glass rounded-2xl border border-white/40 dark:border-white/10 p-3 md:p-4 h-[300px] md:h-[400px] flex items-center justify-center relative overflow-hidden animate-float shadow-2xl will-change-transform">
                     <!-- Scanline -->
-                    <div class="absolute inset-0 z-20 pointer-events-none bg-gradient-to-b from-transparent via-tertiary/20 to-transparent h-[10%] w-full animate-scanline opacity-60 will-change-transform"></div>
+                    <div class="absolute inset-0 z-20 pointer-events-none bg-gradient-to-b from-transparent via-secondary/20 to-transparent h-[10%] w-full animate-scanline opacity-60 will-change-transform"></div>
                     
                     <img class="absolute inset-0 w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100 will-change-transform" 
                          alt="Intelligent Operations" 
@@ -32,11 +32,11 @@
 
         <!-- Content Column -->
         <div class="lg:w-1/2 flex flex-col gap-4 md:gap-base order-1 lg:order-2">
-            <div class="inline-flex items-center gap-xs text-tertiary mb-2" data-aos="fade-left" data-aos-delay="300">
-                <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-tertiary/10 flex items-center justify-center glass shadow-inner mb-2 flex-shrink-0 animate-pulse will-change-opacity">
+            <div class="inline-flex items-center gap-xs text-secondary mb-2" data-aos="fade-left" data-aos-delay="300">
+                <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-secondary/10 flex items-center justify-center glass shadow-inner mb-2 flex-shrink-0 animate-pulse will-change-opacity">
                     <span class="material-symbols-outlined text-[20px] md:text-[24px]" style="font-variation-settings: 'FILL' 1;">verified</span>
                 </div>
-                <span class="font-label-sm font-bold text-[10px] md:text-label-sm uppercase tracking-[0.2em] ml-2 text-tertiary">{{ T "ai_automation_title" }}</span>
+                <span class="font-label-sm font-bold text-[10px] md:text-label-sm uppercase tracking-[0.2em] ml-2 text-secondary">{{ T "ai_automation_title" }}</span>
             </div>
             
             <h2 class="font-h2 font-bold text-3xl md:text-[42px] text-on-background dark:text-white mb-4 md:mb-6 leading-[1.1] tracking-tight" data-aos="fade-left" data-aos-delay="400">
@@ -82,7 +82,7 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = '#8b5cf6'; // Sophisticated Violet (Tertiary)
+                ctx.fillStyle = '#0058be'; // Vilkor Blue (Secondary)
                 ctx.fill();
             }
 
@@ -97,7 +97,7 @@
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
-            const color = '#8b5cf6'; // Sophisticated Violet
+            const color = '#0058be'; // Vilkor Blue
             
             particles.forEach((p, i) => {
 

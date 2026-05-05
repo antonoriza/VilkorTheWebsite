@@ -9,7 +9,7 @@
         </div>
 
         <div class="space-y-4">
-            {{ $langData := index .Site.Data .Language.Lang }}
+            {{ $langData := index hugo.Data .Language.Lang }}
             {{ if $langData.faqs }}
                 {{ range $index, $item := $langData.faqs.items }}
                 <div class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-500 hover:border-[#34d399]/30 open:bg-primary-container/5 dark:open:bg-[#34d399]/5">

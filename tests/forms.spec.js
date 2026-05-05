@@ -97,4 +97,16 @@ test.describe('Vilkor Contact Form', () => {
     await expect(errorMsg).toBeVisible({ timeout: 5000 });
   });
 
+  test('should identify invalid email format', async ({ page }) => {
+    await page.fill('#first-name', 'Test');
+    await page.fill('#email', 'invalid-email'); // Formato incorrecto
+    
+    const submitBtn = page.locator('#submit-btn').first();
+    await submitBtn.click();
+    
+    const emailField = page.locator('#email').first();
+    const isInvalid = await emailField.evaluate((node) => !node.checkValidity());
+    expect(isInvalid).toBe(true);
+  });
+
 });

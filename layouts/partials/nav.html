@@ -24,13 +24,13 @@
             <div class="hidden sm:block relative group">
                 <button class="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-on-surface-variant dark:text-white/50 hover:text-primary transition-colors">
                     <span class="material-symbols-outlined text-[18px]">language</span>
-                    {{ .Language.LanguageName }}
+                    {{ .Language.Label }}
                 </button>
                 <div class="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                     <div class="glass border border-white/20 p-2 rounded-xl shadow-xl min-w-[140px]">
                         {{ range .AllTranslations }}
                         <a href="{{ .RelPermalink }}" class="block px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant dark:text-white/70 hover:bg-primary-container/10 hover:text-primary rounded-lg transition-all">
-                            {{ .Language.LanguageName }}
+                            {{ .Language.Label }}
                         </a>
                         {{ end }}
                     </div>
@@ -71,7 +71,7 @@
             <div class="flex flex-wrap justify-center gap-4">
                 {{ range .AllTranslations }}
                 <a href="{{ .RelPermalink }}" class="text-sm font-bold uppercase tracking-widest {{ if eq $.Language.Lang .Language.Lang }}text-primary-container{{ else }}text-on-surface-variant{{ end }}">
-                    {{ .Language.LanguageName }}
+                    {{ .Language.Label }}
                 </a>
                 {{ end }}
             </div>
