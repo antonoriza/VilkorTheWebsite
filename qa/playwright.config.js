@@ -5,7 +5,7 @@ module.exports = defineConfig({
   outputDir: "../.hugo_internal/test-results", // Fuera de qa/, en la cache global
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     [
@@ -16,7 +16,6 @@ module.exports = defineConfig({
   snapshotPathTemplate:
     "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{-platform}{ext}",
   use: {
-    baseURL: "http://localhost:1314",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     locale: "en-US",
@@ -25,18 +24,27 @@ module.exports = defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        baseURL: "http://127.0.0.1:1314/",
+      },
     },
     {
       name: "mobile-safari",
-      use: { ...devices["iPhone 13"] },
+      use: {
+        ...devices["iPhone 13"],
+        baseURL: "http://127.0.0.1:1314/",
+      },
     },
   ],
   webServer: {
     command:
-      "npx hugo server -p 1314 --source .. --config config/_default/config.toml --watch=false --disableLiveReload",
-    url: "http://localhost:1314",
+      "hugo server -p 1314 --bind 0.0.0.0 --source .. --config config/_default/config.toml --watch=false --disableLiveReload",
+    url: "http://127.0.0.1:1314",
     reuseExistingServer: !process.env.CI,
+    env: {
+      PATH: "/usr/local/bin:/usr/bin:/bin:" + process.env.PATH,
+    },
     stdout: "ignore",
     stderr: "pipe",
   },

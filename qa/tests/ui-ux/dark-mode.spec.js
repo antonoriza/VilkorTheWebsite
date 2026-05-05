@@ -5,6 +5,7 @@ test.describe("Appearance Tests", () => {
     page,
   }) => {
     await page.goto("/es/");
+    await page.waitForLoadState("networkidle");
 
     const darkToggle = page.locator("#dark-mode-toggle");
     if ((await darkToggle.count()) > 0) {
