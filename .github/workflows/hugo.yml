@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     # Using the official Playwright container for 100% environment consistency
     container:
-      image: mcr.microsoft.com/playwright:v1.59.1-focal
+      image: mcr.microsoft.com/playwright:v1.49.1-jammy
     env:
       HUGO_VERSION: 0.161.1
       STATICFORMS_API_KEY: ${{ secrets.STATICFORMS_API_KEY }}
