@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "hugo server",
+    "dev": "hugo server --configDir config",
     "test": "playwright test -c qa/playwright.config.js"
   },
   "keywords": [],
