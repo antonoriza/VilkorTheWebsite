@@ -8,6 +8,7 @@ module.exports = defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html', { outputFolder: '../.hugo_internal/playwright-report', open: 'never' }]],
+  snapshotPathTemplate: '{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{ext}',
   use: {
     baseURL: 'http://localhost:1314',
     trace: 'on-first-retry',
