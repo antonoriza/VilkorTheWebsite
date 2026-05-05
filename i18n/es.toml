@@ -61,11 +61,11 @@ other = "Hasta 30 viviendas"
 [pricing_starter_f1]
 other = "1 administrador"
 [pricing_starter_f2]
-other = "Cobranza y Amenidades"
+other = "Gestión de Cuotas y Adeudos"
 [pricing_starter_f3]
-other = "Votaciones y Asambleas"
+other = "Administración de Presupuesto"
 [pricing_starter_f4]
-other = "Control de acceso básico"
+other = "Amenidades y Votaciones"
 [pricing_starter_f5]
 other = "Soporte por correo"
 
