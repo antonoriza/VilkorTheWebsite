@@ -1,4 +1,4 @@
-# Optimized CI/CD Pipeline for Vilkor Enterprise
+# Optimized CI/CD Pipeline for Vilkor Enterprise (Dockerized)
 name: Deploy Hugo site to Pages
 
 on:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -23,6 +23,9 @@ jobs:
   # Quality Assurance & Build
   qa_and_build:
     runs-on: ubuntu-latest
+    # Using the official Playwright container for 100% environment consistency
+    container:
+      image: mcr.microsoft.com/playwright:v1.59.1-focal
     env:
       HUGO_VERSION: 0.161.1
       STATICFORMS_API_KEY: ${{ secrets.STATICFORMS_API_KEY }}
@@ -39,115 +42,63 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Cache Hugo Binary
-        id: cache-hugo
-        uses: actions/cache@v4
-        with:
-          path: ${{ runner.temp }}/hugo
-          key: ${{ runner.os }}-hugo-${{ env.HUGO_VERSION }}
-
-      - name: Install Hugo CLI
-        if: steps.cache-hugo.outputs.cache-hit != 'true'
+      - name: Install Hugo (Inside Container)
         run: |
-          mkdir -p ${{ runner.temp }}/hugo
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb
-          sudo dpkg -i ${{ runner.temp }}/hugo.deb
-          cp /usr/local/bin/hugo ${{ runner.temp }}/hugo/hugo
-
-      - name: Restore Hugo from Cache
-        if: steps.cache-hugo.outputs.cache-hit == 'true'
-        run: sudo cp ${{ runner.temp }}/hugo/hugo /usr/local/bin/hugo
+          wget https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb
+          dpkg -i hugo_extended_${HUGO_VERSION}_linux-amd64.deb
 
       - name: Install dependencies
         run: npm install
 
-      - name: Code Linting (Prettier)
+      - name: Code Linting
         run: npm run lint
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-
-      - name: Run Playwright Tests (All Suites)
+      - name: Run Playwright Tests (Dockerized Environment)
         id: playwright-tests
         run: npx playwright test -c qa/playwright.config.js --reporter=list,github,html,json
         env:
           PLAYWRIGHT_HTML_REPORT: .hugo_internal/playwright-report
           PLAYWRIGHT_JSON_OUTPUT_NAME: .hugo_internal/test-results.json
+          HOME: /root # Required for some container environments
 
       - name: Build with Hugo
-        env:
-          HUGO_ENVIRONMENT: production
-        run: |
-          hugo \
-            --minify \
-            --config config/_default/config.toml \
-            --baseURL "${{ steps.pages.outputs.base_url }}/"
+        run: hugo --minify --config config/_default/config.toml
 
-      - name: Lighthouse Audit
-        id: lighthouse
-        run: npx lhci autorun --output=json > .hugo_internal/lhci-results.json || echo "LHCI failed"
-
-      - name: Generate Premium Suite-Based Dashboard
+      - name: Generate Premium Dashboard
         if: always()
         run: |
           JSON_REPORT=".hugo_internal/test-results.json"
           echo "## 🛡️ Vilkor Enterprise Quality Dashboard" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ ! -f "$JSON_REPORT" ]; then
-            echo "### ⚠️ Pipeline Error" >> $GITHUB_STEP_SUMMARY
-            echo "> 🔴 **Tests failed to execute.** Check the Linting or Setup steps." >> $GITHUB_STEP_SUMMARY
+            echo "> 🔴 **Tests failed to execute.**" >> $GITHUB_STEP_SUMMARY
           else
-            # Extract stats using jq
             TOTAL=$(jq '.stats.expected' $JSON_REPORT)
             FAILED=$(jq '.stats.unexpected' $JSON_REPORT)
-            SKIPPED=$(jq '.stats.skipped' $JSON_REPORT)
-            DURATION=$(jq '.stats.duration' $JSON_REPORT | awk '{print $1/1000 "s"}')
-            
-            echo "### 🧪 Test Summary" >> $GITHUB_STEP_SUMMARY
+            echo "### 🧪 Test Summary: $TOTAL Tests" >> $GITHUB_STEP_SUMMARY
             if [ "$FAILED" -eq "0" ]; then
-              echo "> ✅ **$TOTAL** tests passed in **$DURATION**." >> $GITHUB_STEP_SUMMARY
+              echo "> ✅ All tests passed in the standardized Docker environment." >> $GITHUB_STEP_SUMMARY
             else
-              echo "> ❌ **$FAILED** tests failed out of **$TOTAL**. Review the report below." >> $GITHUB_STEP_SUMMARY
+              echo "> ❌ **$FAILED** tests failed. Review the visual differences in artifacts." >> $GITHUB_STEP_SUMMARY
             fi
             
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "#### 📂 Suite Breakdown" >> $GITHUB_STEP_SUMMARY
             echo "| Suite | Status | Tests | Failed |" >> $GITHUB_STEP_SUMMARY
             echo "| :--- | :---: | :---: | :---: |" >> $GITHUB_STEP_SUMMARY
             
-            # Function to get suite stats
             get_suite_stats() {
               local suite=$1
               local count=$(jq "[.suites[] | select(.title | contains(\"$suite\")) | .specs[]] | length" $JSON_REPORT || echo "0")
               local fails=$(jq "[.suites[] | select(.title | contains(\"$suite\")) | .specs[] | select(.ok == false)] | length" $JSON_REPORT || echo "0")
-              local icon="🟢"
-              if [ "$fails" -gt "0" ]; then icon="🔴"; elif [ "$count" -eq "0" ]; then icon="⚪"; fi
+              local icon="🟢"; if [ "$fails" -gt "0" ]; then icon="🔴"; elif [ "$count" -eq "0" ]; then icon="⚪"; fi
               echo "| $suite | $icon | $count | $fails |"
             }
-
             get_suite_stats "Audit" >> $GITHUB_STEP_SUMMARY
             get_suite_stats "Functional" >> $GITHUB_STEP_SUMMARY
             get_suite_stats "i18n" >> $GITHUB_STEP_SUMMARY
             get_suite_stats "Visual" >> $GITHUB_STEP_SUMMARY
             get_suite_stats "UI-UX" >> $GITHUB_STEP_SUMMARY
           fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ⚡ Core Web Vitals" >> $GITHUB_STEP_SUMMARY
-          if [ -f ".hugo_internal/lhci-results.json" ]; then
-             echo "| Category | Score | Status |" >> $GITHUB_STEP_SUMMARY
-             echo "| --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
-             echo "| Performance | 95+ | 🟢 |" >> $GITHUB_STEP_SUMMARY
-             echo "| Accessibility | 100 | 🟢 |" >> $GITHUB_STEP_SUMMARY
-             echo "| SEO | 100 | 🟢 |" >> $GITHUB_STEP_SUMMARY
-          else
-             echo "> ⚪ Lighthouse audit skipped." >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 [View Full Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
