@@ -1,0 +1,80 @@
+{{/*
+ * partials/head.html
+ * <head> content: meta, SEO, fonts, critical CSS.
+ * Single responsibility: document metadata and above-the-fold resources.
+ */}}
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+<meta name="description" content="{{ T "site_description" }}"/>
+<link rel="canonical" href="{{ .Permalink }}"/>
+
+<!-- Open Graph / Social SEO -->
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="{{ .Permalink }}"/>
+<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}"/>
+<meta property="og:description" content="{{ T "site_description" }}"/>
+<meta property="og:image" content="{{ .Site.BaseURL }}images/og-image.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}"/>
+<meta name="twitter:description" content="{{ T "site_description" }}"/>
+<meta name="twitter:image" content="{{ .Site.BaseURL }}images/og-image.png"/>
+
+<!-- Cache Control -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<!-- External Dependencies -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<!-- Site Styles: Hugo Concat bundles all modules at build time -->
+{{ $cssModules := slice
+    (resources.Get "css/base/_variables.css")
+    (resources.Get "css/base/_reset.css")
+    (resources.Get "css/components/_glass.css")
+    (resources.Get "css/components/_shadows.css")
+    (resources.Get "css/components/_pricing-cards.css")
+    (resources.Get "css/components/_shimmer.css")
+    (resources.Get "css/utilities/_grid.css")
+    (resources.Get "css/utilities/_icons.css")
+}}
+{{ $style := $cssModules | resources.Concat "css/main.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
+
+
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "on-background": "var(--color-on-background)",
+                    "primary": "var(--color-primary)",
+                    "secondary": "var(--color-secondary)",
+                    "tertiary": "var(--color-tertiary)",
+                    "warning": "var(--color-warning)",
+                    "surface": "#fafaf1",
+                    "primary-container": "var(--color-primary-container)",
+                    "on-surface": "#1a1c17",
+                    "on-surface-variant": "#44493f",
+                    "surface-container-high": "#e2e3d8",
+                },
+                spacing: {
+                    "gutter": "32px",
+                    "base": "8px",
+                    "container-max": "1280px",
+                },
+                fontFamily: {
+                    "h1": ["Manrope"],
+                    "h2": ["Manrope"],
+                    "body": ["Inter"],
+                }
+            }
+        }
+    }
+</script>

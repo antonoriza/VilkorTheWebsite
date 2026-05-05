@@ -24,7 +24,7 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.160.0
+      HUGO_VERSION: 0.161.1
       STATICFORMS_API_KEY: ${{ secrets.STATICFORMS_API_KEY }}
     steps:
       - name: Checkout
@@ -51,7 +51,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npm test
 
       - name: Setup Pages
         id: pages
@@ -64,12 +64,13 @@ jobs:
         run: |
           hugo \
             --minify \
+            --config config/_default/config.toml \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: ./.hugo_internal/build
 
   # Deployment job
   deploy:

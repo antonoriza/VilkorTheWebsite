@@ -1,0 +1,46 @@
+/* components/_pricing-cards.css — Pricing card specialized effects */
+
+#pricing-toggle {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.dark #pricing-toggle {
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+}
+
+#toggle-knob {
+    filter: drop-shadow(0 0 4px rgba(52, 211, 153, 0.4));
+}
+
+.pricing-grid {
+    perspective: 2000px;
+}
+
+.pricing-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.pricing-card > * {
+    transform: translateZ(25px);
+}
+
+.pricing-card:hover {
+    box-shadow: 0 45px 100px -20px rgba(0, 0, 0, 0.15);
+}
+
+.dark .pricing-card:hover {
+    box-shadow: 0 45px 100px -20px rgba(52, 211, 153, 0.12);
+}
+
+.pricing-card li {
+    transition: transform 0.3s ease;
+}
+
+.pricing-card:hover li {
+    transform: translateX(6px);
+}
+
+.price-value {
+    transition: opacity 0.2s ease-in-out;
+}

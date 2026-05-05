@@ -1,0 +1,69 @@
+baseURL = 'https://vilkor.xyz/'
+locale = 'en-us'
+defaultContentLanguage = 'es'
+
+# Global Project Organization
+assetDir = "site/assets"
+layoutDir = "site/layouts"
+i18nDir = "site/locales/i18n"
+dataDir = "site/locales/data"
+contentDir = "site/content"
+publishDir = ".hugo_internal/build"
+resourceDir = ".hugo_internal/cache"
+
+[params]
+  author = "Vilkor Enterprise"
+  [params.staticForms]
+    apiKey = ""
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[security]
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$', 'STATICFORMS_API_KEY']
+
+[languages]
+  [languages.en]
+    languageName = "English"
+    title = "Vilkor | Enterprise Property Management"
+    weight = 1
+    contentDir = "site/content/en"
+    [languages.en.params]
+      description = "Institutional-grade property management platform for high-scale operations."
+
+  [languages.es]
+    languageName = "Español"
+    title = "Vilkor | Gestión de Propiedades Empresarial"
+    weight = 2
+    contentDir = "site/content/es"
+    [languages.es.params]
+      description = "Plataforma de gestión inmobiliaria de alta gama para la administración eficiente de propiedades y condominios."
+
+  [languages.pt]
+    languageName = "Português"
+    title = "Vilkor | Gestão de Propriedades Empresarial"
+    weight = 3
+    contentDir = "site/content/pt"
+    [languages.pt.params]
+      description = "Plataforma de gestão de propriedades de nível institucional para operações de larga escala."
+
+[menu]
+  [[menu.main]]
+    name = "Solutions"
+    url = "#solutions"
+    weight = 1
+  [[menu.main]]
+    name = "Features"
+    url = "#features"
+    weight = 2
+  [[menu.main]]
+    name = "Why Vilkor"
+    url = "#why-vilkor"
+    weight = 3
+  [[menu.main]]
+    name = "FAQ"
+    url = "#faq"
+    weight = 4

@@ -1,0 +1,778 @@
+[hero_title]
+other = "Administración de Condominio. A la altura de su desarrollo."
+
+[no_copy_message]
+other = "Hey, no copies mis textos :P"
+
+
+[site_description]
+other = "Vilkor es la plataforma líder en gestión de propiedades y desarrollos inmobiliarios, diseñada para ofrecer transparencia, control y eficiencia operativa total."
+
+[book_demo]
+other = "Agendar Demo"
+
+[demo_email_subject]
+other = "Nueva Solicitud de Demo - Vilkor PMS"
+
+[error_missing_apikey_title]
+other = "Falta API Key"
+
+[error_missing_apikey_body]
+other = "Por favor, configura [params.staticForms] apiKey en hugo.toml o la variable de entorno STATICFORMS_API_KEY."
+
+[pricing_discount_label]
+other = "-20%"
+
+[pricing_starter_monthly]
+other = "649"
+[pricing_starter_annual]
+other = "519"
+
+[pricing_standard_monthly]
+other = "990"
+[pricing_standard_annual]
+other = "792"
+
+[pricing_pro_monthly]
+other = "1,490"
+[pricing_pro_annual]
+other = "1,192"
+
+[pricing_class_monthly]
+other = "1,900"
+[pricing_class_annual]
+other = "1,520"
+
+[demo_success_thanks]
+other = "¡Gracias"
+
+[demo_success_body]
+other = "Hemos recibido su solicitud. Un ingeniero de ventas le contactará en breve."
+
+[demo_error_title]
+other = "Hubo un problema"
+
+[demo_error_body]
+other = "No pudimos procesar tu solicitud."
+
+[demo_retry]
+other = "Reintentar"
+
+[start_operating]
+other = "Comenzar Ahora"
+
+[solutions]
+other = "Soluciones"
+
+[features]
+other = "Funcionalidades"
+
+[why_vilkor]
+other = "¿Por qué Vilkor?"
+
+[pricing_title]
+other = "Planes que Crecen con su Desarrollo"
+
+[pricing_monthly]
+other = "Mensual"
+
+[pricing_annual]
+other = "Anual"
+
+[pricing_per_month]
+other = "mxn / mes"
+
+[pricing_popular]
+other = "Más Popular"
+
+# --- Starter ---
+[pricing_starter_tagline]
+other = "Para condominios pequeños que buscan orden."
+[pricing_starter_desc]
+other = "Hasta 30 viviendas"
+[pricing_starter_f1]
+other = "1 administrador."
+[pricing_starter_f2]
+other = "Control integral de cuotas, adeudos y multas.*"
+[pricing_starter_f3]
+other = "Monitoreo del flujo de caja (Ingresos/Egresos).*"
+[pricing_starter_f4]
+other = "Planificación estratégica de presupuestos.*"
+[pricing_starter_f5]
+other = "Avisos, votaciones, eventos."
+[pricing_starter_f6]
+other = "Pago en línea o por STP.*"
+[pricing_starter_f7]
+other = "Soporte por correo."
+[pricing_starter_reports_note]
+other = "Incluye reportes y cierres con periodicidad mensual y anual."
+[pricing_starter_fee_note]
+other = "Aplica una tarifa de procesamiento estándar por transacción en línea (no aplica a STP)."
+[pricing_standard_reports_note]
+other = "Incluye reportes y cierres con periodicidad mensual y anual."
+[pricing_pro_reports_note]
+other = "Incluye reportes y cierres con periodicidad mensual y anual."
+
+# --- Standard ---
+[pricing_standard_tagline]
+other = "Gestión completa para comunidades en crecimiento."
+[pricing_standard_desc]
+other = "Hasta 100 viviendas"
+[pricing_standard_f1]
+other = "Todo lo del plan Starter."
+[pricing_standard_f2]
+other = "Hasta 2 administradores."
+[pricing_standard_f3]
+other = "Reporte financiero al instante con datos en tiempo real."
+[pricing_standard_f4]
+other = "Exportación de estados de cuenta a excel."
+[pricing_standard_f5]
+other = "Badges para residentes (Comitivas/Mesa)."
+[pricing_standard_f6]
+other = "Perfiles para staff (Guardias/Limpieza)."
+[pricing_standard_f7]
+other = "Soporte correo y whatsapp."
+
+# --- Pro ---
+[pricing_pro_tagline]
+other = "La operación completa, sin límites de usuarios."
+[pricing_pro_desc]
+other = "Hasta 200 viviendas"
+[pricing_pro_f1]
+other = "Todo lo del plan Standard."
+[pricing_pro_f2]
+other = "Hasta 3 administradores."
+[pricing_pro_f3]
+other = "Gestión de paquetería e inventario."
+[pricing_pro_f4]
+other = "Bitácora de actividades del staff."
+[pricing_pro_f5]
+other = "Gestión y Reserva de amenidades."
+[pricing_pro_f6]
+other = "Directorio de proveedores."
+[pricing_pro_f7]
+other = "Gestión de staff (Horarios/Vacaciones)."
+[pricing_pro_f8]
+other = "Soporte correo y whatsapp."
+
+# --- Class ---
+[pricing_class_tagline]
+other = "Infraestructura tecnológica y control avanzado."
+[pricing_class_desc]
+other = "Hasta 300 viviendas"
+[pricing_class_f1]
+other = "Todo lo del plan Pro."
+[pricing_class_f2]
+other = "Generación de pases de acceso vía QR."
+[pricing_class_f3]
+other = "Auditoría Financiera Avanzada."
+[pricing_class_f4]
+other = "Botón de pánico."
+[pricing_class_f5]
+other = "Integraciones con módulos inteligentes (Biométricos/IoT).*"
+[pricing_class_f6]
+other = "Soporte prioritario por correo y whatsapp."
+[pricing_class_hardware_note]
+other = "Dichos módulos se venden por separado."
+
+# --- Enterprise ---
+[pricing_enterprise_tagline]
+other = "Solución a la medida de su operación."
+[pricing_enterprise_quote]
+other = "Cotización"
+[pricing_enterprise_desc]
+other = "Más de 300 viviendas"
+[pricing_enterprise_f1]
+other = "Todo lo del plan Class."
+[pricing_enterprise_f2]
+other = "Capacitación personalizada."
+[pricing_enterprise_f3]
+other = "Integración de módulos inteligentes externos."
+[pricing_enterprise_f4]
+other = "Acuerdo de nivel de servicio personalizado (SLA)."
+[pricing_enterprise_f5]
+other = "Soporte directo prioritario especializado."
+
+[pricing_subtitle]
+other = "Todos los planes incluyen soporte, actualizaciones y acceso completo a la plataforma. Sin contratos de largo plazo."
+
+[pricing_cta_trial]
+other = "Iniciar prueba gratuita"
+[pricing_cta_contact]
+other = "Solicitar Cotización"
+
+[currency_per_month]
+other = "mxn / mes"
+
+[currency_symbol]
+other = "$"
+
+[pricing_disclaimer_trial]
+other = "15 días de prueba sin compromiso"
+[pricing_disclaimer_annual]
+other = "2 meses de regalo en pago anual"
+[pricing_disclaimer_tax]
+other = "Precios en MXN más IVA"
+[pricing_disclaimer_storage]
+other = "Sujeto a límites de almacenamiento administrativo"
+
+[faq]
+other = "Preguntas Frecuentes"
+
+[one_platform]
+other = "Gestión Centralizada"
+
+
+[ready_unstoppable]
+other = "¿Listo para hacer que su propiedad sea imparable?"
+
+[request_sent]
+other = "¡Solicitud Enviada!"
+
+[thanks_interest]
+other = "Gracias por su interés"
+
+[request_received]
+other = "Solicitud Recibida"
+
+[thank_you]
+other = "Gracias"
+
+[future_property_management]
+other = "La administración que su desarrollo merece."
+
+[intelligent_operations]
+other = "Operaciones Inteligentes"
+
+[intelligent_ops_desc]
+other = """
+<div class="space-y-6 text-on-surface-variant dark:text-gray-300">
+    <p class="font-body-lg text-[18px] leading-relaxed">
+        Administrar un condominio es gestionar el patrimonio y la convivencia de decenas de familias. Vilkor estructura esa responsabilidad en tres pilares:
+    </p>
+
+    <ul class="space-y-4">
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">account_balance_wallet</span>
+            <p class="text-sm"><strong>Finanzas con Trazabilidad:</strong> Cobranza automatizada, conciliación inmediata y reportes listos para rendición de cuentas. La información financiera, disponible en tiempo real para quien la necesite.</p>
+        </li>
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">forum</span>
+            <p class="text-sm"><strong>Comunicación Oficial:</strong> Emita avisos, convoque asambleas y gestione solicitudes a través de un canal formal que deja registro de cada interacción.</p>
+        </li>
+        <li class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">widgets</span>
+            <p class="text-sm"><strong>Módulos que se Adaptan:</strong> Desde el control de acceso hasta la logística de paquetería y el seguimiento de mantenimientos, cada módulo se activa según las necesidades de su desarrollo.</p>
+        </li>
+    </ul>
+</div>
+"""
+
+
+[enterprise_grade]
+other = "Sistema de Grado Empresarial"
+
+[early_access]
+other = "Acceso Anticipado"
+
+[hero_description]
+other = "Vilkor centraliza la cobranza, comunicación y operaciones de su desarrollo inmobiliario en una plataforma auditada, disponible 24/7 y lista para escalar."
+
+[explore_platform]
+other = "Ver todas las funciones"
+
+[scale_potential_value]
+other = "AUDITORÍA"
+
+[scale_potential_label]
+other = "Operaciones claras y transparentes siempre."
+
+[institutional_rigor_value]
+other = "SOLIDEZ"
+
+[institutional_rigor_label]
+other = "El rigor operativo que su desarrollo requiere."
+
+[tech_stack_value]
+other = "CONTROL"
+
+[tech_stack_label]
+other = "Acceso total desde cualquier equipo hoy."
+
+[ai_automation_chip]
+other = "EFICIENCIA PROFESIONAL"
+
+[tab_admin]
+other = "Para Administradores"
+
+[tab_resident]
+other = "Para el Residente"
+
+[admin_scalability_title]
+other = "Arquitectura que Escala"
+
+[admin_scalability_desc]
+other = "Estandarice procesos y gestione múltiples carteras con una infraestructura ligera."
+
+[admin_audit_title]
+other = "Rigor de Auditoría"
+
+[admin_audit_desc]
+other = "Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias."
+
+[admin_security_title]
+other = "Control y Trazabilidad"
+
+[admin_security_desc]
+other = "Trazabilidad total en cada transacción, gestión de staff y accesos."
+
+[resident_transparency_title]
+other = "Visibilidad Directa"
+
+[resident_transparency_desc]
+other = "Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera."
+
+[resident_certainty_title]
+other = "Gestión sin Ambigüedades"
+
+[resident_certainty_desc]
+other = "Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas."
+
+[resident_value_title]
+other = "Plusvalía Tecnológica"
+
+[resident_value_desc]
+other = "Una comunidad organizada aumenta el valor real de su propiedad."
+
+[ai_automation_title]
+other = "Gestión que Demuestra Confianza"
+
+[ai_automation_desc]
+other = """
+<div class="space-y-6">
+    <p class="font-body-lg text-on-surface-variant dark:text-gray-400 max-w-2xl leading-relaxed mb-8">
+        Optimice su gestión con un ecosistema diseñado para la rendición de cuentas, elevado para aumentar el valor patrimonial y la confianza de los residentes.
+    </p>
+
+    <!-- Tab System (CSS Based) -->
+    <div class="relative w-full max-w-2xl">
+        <input type="radio" id="tab-admin" name="card-tabs" class="hidden peer/admin" checked>
+        <input type="radio" id="tab-resident" name="card-tabs" class="hidden peer/resident">
+
+        <!-- Tab Headers -->
+        <div class="flex p-1 bg-on-background/5 dark:bg-white/5 rounded-xl border border-on-background/10 dark:border-white/10 mb-8 w-fit">
+            <label for="tab-admin" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/admin:bg-[#674bb5] peer-checked/admin:text-white">Para Administradores</label>
+            <label for="tab-resident" class="px-6 py-2 rounded-lg text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 hover:opacity-80 peer-checked/resident:bg-[#674bb5] peer-checked/resident:text-white">Para el Residente</label>
+        </div>
+
+        <!-- Admin Content -->
+        <div class="hidden peer-checked/admin:block animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">hub</span>
+                    <h4 class="font-bold text-sm dark:text-white">Arquitectura que Escala</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Estandarice procesos y gestione múltiples carteras con una infraestructura ligera.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">account_balance</span>
+                    <h4 class="font-bold text-sm dark:text-white">Rigor de Auditoría</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">verified_user</span>
+                    <h4 class="font-bold text-sm dark:text-white">Control y Trazabilidad</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Trazabilidad total en cada transacción, gestión de staff y accesos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resident Content -->
+        <div class="hidden peer-checked/resident:block animate-fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">visibility</span>
+                    <h4 class="font-bold text-sm dark:text-white">Visibilidad Directa</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">phonelink_setup</span>
+                    <h4 class="font-bold text-sm dark:text-white">Gestión sin Ambigüedades</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas.</p>
+                </div>
+                <div class="space-y-3">
+                    <span class="material-symbols-outlined text-[#674bb5] text-2xl">trending_up</span>
+                    <h4 class="font-bold text-sm dark:text-white">Plusvalía Tecnológica</h4>
+                    <p class="text-[12px] opacity-70 leading-relaxed">Una comunidad organizada aumenta el valor real de su propiedad.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+"""
+
+[chip_omnichannel]
+other = "Gestión Unificada"
+
+[chip_total_integrity]
+other = "Integridad Total"
+
+[chip_massive_reach]
+other = "Alcance Masivo"
+
+[chip_active_security]
+other = "Seguridad Activa"
+
+[unmatched_speed_chip]
+other = "BIENESTAR RESIDENCIAL"
+
+[unmatched_speed_title]
+other = "Tranquilidad para cada Residente"
+
+[unmatched_speed_desc]
+other = "Un hogar se vive sin complicaciones. Ofrezca a sus residentes la comodidad de resolver todo desde su celular: avisos, pagos y solicitudes de mantenimiento, garantizando respuestas rápidas y una convivencia sin fricciones ni malentendidos."
+
+[uptime_label]
+other = "Fiabilidad de Tiempo de Actividad"
+
+[unified_data_title]
+other = "Estados de Cuenta en Tiempo Real"
+
+[unified_data_desc]
+other = "Unifique estados financieros, reportes de gestión y registros de staff en una fuente de verdad auditable y centralizada."
+
+[sync_total_label]
+other = "Sincronización Total"
+
+[automated_workflows_title]
+other = "Comunicación Institucional"
+
+[automated_workflows_desc]
+other = "Gestione avisos críticos, convoque asambleas y coordine eventos con una infraestructura de comunicación de alto alcance."
+
+[realtime_analytics_title]
+other = "Control y Seguridad"
+
+[realtime_analytics_desc]
+other = "Administre accesos, supervise la logística de paquetería y gestione el flujo de proveedores con monitoreo operativo en tiempo real."
+
+[every_tool]
+other = "Inteligencia Operativa a Gran Escala"
+
+[every_tool_subtitle]
+other = "Soluciones modulares que transforman la complejidad en rentabilidad y plusvalía, garantizando el rigor administrativo."
+
+# 1. Gestión de Activos (Finanzas)
+[finances_header]
+other = "Gestión de Activos"
+[finances_focus]
+other = "Enfoque: SOLIDEZ"
+
+[smart_collection_title]
+other = "Cobranza Automatizada"
+[smart_collection_empower]
+other = "Asegure el flujo de caja"
+[smart_collection_desc]
+other = "Automatice la cobranza y elimine la morosidad con flujos lógicos de seguimiento y conciliación inmediata."
+
+[data_integrity_title]
+other = "Integración Sencilla"
+[data_integrity_empower]
+other = "Transición sin fricciones"
+[data_integrity_desc]
+other = "Trasladamos sus datos históricos a Vilkor con total integridad, asegurando la continuidad de su operación desde el primer día."
+
+[reserve_optimization_title]
+other = "Optimización de Reservas"
+[reserve_optimization_empower]
+other = "Control de fondos de reserva"
+[reserve_optimization_desc]
+other = "Visualice la salud financiera a largo plazo con proyecciones de fondos y presupuestos auditables."
+
+[expense_audit_title]
+other = "Auditoría de Egresos"
+[expense_audit_empower]
+other = "Visibilidad total de cada gasto"
+[expense_audit_desc]
+other = "Registre, clasifique y apruebe cada gasto administrativo con trazabilidad completa. Nada sale sin evidencia."
+
+# 2. Operaciones y Comunidad (Flujos)
+[operations_header]
+other = "Operaciones y Comunidad"
+[operations_focus]
+other = "Enfoque: AGILIDAD"
+
+[property_evolution_title]
+other = "Mantenimiento Mayor"
+[property_evolution_empower]
+other = "Incremente la plusvalía"
+[property_evolution_desc]
+other = "Planifique y ejecute mantenimientos preventivos y correctivos que protegen su inversión estructural."
+
+[digital_vault_title]
+other = "Expediente Digital"
+[digital_vault_empower]
+other = "Documentación oficial organizada"
+[digital_vault_desc]
+other = "Resguarde contratos, reglamentos y actas de asamblea en un repositorio centralizado para consulta administrativa."
+
+[service_logistics_title]
+other = "Tickets de Mantenimiento"
+[service_logistics_empower]
+other = "Resolución con seguimiento formal"
+[service_logistics_desc]
+other = "Registre solicitudes de mantenimiento, asígnelas a proveedores y dé seguimiento hasta su cierre con evidencia fotográfica."
+
+[resolution_channel_title]
+other = "Canal de Atención Formal"
+[resolution_channel_empower]
+other = "Elimine malentendidos"
+[resolution_channel_desc]
+other = "Centralice la atención al residente bajo un sistema de tickets que garantiza respuestas y acuerdos trazables."
+
+# 3. Control e Infraestructura (Seguridad)
+[security_header]
+other = "Control e Infraestructura"
+[security_focus]
+other = "Enfoque: BLINDAJE"
+
+[shielded_perimeter_title]
+other = "Perímetro Blindado"
+[shielded_perimeter_empower]
+other = "Gestione accesos con rigor"
+[shielded_perimeter_desc]
+other = "Gestión rigurosa de entradas y salidas con registro biométrico e instantáneo en la nube."
+
+[logistics_management_title]
+other = "Gestión de Logística"
+[logistics_management_empower]
+other = "Controle entregas e insumos"
+[logistics_management_desc]
+other = "Control total sobre la recepción de insumos operativos y entregas de última milla para residentes."
+
+[activity_monitor_title]
+other = "Bitácora de Eventos"
+[activity_monitor_empower]
+other = "Registro auditable de cada turno"
+[activity_monitor_desc]
+other = "Lleve un registro cronológico de incidencias, visitas y rondas de seguridad. Consulte el historial en cualquier momento desde cualquier dispositivo."
+
+[staff_supervision_title]
+other = "Supervisión de Staff"
+[staff_supervision_empower]
+other = "Audite el desempeño operativo"
+[staff_supervision_desc]
+other = "Coordine y audite el desempeño del personal operativo y proveedores desde una sola pantalla de control."
+
+[tenant_portal_title]
+other = "Portal del Inquilino"
+
+[tenant_portal_desc]
+other = "Proporcione una experiencia de marca fluida para que los residentes gestionen arrendamientos y envíen solicitudes."
+
+[rent_collection_title]
+other = "Cobro de Alquiler"
+
+[rent_collection_desc]
+other = "Optimice su flujo de caja con facturación automatizada y conciliación en tiempo real."
+
+[maintenance_title]
+other = "Mantenimiento"
+
+[maintenance_desc]
+other = "Rastree problemas desde el envío hasta la resolución con asignaciones automatizadas a proveedores."
+
+[predictive_yield_chip]
+other = "Enfoque en ROI"
+
+[predictive_yield_title]
+other = "Rendimiento Predictivo"
+
+[predictive_yield_desc]
+other = "Maximice los ingresos con IA que analiza las tendencias del mercado y optimiza los precios en tiempo real."
+
+[smart_access_chip]
+other = "Listo para IoT"
+
+[smart_access_title]
+other = "Acceso Inteligente"
+
+[smart_access_desc]
+other = "Integración unificada de IoT para entrada sin llave, control de clima inteligente y seguridad de las instalaciones."
+
+[esg_compliance_chip]
+other = "Listo para Auditoría"
+
+[esg_compliance_title]
+other = "Cumplimiento ESG"
+
+[esg_compliance_desc]
+other = "Informes de sostenibilidad automatizados y monitoreo de energía para inversores institucionales."
+
+[deployment_badge]
+other = "NÚCLEO INTELIGENTE DE GESTIÓN PATRIMONIAL"
+
+[alt_hero]
+other = "Arquitectura Empresarial Vilkor"
+
+
+[label_secure_cloud]
+other = "Datos seguros 24/7 en la nube."
+
+[label_cross_platform]
+other = "Acceda desde su computadora, móvil o tablet."
+
+[command_headline]
+other = "Su condominio puede operar como una empresa. Comience hoy."
+
+[command_subtitle]
+other = "Deje atrás la ambigüedad y la gestión manual. Evolucione a la plataforma diseñada para automatizar el ciclo de vida de su desarrollo inmobiliario, brindando certeza técnica y financiera."
+
+[soc2_compliant]
+other = "SEGURIDAD NATIVA EN LA NUBE"
+
+[encryption_label]
+other = "Cifrado AES-256"
+
+[gdpr_ready]
+other = "CONFIDENCIALIDAD GARANTIZADA"
+
+[footer_support]
+other = "Soporte"
+
+[footer_legal]
+other = "Legal"
+
+[footer_rights]
+other = "Todos los derechos reservados."
+
+[why_vilkor_subtitle]
+other = "Construimos Vilkor porque la administración de condominios merecía algo mejor: un sistema que imponga orden, registre cada transacción y le dé al administrador la autoridad que necesita para operar con excelencia."
+
+
+
+
+[rapid_deployment_title]
+other = "Onboarding Sencillo"
+[rapid_deployment_desc]
+other = "Eliminamos la complejidad tecnológica. Le acompañamos personalmente en la configuración y capacitación de su equipo, asegurando que Vilkor se convierta en el motor de su operación diaria sin fricciones ni curvas de aprendizaje lentas."
+
+
+[demo_subtitle]
+other = "Cuéntenos un poco sobre sus operaciones y adaptaremos el recorrido a sus necesidades específicas."
+
+[first_name]
+other = "Nombre"
+
+[last_name]
+other = "Apellido"
+
+[work_email]
+other = "Correo Electrónico de Trabajo"
+
+[privacy_promise]
+other = "No compartiremos su información con terceros."
+
+[alt_dashboard]
+other = "Interfaz del Panel de Control"
+
+[phone_number]
+other = "Número de Teléfono"
+[processing]
+other = "Procesando..."
+
+
+[cookie_title]
+other = "Privacidad y Cookies"
+[cookie_text]
+other = "Utilizamos cookies para mejorar su experiencia de navegación, ofrecer contenido personalizado y analizar nuestro tráfico. Al hacer clic en 'Aceptar todo', usted consiente nuestro uso de cookies."
+[cookie_accept]
+other = "Aceptar todo"
+[cookie_decline]
+other = "Rechazar todo"
+
+[onboarding_architect_msg]
+other = "Nos pondremos en contacto con usted a la brevedad."
+
+[first_name_placeholder]
+other = "Santiago"
+
+[last_name_placeholder]
+other = "Pérez"
+
+[work_email_placeholder]
+other = "juan.perez@empresa.com"
+
+[phone_placeholder]
+other = "55 1234 5678"
+
+
+[faq_footer_text]
+other = "¿Tiene más dudas?"
+
+[faq_footer_link]
+other = "Hable con uno de nuestros ingenieros de venta"
+
+[nav_solutions]
+other = "Soluciones"
+[nav_features]
+other = "Funcionalidades"
+[nav_why]
+other = "Diferenciadores"
+[nav_pricing]
+other = "Precios"
+[nav_faq]
+other = "FAQ"
+[nav_contact]
+other = "Solicitar Demo"
+
+[nav_toggle_menu]
+other = "Alternar menú de navegación"
+
+[select_language]
+other = "Seleccionar idioma"
+
+[footer_platform]
+other = "Plataforma"
+
+
+[footer_location]
+other = "🏢 Coacalco, Estado de México, México"
+
+[contact_email]
+other = "hola@vilkor.xyz"
+
+[pricing_toggle_label]
+other = "Cambiar entre facturación mensual y anual"
+
+[contact_label]
+other = "Contacto"
+
+[footer_privacy]
+other = "Privacidad"
+
+[footer_terms]
+other = "Términos de Servicio"
+
+[terms_title]
+other = "Términos y Condiciones de Uso – Vilkor PMS"
+
+[terms_content]
+other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última actualización: 2 de mayo de 2026</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Procesamiento de Pagos y Comisiones</h4> <p>El servicio de pagos en Vilkor se realiza a través de la infraestructura de <strong>Stripe</strong>.</p> <ul class='list-disc pl-5 mt-2 space-y-1'> <li><strong>Comisiones:</strong> El Usuario acepta que el uso de la pasarela de pagos conlleva comisiones que dependen de las políticas vigentes de Stripe. Vilkor se reserva el derecho de aplicar cargos por servicio adicionales desglosados al momento de la transacción.</li> <li><strong>Independencia Financiera:</strong> Vilkor no retiene fondos ni interviene en el proceso de liquidación. Aclaraciones sobre transferencias deben gestionarse vía Stripe o su institución bancaria.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Conducta y Convivencia</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Uso Aceptable:</strong> Queda estrictamente prohibido el uso de lenguaje ofensivo, discriminatorio o violento en cualquier módulo de la plataforma.</li> <li><strong>Deslinde de Interacción:</strong> Vilkor es un facilitador tecnológico. No supervisamos comunicaciones privadas y nos deslindamos de responsabilidades derivadas de conflictos entre residentes, staff o administradores.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Gestión de Datos y Almacenamiento</h4> <p>Vilkor permite la carga de documentos y gestión de archivos bajo un esquema de <strong>almacenamiento administrativo limitado</strong> sujeto a los límites de nuestro proveedor de infraestructura cloud. El Usuario tiene prohibido el uso de la plataforma como servicio de almacenamiento general de archivos personales, fotos o video.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Terminación del Servicio</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Periodo de Gracia:</strong> Tras la cancelación, el Administrador tendrá <strong>30 días naturales</strong> para exportar su información.</li> <li><strong>Eliminación:</strong> Transcurrido dicho plazo, Vilkor eliminará definitivamente los datos para garantizar la privacidad y optimización del sistema.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Deslinde de IA y Soporte (SLA)</h4> <p>El uso de agentes de <strong>IA</strong> es de carácter informativo. Las decisiones finales son responsabilidad del Usuario Humano. La disponibilidad técnica se rige exclusivamente por el SLA de nuestro proveedor de nube.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Ley Aplicable y Jurisdicción</h4> <p>Este contrato se rige por las leyes de <strong>México</strong>. Cualquier disputa será resuelta en los tribunales competentes de la Ciudad de México / Estado de México.</p> </section> </div>"
+
+[privacy_title]
+other = "Aviso de Privacidad Integral – Vilkor PMS"
+
+[privacy_content]
+other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última actualización: 2 de mayo de 2026</p> <p>En cumplimiento con la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong>, se pone a su disposición el presente Aviso de Privacidad Integral.</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Identidad y Domicilio</h4> <p>El responsable del tratamiento de sus datos personales es el equipo de <strong>Vilkor</strong>. Contacto: <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a>.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Datos Personales Recabados</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Identificación:</strong> Nombre completo, fotografía (opcional) y rol.</li> <li><strong>Contacto:</strong> Correo electrónico, teléfono y unidad/departmento.</li> <li><strong>Financieros:</strong> Procesados directamente por <strong>Stripe</strong>.</li> <li><strong>Uso:</strong> Registros de acceso, logs e interacciones con agentes de IA.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Finalidades del Tratamiento</h4> <ul class='list-disc pl-5 space-y-1'> <li>Gestionar el control de acceso y administración.</li> <li>Facilitar comunicación interna (Residentes, Staff, Admins).</li> <li>Procesar pagos automatizados vía Stripe.</li> <li>Optimizar la gestión operativa mediante Inteligencia Artificial.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Transferencia de Datos</h4> <p>Sus datos pueden ser transferidos a terceros únicamente para la ejecución de transacciones financieras (Stripe), alojamiento en infraestructura segura (Cloud) o por requerimiento de autoridades competentes.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Derechos ARCO</h4> <p>Usted tiene derecho al <strong>Acceso, Rectificación, Cancelación u Oposición</strong> de sus datos. Envíe su solicitud a <a href='mailto:legal@vilkor.xyz' class='text-[#34d399] underline'>legal@vilkor.xyz</a> con identificación oficial digitalizada.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Consentimiento para uso de IA</h4> <p>Al utilizar Vilkor, el usuario consiente el procesamiento de información operativa por modelos de lenguaje para generar resúmenes, reportes y automatizaciones.</p> </section> </div>"
+
+[send_another]
+other = "Enviar otra solicitud"
+
+[understood]
+other = "Entendido"
+
+[select_region]
+other = "Seleccionar Región"
+
+[cancel]
+other = "Cancelar"

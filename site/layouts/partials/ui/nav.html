@@ -1,0 +1,86 @@
+<nav id="main-nav" class="fixed top-0 left-0 w-full z-[100] transition-all duration-500 border-b border-transparent">
+    <div class="max-w-[1440px] mx-auto px-6 md:px-12 py-6 flex justify-between items-center relative">
+        
+        <!-- Logo -->
+        <a href="{{ site.Home.RelPermalink }}" class="relative group z-[110]">
+            <span class="font-h3 text-[24px] font-black text-on-background dark:text-white uppercase tracking-tighter">
+                Vilkor
+            </span>
+            <div class="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary-container transition-all duration-300 group-hover:w-full"></div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <div class="hidden lg:flex items-center gap-10">
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary dark:hover:text-primary transition-colors" href="#solutions">{{ T "nav_solutions" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary dark:hover:text-primary transition-colors" href="#features">{{ T "nav_features" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary dark:hover:text-primary transition-colors" href="#why-vilkor">{{ T "nav_why" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary dark:hover:text-primary transition-colors" href="#pricing">{{ T "nav_pricing" }}</a>
+            <a class="nav-link text-[13px] font-bold uppercase tracking-[0.15em] text-on-surface-variant dark:text-white/70 hover:text-primary dark:hover:text-primary transition-colors" href="#faq">{{ T "nav_faq" }}</a>
+        </div>
+
+        <!-- Desktop Actions & Settings -->
+        <div class="flex items-center gap-4 md:gap-6 z-[110]">
+            <!-- Language Switcher (Desktop) -->
+            <div class="hidden sm:block relative group">
+                <button class="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-on-surface-variant dark:text-white/50 hover:text-primary transition-colors" aria-label="{{ T "select_language" }}">
+                    <span class="material-symbols-outlined text-[18px]">language</span>
+                    {{ .Language.LanguageName }}
+                </button>
+                <div class="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                    <div class="glass border border-white/20 p-2 rounded-xl shadow-xl min-w-[140px]">
+                        {{ range .AllTranslations }}
+                        <a href="{{ .RelPermalink }}" class="block px-4 py-2 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant dark:text-white/70 hover:bg-primary-container/10 hover:text-primary rounded-lg transition-all">
+                            {{ .Language.LanguageName }}
+                        </a>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Toggle -->
+            <button id="dark-mode-toggle" class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high dark:bg-white/5 text-on-surface-variant dark:text-white/70 hover:bg-primary-container/10 hover:text-primary transition-all" aria-label="Toggle dark mode">
+                <span class="material-symbols-outlined text-[20px] dark:hidden">dark_mode</span>
+                <span class="material-symbols-outlined text-[20px] hidden dark:block">light_mode</span>
+            </button>
+
+            <!-- CTA -->
+            <a href="#book-a-demo" class="hidden sm:flex px-6 py-3 bg-primary-container text-black text-[11px] font-black uppercase tracking-widest rounded-full hover:shadow-[0_0_20px_rgba(52,211,153,0.4)] transition-all shadow-lg shadow-black/5">
+                {{ T "nav_contact" }}
+            </a>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-toggle" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-high dark:bg-white/5 text-on-surface-variant dark:text-white/70" aria-label="{{ T "nav_toggle_menu" }}">
+                <span id="menu-icon" class="material-symbols-outlined">menu</span>
+                <span id="close-icon" class="material-symbols-outlined hidden">close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="lg:hidden fixed inset-0 bg-white dark:bg-zinc-950 z-[105] flex flex-col pt-32 px-8 transition-transform duration-500 translate-x-full">
+        <div class="flex flex-col gap-6 items-center text-center">
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#solutions">{{ T "nav_solutions" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#features">{{ T "nav_features" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#why-vilkor">{{ T "nav_why" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#pricing">{{ T "nav_pricing" }}</a>
+            <a class="mobile-nav-link text-2xl font-bold text-on-background dark:text-white" href="#faq">{{ T "nav_faq" }}</a>
+            
+            <div class="h-[1px] w-full bg-on-background/10 dark:bg-white/10 my-4"></div>
+            
+            <!-- Language Switcher (Mobile) -->
+            <div class="flex flex-wrap justify-center gap-4">
+                {{ range .AllTranslations }}
+                <a href="{{ .RelPermalink }}" class="text-sm font-bold uppercase tracking-widest {{ if eq $.Language.Lang .Language.Lang }}text-primary-container{{ else }}text-on-surface-variant{{ end }}">
+                    {{ .Language.LanguageName }}
+                </a>
+                {{ end }}
+            </div>
+
+            <a href="#book-a-demo" class="mt-8 w-full py-5 bg-primary-container text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
+                {{ T "nav_contact" }}
+            </a>
+        </div>
+    </div>
+</nav>
+
+{{/* Nav interactivity: assets/js/nav.js | Styles: assets/css/components/_glass.css */}}

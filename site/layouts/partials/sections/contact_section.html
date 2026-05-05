@@ -1,0 +1,272 @@
+<!-- 7) book a demo? -->
+<section id="book-a-demo" class="py-16 md:py-24 px-6 md:px-8 relative overflow-hidden border-t border-on-background/5 dark:border-white/5 scroll-mt-24" data-aos="fade-up">
+    <!-- PCB Animated Background - High Fidelity -->
+    <div class="absolute inset-0 -z-10 opacity-40 dark:opacity-60 pointer-events-none">
+        <svg class="w-full h-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-100 100 H300 L400 200 V400 L500 500 H1300" stroke="primary-container" stroke-width="2" class="animate-pulse-path" style="filter: drop-shadow(0 0 8px primary-container);"/>
+            <path d="M1300 300 H900 L800 400 V600 L700 700 H-100" stroke="secondary" stroke-width="2" class="animate-pulse-path" style="animation-delay: 2s; filter: drop-shadow(0 0 8px secondary);"/>
+            <path d="M1200 100 V300 L1100 400 H800 L700 500 V800" stroke="secondary" stroke-width="2" class="animate-pulse-path" style="animation-delay: 3.5s; filter: drop-shadow(0 0 8px secondary);"/>
+            <circle cx="300" cy="100" r="4" fill="primary-container" class="animate-node-glow"/>
+            <circle cx="900" cy="300" r="4" fill="secondary" class="animate-node-glow"/>
+            <circle cx="1100" cy="400" r="4" fill="secondary" class="animate-node-glow"/>
+        </svg>
+    </div>
+
+    <div class="max-w-2xl mx-auto relative group">
+        <!-- Main Container -->
+        <div class="glass p-8 md:p-12 rounded-[2.5rem] border border-white/40 dark:border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-3xl min-h-[600px] flex flex-col justify-center">
+            <!-- Form content (Glass state) -->
+            <div id="demo-form-content" class="transition-opacity duration-300 relative z-10">
+                <div class="mb-10 text-center">
+                    <h2 class="font-h2 text-3xl md:text-4xl font-bold mb-4 text-on-surface dark:text-white tracking-tight leading-tight">{{ T "book_demo" }}</h2>
+                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 max-w-md mx-auto">{{ T "demo_subtitle" }}</p>
+                </div>
+                
+                <form id="demo-form" action="https://api.staticforms.dev/submit" method="POST" class="space-y-6">
+                    <input type="hidden" name="apiKey" value="{{ os.Getenv "STATICFORMS_API_KEY" | default site.Params.staticForms.apiKey }}">
+                    <input type="hidden" name="subject" value="{{ T "demo_email_subject" }}">
+                    <input type="hidden" name="redirectTo" value="{{ .Permalink }}?success=true#book-a-demo">
+                    <input type="text" name="honeypot" style="display:none">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex flex-col space-y-2">
+                            <label for="first-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "first_name" }}</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">person</span>
+                                <input id="first-name" name="first_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "first_name_placeholder" }}" required type="text" minlength="3"/>
+                            </div>
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label for="last-name" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "last_name" }}</label>
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">badge</span>
+                                <input id="last-name" name="last_name" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "last_name_placeholder" }}" required type="text" minlength="3"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="email" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "work_email" }}</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">mail</span>
+                            <input id="email" name="email" class="w-full bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 py-4 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "work_email_placeholder" }}" required type="email"/>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col space-y-2">
+                        <label for="phone" class="text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant dark:text-white/90 ml-1">{{ T "phone_number" }}</label>
+                        <div class="flex gap-3">
+                            <div class="w-32 flex-shrink-0 relative">
+                                <select name="country_code" aria-label="{{ T "select_region" }}" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-4 pr-10 rounded-2xl appearance-none cursor-pointer outline-none dark:text-white dark:bg-zinc-900 font-bold text-sm">
+                                    <option value="52" selected>🇲🇽 +52</option>
+                                    <option value="1">🇺🇸 +1</option>
+                                    <option value="1">🇨🇦 +1</option>
+                                    <option value="54">🇦🇷 +54</option>
+                                    <option value="591">🇧🇴 +591</option>
+                                    <option value="55">🇧🇷 +55</option>
+                                    <option value="56">🇨🇱 +56</option>
+                                    <option value="57">🇨🇴 +57</option>
+                                    <option value="506">🇨🇷 +506</option>
+                                    <option value="53">🇨🇺 +53</option>
+                                    <option value="593">🇪🇨 +593</option>
+                                    <option value="503">🇸🇻 +503</option>
+                                    <option value="502">🇬🇹 +502</option>
+                                    <option value="504">🇭🇳 +504</option>
+                                    <option value="505">🇳🇮 +505</option>
+                                    <option value="507">🇵🇦 +507</option>
+                                    <option value="595">🇵🇾 +595</option>
+                                    <option value="51">🇵🇪 +51</option>
+                                    <option value="1">🇵🇷 +1</option>
+                                    <option value="1">🇩🇴 +1</option>
+                                    <option value="598">🇺🇾 +598</option>
+                                    <option value="58">🇻🇪 +58</option>
+                                    <option value="34">🇪🇸 +34</option>
+                                </select>
+                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">expand_more</span>
+                            </div>
+                            <div class="relative flex-grow">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant dark:text-white/50 text-[20px]">phone</span>
+                                <input id="phone" name="phone" class="w-full h-[64px] bg-black/5 dark:bg-white/[0.05] border border-on-background/10 dark:border-white/20 pl-12 pr-4 rounded-2xl focus:border-primary-container transition-all outline-none dark:text-white" placeholder="{{ T "phone_placeholder" }}" required type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '');"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="pt-4">
+                        <button id="submit-btn" class="w-full bg-primary-container text-[#002114] font-bold text-lg h-[64px] rounded-2xl hover:shadow-xl transition-all flex items-center justify-center gap-3 group" type="submit">
+                            <span id="btn-text">{{ T "book_demo" }}</span>
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Success Message -->
+            <div id="final-success-check-123" class="absolute inset-0 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500 rounded-[2.5rem]" style="display: none;">
+                <!-- Centered Icon with protection zone -->
+                <div class="mb-8 md:mb-10 flex flex-col items-center">
+                    <div class="w-24 h-24 md:w-28 md:h-28 bg-primary-container/10 rounded-full flex items-center justify-center animate-success-check shadow-inner border border-primary-container/20">
+                        <span class="material-symbols-outlined text-primary-container text-[40px] md:text-[56px]" style="font-variation-settings: 'FILL' 1, 'wght' 500;">check_circle</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 max-w-sm mx-auto">
+                    <h3 class="font-h2 text-2xl md:text-3xl text-on-background dark:text-white font-bold tracking-tight">
+                        {{ T "demo_success_thanks" }}, <span id="user-name-display" class="text-primary-container"></span>!
+                    </h3>
+                    <p class="font-body-lg text-base md:text-lg text-on-surface-variant dark:text-gray-400 leading-relaxed">
+                        {{ T "demo_success_body" }}
+                    </p>
+                </div>
+
+                <!-- Footer accent -->
+                <div class="mt-12 w-12 h-1 bg-gradient-to-r from-transparent via-primary-container/30 to-transparent rounded-full"></div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="contact-error-message" class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 md:p-12 bg-white dark:bg-zinc-950 z-[100] animate-in fade-in zoom-in duration-500" style="display: none;">
+                <div class="w-20 h-20 md:w-24 md:h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-8">
+                    <span class="material-symbols-outlined text-red-500 text-[48px] md:text-[56px]">priority_high</span>
+                </div>
+                <h3 class="font-bold text-2xl md:text-3xl text-on-background dark:text-white mb-4 tracking-tight">{{ T "demo_error_title" }}</h3>
+                <p class="text-sm md:text-base text-on-surface-variant dark:text-gray-400 max-w-sm mb-10">{{ T "demo_error_body" }}</p>
+                <button onclick="window.location.reload();" class="px-10 py-4 bg-on-background dark:bg-white text-white dark:text-black rounded-xl font-bold text-sm">{{ T "demo_retry" }}</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes success-check { 
+    0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+    70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.animate-success-check { animation: success-check 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+.animate-pulse-path {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: dash 12s linear infinite;
+}
+@keyframes dash {
+    0% { stroke-dashoffset: 2000; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+}
+    .animate-node-glow { animation: node-pulse 4s ease-in-out infinite; }
+    @keyframes node-pulse {
+        0%, 100% { opacity: 0.1; r: 3; }
+        50% { opacity: 0.8; r: 5; filter: blur(3px); }
+    }
+
+    /* Fix for overlapping select arrows */
+    select.appearance-none {
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        background-image: none !important;
+    }
+    /* IE/Edge fix */
+    select.appearance-none::-ms-expand {
+        display: none;
+    }
+</style>
+
+
+<script>
+document.getElementById('demo-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const content = document.getElementById('demo-form-content');
+    const success = document.getElementById('final-success-check-123');
+    const errorMsg = document.getElementById('contact-error-message');
+    const nameDisplay = document.getElementById('user-name-display');
+
+    // UI Feedback
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    const originalText = btnText.textContent;
+    btnText.textContent = '{{ T "processing" }}...';
+
+    const formData = new FormData(form);
+    const object = Object.fromEntries(formData);
+
+    // Concat phone for better readability in email if needed
+    if (object.country_code && object.phone) {
+        object.phone = `+${object.country_code} ${object.phone}`;
+    }
+
+    // IMPORTANT: Remove redirectTo when using AJAX/fetch. 
+    // If present, StaticForms might return a redirect response that breaks JSON parsing.
+    delete object.redirectTo;
+
+    // Validation: Check if apiKey is missing
+    if (!object.apiKey || object.apiKey.trim() === "" || object.apiKey.includes("site.Params")) {
+        console.error('StaticForms: API Key is missing or invalid.');
+        
+        // Show the full error state instead of just button text for better visibility
+        content.style.display = 'none';
+
+        errorMsg.style.display = 'flex';
+        
+        // If possible, customize the error message text (optional, but helpful)
+        const errorTitle = errorMsg.querySelector('h3');
+        if (errorTitle) errorTitle.textContent = '{{ T "error_missing_apikey_title" }}';
+        
+        const errorBody = errorMsg.querySelector('p');
+        if (errorBody) errorBody.textContent = '{{ T "error_missing_apikey_body" }}';
+        
+        return;
+    }
+
+    const json = JSON.stringify(object);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: json
+    })
+    .then(async response => {
+        let result;
+        try {
+            result = await response.json();
+        } catch (e) {
+            result = { success: false, message: 'Invalid response from server' };
+        }
+
+        if (response.ok) {
+            // Success Logic: If response is OK, we assume it worked even if JSON parsing fails 
+            // (StaticForms sometimes returns non-JSON redirects if misconfigured)
+            if (nameDisplay) nameDisplay.textContent = object.first_name || 'Juan';
+            content.style.opacity = '0';
+            setTimeout(() => {
+                content.style.display = 'none';
+                success.style.display = 'flex';
+            }, 300);
+        } else {
+            console.error('Submission failed:', result);
+            throw new Error(result.message || 'Submission failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error details:', error);
+        content.style.display = 'none';
+
+        errorMsg.style.display = 'flex';
+    })
+    .finally(() => {
+        if (content.style.display !== 'none') {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnText.textContent = originalText;
+        }
+    });
+});
+</script>

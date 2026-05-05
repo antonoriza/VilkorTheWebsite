@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "hugo server",
-    "test": "playwright test"
+    "test": "playwright test -c qa/playwright.config.js"
   },
   "keywords": [],
   "author": "",

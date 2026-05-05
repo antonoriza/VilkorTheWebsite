@@ -1,0 +1,26 @@
+/* components/_shimmer.css — Ambient shimmer animation */
+
+.shimmer-soft {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-soft::after {
+    content: "";
+    position: absolute;
+    inset: -150%;
+    background: linear-gradient(
+        45deg,
+        transparent 48%,
+        rgba(255, 255, 255, 0.05) 50%,
+        transparent 52%
+    );
+    animation: shimmer-ambient 15s linear infinite;
+    pointer-events: none;
+    will-change: transform;
+}
+
+@keyframes shimmer-ambient {
+    from { transform: translate(-5%, -5%); }
+    to   { transform: translate(5%, 5%); }
+}

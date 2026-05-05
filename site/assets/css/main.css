@@ -1,0 +1,21 @@
+/*
+ * VILKOR CORE DESIGN SYSTEM
+ * Orchestrator — imports all CSS modules in dependency order.
+ * Edit the specific module file, not this one.
+ */
+
+/* 1. Design Tokens */
+@import "base/_variables.css";
+
+/* 2. Resets & Global Layout */
+@import "base/_reset.css";
+
+/* 3. Components */
+@import "components/_glass.css";
+@import "components/_shadows.css";
+@import "components/_pricing-cards.css";
+@import "components/_shimmer.css";
+
+/* 4. Utilities */
+@import "utilities/_grid.css";
+@import "utilities/_icons.css";
