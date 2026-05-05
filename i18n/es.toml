@@ -77,11 +77,11 @@ other = "Hasta 100 viviendas"
 [pricing_standard_f1]
 other = "Hasta 3 administradores"
 [pricing_standard_f2]
-other = "Cobranza y estados de cuenta"
+other = "Todo lo del plan Starter"
 [pricing_standard_f3]
 other = "Tickets de mantenimiento"
 [pricing_standard_f4]
-other = "Expediente Digital (Reglamentos/Actas)"
+other = "Expediente Digital Administrativo"
 [pricing_standard_f5]
 other = "Comunicados y Acceso"
 [pricing_standard_f6]
@@ -95,7 +95,7 @@ other = "Hasta 200 viviendas"
 [pricing_pro_f1]
 other = "Administradores ilimitados"
 [pricing_pro_f2]
-other = "Mantenimiento y Tickets"
+other = "Todo lo del plan Standard"
 [pricing_pro_f3]
 other = "Gestión de paquetería"
 [pricing_pro_f4]
@@ -115,11 +115,11 @@ other = "Hasta 300 viviendas"
 [pricing_class_f1]
 other = "Administradores ilimitados"
 [pricing_class_f2]
-other = "Gestión multi-fraccionamiento"
+other = "Todo lo del plan Pro"
 [pricing_class_f3]
-other = "Dashboard de carteras"
+other = "Gestión multi-fraccionamiento"
 [pricing_class_f4]
-other = "Finanzas y Mantenimiento"
+other = "Dashboard de carteras"
 [pricing_class_f5]
 other = "Exportación avanzada"
 [pricing_class_f6]
@@ -133,7 +133,7 @@ other = "Cotización"
 [pricing_enterprise_desc]
 other = "Más de 300 viviendas"
 [pricing_enterprise_f1]
-other = "Funcionalidades ilimitadas"
+other = "Todo lo del plan Class"
 [pricing_enterprise_f2]
 other = "Migración de datos asistida"
 [pricing_enterprise_f3]
