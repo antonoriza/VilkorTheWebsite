@@ -83,17 +83,19 @@ other = "Gestión completa para comunidades en crecimiento."
 [pricing_standard_desc]
 other = "Hasta 100 viviendas"
 [pricing_standard_f1]
-other = "Hasta 3 administradores."
-[pricing_standard_f2]
 other = "Todo lo del plan Starter.*"
+[pricing_standard_f2]
+other = "Hasta 2 administradores."
 [pricing_standard_f3]
-other = "Tickets de mantenimiento."
+other = "Generación de reporte financiero automatizado."
 [pricing_standard_f4]
-other = "Expediente Digital Administrativo."
+other = "Exportación de pagos a excel."
 [pricing_standard_f5]
-other = "Comunicados Masivos."
+other = "Badges para residentes (Comitivas/Mesa)."
 [pricing_standard_f6]
-other = "Soporte estándar."
+other = "Perfiles para staff (Guardias/Limpieza)."
+[pricing_standard_f7]
+other = "Soporte correo y whatsapp."
 
 # --- Pro ---
 [pricing_pro_tagline]
