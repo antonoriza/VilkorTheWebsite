@@ -1,6 +1,10 @@
 <!-- 5) Pricing -->
-<section id="pricing" class="pt-12 md:pt-20 pb-4 md:pb-6 bg-white dark:bg-zinc-950 scroll-mt-24">
-    <div class="max-w-[95%] xl:max-w-[98%] 2xl:max-w-[2000px] mx-auto px-4">
+<section id="pricing" class="py-16 md:py-24 relative overflow-hidden scroll-mt-24">
+    <!-- Ambient Light for Glassmorphism (Light Mode) -->
+    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary-container/10 blur-[120px] rounded-full pointer-events-none dark:hidden"></div>
+    <div class="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-secondary/5 blur-[100px] rounded-full pointer-events-none dark:hidden"></div>
+    
+    <div class="max-w-[95%] xl:max-w-[98%] 2xl:max-w-[2000px] mx-auto px-4 relative z-10">
         <div class="text-center mb-10 md:mb-12" data-aos="fade-up">
             <h2 class="font-h1 font-bold text-3xl md:text-5xl text-on-background dark:text-white mb-4 md:mb-6 tracking-tight leading-tight">{{ T "pricing_title" }}</h2>
             
