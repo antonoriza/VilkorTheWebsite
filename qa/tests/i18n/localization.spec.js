@@ -44,7 +44,7 @@ test.describe("Vilkor Multi-language UI/UX Tests", () => {
       }) => {
         await page.goto(lang.path);
         const contactBtn = page
-          .locator('a[href="#book-a-demo"]')
+          .locator('main a[href="#book-a-demo"]')
           .filter({ hasText: lang.contactText, visible: true })
           .first();
         await expect(contactBtn).toBeVisible();

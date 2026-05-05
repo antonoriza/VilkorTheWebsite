@@ -10,10 +10,7 @@ test.describe("FAQ Tests", () => {
       const summary = firstFaq.locator("summary");
 
       await summary.click();
-      await page.waitForTimeout(500); // Wait for animation
-
-      const isOpen = await firstFaq.evaluate((node) => node.open);
-      expect(isOpen).toBe(true);
+      await expect(firstFaq).toHaveAttribute("open", "");
     }
   });
 });

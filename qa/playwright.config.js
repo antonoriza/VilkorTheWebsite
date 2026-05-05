@@ -19,6 +19,8 @@ module.exports = defineConfig({
     baseURL: "http://localhost:1314",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    locale: "en-US",
+    timezoneId: "UTC",
   },
   projects: [
     {

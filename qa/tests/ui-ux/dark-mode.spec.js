@@ -9,9 +9,7 @@ test.describe("Appearance Tests", () => {
     const darkToggle = page.locator("#dark-mode-toggle");
     if ((await darkToggle.count()) > 0) {
       await darkToggle.click();
-      const isDark = await page.locator("html").hasClass("dark");
-      console.log(`Dark mode active: ${isDark}`);
-      expect(isDark).toBe(true);
+      await expect(page.locator("html")).toHaveClass(/dark/);
     }
   });
 });
