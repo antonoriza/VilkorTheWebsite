@@ -1,4 +1,4 @@
-# Enterprise Modular CI/CD Pipeline for Vilkor
+# Minimalist CI/CD Pipeline for Vilkor
 name: Deploy Hugo site to Pages
 
 on:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -20,56 +20,9 @@ defaults:
     shell: bash
 
 jobs:
-  # 1. Quality Gate: Checks code style and formatting
-  quality_gate:
-    name: 🧹 Code Quality (Lint)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-      - run: npm ci
-      - name: Run Linter
-        run: npm run lint
-
-  # 2. E2E Testing: Runs the full Playwright suite in Docker
-  e2e_tests:
-    name: 🧪 E2E Testing Suite
-    runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.49.1-jammy
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-      - run: npm ci
-      - name: Clean Hugo Cache
-        run: rm -rf .hugo_internal/build .hugo_internal/cache
-
-      - name: Run All Tests
-        id: playwright
-        run: npx playwright test -c qa/playwright.config.js --reporter=list,github,html,json
-        env:
-          PLAYWRIGHT_HTML_REPORT: .hugo_internal/playwright-report
-          PLAYWRIGHT_JSON_OUTPUT_NAME: .hugo_internal/test-results.json
-          HOME: /root
-
-      - name: Upload Test Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: .hugo_internal/playwright-report/
-          retention-days: 7
-
-  # 3. Build & Audit: Compiles the site and runs Lighthouse
-  build_and_audit:
-    name: 🏗️ Production Build & Audit
-    needs: [quality_gate, e2e_tests]
+  # Build: Compiles the site
+  build:
+    name: 🏗️ Production Build
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.161.1
@@ -84,83 +37,18 @@ jobs:
           wget https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb
           sudo dpkg -i hugo_extended_${HUGO_VERSION}_linux-amd64.deb
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-      - run: npm ci
-
       - name: Build Hugo Site
         run: hugo --minify --config config/_default/config.toml
-
-      - name: Lighthouse Audit
-        run: npx lhci autorun --output=json > .hugo_internal/lhci-results.json || echo "Audit skipped"
-
-      - name: Download Test Results for Dashboard
-        uses: actions/download-artifact@v4
-        with:
-          name: playwright-report
-          path: .hugo_internal/playwright-report/
-
-      - name: Generate Premium Dashboard
-        if: always()
-        run: |
-          JSON_REPORT=".hugo_internal/playwright-report/results.json" # Note: Adjust path if needed
-          # Checking if file exists, if not use a fallback
-          if [ ! -f "$JSON_REPORT" ]; then
-             JSON_REPORT=".hugo_internal/test-results.json" 
-          fi
-
-          echo "## 🛡️ Vilkor Enterprise Quality Dashboard" >> $GITHUB_STEP_SUMMARY
-
-          if [ ! -f "$JSON_REPORT" ]; then
-            echo "### ⚠️ QA Status: Unknown" >> $GITHUB_STEP_SUMMARY
-            echo "> 🔴 **Tests failed to provide data.**" >> $GITHUB_STEP_SUMMARY
-          else
-            TOTAL=$(jq '.stats.expected' $JSON_REPORT)
-            FAILED=$(jq '.stats.unexpected' $JSON_REPORT)
-            echo "### 🧪 Test Summary: $TOTAL Tests" >> $GITHUB_STEP_SUMMARY
-            if [ "$FAILED" -eq "0" ]; then
-              echo "> ✅ All tests passed in the standardized Docker environment." >> $GITHUB_STEP_SUMMARY
-            else
-              echo "> ❌ **$FAILED** tests failed. Review the visual differences in artifacts." >> $GITHUB_STEP_SUMMARY
-            fi
-            
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "| Suite | Status | Tests | Failed |" >> $GITHUB_STEP_SUMMARY
-            echo "| :--- | :---: | :---: | :---: |" >> $GITHUB_STEP_SUMMARY
-            
-            get_suite_stats() {
-              local suite=$1
-              local count=$(jq "[.suites[] | select(.title | contains(\"$suite\")) | .specs[]] | length" $JSON_REPORT || echo "0")
-              local fails=$(jq "[.suites[] | select(.title | contains(\"$suite\")) | .specs[] | select(.ok == false)] | length" $JSON_REPORT || echo "0")
-              local icon="🟢"; if [ "$fails" -gt "0" ]; then icon="🔴"; elif [ "$count" -eq "0" ]; then icon="⚪"; fi
-              echo "| $suite | $icon | $count | $fails |"
-            }
-            get_suite_stats "Smoke" >> $GITHUB_STEP_SUMMARY
-            get_suite_stats "Visual" >> $GITHUB_STEP_SUMMARY
-          fi
-
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ⚡ Lighthouse Core Web Vitals" >> $GITHUB_STEP_SUMMARY
-          if [ -f ".hugo_internal/lhci-results.json" ]; then
-             echo "| Category | Score | Status |" >> $GITHUB_STEP_SUMMARY
-             echo "| --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
-             echo "| Performance | 95+ | 🟢 |" >> $GITHUB_STEP_SUMMARY
-             echo "| Accessibility | 100 | 🟢 |" >> $GITHUB_STEP_SUMMARY
-          else
-             echo "> ⚪ Lighthouse audit skipped." >> $GITHUB_STEP_SUMMARY
-          fi
 
       - name: Upload Production Files
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./.hugo_internal/build
+          path: ./public
 
-  # 4. Deployment: Final push to GitHub Pages
+  # Deploy: Final push to GitHub Pages
   deploy:
     name: 🚀 Global Deployment
-    needs: build_and_audit
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

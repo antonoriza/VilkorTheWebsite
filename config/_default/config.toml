@@ -8,8 +8,8 @@ layoutDir = "site/layouts"
 i18nDir = "site/locales/i18n"
 dataDir = "site/locales/data"
 contentDir = "site/content"
-publishDir = ".hugo_internal/build"
-resourceDir = ".hugo_internal/cache"
+publishDir = "public"
+resourceDir = "resources"
 
 [params]
   author = "Vilkor Enterprise"
