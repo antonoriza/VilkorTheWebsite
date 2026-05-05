@@ -77,15 +77,15 @@ other = "Hasta 100 viviendas"
 [pricing_standard_f1]
 other = "Hasta 3 administradores"
 [pricing_standard_f2]
-other = "Todo lo de Starter, más:"
+other = "Cobranza y estados de cuenta"
 [pricing_standard_f3]
 other = "Tickets de mantenimiento"
 [pricing_standard_f4]
-other = "Bóveda de documentos"
+other = "Expediente Digital (Reglamentos/Actas)"
 [pricing_standard_f5]
-other = "Reportes financieros descargables"
+other = "Comunicados y Acceso"
 [pricing_standard_f6]
-other = "Soporte con respuesta en 48h"
+other = "Soporte estándar"
 
 # --- Pro ---
 [pricing_pro_tagline]
@@ -95,17 +95,17 @@ other = "Hasta 200 viviendas"
 [pricing_pro_f1]
 other = "Administradores ilimitados"
 [pricing_pro_f2]
-other = "Todo lo de Standard, más:"
+other = "Mantenimiento y Tickets"
 [pricing_pro_f3]
 other = "Gestión de paquetería"
 [pricing_pro_f4]
-other = "Bitácora de rondas de seguridad"
+other = "Bitácora de eventos y rondas"
 [pricing_pro_f5]
-other = "Supervisión de staff y proveedores"
+other = "Supervisión de staff"
 [pricing_pro_f6]
 other = "Pagos en línea integrados"
 [pricing_pro_f7]
-other = "Soporte con respuesta en 24h"
+other = "Soporte en 24h (Días hábiles)"
 
 # --- Class ---
 [pricing_class_tagline]
@@ -115,15 +115,15 @@ other = "Hasta 300 viviendas"
 [pricing_class_f1]
 other = "Administradores ilimitados"
 [pricing_class_f2]
-other = "Todo lo de Pro, más:"
-[pricing_class_f3]
 other = "Gestión multi-fraccionamiento"
+[pricing_class_f3]
+other = "Dashboard de carteras"
 [pricing_class_f4]
-other = "Dashboard consolidado de carteras"
+other = "Finanzas y Mantenimiento"
 [pricing_class_f5]
-other = "Exportación avanzada de reportes"
+other = "Exportación avanzada"
 [pricing_class_f6]
-other = "Soporte prioritario (respuesta en 8h)"
+other = "Soporte prioritario"
 
 # --- Enterprise ---
 [pricing_enterprise_tagline]
@@ -133,15 +133,15 @@ other = "Cotización"
 [pricing_enterprise_desc]
 other = "Más de 300 viviendas"
 [pricing_enterprise_f1]
-other = "Todo lo de Class, más:"
+other = "Funcionalidades ilimitadas"
 [pricing_enterprise_f2]
-other = "Implementación y migración asistida"
+other = "Migración de datos asistida"
 [pricing_enterprise_f3]
-other = "Capacitación personalizada del equipo"
+other = "Capacitación personalizada"
 [pricing_enterprise_f4]
-other = "Acuerdo de nivel de servicio (SLA)"
+other = "Acuerdo de nivel (SLA)"
 [pricing_enterprise_f5]
-other = "Soporte directo con el equipo técnico"
+other = "Soporte directo especializado"
 
 [pricing_subtitle]
 other = "Todos los planes incluyen soporte, actualizaciones y acceso completo a la plataforma. Sin contratos de largo plazo."
@@ -155,7 +155,7 @@ other = "Solicitar Cotización"
 other = "mxn / mes"
 
 [pricing_disclaimer]
-other = "Todos los planes incluyen 15 días de prueba sin costo. Al elegir facturación anual obtiene el equivalente a 2 meses gratis. Precios en MXN más IVA."
+other = "Todos los planes incluyen 15 días de prueba sin costo. Al elegir facturación anual obtiene el equivalente a 2 meses gratis. Precios en MXN más IVA. Límites de almacenamiento administrativo aplican según el plan."
 
 [faq]
 other = "Preguntas Frecuentes"
@@ -447,11 +447,11 @@ other = "Incremente la plusvalía"
 other = "Planifique y ejecute mantenimientos preventivos y correctivos que protegen su inversión estructural."
 
 [digital_vault_title]
-other = "Bóveda Digital"
+other = "Expediente Digital"
 [digital_vault_empower]
-other = "Documentación siempre a la mano"
+other = "Documentación oficial organizada"
 [digital_vault_desc]
-other = "Almacene contratos, reglamentos y planos en un repositorio seguro, accesible para los perfiles autorizados en cualquier momento."
+other = "Resguarde contratos, reglamentos y actas de asamblea en un repositorio centralizado para consulta administrativa."
 
 [service_logistics_title]
 other = "Tickets de Mantenimiento"
@@ -689,7 +689,7 @@ other = "Términos de Servicio"
 other = "Términos y Condiciones de Uso – Vilkor PMS"
 
 [terms_content]
-other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última actualización: 2 de mayo de 2026</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Procesamiento de Pagos y Comisiones</h4> <p>El servicio de pagos en Vilkor se realiza a través de la infraestructura de <strong>Stripe</strong>.</p> <ul class='list-disc pl-5 mt-2 space-y-1'> <li><strong>Comisiones:</strong> El Usuario acepta que el uso de la pasarela de pagos conlleva comisiones que dependen de las políticas vigentes de Stripe. Vilkor se reserva el derecho de aplicar cargos por servicio adicionales desglosados al momento de la transacción.</li> <li><strong>Independencia Financiera:</strong> Vilkor no retiene fondos ni interviene en el proceso de liquidación. Aclaraciones sobre transferencias deben gestionarse vía Stripe o su institución bancaria.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Conducta y Convivencia</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Uso Aceptable:</strong> Queda estrictamente prohibido el uso de lenguaje ofensivo, discriminatorio o violento en cualquier módulo de la plataforma.</li> <li><strong>Deslinde de Interacción:</strong> Vilkor es un facilitador tecnológico. No supervisamos comunicaciones privadas y nos deslindamos de responsabilidades derivadas de conflictos entre residentes, staff o administradores.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Gestión de Datos y Almacenamiento</h4> <p>Vilkor permite la carga de documentos y gestión de archivos bajo un esquema de <strong>almacenamiento dinámico</strong> sujeto a los límites de nuestro proveedor de infraestructura cloud. El Usuario es responsable de mantener respaldos externos de documentación crítica.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Terminación del Servicio</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Periodo de Gracia:</strong> Tras la cancelación, el Administrador tendrá <strong>30 días naturales</strong> para exportar su información.</li> <li><strong>Eliminación:</strong> Transcurrido dicho plazo, Vilkor eliminará definitivamente los datos para garantizar la privacidad y optimización del sistema.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Deslinde de IA y Soporte (SLA)</h4> <p>El uso de agentes de <strong>IA</strong> es de carácter informativo. Las decisiones finales son responsabilidad del Usuario Humano. La disponibilidad técnica se rige exclusivamente por el SLA de nuestro proveedor de nube.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Ley Aplicable y Jurisdicción</h4> <p>Este contrato se rige por las leyes de <strong>México</strong>. Cualquier disputa será resuelta en los tribunales competentes de la Ciudad de México / Estado de México.</p> </section> </div>"
+other = " <div class='space-y-8 text-on-surface-variant dark:text-white/70 text-sm leading-relaxed'> <p class='text-xs uppercase tracking-widest opacity-60 dark:text-white/80'>Última actualización: 2 de mayo de 2026</p> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>1. Procesamiento de Pagos y Comisiones</h4> <p>El servicio de pagos en Vilkor se realiza a través de la infraestructura de <strong>Stripe</strong>.</p> <ul class='list-disc pl-5 mt-2 space-y-1'> <li><strong>Comisiones:</strong> El Usuario acepta que el uso de la pasarela de pagos conlleva comisiones que dependen de las políticas vigentes de Stripe. Vilkor se reserva el derecho de aplicar cargos por servicio adicionales desglosados al momento de la transacción.</li> <li><strong>Independencia Financiera:</strong> Vilkor no retiene fondos ni interviene en el proceso de liquidación. Aclaraciones sobre transferencias deben gestionarse vía Stripe o su institución bancaria.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>2. Conducta y Convivencia</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Uso Aceptable:</strong> Queda estrictamente prohibido el uso de lenguaje ofensivo, discriminatorio o violento en cualquier módulo de la plataforma.</li> <li><strong>Deslinde de Interacción:</strong> Vilkor es un facilitador tecnológico. No supervisamos comunicaciones privadas y nos deslindamos de responsabilidades derivadas de conflictos entre residentes, staff o administradores.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>3. Gestión de Datos y Almacenamiento</h4> <p>Vilkor permite la carga de documentos y gestión de archivos bajo un esquema de <strong>almacenamiento administrativo limitado</strong> sujeto a los límites de nuestro proveedor de infraestructura cloud. El Usuario tiene prohibido el uso de la plataforma como servicio de almacenamiento general de archivos personales, fotos o video.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>4. Terminación del Servicio</h4> <ul class='list-disc pl-5 space-y-1'> <li><strong>Periodo de Gracia:</strong> Tras la cancelación, el Administrador tendrá <strong>30 días naturales</strong> para exportar su información.</li> <li><strong>Eliminación:</strong> Transcurrido dicho plazo, Vilkor eliminará definitivamente los datos para garantizar la privacidad y optimización del sistema.</li> </ul> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>5. Deslinde de IA y Soporte (SLA)</h4> <p>El uso de agentes de <strong>IA</strong> es de carácter informativo. Las decisiones finales son responsabilidad del Usuario Humano. La disponibilidad técnica se rige exclusivamente por el SLA de nuestro proveedor de nube.</p> </section> <section> <h4 class='text-on-background dark:text-white font-bold text-lg mb-3'>6. Ley Aplicable y Jurisdicción</h4> <p>Este contrato se rige por las leyes de <strong>México</strong>. Cualquier disputa será resuelta en los tribunales competentes de la Ciudad de México / Estado de México.</p> </section> </div>"
 
 [privacy_title]
 other = "Aviso de Privacidad Integral – Vilkor PMS"
