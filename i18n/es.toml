@@ -120,6 +120,8 @@ other = "Gestión y Reserva de amenidades."
 other = "Directorio de proveedores."
 [pricing_pro_f7]
 other = "Gestión de staff (Horarios/Vacaciones)."
+[pricing_pro_f8]
+other = "Soporte correo y whatsapp."
 
 # --- Class ---
 [pricing_class_tagline]
