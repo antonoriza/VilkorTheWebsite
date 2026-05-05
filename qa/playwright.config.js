@@ -14,7 +14,7 @@ module.exports = defineConfig({
     ],
   ],
   snapshotPathTemplate:
-    "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{ext}",
+    "{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{-platform}{ext}",
   use: {
     baseURL: "http://localhost:1314",
     trace: "on-first-retry",
