@@ -1,13 +1,10 @@
-# Ignorar plantillas de Hugo porque Prettier no entiende Go Templates
+# Ignore Hugo templates
 site/layouts/
 site/locales/
-.hugo_internal/
 node_modules/
-dist/
 public/
-build/
+resources/
 *.toml
 *.lock
-test-results/
-.playwright/
-playwright-report/
+.DS_Store
+*.log
