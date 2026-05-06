@@ -456,57 +456,57 @@ other = "Control y Seguridad"
 other = "Administre accesos, supervise la logística de paquetería y gestione el flujo de proveedores con monitoreo operativo en tiempo real."
 
 [every_tool]
-other = "Inteligencia Operativa a Gran Escala"
+other = "Todo lo que su administración necesita"
 
 [every_tool_subtitle]
-other = "Soluciones modulares que transforman la complejidad en rentabilidad y plusvalía, garantizando el rigor administrativo."
+other = "Cada módulo de Vilkor resuelve un problema real de su comunidad: menos morosidad, menos conflictos, menos caos. Transforme el caos en rentabilidad y plusvalía."
 
 # 1. Gestión de Activos (Finanzas)
 [finances_header]
-other = "Gestión de Activos"
+other = "Finanzas bajo control, siempre"
 [finances_focus]
 other = "Enfoque: SOLIDEZ"
 
 [smart_collection_title]
-other = "Cobranza Automatizada"
+other = "Cobre a tiempo, sin perseguir a nadie"
 [smart_collection_empower]
 other = "Asegure el flujo de caja"
 [smart_collection_desc]
-other = "Automatice la cobranza y elimine la morosidad con flujos lógicos de seguimiento y conciliación inmediata."
+other = "Vilkor genera recordatorios, aplica recargos y multas. Usted supervisa y el sistema ejecuta."
 
 [data_integrity_title]
-other = "Integración Sencilla"
+other = "Arranque inmediato."
 [data_integrity_empower]
 other = "Transición sin fricciones"
 [data_integrity_desc]
-other = "Trasladamos sus datos históricos a Vilkor con total integridad, asegurando la continuidad de su operación desde el primer día."
+other = "Preparamos y tenemos listo su entorno digital a la brevedad. Usa ya otro sistema? Migramos su historial completo en menos de 72 horas. Su operación continúa sin pausas ni hojas de cálculo perdidas."
 
 [reserve_optimization_title]
-other = "Optimización de Reservas"
+other = "Sepa de cuánto dispone hoy y cuánto necesitará mañana"
 [reserve_optimization_empower]
 other = "Control de fondos de reserva"
 [reserve_optimization_desc]
-other = "Visualice la salud financiera a largo plazo con proyecciones de fondos y presupuestos auditables."
+other = "Proyecciones de fondos y presupuestos auditables para planificar con certeza, no con suposiciones."
 
 [expense_audit_title]
 other = "Auditoría de Egresos"
 [expense_audit_empower]
 other = "Visibilidad total de cada gasto"
 [expense_audit_desc]
-other = "Registre, clasifique y apruebe cada gasto administrativo con trazabilidad completa. Nada sale sin evidencia."
+other = "Cada gasto se registra, clasifica y aprueba con trazabilidad completa. Si alguien pregunta en qué se gastó, la respuesta está a un clic. Nada sale sin evidencia. Nunca."
 
 # 2. Operaciones y Comunidad (Flujos)
 [operations_header]
-other = "Operaciones y Comunidad"
+other = "Operación sin fricciones, comunidad sin conflictos"
 [operations_focus]
 other = "Enfoque: AGILIDAD"
 
 [property_evolution_title]
-other = "Mantenimiento Mayor"
+other = "Proteja su inversión antes de que el problema llegue"
 [property_evolution_empower]
 other = "Incremente la plusvalía"
 [property_evolution_desc]
-other = "Planifique y ejecute mantenimientos preventivos y correctivos que protegen su inversión estructural."
+other = "Planifique mantenimientos preventivos y correctivos con fechas, presupuesto y responsables asignados. El hogar no espera; tampoco usted."
 
 [digital_vault_title]
 other = "Expediente Digital"
@@ -516,52 +516,52 @@ other = "Documentación oficial organizada"
 other = "Resguarde contratos, reglamentos y actas de asamblea en un repositorio centralizado para consulta administrativa."
 
 [service_logistics_title]
-other = "Tickets de Mantenimiento"
+other = "El residente reporta. El responsable actúa. Usted verifica"
 [service_logistics_empower]
 other = "Resolución con seguimiento formal"
 [service_logistics_desc]
-other = "Registre solicitudes de mantenimiento, asígnelas a proveedores y dé seguimiento hasta su cierre con evidencia fotográfica."
+other = "Cada solicitud abre un ticket con seguimiento en tiempo real y cierre con evidencia fotográfica. Los problemas se resuelven; no se ignoran."
 
 [resolution_channel_title]
-other = "Canal de Atención Formal"
+other = "Respuestas que constan por escrito, siempre"
 [resolution_channel_empower]
 other = "Elimine malentendidos"
 [resolution_channel_desc]
-other = "Centralice la atención al residente bajo un sistema de tickets que garantiza respuestas y acuerdos trazables."
+other = "Publique y programe avisos vecinales y/o individuales. Cada comunicación queda registrada. Adios a malentendidos y los \"yo nunca dije eso\"."
 
 # 3. Control e Infraestructura (Seguridad)
 [security_header]
-other = "Control e Infraestructura"
+other = "Seguridad sin puntos ciegos"
 [security_focus]
 other = "Enfoque: BLINDAJE"
 
 [shielded_perimeter_title]
-other = "Perímetro Blindado"
+other = "Sepa quién entra, quién sale y cuándo"
 [shielded_perimeter_empower]
 other = "Gestione accesos con rigor"
 [shielded_perimeter_desc]
-other = "Gestión rigurosa de entradas y salidas con registro biométrico e instantáneo en la nube."
+other = "Control de acceso con registro biométrico y/o detección de placas vehiculares instantáneo y en la nube. Visitas, proveedores, residentes: un historial limpio y verificable en todo momento."
 
 [logistics_management_title]
-other = "Gestión de Logística"
+other = "Los paquetes de sus residentes, seguros y organizados"
 [logistics_management_empower]
 other = "Controle entregas e insumos"
 [logistics_management_desc]
-other = "Control total sobre la recepción de insumos operativos y entregas de última milla para residentes."
+other = "Registre cada entrega, notifique al residente de inmediato y evite extravíos. La última milla termina bien, siempre."
 
 [activity_monitor_title]
-other = "Bitácora de Eventos"
+other = "Si ocurrió en su comunidad, quedó registrado"
 [activity_monitor_empower]
 other = "Registro auditable de cada turno"
 [activity_monitor_desc]
 other = "Lleve un registro cronológico de incidencias, visitas y rondas de seguridad. Consulte el historial en cualquier momento desde cualquier dispositivo."
 
 [staff_supervision_title]
-other = "Supervisión de Staff"
+other = "Su equipo, coordinado. Sin llamadas, sin malentendidos."
 [staff_supervision_empower]
 other = "Audite el desempeño operativo"
 [staff_supervision_desc]
-other = "Coordine y audite el desempeño del personal operativo y proveedores desde una sola pantalla de control."
+other = "Horarios, asignaciones de inventario, gestión de actividades desde una sola pantalla de control."
 
 [tenant_portal_title]
 other = "Portal del Inquilino"
@@ -646,7 +646,7 @@ other = "Legal"
 other = "Todos los derechos reservados."
 
 [why_vilkor_subtitle]
-other = "Construimos Vilkor porque la administración de condominios merecía algo mejor: un sistema que imponga orden, registre cada transacción y le dé al administrador la autoridad que necesita para operar con excelencia."
+other = "La mayoria de soluciones afuera construyen y operan sobre la burocracia e ineficiencia de procesos fragmentados. Construimos Vilkor porque la administración de comunidades y tu hogar merece algo mejor: un sistema que imponga orden, registre cada transacción y le dé al residente la confianza de saber que su patrimonio esta en buenas manos."
 
 
 

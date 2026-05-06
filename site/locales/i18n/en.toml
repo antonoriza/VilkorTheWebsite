@@ -453,57 +453,57 @@ other = "Control and Security"
 other = "Manage access control, supervise package logistics, and oversee vendor flows with real-time operational monitoring."
 
 [every_tool]
-other = "Operational Intelligence at Scale"
+other = "Everything your management needs"
 
 [every_tool_subtitle]
-other = "Modular solutions that transform complexity into profitability and asset appreciation, guaranteeing administrative rigor."
+other = "Each Vilkor module solves a real community problem: less delinquency, fewer conflicts, less chaos. Transform chaos into profitability and asset value."
 
 # 1. Asset Management (Finances)
 [finances_header]
-other = "Asset Management"
+other = "Finances under control, always"
 [finances_focus]
 other = "Focus: SOLIDITY"
 
 [smart_collection_title]
-other = "Automated Collection"
+other = "Collect on time, without chasing anyone"
 [smart_collection_empower]
 other = "Secure your cash flow"
 [smart_collection_desc]
-other = "Automate billing and eliminate delinquency with logical follow-up flows and immediate reconciliation."
+other = "Vilkor generates reminders, applies surcharges and fines. You supervise and the system executes."
 
 [data_integrity_title]
-other = "Seamless Integration"
+other = "Immediate start."
 [data_integrity_empower]
 other = "Frictionless transition"
 [data_integrity_desc]
-other = "We migrate your historical data to Vilkor with total integrity, ensuring operational continuity from day one."
+other = "We prepare and have your digital environment ready shortly. Already using another system? We migrate your entire history in less than 72 hours. Your operation continues without pauses or lost spreadsheets."
 
 [reserve_optimization_title]
-other = "Reserve Optimization"
+other = "Know how much you have today and how much you will need tomorrow"
 [reserve_optimization_empower]
 other = "Reserve fund control"
 [reserve_optimization_desc]
-other = "Visualize long-term financial health with fund projections and auditable budgets."
+other = "Fund projections and auditable budgets to plan with certainty, not assumptions."
 
 [expense_audit_title]
 other = "Expense Audit"
 [expense_audit_empower]
 other = "Full visibility of every expense"
 [expense_audit_desc]
-other = "Register, classify, and approve every administrative expense with full traceability. Nothing leaves without evidence."
+other = "Every expense is recorded, classified, and approved with full traceability. If someone asks what it was spent on, the answer is just a click away. Nothing leaves without evidence. Never."
 
 # 2. Operations and Community (Flows)
 [operations_header]
-other = "Operations and Community"
+other = "Frictionless operation, conflict-free community"
 [operations_focus]
 other = "Focus: AGILITY"
 
 [property_evolution_title]
-other = "Major Maintenance"
+other = "Protect your investment before the problem arrives"
 [property_evolution_empower]
 other = "Increase asset value"
 [property_evolution_desc]
-other = "Plan and execute preventive and corrective maintenance that protects your structural investment."
+other = "Plan preventive and corrective maintenance with dates, budget, and assigned managers. The home doesn't wait; neither do you."
 
 [digital_vault_title]
 other = "Digital Vault"
@@ -513,52 +513,52 @@ other = "Organized official documentation"
 other = "Safeguard contracts, regulations, and assembly minutes in a centralized repository for administrative reference."
 
 [service_logistics_title]
-other = "Maintenance Tickets"
+other = "The resident reports. The responsible acts. You verify"
 [service_logistics_empower]
 other = "Resolution with formal tracking"
 [service_logistics_desc]
-other = "Record maintenance requests, assign them to vendors, and follow up until closure with photographic evidence."
+other = "Each request opens a ticket with real-time tracking and closure with photographic evidence. Problems are solved; not ignored."
 
 [resolution_channel_title]
-other = "Formal Attention Channel"
+other = "Responses in writing, always"
 [resolution_channel_empower]
 other = "Eliminate misunderstandings"
 [resolution_channel_desc]
-other = "Centralize resident attention under a ticket system that guarantees traceable responses and agreements."
+other = "Publish and schedule neighborhood and/or individual notices. Every communication is recorded. Goodbye to misunderstandings and \"I never said that\"."
 
 # 3. Control and Infrastructure (Security)
 [security_header]
-other = "Control and Infrastructure"
+other = "Security without blind spots"
 [security_focus]
 other = "Focus: SHIELDING"
 
 [shielded_perimeter_title]
-other = "Shielded Perimeter"
+other = "Know who enters, who leaves, and when"
 [shielded_perimeter_empower]
 other = "Manage access with rigor"
 [shielded_perimeter_desc]
-other = "Rigorous entry and exit management with biometric and instantaneous cloud recording."
+other = "Access control with biometric registration and/or instantaneous cloud-based license plate detection. Visitors, vendors, residents: a clean and verifiable history at all times."
 
 [logistics_management_title]
-other = "Logistics Management"
+other = "Your residents' packages, safe and organized"
 [logistics_management_empower]
 other = "Control deliveries and supplies"
 [logistics_management_desc]
-other = "Total control over the reception of operational supplies and last-mile deliveries for residents."
+other = "Record every delivery, notify the resident immediately, and avoid losses. The last mile ends well, always."
 
 [activity_monitor_title]
-other = "Activity Log"
+other = "If it happened in your community, it was recorded"
 [activity_monitor_empower]
 other = "Auditable record of every shift"
 [activity_monitor_desc]
 other = "Keep a chronological record of incidents, visits, and security rounds. Access history anytime from any device."
 
 [staff_supervision_title]
-other = "Staff Supervision"
+other = "Your team, coordinated. No calls, no misunderstandings."
 [staff_supervision_empower]
 other = "Audit operational performance"
 [staff_supervision_desc]
-other = "Coordinate and audit the performance of operational staff and vendors from a single control screen."
+other = "Schedules, inventory assignments, activity management from a single control screen."
 
 [tenant_portal_title]
 other = "Tenant Portal"
@@ -642,7 +642,7 @@ other = "Legal"
 other = "All rights reserved."
 
 [why_vilkor_subtitle]
-other = "We built Vilkor because property management deserved better: a system that enforces order, records every transaction, and gives the administrator the authority they need to operate with excellence."
+other = "Most solutions out there build and operate on the bureaucracy and inefficiency of fragmented processes. We built Vilkor because community management and your home deserve something better: a system that imposes order, records every transaction, and gives the resident the confidence of knowing that their assets are in good hands."
 
 [rapid_deployment_title]
 other = "Frictionless Onboarding"
