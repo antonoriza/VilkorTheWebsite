@@ -38,6 +38,8 @@ jobs:
           sudo dpkg -i hugo_extended_${HUGO_VERSION}_linux-amd64.deb
 
       - name: Build Hugo Site
+        env:
+          STATICFORMS_API_KEY: ${{ secrets.STATICFORMS_API_KEY }}
         run: hugo --minify --config config/_default/config.toml
 
       - name: Upload Production Files
