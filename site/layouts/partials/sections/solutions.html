@@ -339,7 +339,8 @@
         </div>
 
         <div class="relative z-10 flex flex-col items-center">
-          <div class="mb-6 md:mb-8 relative">
+          <!-- Admin Icon (Shown when Admin tab is checked) -->
+          <div class="mb-6 md:mb-8 relative admin-content-only">
             <div
               class="absolute -inset-4 border border-white/30 rounded-full animate-spin-slow opacity-50"
             ></div>
@@ -353,25 +354,66 @@
             </div>
           </div>
 
-          <h3
-            class="font-h1 font-bold text-2xl md:text-[32px] text-white mb-3 md:mb-4 leading-none tracking-tight"
-          >
-            {{ T "unmatched_speed_title" }}
-          </h3>
-          <div class="flex items-center gap-2 mb-3 md:mb-4">
+          <!-- Resident Icon (Shown when Resident tab is checked) -->
+          <div class="mb-6 md:mb-8 relative resident-content-only hidden">
             <div
-              class="w-1.5 h-1.5 bg-white rounded-full animate-ping"
+              class="absolute -inset-4 border border-white/30 rounded-full animate-spin-slow opacity-50"
             ></div>
-            <span
-              class="text-[9px] md:text-[10px] font-bold text-white/90 uppercase tracking-[0.2em]"
-              >{{ T "sync_total_label" }}</span
+            <div
+              class="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-2xl md:rounded-3xl bg-white/20 text-white glass shadow-2xl group-hover:scale-110 transition-transform duration-500"
             >
+              <span
+                class="material-symbols-outlined text-4xl md:text-[48px] animate-pulse text-white"
+                >visibility</span
+              >
+            </div>
           </div>
-          <p
-            class="font-body-lg text-sm md:text-lg text-white/80 max-w-[280px] leading-relaxed"
-          >
-            {{ T "unmatched_speed_desc" }}
-          </p>
+
+          <!-- Admin Content -->
+          <div class="admin-content-only contents">
+            <h3
+              class="font-h1 font-bold text-2xl md:text-[32px] text-white mb-3 md:mb-4 leading-none tracking-tight"
+            >
+              {{ T "unmatched_speed_title" }}
+            </h3>
+            <div class="flex items-center gap-2 mb-3 md:mb-4">
+              <div
+                class="w-1.5 h-1.5 bg-white rounded-full animate-ping"
+              ></div>
+              <span
+                class="text-[9px] md:text-[10px] font-bold text-white/90 uppercase tracking-[0.2em]"
+                >{{ T "sync_total_label" }}</span
+              >
+            </div>
+            <p
+              class="font-body-lg text-sm md:text-lg text-white/80 max-w-[280px] leading-relaxed"
+            >
+              {{ T "unmatched_speed_desc" }}
+            </p>
+          </div>
+
+          <!-- Resident Content -->
+          <div class="resident-content-only hidden contents">
+            <h3
+              class="font-h1 font-bold text-2xl md:text-[32px] text-white mb-3 md:mb-4 leading-tight tracking-tight"
+            >
+              Transparencia total para tu tranquilidad
+            </h3>
+            <div class="flex items-center gap-2 mb-3 md:mb-4">
+              <div
+                class="w-1.5 h-1.5 bg-white rounded-full animate-ping"
+              ></div>
+              <span
+                class="text-[9px] md:text-[10px] font-bold text-white/90 uppercase tracking-[0.2em]"
+                >MONITOREO EN TIEMPO REAL</span
+              >
+            </div>
+            <p
+              class="font-body-lg text-sm md:text-lg text-white/80 max-w-[280px] leading-relaxed"
+            >
+              Tienes monitoreo y visibilidad en tiempo real de las actividades de tu administración, desde tu celular y sin intermediarios. Puedes verificar estados financieros, avisos, operaciones y más al instante.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -410,5 +452,19 @@
   }
   .dark #tab-resident:checked ~ div label[for="tab-resident"] {
     background: #18181b !important;
+  }
+  /* Theme Content Visibility */
+  #tab-admin:checked ~ div .admin-content-only {
+    display: flex !important;
+  }
+  #tab-admin:checked ~ div .resident-content-only {
+    display: none !important;
+  }
+
+  #tab-resident:checked ~ div .resident-content-only {
+    display: flex !important;
+  }
+  #tab-resident:checked ~ div .admin-content-only {
+    display: none !important;
   }
 </style>
