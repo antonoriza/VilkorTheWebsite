@@ -2,9 +2,9 @@
   id="faq"
   class="pt-4 md:pt-6 pb-16 md:pb-20 border-t border-on-background/5 dark:border-white/5 relative overflow-hidden scroll-mt-24 w-full"
 >
-  <!-- Hyper-Organic Ethereal Glow - No hard edges -->
+  <!-- Living Glow - Dynamic Color Cycle (Emerald -> Blue -> Purple) -->
   <div
-    class="absolute -top-[600px] -left-[50%] w-[200%] h-[1200px] bg-[radial-gradient(circle_at_25%_25%,rgba(52,211,153,0.18),transparent_65%)] blur-[160px] pointer-events-none opacity-70 dark:opacity-100"
+    class="absolute -top-[600px] -left-[50%] w-[200%] h-[1200px] animate-glow-cycle blur-[160px] pointer-events-none opacity-70 dark:opacity-100"
   ></div>
 
   <div class="max-w-container-max mx-auto px-6 md:px-gutter relative z-10">
@@ -116,5 +116,23 @@
   /* Target the container when details is open */
   .faq-details[open] {
     margin-bottom: 0.5rem;
+  }
+
+  /* Living Glow Animation */
+  .animate-glow-cycle {
+    animation: faq-glow-cycle 15s ease-in-out infinite alternate;
+    background: radial-gradient(circle at 25% 25%, rgba(52, 211, 153, 0.2), transparent 65%);
+  }
+
+  @keyframes faq-glow-cycle {
+    0% {
+      background: radial-gradient(circle at 25% 25%, rgba(52, 211, 153, 0.2), transparent 65%);
+    }
+    50% {
+      background: radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.2), transparent 65%);
+    }
+    100% {
+      background: radial-gradient(circle at 25% 25%, rgba(168, 85, 247, 0.2), transparent 65%);
+    }
   }
 </style>
