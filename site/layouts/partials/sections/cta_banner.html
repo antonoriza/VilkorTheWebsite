@@ -1,11 +1,11 @@
 <!-- 4) CTA Banner: High-Conversion Strategic Command -->
 <section
-  class="py-20 md:py-32 px-gutter bg-zinc-950 text-center relative overflow-hidden"
+  class="py-20 md:py-32 px-gutter bg-zinc-950 dark:bg-white text-center relative overflow-hidden transition-colors duration-500"
   data-aos="fade-up"
 >
   <!-- Sophisticated Background Pattern -->
   <div
-    class="absolute inset-0 opacity-[0.15] pointer-events-none"
+    class="absolute inset-0 opacity-[0.15] dark:opacity-[0.05] pointer-events-none"
     style="
       background-image: radial-gradient(#34d399 0.5px, transparent 0.5px);
       background-size: 24px 24px;
@@ -14,26 +14,25 @@
 
   <!-- Dynamic Glows -->
   <div
-    class="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#34d399]/10 blur-[120px] rounded-full pointer-events-none"
+    class="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#34d399]/15 dark:bg-[#34d399]/25 blur-[120px] rounded-full pointer-events-none"
   ></div>
   <div
-    class="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-primary-container/5 blur-[100px] rounded-full pointer-events-none"
+    class="absolute -bottom-24 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-primary-container/10 dark:bg-primary-container/20 blur-[100px] rounded-full pointer-events-none"
   ></div>
 
   <div class="max-w-7xl mx-auto relative z-10">
     <span
-      class="inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white font-label-sm text-[10px] uppercase tracking-[0.3em] mb-8"
-      >{{ T "deployment_badge" }}</span
-    >
+      class="inline-block px-3 py-1 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 border border-white/20 dark:border-zinc-200 font-label-sm text-[10px] uppercase tracking-[0.3em] mb-8 shadow-lg"
+      >{{ T "deployment_badge" }}</span>
 
     <h2
-      class="font-h1 font-bold text-4xl md:text-[72px] text-white max-w-5xl mx-auto mb-8 tracking-tighter leading-[0.95]"
+      class="font-h1 font-bold text-4xl md:text-[72px] text-white dark:text-zinc-950 max-w-5xl mx-auto mb-8 tracking-tighter leading-[0.95]"
     >
       {{ T "command_headline" }}
     </h2>
 
     <p
-      class="text-white text-lg md:text-xl max-w-2xl mx-auto mb-14 leading-relaxed font-light"
+      class="text-white dark:text-zinc-600 text-lg md:text-xl max-w-2xl mx-auto mb-14 leading-relaxed font-light"
     >
       {{ T "command_subtitle" }}
     </p>
@@ -42,7 +41,7 @@
       class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20"
     >
       <a
-        class="group relative bg-white text-zinc-950 font-bold px-12 py-5 rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]"
+        class="group relative bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white font-bold px-12 py-5 rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] dark:hover:shadow-[0_0_40px_rgba(0,0,0,0.1)]"
         href="#book-a-demo"
       >
         <span class="relative z-10">{{ T "nav_contact" }}</span>
@@ -56,40 +55,40 @@
     <div class="flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
       <div class="flex items-center gap-3 group">
         <div
-          class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary-container/50 transition-colors"
+          class="w-10 h-10 rounded-full bg-white/5 dark:bg-zinc-100 border border-white/10 dark:border-zinc-200 flex items-center justify-center group-hover:border-primary-container/50 transition-colors"
         >
           <span class="material-symbols-outlined text-primary-container text-xl"
             >verified_user</span
           >
         </div>
         <span
-          class="text-white/80 text-[10px] uppercase tracking-widest font-bold group-hover:text-white transition-colors"
+          class="text-white/80 dark:text-zinc-500 text-[10px] uppercase tracking-widest font-bold group-hover:text-white dark:group-hover:text-zinc-950 transition-colors"
           >{{ T "soc2_compliant" }}</span
         >
       </div>
       <div class="flex items-center gap-3 group">
         <div
-          class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary-container/50 transition-colors"
+          class="w-10 h-10 rounded-full bg-white/5 dark:bg-zinc-100 border border-white/10 dark:border-zinc-200 flex items-center justify-center group-hover:border-primary-container/50 transition-colors"
         >
           <span class="material-symbols-outlined text-primary-container text-xl"
             >lock</span
           >
         </div>
         <span
-          class="text-white/80 text-[10px] uppercase tracking-widest font-bold group-hover:text-white transition-colors"
+          class="text-white/80 dark:text-zinc-500 text-[10px] uppercase tracking-widest font-bold group-hover:text-white dark:group-hover:text-zinc-950 transition-colors"
           >{{ T "encryption_label" }}</span
         >
       </div>
       <div class="flex items-center gap-3 group">
         <div
-          class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary-container/50 transition-colors"
+          class="w-10 h-10 rounded-full bg-white/5 dark:bg-zinc-100 border border-white/10 dark:border-zinc-200 flex items-center justify-center group-hover:border-primary-container/50 transition-colors"
         >
           <span class="material-symbols-outlined text-primary-container text-xl"
             >gavel</span
           >
         </div>
         <span
-          class="text-white/80 text-[10px] uppercase tracking-widest font-bold group-hover:text-white transition-colors"
+          class="text-white/80 dark:text-zinc-500 text-[10px] uppercase tracking-widest font-bold group-hover:text-white dark:group-hover:text-zinc-950 transition-colors"
           >{{ T "gdpr_ready" }}</span
         >
       </div>
