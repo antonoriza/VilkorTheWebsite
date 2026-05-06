@@ -721,6 +721,18 @@ other = "Toggle navigation menu"
 [select_language]
 other = "Select language"
 
+[error_404_badge]
+other = "Uppsss"
+
+[error_404_title]
+other = "Page not found"
+
+[error_404_desc]
+other = "Check the URL/address you entered."
+
+[error_404_cta]
+other = "go to Vilkor.xyz"
+
 [footer_platform]
 other = "Platform"
 

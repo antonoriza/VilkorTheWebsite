@@ -1,0 +1,117 @@
+{{ define "main" }}
+<div class="relative min-h-[85vh] flex flex-col items-center justify-center overflow-hidden bg-background dark:bg-[#0a0a0a]">
+    <!-- Disruptive Background Elements -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary-container/10 rounded-full blur-[150px] animate-blob"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#674bb5]/10 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
+        
+        <!-- Architectural Grid Overlay -->
+        <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" 
+             style="background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px); background-size: 50px 50px;"></div>
+    </div>
+
+    <!-- Scanner Line Animation -->
+    <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary-container to-transparent opacity-50 z-20 animate-scan"></div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+        <div class="glitch-container mb-4 relative inline-block">
+            <h1 class="text-[120px] md:text-[240px] font-black tracking-tighter leading-none select-none text-on-background dark:text-white filter drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]" data-text="404">
+                404
+            </h1>
+            <div class="absolute -top-10 -right-10 hidden md:block">
+                <span class="px-4 py-1 bg-[#674bb5] text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full rotate-12 shadow-xl animate-bounce">{{ T "error_404_badge" | default "Uppsss" }}</span>
+            </div>
+        </div>
+        
+        <div class="space-y-6 mt-[-20px] md:mt-[-40px]">
+            <h2 class="text-3xl md:text-5xl font-black text-on-background dark:text-white uppercase tracking-tight italic">
+                {{ T "error_404_title" | default "Arquitectura no encontrada." }}
+            </h2>
+            
+            <p class="text-on-surface-variant dark:text-white/50 max-w-md mx-auto text-lg md:text-xl font-medium leading-relaxed">
+                {{ T "error_404_desc" | default "Esta unidad no existe en nuestro registro. Probablemente se ha mudado o nunca fue construida." }}
+            </p>
+
+            <div class="pt-10 flex justify-center">
+                <a href="https://vilkor.xyz" class="group relative px-10 py-5 bg-primary-container text-black text-[13px] font-black uppercase tracking-[0.2em] rounded-full overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-[0_0_50px_rgba(52,211,153,0.6)]">
+                    <span class="relative z-10">{{ T "error_404_cta" | default "ir a Vilkor.xyz" }}</span>
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Decorative Elements (Disruptive) -->
+    <div class="absolute top-[20%] right-[15%] hidden lg:block opacity-20 animate-float">
+        <div class="w-20 h-20 border-2 border-primary-container rotate-45"></div>
+    </div>
+    <div class="absolute bottom-[20%] left-[10%] hidden lg:block opacity-10 animate-float-delayed">
+        <div class="w-32 h-32 border border-[#674bb5] rounded-full"></div>
+    </div>
+</div>
+
+<style>
+    @keyframes blob {
+        0% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0, 0) scale(1); }
+    }
+    .animate-blob { animation: blob 7s infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
+
+    @keyframes scan {
+        0% { top: -10%; }
+        100% { top: 110%; }
+    }
+    .animate-scan { animation: scan 4s linear infinite; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(45deg); }
+        50% { transform: translateY(-20px) rotate(55deg); }
+    }
+    .animate-float { animation: float 5s ease-in-out infinite; }
+
+    @keyframes float-delayed {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(30px); }
+    }
+    .animate-float-delayed { animation: float-delayed 8s ease-in-out infinite; }
+
+    /* Glitch Effect */
+    .glitch-container h1::before,
+    .glitch-container h1::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.8;
+    }
+
+    .glitch-container h1::before {
+        color: #34d399;
+        z-index: -1;
+        animation: glitch-anim 0.3s cubic-bezier(.25,.46,.45,.94) both infinite;
+    }
+
+    .glitch-container h1::after {
+        color: #674bb5;
+        z-index: -2;
+        animation: glitch-anim 0.3s cubic-bezier(.25,.46,.45,.94) reverse both infinite;
+    }
+
+    @keyframes glitch-anim {
+        0% { transform: translate(0); }
+        20% { transform: translate(-3px, 3px); }
+        40% { transform: translate(-3px, -3px); }
+        60% { transform: translate(3px, 3px); }
+        80% { transform: translate(3px, -3px); }
+        100% { transform: translate(0); }
+    }
+
+    .italic { font-style: italic; }
+</style>
+{{ end }}
