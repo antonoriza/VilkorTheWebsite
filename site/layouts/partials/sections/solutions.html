@@ -339,8 +339,8 @@
         </div>
 
         <div class="relative z-10 flex flex-col items-center">
-          <!-- Admin Icon (Shown when Admin tab is checked) -->
-          <div class="mb-6 md:mb-8 relative admin-content-only">
+          <!-- Admin Icon -->
+          <div class="mb-6 md:mb-8 relative admin-only-view">
             <div
               class="absolute -inset-4 border border-white/30 rounded-full animate-spin-slow opacity-50"
             ></div>
@@ -354,8 +354,8 @@
             </div>
           </div>
 
-          <!-- Resident Icon (Shown when Resident tab is checked) -->
-          <div class="mb-6 md:mb-8 relative resident-content-only hidden">
+          <!-- Resident Icon -->
+          <div class="mb-6 md:mb-8 relative resident-only-view hidden">
             <div
               class="absolute -inset-4 border border-white/30 rounded-full animate-spin-slow opacity-50"
             ></div>
@@ -370,7 +370,7 @@
           </div>
 
           <!-- Admin Content -->
-          <div class="admin-content-only contents">
+          <div class="admin-only-view flex flex-col items-center">
             <h3
               class="font-h1 font-bold text-2xl md:text-[32px] text-white mb-3 md:mb-4 leading-none tracking-tight"
             >
@@ -393,7 +393,7 @@
           </div>
 
           <!-- Resident Content -->
-          <div class="resident-content-only hidden contents">
+          <div class="resident-only-view hidden flex flex-col items-center">
             <h3
               class="font-h1 font-bold text-2xl md:text-[32px] text-white mb-3 md:mb-4 leading-tight tracking-tight"
             >
@@ -454,17 +454,17 @@
     background: #18181b !important;
   }
   /* Theme Content Visibility */
-  #tab-admin:checked ~ div .admin-content-only {
-    display: flex !important;
+  #tab-admin:checked ~ div .admin-only-view {
+    display: flex;
   }
-  #tab-admin:checked ~ div .resident-content-only {
-    display: none !important;
+  #tab-admin:checked ~ div .resident-only-view {
+    display: none;
   }
 
-  #tab-resident:checked ~ div .resident-content-only {
-    display: flex !important;
+  #tab-resident:checked ~ div .resident-only-view {
+    display: flex;
   }
-  #tab-resident:checked ~ div .admin-content-only {
-    display: none !important;
+  #tab-resident:checked ~ div .admin-only-view {
+    display: none;
   }
 </style>
