@@ -236,7 +236,7 @@
 
               <!-- Admin Content -->
               <div
-                class="hidden peer-checked/admin:block animate-fade-in text-center lg:text-left relative z-10"
+                class="admin-tab-content hidden animate-fade-in text-center lg:text-left relative z-10"
               >
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div class="space-y-2 md:space-y-3">
@@ -280,7 +280,7 @@
 
               <!-- Resident Content -->
               <div
-                class="hidden peer-checked/resident:block animate-fade-in text-center lg:text-left relative z-10"
+                class="resident-tab-content hidden animate-fade-in text-center lg:text-left relative z-10"
               >
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div class="space-y-2 md:space-y-3">
@@ -455,16 +455,24 @@
   }
   /* Theme Content Visibility */
   #tab-admin:checked ~ div .admin-only-view {
-    display: flex;
+    display: flex !important;
   }
-  #tab-admin:checked ~ div .resident-only-view {
-    display: none;
+  #tab-admin:checked ~ div .admin-tab-content {
+    display: block !important;
+  }
+  #tab-admin:checked ~ div .resident-only-view,
+  #tab-admin:checked ~ div .resident-tab-content {
+    display: none !important;
   }
 
   #tab-resident:checked ~ div .resident-only-view {
-    display: flex;
+    display: flex !important;
   }
-  #tab-resident:checked ~ div .admin-only-view {
-    display: none;
+  #tab-resident:checked ~ div .resident-tab-content {
+    display: block !important;
+  }
+  #tab-resident:checked ~ div .admin-only-view,
+  #tab-resident:checked ~ div .admin-tab-content {
+    display: none !important;
   }
 </style>
