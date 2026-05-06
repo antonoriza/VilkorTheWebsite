@@ -328,9 +328,7 @@
 
       <!-- Resident Peace Block -->
       <div
-        class="md:col-span-4 rounded-2xl p-8 md:p-xl flex flex-col items-center justify-center text-center shadow-premium hover:translate-y-[-4px] transition-all duration-500 relative overflow-hidden group
-        peer-checked/admin:bg-purple-600 peer-checked/admin:border-purple-600/30
-        peer-checked/resident:bg-blue-600 peer-checked/resident:border-blue-600/30"
+        class="md:col-span-4 role-theme-card rounded-2xl p-8 md:p-xl flex flex-col items-center justify-center text-center shadow-premium hover:translate-y-[-4px] transition-all duration-500 relative overflow-hidden group"
         data-aos="fade-up"
         data-aos-delay="200"
       >
@@ -386,17 +384,29 @@
     transition: all 0.3s ease;
   }
 
+  /* Admin Theme */
+  #tab-admin:checked ~ div .role-theme-card {
+    background-color: #9333ea !important; /* purple-600 */
+    border-color: rgba(147, 51, 234, 0.3);
+  }
   #tab-admin:checked ~ div label[for="tab-admin"] {
-    border-color: #9333ea !important; /* purple-600 */
+    border-color: #9333ea !important;
     background: white !important;
+    color: #9333ea !important;
   }
   .dark #tab-admin:checked ~ div label[for="tab-admin"] {
     background: #18181b !important;
   }
 
+  /* Resident Theme */
+  #tab-resident:checked ~ div .role-theme-card {
+    background-color: #2563eb !important; /* blue-600 */
+    border-color: rgba(37, 99, 235, 0.3);
+  }
   #tab-resident:checked ~ div label[for="tab-resident"] {
-    border-color: #2563eb !important; /* blue-600 */
+    border-color: #2563eb !important;
     background: white !important;
+    color: #2563eb !important;
   }
   .dark #tab-resident:checked ~ div label[for="tab-resident"] {
     background: #18181b !important;
