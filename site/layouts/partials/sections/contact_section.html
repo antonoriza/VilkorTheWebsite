@@ -215,7 +215,7 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
             console.warn('StaticForms: API Key missing, but running on localhost. Simulating success...');
             // Simulate processing delay
             setTimeout(() => {
-                if (nameDisplay) nameDisplay.textContent = object.first_name || 'Juan';
+                if (nameDisplay) nameDisplay.textContent = object.first_name || 'Santi';
                 content.style.opacity = '0';
                 setTimeout(() => {
                     content.style.display = 'none';
@@ -263,7 +263,7 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
         if (response.ok) {
             // Success Logic: If response is OK, we assume it worked even if JSON parsing fails 
             // (StaticForms sometimes returns non-JSON redirects if misconfigured)
-            if (nameDisplay) nameDisplay.textContent = object.first_name || 'Juan';
+            if (nameDisplay) nameDisplay.textContent = object.first_name || 'Santi';
             content.style.opacity = '0';
             setTimeout(() => {
                 content.style.display = 'none';
