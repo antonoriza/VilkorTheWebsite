@@ -174,29 +174,6 @@
 
         <div class="relative z-10 flex flex-col h-full">
           <div class="max-w-3xl">
-            <div
-              class="flex flex-col items-center lg:items-start text-center lg:text-left gap-6 md:gap-8 mb-8"
-            >
-              <div class="flex items-center gap-4">
-                <div
-                  class="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary glass shadow-inner"
-                >
-                  <span class="material-symbols-outlined text-2xl md:text-3xl"
-                    >assignment_turned_in</span
-                  >
-                </div>
-                <span
-                  class="px-3 md:px-4 py-1 md:py-1.5 rounded-full bg-tertiary/5 text-tertiary text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] border border-tertiary/10"
-                  >{{ T "ai_automation_chip" }}</span
-                >
-              </div>
-              <h3
-                class="font-h1 font-bold text-2xl md:text-[36px] text-on-background dark:text-white leading-tight tracking-tight"
-              >
-                {{ T "ai_automation_title" }}
-              </h3>
-            </div>
-
             <!-- Tab System -->
             <div class="relative w-full">
               <input
@@ -213,18 +190,45 @@
                 class="hidden peer/resident"
               />
 
+              <!-- Dynamic Header (Changes color based on tab) -->
+              <div class="flex flex-col items-center lg:items-start text-center lg:text-left gap-6 md:gap-8 mb-8">
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center glass shadow-inner transition-colors duration-300
+                    peer-checked/admin:bg-purple-600/10 peer-checked/admin:text-purple-600
+                    peer-checked/resident:bg-blue-600/10 peer-checked/resident:text-blue-600"
+                  >
+                    <span class="material-symbols-outlined text-2xl md:text-3xl"
+                      >assignment_turned_in</span
+                    >
+                  </div>
+                  <span
+                    class="px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] border transition-colors duration-300
+                    peer-checked/admin:bg-purple-600/5 peer-checked/admin:text-purple-600 peer-checked/admin:border-purple-600/10
+                    peer-checked/resident:bg-blue-600/5 peer-checked/resident:text-blue-600 peer-checked/resident:border-blue-600/10"
+                    >{{ T "ai_automation_chip" }}</span>
+                </div>
+                <h3
+                  class="font-h1 font-bold text-2xl md:text-[36px] text-on-background dark:text-white leading-tight tracking-tight"
+                >
+                  {{ T "ai_automation_title" }}
+                </h3>
+              </div>
+
               <!-- Tab Headers -->
               <div
                 class="flex p-1.5 bg-black/5 dark:bg-white/5 rounded-2xl border border-on-background/10 dark:border-white/20 mb-8 w-fit mx-auto lg:mx-0 shadow-inner relative z-20"
               >
                 <label
                   for="tab-admin"
-                  class="tab-label px-5 md:px-7 py-2.5 rounded-xl text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 border-[3px] border-transparent text-on-surface-variant dark:text-white/80 relative z-30"
+                  class="tab-label px-5 md:px-7 py-2.5 rounded-xl text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 border-[3px] border-transparent text-on-surface-variant dark:text-white/80 relative z-30
+                  peer-checked/admin:border-purple-600 peer-checked/admin:bg-white dark:peer-checked/admin:bg-zinc-900 peer-checked/admin:text-purple-600"
                   >{{ T "tab_admin" }}</label
                 >
                 <label
                   for="tab-resident"
-                  class="tab-label px-5 md:px-7 py-2.5 rounded-xl text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 border-[3px] border-transparent text-on-surface-variant dark:text-white/80 relative z-30"
+                  class="tab-label px-5 md:px-7 py-2.5 rounded-xl text-[11px] md:text-[12px] font-bold uppercase tracking-wider cursor-pointer transition-all duration-300 border-[3px] border-transparent text-on-surface-variant dark:text-white/80 relative z-30
+                  peer-checked/resident:border-blue-600 peer-checked/resident:bg-white dark:peer-checked/resident:bg-zinc-900 peer-checked/resident:text-blue-600"
                   >{{ T "tab_resident" }}</label
                 >
               </div>
@@ -236,7 +240,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div class="space-y-2 md:space-y-3">
                     <span
-                      class="material-symbols-outlined text-tertiary text-2xl"
+                      class="material-symbols-outlined text-purple-600 text-2xl"
                       >hub</span
                     >
                     <h4 class="font-bold text-sm dark:text-white">
@@ -248,7 +252,7 @@
                   </div>
                   <div class="space-y-2 md:space-y-3">
                     <span
-                      class="material-symbols-outlined text-tertiary text-2xl"
+                      class="material-symbols-outlined text-purple-600 text-2xl"
                       >account_balance</span
                     >
                     <h4 class="font-bold text-sm dark:text-white">
@@ -260,7 +264,7 @@
                   </div>
                   <div class="space-y-2 md:space-y-3">
                     <span
-                      class="material-symbols-outlined text-tertiary text-2xl"
+                      class="material-symbols-outlined text-purple-600 text-2xl"
                       >verified_user</span
                     >
                     <h4 class="font-bold text-sm dark:text-white">
@@ -280,7 +284,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div class="space-y-2 md:space-y-3">
                     <span
-                      class="material-symbols-outlined text-tertiary text-2xl"
+                      class="material-symbols-outlined text-blue-600 text-2xl"
                       >visibility</span
                     >
                     <h4 class="font-bold text-sm dark:text-white">
@@ -292,7 +296,7 @@
                   </div>
                   <div class="space-y-2 md:space-y-3">
                     <span
-                      class="material-symbols-outlined text-tertiary text-2xl"
+                      class="material-symbols-outlined text-blue-600 text-2xl"
                       >phonelink_setup</span
                     >
                     <h4 class="font-bold text-sm dark:text-white">
@@ -304,7 +308,7 @@
                   </div>
                   <div class="space-y-2 md:space-y-3">
                     <span
-                      class="material-symbols-outlined text-tertiary text-2xl"
+                      class="material-symbols-outlined text-blue-600 text-2xl"
                       >trending_up</span
                     >
                     <h4 class="font-bold text-sm dark:text-white">
@@ -374,24 +378,24 @@
 </section>
 
 <style>
-  /* Surgical Tab Styling - Enterprise Elegant */
-  #tab-admin:checked ~ div label[for="tab-admin"],
-  #tab-resident:checked ~ div label[for="tab-resident"] {
-    border: 1px solid var(--color-tertiary) !important;
-    background-color: white !important;
-    color: #121212 !important;
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.05),
-      0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
-    transform: translateY(-1px);
-    z-index: 40;
+  /* Surgical Tab Styling - Professional Color Coding */
+  .tab-label {
+    transition: all 0.3s ease;
   }
 
-  .dark #tab-admin:checked ~ div label[for="tab-admin"],
+  #tab-admin:checked ~ div label[for="tab-admin"] {
+    border-color: #9333ea !important; /* purple-600 */
+    background: white !important;
+  }
+  .dark #tab-admin:checked ~ div label[for="tab-admin"] {
+    background: #18181b !important;
+  }
+
+  #tab-resident:checked ~ div label[for="tab-resident"] {
+    border-color: #2563eb !important; /* blue-600 */
+    background: white !important;
+  }
   .dark #tab-resident:checked ~ div label[for="tab-resident"] {
-    background-color: #18181b !important;
-    color: white !important;
-    border-color: var(--color-tertiary) !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+    background: #18181b !important;
   }
 </style>
