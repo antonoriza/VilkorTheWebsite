@@ -208,7 +208,23 @@ document.getElementById('demo-form').addEventListener('submit', function(e) {
     delete object.redirectTo;
 
     // Validation: Check if apiKey is missing
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
     if (!object.apiKey || object.apiKey.trim() === "" || object.apiKey.includes("site.Params")) {
+        if (isLocal) {
+            console.warn('StaticForms: API Key missing, but running on localhost. Simulating success...');
+            // Simulate processing delay
+            setTimeout(() => {
+                if (nameDisplay) nameDisplay.textContent = object.first_name || 'Juan';
+                content.style.opacity = '0';
+                setTimeout(() => {
+                    content.style.display = 'none';
+                    success.style.display = 'flex';
+                }, 300);
+            }, 1000);
+            return;
+        }
+
         console.error('StaticForms: API Key is missing or invalid.');
         
         // Show the full error state instead of just button text for better visibility
