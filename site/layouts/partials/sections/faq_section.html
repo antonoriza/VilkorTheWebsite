@@ -23,25 +23,35 @@
     <div class="space-y-4">
       {{ $langData := index .Site.Data .Language.Lang }} {{ if $langData.faqs }}
       {{ range $index, $item := $langData.faqs.items }}
+      {{ $color := "emerald" }}
+      {{ if eq (mod $index 3) 1 }}{{ $color = "blue" }}{{ end }}
+      {{ if eq (mod $index 3) 2 }}{{ $color = "purple" }}{{ end }}
+      
+      {{ $colorHex := "#34d399" }}
+      {{ if eq $color "blue" }}{{ $colorHex = "#3b82f6" }}{{ end }}
+      {{ if eq $color "purple" }}{{ $colorHex = "#a855f7" }}{{ end }}
+
       <div
-        class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-500 hover:border-[#34d399]/30
-        [&[open]]:bg-gradient-to-br [&[open]]:from-[#34d399]/5 [&[open]]:to-transparent [&[open]]:border-[#34d399]/40 [&[open]]:shadow-2xl [&[open]]:shadow-[#34d399]/10"
+        class="glass rounded-2xl border border-white/40 dark:border-white/10 overflow-hidden group transition-all duration-500 
+        hover:border-{{$color}}-400/30
+        [&[open]]:bg-gradient-to-br [&[open]]:from-{{$color}}-500/5 [&[open]]:to-transparent 
+        [&[open]]:border-{{$color}}-500/40 [&[open]]:shadow-2xl [&[open]]:shadow-{{$color}}-500/10"
       >
         <details class="group/item faq-details">
           <summary
             class="flex items-center justify-between p-5 md:p-7 cursor-pointer list-none relative overflow-hidden"
           >
             <!-- Hover highlight -->
-            <div class="absolute inset-0 bg-[#34d399]/0 group-hover:bg-[#34d399]/5 transition-colors duration-300"></div>
+            <div class="absolute inset-0 bg-{{$color}}-500/0 group-hover:bg-{{$color}}-500/5 transition-colors duration-300"></div>
             
             <h3
-              class="font-bold text-base md:text-[18px] text-on-background dark:text-white pr-6 md:pr-8 relative z-10 transition-colors duration-300 group-open/item:text-[#34d399]"
+              class="font-bold text-base md:text-[18px] text-on-background dark:text-white pr-6 md:pr-8 relative z-10 transition-colors duration-300 group-open/item:text-{{$color}}-500 dark:group-open/item:text-{{$color}}-400"
             >
               {{ $item.question }}
             </h3>
-            <div class="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 group-open/item:bg-[#34d399] group-open/item:border-[#34d399] transition-all duration-500">
+            <div class="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 group-open/item:bg-{{$color}}-500 group-open/item:border-{{$color}}-500 transition-all duration-500">
               <span
-                class="material-symbols-outlined text-[#34d399] group-open/item:text-white transition-all duration-500 group-open/item:rotate-[135deg]"
+                class="material-symbols-outlined text-{{$color}}-500 dark:text-{{$color}}-400 group-open/item:text-white transition-all duration-500 group-open/item:rotate-[135deg]"
                 >add</span
               >
             </div>
@@ -49,7 +59,7 @@
           <div
             class="px-5 md:px-7 pb-5 md:pb-7 text-sm md:text-base text-on-surface-variant dark:text-white/80 leading-relaxed faq-content"
           >
-            <div class="pt-4 border-t border-[#34d399]/10 mt-2">
+            <div class="pt-4 border-t border-{{$color}}-500/10 mt-2">
               {{ $item.answer | safeHTML }}
             </div>
           </div>
