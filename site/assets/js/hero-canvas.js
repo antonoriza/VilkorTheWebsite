@@ -70,7 +70,7 @@
   function drawGrid(color) {
     ctx.beginPath();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 0.8;
+    ctx.lineWidth = 1.0;
 
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols - 1; j++) {
