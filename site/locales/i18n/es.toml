@@ -700,7 +700,7 @@ other = "Santiago"
 other = "Pérez"
 
 [work_email_placeholder]
-other = "juan.perez@empresa.com"
+other = "santi.perez@empresa.com"
 
 [phone_placeholder]
 other = "55 1234 5678"
