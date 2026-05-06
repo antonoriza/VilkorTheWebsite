@@ -721,6 +721,18 @@ other = "Alternar menu de navegação"
 [select_language]
 other = "Selecionar idioma"
 
+[error_404_badge]
+other = "Uppsss"
+
+[error_404_title]
+other = "Página não encontrada"
+
+[error_404_desc]
+other = "Verifique a URL/endereço que você inseriu."
+
+[error_404_cta]
+other = "ir para Vilkor.xyz"
+
 [footer_platform]
 other = "Plataforma"
 
