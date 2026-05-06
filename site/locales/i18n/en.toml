@@ -1,5 +1,5 @@
 [hero_title]
-other = "Property Management. Elevated to your development's standard."
+other = "Property Management. Elevated to your community's standard."
 
 [no_copy_message]
 other = "Hey, don't copy my content :P"
@@ -70,7 +70,7 @@ other = "Features"
 other = "Why Vilkor?"
 
 [pricing_title]
-other = "Plans that Grow with your Development"
+other = "Plans that Grow with your Community"
 
 [pricing_monthly]
 other = "Monthly"
@@ -237,7 +237,7 @@ other = "Request Received"
 other = "Thank You"
 
 [future_property_management]
-other = "The management your development deserves."
+other = "The management your community deserves."
 
 [intelligent_operations]
 other = "Intelligent Operations"
@@ -245,22 +245,22 @@ other = "Intelligent Operations"
 [intelligent_ops_desc]
 other = """
 <div class="space-y-6 text-on-surface-variant dark:text-gray-300">
-    <p class="font-body-lg text-[18px] leading-relaxed">
+    <p class="font-body-lg text-[20px] md:text-[18px] leading-relaxed">
         Managing a community means protecting the assets and harmony of dozens of families. Vilkor structures that responsibility into three pillars:
     </p>
 
     <ul class="space-y-4">
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">account_balance_wallet</span>
-            <p class="text-sm"><strong>Traceable Finances:</strong> Automated collection, instant reconciliation, and reports ready for accountability. Financial information, available in real-time for those who need it.</p>
+            <p class="text-base md:text-sm"><strong>Traceable Finances:</strong> Automated collection, instant reconciliation, and reports ready for accountability. Financial information, available in real-time for those who need it.</p>
         </li>
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">forum</span>
-            <p class="text-sm"><strong>Official Communication:</strong> Issue notices, convene assemblies, and manage requests through a formal channel that leaves a record of every interaction.</p>
+            <p class="text-base md:text-sm"><strong>Official Communication:</strong> Issue notices, convene assemblies, and manage requests through a formal channel that leaves a record of every interaction.</p>
         </li>
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">widgets</span>
-            <p class="text-sm"><strong>Adaptive Modules:</strong> From access control to package logistics and maintenance tracking, each module is activated according to your development's needs.</p>
+            <p class="text-base md:text-sm"><strong>Adaptive Modules:</strong> From access control to package logistics and maintenance tracking, each module is activated according to your development's needs.</p>
         </li>
     </ul>
 </div>
@@ -273,7 +273,7 @@ other = "Enterprise Grade System"
 other = "Early Access"
 
 [hero_description]
-other = "Vilkor centralizes billing, communication, and operations for your real estate development in an audited, 24/7 available, and ready-to-scale platform."
+other = "Vilkor centralizes billing, communication, and operations for your community in an audited, 24/7 available, and ready-to-scale platform."
 
 [explore_platform]
 other = "View all features"
@@ -288,7 +288,7 @@ other = "Always clear and transparent operations."
 other = "SOLIDITY"
 
 [institutional_rigor_label]
-other = "The operational rigor your development requires."
+other = "The operational rigor your community requires."
 
 [tech_stack_value]
 other = "CONTROL"
@@ -347,7 +347,7 @@ other = "Tailored for you"
 [ai_automation_desc]
 other = """
 <div class="space-y-6">
-    <p class="font-body-lg text-on-surface-variant dark:text-gray-400 max-w-2xl leading-relaxed mb-8">
+    <p class="font-body-lg text-lg md:text-base text-on-surface-variant dark:text-gray-400 max-w-2xl leading-relaxed mb-8">
         Optimize your management with an ecosystem designed for accountability, elevated to increase asset value and resident trust.
     </p>
 
@@ -367,18 +367,18 @@ other = """
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">hub</span>
-                    <h4 class="font-bold text-sm dark:text-white">Scalable Architecture</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Standardize processes and manage multiple portfolios with a lean infrastructure.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Scalable Architecture</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Standardize processes and manage multiple portfolios with a lean infrastructure.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">account_balance</span>
-                    <h4 class="font-bold text-sm dark:text-white">Audit Rigor</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Complete financial reports ready for accountability, without discrepancies.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Audit Rigor</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Complete financial reports ready for accountability, without discrepancies.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">verified_user</span>
-                    <h4 class="font-bold text-sm dark:text-white">Control and Traceability</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Total traceability in every transaction, staff management, and access control.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Control and Traceability</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Total traceability in every transaction, staff management, and access control.</p>
                 </div>
             </div>
         </div>
@@ -388,18 +388,18 @@ other = """
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">visibility</span>
-                    <h4 class="font-bold text-sm dark:text-white">Direct Visibility</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Immediate access to account statements, regulations, and financial management evidence.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Direct Visibility</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Immediate access to account statements, regulations, and financial management evidence.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">phonelink_setup</span>
-                    <h4 class="font-bold text-sm dark:text-white">Unambiguous Management</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Direct channel for procedures, reports, and formal request follow-up with timely responses.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Unambiguous Management</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Direct channel for procedures, reports, and formal request follow-up with timely responses.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">trending_up</span>
-                    <h4 class="font-bold text-sm dark:text-white">Technological Appreciation</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">An organized community increases the real value of your property.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Technological Appreciation</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">An organized community increases the real value of your property.</p>
                 </div>
             </div>
         </div>
@@ -621,7 +621,7 @@ other = "Access from your computer, mobile, or tablet."
 other = "Your community can operate like an enterprise. Start today."
 
 [command_subtitle]
-other = "Leave behind ambiguity and manual management. Evolve to the platform designed to automate your real estate development's lifecycle, providing technical and financial certainty."
+other = "Leave behind ambiguity and manual management. Evolve to the platform designed to automate your community's lifecycle, providing technical and financial certainty."
 
 [soc2_compliant]
 other = "NATIVE CLOUD SECURITY"
