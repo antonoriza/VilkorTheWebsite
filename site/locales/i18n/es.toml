@@ -1,5 +1,5 @@
 [hero_title]
-other = "Administración de Condominio. A la altura de su desarrollo."
+other = "Administración de Condominio. A la altura de su comunidad."
 
 [no_copy_message]
 other = "Hey, no copies mis textos :P"
@@ -71,7 +71,7 @@ other = "Funcionalidades"
 other = "¿Por qué Vilkor?"
 
 [pricing_title]
-other = "Planes que Crecen con su Desarrollo"
+other = "Planes que Crecen con su Comunidad"
 
 [pricing_monthly]
 other = "Mensual"
@@ -239,7 +239,7 @@ other = "Solicitud Recibida"
 other = "Gracias"
 
 [future_property_management]
-other = "La administración que su desarrollo merece."
+other = "La administración que su comunidad merece."
 
 [intelligent_operations]
 other = "Operaciones Inteligentes"
@@ -247,22 +247,22 @@ other = "Operaciones Inteligentes"
 [intelligent_ops_desc]
 other = """
 <div class="space-y-6 text-on-surface-variant dark:text-gray-300">
-    <p class="font-body-lg text-[18px] leading-relaxed">
+    <p class="font-body-lg text-[20px] md:text-[18px] leading-relaxed">
         Administrar un condominio es gestionar el patrimonio y la convivencia de decenas de familias. Vilkor estructura esa responsabilidad en tres pilares:
     </p>
 
     <ul class="space-y-4">
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">account_balance_wallet</span>
-            <p class="text-sm"><strong>Finanzas con Trazabilidad:</strong> Cobranza automatizada, conciliación inmediata y reportes listos para rendición de cuentas. La información financiera, disponible en tiempo real para quien la necesite.</p>
+            <p class="text-base md:text-sm"><strong>Finanzas con Trazabilidad:</strong> Cobranza automatizada, conciliación inmediata y reportes listos para rendición de cuentas. La información financiera, disponible en tiempo real para quien la necesite.</p>
         </li>
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">forum</span>
-            <p class="text-sm"><strong>Comunicación Oficial:</strong> Emita avisos, convoque asambleas y gestione solicitudes a través de un canal formal que deja registro de cada interacción.</p>
+            <p class="text-base md:text-sm"><strong>Comunicación Oficial:</strong> Emita avisos, convoque asambleas y gestione solicitudes a través de un canal formal que deja registro de cada interacción.</p>
         </li>
         <li class="flex items-start gap-3">
             <span class="material-symbols-outlined text-[#8b5cf6] text-xl mt-1">widgets</span>
-            <p class="text-sm"><strong>Módulos que se Adaptan:</strong> Desde el control de acceso hasta la logística de paquetería y el seguimiento de mantenimientos, cada módulo se activa según las necesidades de su desarrollo.</p>
+            <p class="text-base md:text-sm"><strong>Módulos que se Adaptan:</strong> Desde el control de acceso hasta la logística de paquetería y el seguimiento de mantenimientos, cada módulo se activa según las necesidades de su desarrollo.</p>
         </li>
     </ul>
 </div>
@@ -276,7 +276,7 @@ other = "Sistema de Grado Empresarial"
 other = "Acceso Anticipado"
 
 [hero_description]
-other = "Vilkor centraliza la cobranza, comunicación y operaciones de su desarrollo inmobiliario en una plataforma auditada, disponible 24/7 y lista para escalar."
+other = "Vilkor centraliza la cobranza, comunicación y operaciones de su comunidad en una plataforma auditada, disponible 24/7 y lista para escalar."
 
 [explore_platform]
 other = "Ver todas las funciones"
@@ -291,7 +291,7 @@ other = "Operaciones claras y transparentes siempre."
 other = "SOLIDEZ"
 
 [institutional_rigor_label]
-other = "El rigor operativo que su desarrollo requiere."
+other = "El rigor operativo que su comunidad requiere."
 
 [tech_stack_value]
 other = "CONTROL"
@@ -350,7 +350,7 @@ other = "Adaptado a usted"
 [ai_automation_desc]
 other = """
 <div class="space-y-6">
-    <p class="font-body-lg text-on-surface-variant dark:text-gray-400 max-w-2xl leading-relaxed mb-8">
+    <p class="font-body-lg text-lg md:text-base text-on-surface-variant dark:text-gray-400 max-w-2xl leading-relaxed mb-8">
         Optimice su gestión con un ecosistema diseñado para la rendición de cuentas, elevado para aumentar el valor patrimonial y la confianza de los residentes.
     </p>
 
@@ -370,18 +370,18 @@ other = """
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">hub</span>
-                    <h4 class="font-bold text-sm dark:text-white">Arquitectura que Escala</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Estandarice procesos y gestione múltiples carteras con una infraestructura ligera.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Arquitectura que Escala</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Estandarice procesos y gestione múltiples carteras con una infraestructura ligera.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">account_balance</span>
-                    <h4 class="font-bold text-sm dark:text-white">Rigor de Auditoría</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Rigor de Auditoría</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Reportes financieros íntegros y listos para rendición de cuentas, sin discrepancias.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">verified_user</span>
-                    <h4 class="font-bold text-sm dark:text-white">Control y Trazabilidad</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Trazabilidad total en cada transacción, gestión de staff y accesos.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Control y Trazabilidad</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Trazabilidad total en cada transacción, gestión de staff y accesos.</p>
                 </div>
             </div>
         </div>
@@ -391,18 +391,18 @@ other = """
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">visibility</span>
-                    <h4 class="font-bold text-sm dark:text-white">Visibilidad Directa</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Visibilidad Directa</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Acceso inmediato a estados de cuenta, reglamentos y evidencia de gestión financiera.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">phonelink_setup</span>
-                    <h4 class="font-bold text-sm dark:text-white">Gestión sin Ambigüedades</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Gestión sin Ambigüedades</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Canal directo para trámites, reportes y seguimiento formal de solicitudes con respuestas oportunas.</p>
                 </div>
                 <div class="space-y-3">
                     <span class="material-symbols-outlined text-[#674bb5] text-2xl">trending_up</span>
-                    <h4 class="font-bold text-sm dark:text-white">Plusvalía Tecnológica</h4>
-                    <p class="text-[12px] opacity-70 leading-relaxed">Una comunidad organizada aumenta el valor real de su propiedad.</p>
+                    <h4 class="font-bold text-base md:text-sm dark:text-white">Plusvalía Tecnológica</h4>
+                    <p class="text-sm md:text-[12px] opacity-70 leading-relaxed">Una comunidad organizada aumenta el valor real de su propiedad.</p>
                 </div>
             </div>
         </div>
@@ -622,10 +622,10 @@ other = "Datos seguros 24/7 en la nube."
 other = "Acceda desde su computadora, móvil o tablet."
 
 [command_headline]
-other = "Su condominio puede operar como una empresa. Comience hoy."
+other = "Su comunidad puede operar como una empresa. Comience hoy."
 
 [command_subtitle]
-other = "Deje atrás la ambigüedad y la gestión manual. Evolucione a la plataforma diseñada para automatizar el ciclo de vida de su desarrollo inmobiliario, brindando certeza técnica y financiera."
+other = "Deje atrás la ambigüedad y la gestión manual. Evolucione a la plataforma diseñada para automatizar el ciclo de vida de su comunidad, brindando certeza técnica y financiera."
 
 [soc2_compliant]
 other = "SEGURIDAD NATIVA EN LA NUBE"

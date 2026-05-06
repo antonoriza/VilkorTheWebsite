@@ -70,13 +70,13 @@
             <!-- Language Switcher (Mobile) -->
             <div class="flex flex-wrap justify-center gap-4">
                 {{ range .AllTranslations }}
-                <a href="{{ .RelPermalink }}" class="text-sm font-bold uppercase tracking-widest {{ if eq $.Language.Lang .Language.Lang }}text-primary-container{{ else }}text-on-surface-variant{{ end }}">
+                <a href="{{ .RelPermalink }}" class="text-base md:text-sm font-bold uppercase tracking-widest {{ if eq $.Language.Lang .Language.Lang }}text-primary-container{{ else }}text-on-surface-variant{{ end }}">
                     {{ .Language.LanguageName }}
                 </a>
                 {{ end }}
             </div>
 
-            <a href="#book-a-demo" translate="no" class="mt-8 w-full py-5 bg-primary-container text-black text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
+            <a href="#book-a-demo" translate="no" class="mt-8 w-full py-5 bg-primary-container text-black text-base md:text-sm font-black uppercase tracking-widest rounded-2xl shadow-xl">
                 {{ T "nav_contact" }}
             </a>
         </div>
