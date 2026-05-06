@@ -39,7 +39,11 @@
   }
 
   function getStrokeColor() {
-    return "#34d399";
+    return (
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--color-secondary",
+      ) || "#0058be"
+    );
   }
 
   function updatePoints() {
@@ -70,7 +74,7 @@
   function drawGrid(color) {
     ctx.beginPath();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 0.5;
 
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols - 1; j++) {
